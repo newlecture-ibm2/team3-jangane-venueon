@@ -1,6 +1,6 @@
 # 🏗️ EventBridge MVP 아키텍처 제안서
 
-> **목표:** 8주 내 데모 가능한 최소 핵심 제품 — "주최자가 이벤트를 만들고, 참여자가 실시간으로 참여하는" End-to-End 시나리오 완성
+> **목표:** 8주 내 데모 가능한 최소 핵심 제품 — "주최자가 이벤트를 만들고, 참여자가 실시간 웨비나와 인터랙티브 기능으로 참여하는" End-to-End 시나리오 완성
 
 ---
 
@@ -17,10 +17,10 @@
 
 ---
 
-## 📌 2. MVP 서비스 분리 (4개 서비스)
+## 📌 2. MVP 서비스 분리 (5개 서비스)
 
 > [!IMPORTANT]
-> 기획서의 7개에서 **4개로 축소**합니다. 기능이 아니라 "팀원 배분"과 "독립 배포"를 기준으로 나눕니다.
+> 기획서의 7개에서 **5개로 축소**합니다. 기능이 아니라 "팀원 배분"과 "독립 배포"를 기준으로 나눕니다. **웨비나 중계는 플랫폼의 정체성("이벤트 중계")이므로 MVP 필수입니다.**
 
 ```mermaid
 graph TB
@@ -35,6 +35,7 @@ graph TB
     subgraph Services["⚙️ Backend Services"]
         US[User Service<br/>회원/인증]
         ES[Event Service<br/>이벤트/티켓/세션]
+        SS[Streaming Service<br/>웨비나 중계]
         IS[Interactive Service<br/>채팅/투표/Q&A]
         CS[Community Service<br/>게시판/후기]
     end
@@ -46,14 +47,21 @@ graph TB
         KF[Kafka<br/>Message Broker]
     end
 
+    subgraph External["☁️ External API"]
+        ZM[Zoom API<br/>Meeting SDK]
+    end
+
     WEB --> GW
     GW --> US
     GW --> ES
+    GW --> SS
     GW --> IS
     GW --> CS
 
     US --> PG1
     ES --> PG2
+    SS --> ZM
+    SS --> RD
     IS --> RD
     IS --> KF
     CS --> PG2
@@ -66,11 +74,35 @@ graph TB
 |--------|----------|-----|----------|
 | **User Service** | 회원가입, 로그인/JWT, 프로필, 역할(HOST/ATTENDEE) | PostgreSQL (user_db) | Spring Security, JWT, OAuth2 |
 | **Event Service** | 이벤트 CRUD, 세션/프로그램, 티켓 생성, 주문/결제, 이벤트 검색, QR 출석 | PostgreSQL (event_db) | JPA, 포트원 API, QR 생성 |
+| **Streaming Service** | 웨비나 중계, Zoom 미팅 생성, 참가 URL/서명 발급 | Redis (세션) | Zoom API, Zoom Meeting SDK |
 | **Interactive Service** | 실시간 채팅, 실시간 투표, 실시간 Q&A | Redis + Kafka | WebSocket (STOMP), Redis Pub/Sub |
 | **Community Service** | 커뮤니티 게시판, 후기/리뷰, 댓글 | PostgreSQL (event_db 공유) | JPA, 파일 업로드 |
 
 > [!TIP]
-> **왜 4개인가?** — 팀원이 4~5명이라면 각 서비스를 1~2명이 담당할 수 있는 최적의 구조입니다. Notification, Analytics, Streaming은 MVP에서 제외하고 2차에서 독립 서비스로 분리합니다.
+> **왜 5개인가?** — 웨비나 중계는 이 플랫폼의 정체성("이벤트 중계")이므로 MVP 필수입니다. **Zoom API**를 활용하면 미디어 서버 인프라 없이 SDK 임베딩만으로 웨비나를 구현할 수 있어 8주 MVP에 최적입니다.
+
+### 💡 웨비나 구현 전략: Zoom API + Meeting SDK
+
+> [!NOTE]
+> WebRTC를 직접 구현하거나 미디어 서버를 운영하면 8주 MVP에서 부담이 큽니다. 대신 **Zoom API**를 활용하여 미팅 생성/관리는 백엔드에서, 화면 임베딩은 프론트에서 처리합니다.
+
+| 항목 | 설명 |
+|------|------|
+| **Zoom API** | Server-to-Server OAuth로 미팅 생성/삭제/조회 (REST API) |
+| **Zoom Meeting SDK** | 웹 페이지 내에 Zoom 미팅 화면을 iframe으로 임베딩 |
+| **주최자(Host)** | Streaming Service에서 Zoom 미팅 생성 → 호스트 URL로 시작 |
+| **참여자(Attendee)** | 라이브 페이지에서 Meeting SDK로 Zoom 화면 임베딩 시청 |
+| **Streaming Service 역할** | Zoom API를 래핑하여 미팅 생성, 서명(signature) 발급, 상태 관리 |
+| **비용** | Zoom 기본 플랜(무료) — 40분 제한, 100명 / 유료 플랜 시 무제한 |
+
+```
+주최자 브라우저                   Zoom Cloud                참여자 브라우저
+  (호스트 시작)  ──Zoom SDK──▶  (미디어 중계)  ──Zoom SDK──▶  (임베딩 시청)
+       │                            │                          │
+       └──── Streaming Service (미팅 생성, SDK 서명 발급) ──────┘
+```
+
+> **향후 확장:** MVP 이후 LiveKit(오픈소스 WebRTC) 등으로 자체 미디어 서버로 전환 가능
 
 ---
 
@@ -85,11 +117,12 @@ graph TB
 | 3 | **이벤트 목록/검색** | Event | ⭐⭐⭐ | 🟢 중 |
 | 4 | **이벤트 상세페이지** | Event | ⭐⭐⭐ | 🟢 중 |
 | 5 | **티켓팅 (결제 연동)** | Event | ⭐⭐⭐ | 🔴 상 |
-| 6 | **실시간 채팅** | Interactive | ⭐⭐⭐ | 🔴 상 |
-| 7 | **실시간 투표** | Interactive | ⭐⭐⭐ | 🟡 중상 |
-| 8 | **QR 출석 체크** | Event | ⭐⭐ | 🟢 하 |
-| 9 | **커뮤니티 게시판** | Community | ⭐⭐ | 🟢 중 |
-| 10 | **주최자 대시보드 (기본)** | Event | ⭐⭐ | 🟡 중상 |
+| 6 | **웨비나 중계 (Zoom SDK)** | Streaming | ⭐⭐⭐ | 🟢 중 |
+| 7 | **실시간 채팅** | Interactive | ⭐⭐⭐ | 🔴 상 |
+| 8 | **실시간 투표** | Interactive | ⭐⭐⭐ | 🟡 중상 |
+| 9 | **QR 출석 체크** | Event | ⭐⭐ | 🟢 하 |
+| 10 | **커뮤니티 게시판** | Community | ⭐⭐ | 🟢 중 |
+| 11 | **주최자 대시보드 (기본)** | Event | ⭐⭐ | 🟡 중상 |
 
 ### 🔵 MVP 보조 (여유 시 추가)
 
@@ -240,6 +273,7 @@ erDiagram
 | **캐시/실시간** | Redis 7 | 세션, 캐시, Pub/Sub |
 | **메시지 브로커** | Apache Kafka | 서비스 간 비동기 통신 |
 | **실시간 통신** | WebSocket (STOMP) | 채팅, 투표, Q&A |
+| **웨비나/미디어** | Zoom API + Meeting SDK | Server-to-Server OAuth, 프론트 임베딩 |
 | **인증** | Spring Security + JWT | Access/Refresh Token |
 | **결제** | 포트원(PortOne) API | 테스트 모드 사용 |
 | **컨테이너** | Docker + Docker Compose | 로컬 개발 환경 |
@@ -247,7 +281,7 @@ erDiagram
 | **모니터링** | Prometheus + Grafana | 기본 메트릭만 |
 
 > [!WARNING]
-> MVP에서 **제외**하는 기술: Kubernetes(Docker Compose로 대체), Elasticsearch(JPA 쿼리로 대체), WebRTC(웨비나는 2차), MongoDB(Redis로 채팅 캐싱)
+> MVP에서 **제외**하는 기술: Kubernetes(Docker Compose로 대체), Elasticsearch(JPA 쿼리로 대체), MongoDB(Redis로 채팅 캐싱)
 
 ---
 
@@ -297,6 +331,17 @@ team_project/
 │   │           ├── repository/
 │   │           ├── entity/
 │   │           └── dto/
+│   │
+│   ├── streaming-service/       # 웨비나 중계 서비스
+│   │   └── src/main/java/
+│   │       └── com/eventbridge/streaming/
+│   │           ├── controller/
+│   │           │   └── MeetingController.java
+│   │           ├── service/
+│   │           │   ├── ZoomApiService.java
+│   │           │   └── MeetingSignatureService.java
+│   │           ├── dto/
+│   │           └── config/      # Zoom API Config
 │   │
 │   ├── interactive-service/     # 실시간 인터랙티브 서비스
 │   │   └── src/main/java/
@@ -380,6 +425,17 @@ team_project/
 | GET | `/api/host/events` | 주최자 이벤트 관리 |
 | GET | `/api/host/events/{id}/attendees` | 참가자 목록 |
 
+### Streaming Service (6 APIs)
+
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | `/api/meetings` | Zoom 미팅 생성 (이벤트 연동) |
+| GET | `/api/meetings/{eventId}` | 미팅 정보 조회 (join URL 포함) |
+| POST | `/api/meetings/{eventId}/signature` | Meeting SDK 서명 발급 (프론트 임베딩용) |
+| DELETE | `/api/meetings/{eventId}` | 미팅 삭제 |
+| PATCH | `/api/meetings/{eventId}/status` | 미팅 상태 변경 (시작/종료) |
+| GET | `/api/meetings/{eventId}/participants` | 참여자 현황 조회 (Zoom Dashboard API) |
+
 ### Interactive Service (8 APIs + WebSocket)
 
 | Type | Endpoint | 설명 |
@@ -406,7 +462,7 @@ team_project/
 | DELETE | `/api/posts/{id}` | 게시글 삭제 |
 | POST | `/api/events/{id}/reviews` | 후기 작성 |
 
-**총 API 수: 42개** → PDF 요구사항(20개 이상) 충족 ✅
+**총 API 수: 48개** → PDF 요구사항(20개 이상) 충족 ✅
 
 ---
 
@@ -429,17 +485,19 @@ gantt
     Event CRUD + 검색          :b2, 2026-04-06, 7d
     프론트 공통 레이아웃         :b3, 2026-04-06, 5d
     Gateway 구성               :b4, 2026-04-06, 3d
+    Zoom API 연동 셋업          :b5, 2026-04-06, 2d
 
     section 🔧 Sprint 2 (핵심)
     티켓팅 + 결제               :c1, 2026-04-13, 7d
-    실시간 채팅 (WebSocket)     :c2, 2026-04-13, 7d
-    이벤트 상세/목록 프론트      :c3, 2026-04-13, 7d
+    웨비나 중계 (Zoom SDK)      :c2, 2026-04-13, 7d
+    실시간 채팅 (WebSocket)     :c3, 2026-04-13, 7d
+    이벤트 상세/목록 프론트      :c4, 2026-04-13, 7d
 
     section 🔧 Sprint 3 (인터랙티브)
     실시간 투표                 :d1, 2026-04-20, 5d
     QR 출석                    :d2, 2026-04-20, 3d
     커뮤니티 게시판              :d3, 2026-04-20, 7d
-    라이브 페이지 프론트         :d4, 2026-04-20, 7d
+    라이브 페이지 프론트 (웨비나+채팅+투표) :d4, 2026-04-20, 7d
 
     section 🔧 Sprint 4 (완성)
     주최자 대시보드              :e1, 2026-04-27, 5d
@@ -518,6 +576,7 @@ services:
     depends_on:
       - user-service
       - event-service
+      - streaming-service
       - interactive-service
       - community-service
 
@@ -544,6 +603,20 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://event-db:5432/event_db
       SPRING_REDIS_HOST: redis
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+  streaming-service:
+    build: ../backend/streaming-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - redis
+    environment:
+      ZOOM_ACCOUNT_ID: ${ZOOM_ACCOUNT_ID}
+      ZOOM_CLIENT_ID: ${ZOOM_CLIENT_ID}
+      ZOOM_CLIENT_SECRET: ${ZOOM_CLIENT_SECRET}
+      ZOOM_SDK_KEY: ${ZOOM_SDK_KEY}
+      ZOOM_SDK_SECRET: ${ZOOM_SDK_SECRET}
+      SPRING_REDIS_HOST: redis
 
   interactive-service:
     build: ../backend/interactive-service
@@ -597,7 +670,7 @@ volumes:
 | 2 | 🔐 **로그인/회원가입** | `/auth/login`, `/auth/signup` | JWT 인증 |
 | 3 | 📄 **이벤트 상세** | `/events/[id]` | 이벤트 정보, 세션, 티켓 구매 |
 | 4 | ✏️ **이벤트 생성** | `/host/events/new` | 이벤트 생성 폼 (위자드) |
-| 5 | 📺 **라이브 페이지** | `/live/[eventId]` | 좌: 화면 / 우: 채팅+투표+Q&A |
+| 5 | 📺 **라이브 페이지** | `/live/[eventId]` | 좌: 웨비나 중계 화면(Zoom SDK 임베딩) / 우: 채팅+투표+Q&A |
 | 6 | 👥 **커뮤니티** | `/community/[id]` | 게시판, 후기 |
 | 7 | 👤 **마이페이지** | `/mypage` | 내 티켓(QR), 참여 이력 |
 | 8 | 📊 **주최자 대시보드** | `/host/dashboard` | 이벤트 관리, 참가자 목록 |
@@ -613,10 +686,10 @@ volumes:
 
 | 역할 | 인원 | 담당 |
 |------|------|------|
-| **프론트엔드** | 2명 | A: 메인/이벤트 상세/검색 + B: 라이브/채팅/투표 UI |
+| **프론트엔드** | 2명 | A: 메인/이벤트 상세/검색 + B: 라이브(웨비나+채팅+투표) UI |
 | **백엔드 - User + Gateway** | 1명 | 인증 체계, API Gateway, 보안 |
 | **백엔드 - Event + Community** | 1명 | 이벤트 CRUD, 티켓팅, 결제, 커뮤니티 |
-| **백엔드 - Interactive** | 1명 | WebSocket, 실시간 채팅/투표, Redis/Kafka |
+| **백엔드 - Streaming + Interactive** | 1명 | Zoom API 연동, WebSocket, 실시간 채팅/투표, Redis/Kafka |
 
 ---
 
@@ -628,10 +701,12 @@ sequenceDiagram
     participant GW as Gateway
     participant US as User Service
     participant ES as Event Service
+    participant STR as Streaming Service
+    participant ZM as Zoom API
     participant IS as Interactive Service
     participant KF as Kafka
 
-    Note over FE,KF: 시나리오: 이벤트 참여 → 실시간 채팅
+    Note over FE,KF: 시나리오: 이벤트 참여 → 웨비나 시청 → 실시간 채팅
 
     FE->>GW: POST /api/auth/login
     GW->>US: 로그인 요청
@@ -647,13 +722,21 @@ sequenceDiagram
     ES->>KF: OrderCreated 이벤트 발행
     ES-->>FE: 주문 완료 + QR
 
+    Note over FE,ZM: 라이브 페이지 입장
+
+    FE->>GW: POST /api/meetings/{eventId}/signature
+    GW->>STR: SDK 서명 요청
+    STR-->>FE: SDK 서명 + 미팅번호 반환
+    FE->>ZM: Zoom Meeting SDK로 임베딩 참가
+    ZM-->>FE: 웨비나 화면 렌더링 (좌측)
+
     FE->>IS: WebSocket 연결 (/ws/chat)
     IS-->>FE: 연결 완료
     FE->>IS: SUBSCRIBE /topic/chat/{roomId}
     
     FE->>IS: SEND /app/chat/{roomId} "안녕하세요!"
     IS->>KF: 채팅 메시지 저장
-    IS-->>FE: 실시간 메시지 브로드캐스트
+    IS-->>FE: 실시간 메시지 브로드캐스트 (우측)
 ```
 
 ---
@@ -665,18 +748,17 @@ sequenceDiagram
 | 회원/JWT 인증 | OAuth 소셜 로그인 |
 | 이벤트 CRUD + 검색 | Elasticsearch (JPA LIKE로 대체) |
 | 티켓팅 + 결제 | 정산 시스템 |
-| 실시간 채팅 | 웨비나 중계 (WebRTC) |
-| 실시간 투표 | 퀴즈쇼/잼라이브 |
-| QR 출석 | 이모지 리액션 |
-| 커뮤니티 게시판 | 노코드 페이지 에디터 |
-| 주최자 대시보드 (기본) | AI 추천 |
+| **웨비나 중계 (Zoom SDK)** | 녹화/아카이브 재생 |
+| 실시간 채팅 | 퀴즈쇼/잼라이브 |
+| 실시간 투표 | 이모지 리액션 |
+| QR 출석 | 노코드 페이지 에디터 |
+| 커뮤니티 게시판 | AI 추천 |
+| 주최자 대시보드 (기본) | 카카오 알림톡/이메일/푸시 |
 | Docker Compose | Kubernetes |
-| 기본 알림 (웹) | 카카오 알림톡/이메일/푸시 |
 | — | 포인트/레벨/어치브먼트 |
 | — | 설문조사 |
-| — | 아카이브/재생 |
 
 ---
 
 > [!IMPORTANT]
-> **MVP 성공 기준:** 데모에서 "주최자가 이벤트를 만들고 → 참여자가 티켓을 구매하고 → 실시간으로 채팅/투표에 참여하는" **End-to-End 시나리오를 끊김 없이 시연**할 수 있으면 MVP는 성공입니다.
+> **MVP 성공 기준:** 데모에서 "주최자가 이벤트를 만들고 → 참여자가 티켓을 구매하고 → **웨비나를 시청하면서** 실시간으로 채팅/투표에 참여하는" **End-to-End 시나리오를 끊김 없이 시연**할 수 있으면 MVP는 성공입니다.
