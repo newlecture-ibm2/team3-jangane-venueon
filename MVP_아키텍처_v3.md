@@ -8,26 +8,28 @@
 
 ## 📌 1. MVP 기능 범위
 
-| # | 기능 | 역할 | 설명 |
-|---|------|------|------|
-| 1 | **회원가입/로그인** | 기획자, 사용자 | JWT 인증, 역할 기반 접근 제어 |
-| 2 | **이벤트 CRUD** | 기획자 | 이벤트 생성·조회·수정·삭제, 세션/프로그램 관리 |
-| 3 | **마이페이지** | 기획자, 사용자 | 기획자: 내 이벤트 관리·수정 / 사용자: 구매내역, 참여 이력 |
-| 4 | **이벤트 티켓팅 + 결제** | 사용자 | 유료·무료 티켓 구매, 포트원 결제 연동, 구매 후 마이페이지 반영 |
-| 6 | **이벤트 커뮤니티 CRUD** | 기획자, 사용자 | 이벤트 기반 커뮤니티 생성·조회·수정·삭제 |
-| 7 | **커뮤니티 글 CRUD** | 기획자, 사용자 | 커뮤니티 내 게시글 작성·조회·수정·삭제, 후기 |
+| # | 기능 | 설명 |
+|---|------|------|
+| 1 | **회원가입/로그인** | JWT 인증 |
+| 2 | **이벤트 CRUD** | 이벤트 생성·조회·수정·삭제, 세션/프로그램 관리 |
+| 3 | **마이페이지** | 내 이벤트 관리, 구매내역, 참여 이력 |
+| 4 | **이벤트 티켓팅 + 결제** | 유료·무료 티켓 구매, 포트원 결제 연동, 구매 후 마이페이지 반영 |
+| 5 | **이벤트 커뮤니티 CRUD** | 이벤트 기반 커뮤니티 생성·조회·수정·삭제 |
+| 6 | **커뮤니티 글 CRUD** | 커뮤니티 내 게시글 작성·조회·수정·삭제, 후기 |
 
 ---
 
-## 📌 2. 사용자 역할 정의
+## 📌 2. 사용자 정책
 
-| 역할 | 코드 | 권한 |
-|------|------|------|
-| **기획자 (Host)** | `ROLE_HOST` | 이벤트 CRUD, 티켓 설정, 커뮤니티 생성/관리, 글 작성 |
-| **사용자 (Attendee)** | `ROLE_USER` | 이벤트 탐색, 티켓 구매, 커뮤니티 가입, 글 작성 |
-| **관리자 (Admin)** | `ROLE_ADMIN` | 전체 관리 (향후 확장) |
+> **권한 분리 없음** — 모든 사용자가 이벤트 생성·참여·구매·커뮤니티 활동 등 모든 기능을 동일하게 사용할 수 있습니다.
 
-> 회원가입 시 역할 선택: **"이벤트를 만들 건가요? (기획자)" / "이벤트에 참여할 건가요? (사용자)"**
+| 항목 | 설명 |
+|------|------|
+| **권한** | 단일 권한 (로그인 사용자 = 모든 기능 접근 가능) |
+| **이벤트 관리** | 본인이 만든 이벤트만 수정/삭제 가능 (작성자 검증) |
+| **커뮤니티 관리** | 본인이 만든 커뮤니티만 수정/삭제 가능 (작성자 검증) |
+| **게시글/댓글** | 본인이 작성한 글만 수정/삭제 가능 (작성자 검증) |
+| **향후 확장** | 필요 시 역할(HOST/ADMIN) 분리 가능하도록 구조는 유지 |
 
 ---
 
@@ -115,14 +117,13 @@ erDiagram
         string password
         string nickname
         string profile_img
-        enum role "HOST, USER, ADMIN"
         timestamp created_at
         timestamp updated_at
     }
 
     EVENT {
         bigint id PK
-        bigint host_id FK
+        bigint creator_id FK
         string title
         text description
         string category
@@ -306,30 +307,50 @@ team_project/
 │   │   │   ├── page.module.css
 │   │   │   ├── (auth)/
 │   │   │   │   ├── login/page.tsx
-│   │   │   │   └── signup/page.tsx         # 역할 선택 (기획자/사용자)
+│   │   │   │   ├── signup/page.tsx         # 역할 선택 (기획자/사용자)
+│   │   │   │   └── components/
+│   │   │   │       ├── LoginForm.tsx
+│   │   │   │       ├── SignupForm.tsx
+│   │   │   │       └── useAuth.ts          # 인증 Hook
 │   │   │   ├── events/
 │   │   │   │   ├── page.tsx               # 이벤트 탐색
 │   │   │   │   ├── [id]/page.tsx          # 이벤트 상세 + 티켓 구매
-│   │   │   │   └── new/page.tsx           # 이벤트 생성 (기획자)
+│   │   │   │   ├── new/page.tsx           # 이벤트 생성 (기획자)
+│   │   │   │   └── components/
+│   │   │   │       ├── EventList.tsx       # 이벤트 목록 섹션
+│   │   │   │       ├── EventDetail.tsx     # 이벤트 상세 섹션
+│   │   │   │       ├── EventForm.tsx       # 이벤트 생성/수정 폼
+│   │   │   │       ├── TicketSection.tsx   # 티켓 선택/구매 섹션
+│   │   │   │       ├── useEvents.ts       # 이벤트 CRUD Hook
+│   │   │   │       └── useOrder.ts        # 주문/결제 Hook
 │   │   │   ├── community/
 │   │   │   │   ├── page.tsx               # 커뮤니티 목록
 │   │   │   │   ├── [id]/page.tsx          # 커뮤니티 상세
 │   │   │   │   ├── [id]/posts/new/page.tsx
-│   │   │   │   └── [id]/posts/[postId]/page.tsx
+│   │   │   │   ├── [id]/posts/[postId]/page.tsx
+│   │   │   │   └── components/
+│   │   │   │       ├── CommunityList.tsx   # 커뮤니티 목록 섹션
+│   │   │   │       ├── PostList.tsx        # 게시글 목록 섹션
+│   │   │   │       ├── PostForm.tsx        # 게시글 작성 폼
+│   │   │   │       ├── CommentList.tsx     # 댓글 섹션
+│   │   │   │       ├── useCommunity.ts    # 커뮤니티 CRUD Hook
+│   │   │   │       └── usePosts.ts        # 게시글 CRUD Hook
 │   │   │   └── mypage/
 │   │   │       ├── page.tsx               # 마이페이지
 │   │   │       ├── events/page.tsx        # 내 이벤트 (기획자)
-│   │   │       ├── tickets/page.tsx       # 내 티켓 (사용자)
-│   │   │       └── communities/page.tsx
-│   │   ├── components/
-│   │   │   ├── common/                    # Button, Card, Modal, Header...
-│   │   │   │   └── useAuth.ts             # 인증 상태 관리 Hook
-│   │   │   ├── event/                     # EventCard, EventForm, TicketSelector...
-│   │   │   │   ├── useEvents.ts           # 이벤트 목록/검색 Hook
-│   │   │   │   └── useOrder.ts            # 티켓 주문/결제 Hook
-│   │   │   └── community/                # PostCard, PostForm, CommentList...
-│   │   │       ├── useCommunity.ts        # 커뮤니티 CRUD Hook
-│   │   │       └── usePosts.ts            # 게시글 CRUD Hook
+│   │   │       ├── tickets/page.tsx       # 구매내역 (사용자)
+│   │   │       ├── communities/page.tsx
+│   │   │       └── components/
+│   │   │           ├── MyEventList.tsx     # 내 이벤트 섹션
+│   │   │           ├── OrderHistory.tsx    # 구매내역 섹션
+│   │   │           └── useMyPage.ts       # 마이페이지 Hook
+│   │   ├── components/                    # 공통 재사용 UI 컴포넌트만
+│   │   │   ├── Button.tsx
+│   │   │   ├── Card.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   ├── Header.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   └── Pagination.tsx
 │   │   ├── lib/                           # api.ts, auth.ts, utils.ts
 │   │   └── styles/
 │   │       ├── globals.css
@@ -349,8 +370,7 @@ team_project/
 │   │       │
 │   │       ├── domain/                    # 💎 도메인 (순수 비즈니스)
 │   │       │   ├── model/
-│   │       │   │   ├── User.java          # 도메인 엔티티 (JPA 어노테이션 없음)
-│   │       │   │   └── UserRole.java      # enum: HOST, USER, ADMIN
+│   │       │   │   └── User.java          # 도메인 엔티티 (JPA 어노테이션 없음)
 │   │       │   └── exception/
 │   │       │       └── UserDomainException.java
 │   │       │
@@ -680,70 +700,69 @@ public class EventMapper {
 
 ### User Service (8 APIs)
 
-| Method | Endpoint | 역할 | 설명 |
-|--------|----------|------|------|
-| POST | `/api/auth/signup` | ALL | 회원가입 (역할 선택: HOST/USER) |
-| POST | `/api/auth/login` | ALL | 로그인 → JWT 발급 |
-| POST | `/api/auth/refresh` | ALL | Access Token 갱신 |
-| POST | `/api/auth/logout` | ALL | 로그아웃 (토큰 블랙리스트) |
-| GET | `/api/users/me` | ALL | 내 프로필 조회 |
-| PUT | `/api/users/me` | ALL | 내 프로필 수정 |
-| GET | `/api/users/{id}` | ALL | 타 유저 프로필 조회 |
-| GET | `/api/users/{id}/role` | 내부 | 유저 역할 조회 (서비스 간) |
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | `/api/auth/signup` | 회원가입 |
+| POST | `/api/auth/login` | 로그인 → JWT 발급 |
+| POST | `/api/auth/refresh` | Access Token 갱신 |
+| POST | `/api/auth/logout` | 로그아웃 (토큰 블랙리스트) |
+| GET | `/api/users/me` | 내 프로필 조회 |
+| PUT | `/api/users/me` | 내 프로필 수정 |
+| GET | `/api/users/{id}` | 타 유저 프로필 조회 |
 
-### Event Service (20 APIs)
+### Event Service (18 APIs)
 
-| Method | Endpoint | 역할 | 설명 |
-|--------|----------|------|------|
-| **이벤트** | | | |
-| POST | `/api/events` | HOST | 이벤트 생성 |
-| GET | `/api/events` | ALL | 이벤트 목록 (필터/검색/페이징) |
-| GET | `/api/events/{id}` | ALL | 이벤트 상세 |
-| PUT | `/api/events/{id}` | HOST | 이벤트 수정 |
-| DELETE | `/api/events/{id}` | HOST | 이벤트 삭제 |
-| PATCH | `/api/events/{id}/status` | HOST | 상태 변경 (DRAFT→PUBLISHED→ENDED) |
-| GET | `/api/events/my` | HOST | 내가 만든 이벤트 목록 (마이페이지) |
-| **세션** | | | |
-| POST | `/api/events/{id}/sessions` | HOST | 세션 등록 |
-| GET | `/api/events/{id}/sessions` | ALL | 세션 목록 |
-| PUT | `/api/sessions/{id}` | HOST | 세션 수정 |
-| DELETE | `/api/sessions/{id}` | HOST | 세션 삭제 |
-| **티켓** | | | |
-| POST | `/api/events/{id}/tickets` | HOST | 티켓 생성 (유료/무료) |
-| GET | `/api/events/{id}/tickets` | ALL | 티켓 목록 |
-| **주문/결제** | | | |
-| POST | `/api/orders` | USER | 티켓 구매 (유료: 결제 / 무료: 즉시 등록) |
-| GET | `/api/orders/my` | USER | 내 구매내역 목록 (마이페이지) |
-| GET | `/api/orders/{id}` | USER | 주문 상세 (이벤트 정보 + 결제 정보) |
-| POST | `/api/orders/{id}/cancel` | USER | 주문 취소/환불 |
-| POST | `/api/payments/confirm` | 시스템 | 포트원 결제 승인 웹훅 |
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| **이벤트** | | |
+| POST | `/api/events` | 이벤트 생성 |
+| GET | `/api/events` | 이벤트 목록 (필터/검색/페이징) |
+| GET | `/api/events/{id}` | 이벤트 상세 |
+| PUT | `/api/events/{id}` | 이벤트 수정 (작성자만) |
+| DELETE | `/api/events/{id}` | 이벤트 삭제 (작성자만) |
+| PATCH | `/api/events/{id}/status` | 상태 변경 (작성자만) |
+| GET | `/api/events/my` | 내가 만든 이벤트 목록 (마이페이지) |
+| **세션** | | |
+| POST | `/api/events/{id}/sessions` | 세션 등록 (이벤트 작성자만) |
+| GET | `/api/events/{id}/sessions` | 세션 목록 |
+| PUT | `/api/sessions/{id}` | 세션 수정 (작성자만) |
+| DELETE | `/api/sessions/{id}` | 세션 삭제 (작성자만) |
+| **티켓** | | |
+| POST | `/api/events/{id}/tickets` | 티켓 생성 (이벤트 작성자만) |
+| GET | `/api/events/{id}/tickets` | 티켓 목록 |
+| **주문/결제** | | |
+| POST | `/api/orders` | 티켓 구매 (유료: 결제 / 무료: 즉시 등록) |
+| GET | `/api/orders/my` | 내 구매내역 목록 (마이페이지) |
+| GET | `/api/orders/{id}` | 주문 상세 (이벤트 정보 + 결제 정보) |
+| POST | `/api/orders/{id}/cancel` | 주문 취소/환불 |
+| POST | `/api/payments/confirm` | 포트원 결제 승인 웹훅 |
 
 ### Community Service (17 APIs)
 
-| Method | Endpoint | 역할 | 설명 |
-|--------|----------|------|------|
-| **커뮤니티** | | | |
-| POST | `/api/communities` | HOST, USER | 커뮤니티 생성 (이벤트 연동) |
-| GET | `/api/communities` | ALL | 커뮤니티 목록 |
-| GET | `/api/communities/{id}` | ALL | 커뮤니티 상세 |
-| PUT | `/api/communities/{id}` | ADMIN | 커뮤니티 수정 |
-| DELETE | `/api/communities/{id}` | ADMIN | 커뮤니티 삭제 |
-| POST | `/api/communities/{id}/join` | ALL | 커뮤니티 가입 |
-| DELETE | `/api/communities/{id}/leave` | ALL | 커뮤니티 탈퇴 |
-| GET | `/api/communities/{id}/members` | ALL | 멤버 목록 |
-| GET | `/api/communities/my` | ALL | 내 커뮤니티 목록 (마이페이지) |
-| **게시글** | | | |
-| POST | `/api/communities/{id}/posts` | MEMBER | 게시글 작성 |
-| GET | `/api/communities/{id}/posts` | ALL | 게시글 목록 (타입별 필터) |
-| GET | `/api/posts/{id}` | ALL | 게시글 상세 |
-| PUT | `/api/posts/{id}` | 작성자 | 게시글 수정 |
-| DELETE | `/api/posts/{id}` | 작성자/ADMIN | 게시글 삭제 |
-| **댓글** | | | |
-| POST | `/api/posts/{id}/comments` | MEMBER | 댓글 작성 (대댓글 지원) |
-| GET | `/api/posts/{id}/comments` | ALL | 댓글 목록 |
-| DELETE | `/api/comments/{id}` | 작성자/ADMIN | 댓글 삭제 |
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| **커뮤니티** | | |
+| POST | `/api/communities` | 커뮤니티 생성 (이벤트 연동) |
+| GET | `/api/communities` | 커뮤니티 목록 |
+| GET | `/api/communities/{id}` | 커뮤니티 상세 |
+| PUT | `/api/communities/{id}` | 커뮤니티 수정 (작성자만) |
+| DELETE | `/api/communities/{id}` | 커뮤니티 삭제 (작성자만) |
+| POST | `/api/communities/{id}/join` | 커뮤니티 가입 |
+| DELETE | `/api/communities/{id}/leave` | 커뮤니티 탈퇴 |
+| GET | `/api/communities/{id}/members` | 멤버 목록 |
+| GET | `/api/communities/my` | 내 커뮤니티 목록 (마이페이지) |
+| **게시글** | | |
+| POST | `/api/communities/{id}/posts` | 게시글 작성 |
+| GET | `/api/communities/{id}/posts` | 게시글 목록 (타입별 필터) |
+| GET | `/api/posts/{id}` | 게시글 상세 |
+| PUT | `/api/posts/{id}` | 게시글 수정 (작성자만) |
+| DELETE | `/api/posts/{id}` | 게시글 삭제 (작성자만) |
+| **댓글** | | |
+| POST | `/api/posts/{id}/comments` | 댓글 작성 (대댓글 지원) |
+| GET | `/api/posts/{id}/comments` | 댓글 목록 |
+| DELETE | `/api/comments/{id}` | 댓글 삭제 (작성자만) |
 
-**총 API: 43개** → PDF 요구사항(20개 이상) 충족 ✅
+**총 API: 42개** → PDF 요구사항(20개 이상) 충족 ✅
 
 ---
 
@@ -789,16 +808,16 @@ sequenceDiagram
 
 ---
 
-## 📌 9. 페이지 구성 (7개)
+## 📌 9. 페이지 구성 (6개)
 
-| # | 페이지 | 경로 | 역할 | 핵심 기능 |
-|---|--------|------|------|----------|
-| 1 | 🏠 **메인 홈** | `/` | ALL | 이벤트 목록/검색/필터, 인기 이벤트 |
-| 2 | 🔐 **로그인/가입** | `/auth/*` | ALL | 역할 선택 회원가입, 로그인 |
-| 3 | 📄 **이벤트 상세** | `/events/[id]` | ALL | 이벤트 정보, 세션, 티켓 구매 |
-| 4 | ✏️ **이벤트 생성/수정** | `/events/new` | HOST | 이벤트 작성 폼 (정보→세션→티켓) |
-| 5 | 👥 **커뮤니티** | `/community/[id]` | ALL | 게시글 목록, 글 작성, 댓글 |
-| 6 | 👤 **마이페이지** | `/mypage/*` | ALL | HOST: 내 이벤트 관리 / USER: 구매내역·참여 이력 |
+| # | 페이지 | 경로 | 핵심 기능 |
+|---|--------|------|----------|
+| 1 | 🏠 **메인 홈** | `/` | 이벤트 목록/검색/필터, 인기 이벤트 |
+| 2 | 🔐 **로그인/가입** | `/auth/*` | 회원가입, 로그인 |
+| 3 | 📄 **이벤트 상세** | `/events/[id]` | 이벤트 정보, 세션, 티켓 구매 |
+| 4 | ✏️ **이벤트 생성/수정** | `/events/new` | 이벤트 작성 폼 (정보→세션→티켓) |
+| 5 | 👥 **커뮤니티** | `/community/[id]` | 게시글 목록, 글 작성, 댓글 |
+| 6 | 👤 **마이페이지** | `/mypage/*` | 내 이벤트 관리, 구매내역, 참여 이력 |
 
 ---
 
