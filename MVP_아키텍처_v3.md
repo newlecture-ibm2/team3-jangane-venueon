@@ -1,4 +1,4 @@
-# 🏗️ EventBridge MVP 아키텍처 v3
+# 🏗️ VenueOn MVP 아키텍처 v3
 
 > **작성일:** 2026-03-25
 > **핵심:** 유료·무료 이벤트 중계 + 커뮤니티 연장선
@@ -366,7 +366,7 @@ team_project/
 │   │           └── JwtAuthFilter.java
 │   │
 │   ├── user-service/                      # ── 헥사고날 구조 (:8081) ──
-│   │   └── src/main/java/com/eventbridge/user/
+│   │   └── src/main/java/com/venueon/user/
 │   │       │
 │   │       ├── domain/                    # 💎 도메인 (순수 비즈니스)
 │   │       │   ├── model/
@@ -420,7 +420,7 @@ team_project/
 │   │                   └── RedisBlacklistAdapter.java # implements TokenBlacklistPort
 │   │
 │   ├── event-service/                     # ── 헥사고날 구조 (:8082) ──
-│   │   └── src/main/java/com/eventbridge/event/
+│   │   └── src/main/java/com/venueon/event/
 │   │       │
 │   │       ├── domain/
 │   │       │   ├── model/
@@ -507,7 +507,7 @@ team_project/
 │   │                   └── UserFeignAdapter.java        # implements UserQueryPort
 │   │
 │   ├── community-service/                 # ── 헥사고날 구조 (:8083) ──
-│   │   └── src/main/java/com/eventbridge/community/
+│   │   └── src/main/java/com/venueon/community/
 │   │       │
 │   │       ├── domain/
 │   │       │   ├── model/
@@ -1019,7 +1019,7 @@ volumes:
 
 ```mermaid
 gantt
-    title EventBridge MVP v3 개발 일정
+    title VenueOn MVP v3 개발 일정
     dateFormat  YYYY-MM-DD
     axisFormat  %m/%d
 
@@ -1079,7 +1079,7 @@ gantt
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│                    EventBridge MVP v3                    │
+│                    VenueOn MVP v3                    │
 ├──────────────┬─────────────────┬───────────────────────┤
 │  User Service │  Event Service  │  Community Service    │
 │  회원/인증    │  이벤트 CRUD     │  커뮤니티 CRUD         │
