@@ -340,7 +340,7 @@ graph LR
     style Application fill:#1e293b,stroke:#334155,color:#f1f5f9
 ```
 
-> **핵심 규칙:** 의존성은 항상 **바깥 → 안쪽**으로만 향합니다. Domain은 어떤 외부 기술(JPA, Spring, HTTP)도 모릅니다..
+> **핵심 규칙:** 의존성은 항상 **바깥 → 안쪽**으로만 향합니다. Domain은 어떤 외부 기술(JPA, Spring, HTTP)도 모릅니다.
 
 ### 프로젝트 구조
 
