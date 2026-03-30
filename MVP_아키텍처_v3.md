@@ -56,10 +56,10 @@
 | Step | 입력 항목 | 설명 |
 |------|-----------|------|
 | **Step 1: 기본 정보** | 이벤트명, 카테고리, 유형(세미나/클래스/밋업/컨퍼런스), 썸네일 | 이벤트의 기본 정보 입력 |
-| **Step 2: 일정 & 장소** | 시작일, 종료일, 장소(온/오프라인), 최대 참석자 수 | 캘린더 UI로 일정 선택 |
-| **Step 3: 세션/프로그램** | 세션 제목, 발표자, 시간, 설명 (복수 등록 가능) | 드래그 정렬로 순서 관리 |
-| **Step 4: 티켓 설정** | 티켓 종류(무료/일반/VIP/얼리버드), 가격, 수량, 판매 기간 | 복수 티켓 타입 생성 |
-| **Step 5: 상세 설명** | 리치 텍스트 에디터 (이미지 삽입, 서식 지원) | 이벤트 상세 페이지 본문 |
+| **Step 2: 일정 & 장소** | 시작일, 종료일, 장소(온/오프라인), 최대 참석자 수, 유료/무료, 가격 | 캘린더 UI로 일정 선택 |
+| **Step 3: 상세 설명** | 리치 텍스트 에디터 (이미지 삽입, 서식 지원) | 이벤트 상세 페이지 본문 |
+
+> **향후 확장:** 세션/프로그램 관리 (Step 3), 티켓 등급별 가격 설정 (Step 4) 추가 예정
 
 ### 등록 흐름도
 
@@ -67,20 +67,23 @@
 flowchart LR
     A["📝 이벤트 생성 클릭"] --> B["Step 1\n기본 정보"]
     B --> C["Step 2\n일정 & 장소"]
-    C --> D["Step 3\n세션/프로그램"]
-    D --> E["Step 4\n티켓 설정"]
-    E --> F["Step 5\n상세 설명"]
-    F --> G["미리보기"]
-    G --> H{"발행?"}
-    H -->|"임시저장"| I["DRAFT 상태"]
-    H -->|"발행"| J["PUBLISHED 상태\n상세페이지 자동 생성"]
+    C --> D["Step 3\n상세 설명"]
+    D --> E["미리보기"]
+    E --> F{"발행?"}
+    F -->|"임시저장"| G["DRAFT 상태"]
+    F -->|"발행"| H["PUBLISHED 상태\n상세페이지 자동 생성"]
 ```
 
 > **핵심:** 폼에 데이터를 입력하면 **이벤트 상세 페이지, 캘린더, 강의장/일정 정보가 자동으로 구성**되어 별도 디자인 작업 없이 바로 노출됩니다.
 
 ---
 
-## 📌 3. MSA 서비스 분리 (3개)
+## 📌 3. 모듈러 모놀리스 (Modular Monolith)
+
+> **왜 MSA가 아닌 모듈러 모놀리스인가?**
+> MVP 규모에서 서비스를 물리적으로 분리하면 네트워크 통신, 분산 트랜잭션, 독립 DB 관리 등 불필요한 복잡도가 증가합니다.
+> **하나의 Spring Boot 앱** 안에서 **패키지로 도메인을 분리**하면 헥사고날 구조를 유지하면서도 개발 생산성을 극대화할 수 있습니다.
+> 향후 트래픽 증가 시 특정 모듈만 별도 서비스로 분리하면 됩니다.
 
 ```mermaid
 graph TB
@@ -88,58 +91,57 @@ graph TB
         WEB[Web Application]
     end
 
-    subgraph Gateway["🔀 API Gateway"]
-        GW[Spring Cloud Gateway<br/>JWT 검증 + 라우팅]
-    end
-
-    subgraph Services["⚙️ Backend Microservices"]
-        US["User Service<br/>:8081<br/>회원/인증/마이페이지"]
-        ES["Event Service<br/>:8082<br/>이벤트/티켓/결제/QR"]
-        CS["Community Service<br/>:8083<br/>커뮤니티/게시글"]
+    subgraph Backend["⚙️ Spring Boot Application :8080"]
+        SEC["Spring Security<br/>JWT 검증 + 인가"]
+        UM["user 모듈<br/>회원/인증/마이페이지"]
+        EM["event 모듈<br/>이벤트/티켓/결제"]
+        CM["community 모듈<br/>커뮤니티/게시글"]
+        COMMON["common 모듈<br/>공통 DTO/예외/어노테이션"]
     end
 
     subgraph Infra["🏗️ Infrastructure"]
-        PG1[(PostgreSQL<br/>user_db)]
-        PG2[(PostgreSQL<br/>event_db)]
-        PG3[(PostgreSQL<br/>community_db)]
+        PG[(PostgreSQL<br/>venueon_db)]
         RD[(Redis<br/>JWT 블랙리스트<br/>+ 캐시)]
     end
 
-    WEB -->|HTTP| GW
-    GW --> US
-    GW --> ES
-    GW --> CS
+    WEB -->|HTTP| SEC
+    SEC --> UM
+    SEC --> EM
+    SEC --> CM
 
-    US --> PG1
-    US --> RD
-    ES --> PG2
-    CS --> PG3
+    UM --> PG
+    UM --> RD
+    EM --> PG
+    CM --> PG
 
-    ES -.->|"REST (유저 정보 조회)"| US
-    CS -.->|"REST (이벤트 정보 조회)"| ES
+    EM -.->|"메서드 호출 (같은 JVM)"| UM
+    CM -.->|"메서드 호출 (같은 JVM)"| EM
 ```
 
-### 서비스별 역할
+### 모듈별 역할
 
-| 서비스 | 포트 | 담당 | DB |
-|--------|------|------|-----|
-| **User Service** | 8081 | 회원가입, 로그인, JWT 발급/갱신, 프로필, 마이페이지 | user_db |
-| **Event Service** | 8082 | 이벤트 CRUD, 세션 관리, 티켓 CRUD, 주문/결제, 구매내역 관리 | event_db |
-| **Community Service** | 8083 | 커뮤니티 CRUD, 게시글 CRUD, 댓글, 후기 | community_db |
+| 모듈 (패키지) | 담당 |
+|--------------|------|
+| **com.venueon.user** | 회원가입, 로그인, JWT 발급/갱신, 프로필, 마이페이지 |
+| **com.venueon.event** | 이벤트 CRUD, 세션 관리, 티켓 CRUD, 주문/결제, 구매내역 관리 |
+| **com.venueon.community** | 커뮤니티 CRUD, 게시글 CRUD, 댓글, 후기 |
+| **com.venueon.common** | ApiResponse, 예외 처리, @UseCase 어노테이션 등 공통 |
 
-**서비스 수: 3개** → PDF 요구사항(최소 3개) 충족 ✅
+**도메인 모듈: 3개** → 요구사항 충족 ✅ / **DB: 1개** (테이블로 분리)
 
-### 서비스 간 통신
+### 모듈 간 통신
 
 | 호출 방향 | 방식 | 목적 |
 |-----------|------|------|
-| Event → User | REST (OpenFeign) | 주문 시 유저 정보 확인 |
-| Community → Event | REST (OpenFeign) | 커뮤니티 생성 시 이벤트 정보 참조 |
-| Community → User | REST (OpenFeign) | 게시글 작성자 정보 조회 |
+| event → user | **메서드 호출** (Port 인터페이스) | 주문 시 유저 정보 확인 |
+| community → event | **메서드 호출** (Port 인터페이스) | 커뮤니티 생성 시 이벤트 정보 참조 |
+| community → user | **메서드 호출** (Port 인터페이스) | 게시글 작성자 정보 조회 |
+
+> **핵심:** 모듈 간 직접 의존 대신 **Port 인터페이스를 통한 호출**로 결합도를 최소화합니다. 같은 JVM이므로 네트워크 오버헤드 없이 단순 메서드 호출로 처리됩니다.
 
 ---
 
-## 📌 4. ERD (11개 Entity)
+## 📌 4. ERD (8개 Entity)
 
 ```mermaid
 erDiagram
@@ -149,11 +151,9 @@ erDiagram
     USER ||--o{ COMMENT : "writes"
     USER ||--o{ COMMUNITY_MEMBER : "joins"
 
-    EVENT ||--o{ SESSION : "contains"
-    EVENT ||--o{ TICKET : "offers"
+    EVENT ||--o{ ORDER : "registered_via"
     EVENT ||--o{ COMMUNITY : "has"
 
-    TICKET ||--o{ ORDER : "purchased_via"
     COMMUNITY ||--o{ COMMUNITY_MEMBER : "has"
     COMMUNITY ||--o{ POST : "contains"
     POST ||--o{ COMMENT : "has"
@@ -179,6 +179,7 @@ erDiagram
         string location
         boolean is_online
         boolean is_free
+        int price
         int max_attendees
         string thumbnail_url
         timestamp start_date
@@ -187,37 +188,11 @@ erDiagram
         timestamp updated_at
     }
 
-    SESSION {
-        bigint id PK
-        bigint event_id FK
-        string title
-        string speaker_name
-        string speaker_bio
-        text description
-        timestamp start_time
-        timestamp end_time
-        int sort_order
-    }
-
-    TICKET {
-        bigint id PK
-        bigint event_id FK
-        string name
-        enum type "FREE, GENERAL, VIP, EARLY_BIRD"
-        int price
-        int quantity
-        int sold_count
-        timestamp sale_start
-        timestamp sale_end
-    }
-
     ORDER {
         bigint id PK
         bigint user_id FK
-        bigint ticket_id FK
         bigint event_id FK
-        enum status "PENDING, PAID, CANCELLED, REFUNDED, FREE_REGISTERED"
-        string payment_id
+        enum status "PENDING, PAID, CANCELLED, REFUNDED, REGISTERED"
         int amount
         timestamp ordered_at
     }
@@ -266,8 +241,9 @@ erDiagram
     }
 ```
 
-**Entity 수: 11개** → PDF 요구사항(최소 5개) 충족 ✅  
-**관계 포인트:** ORDER에 `qr_code`와 `private_link` 필드가 있어, 결제 완료 시 둘 다 발급됩니다.
+**Entity 수: 8개** → PDF 요구사항(최소 5개) 충족 ✅
+
+> **향후 확장:** Session(세션/프로그램), Ticket(티켓 등급별 가격) Entity는 MVP 이후 추가 예정
 
 ---
 
@@ -277,16 +253,14 @@ erDiagram
 |----------|------|------|
 | **프론트엔드** | Next.js 14+ (App Router) | React 18, SSR/SSG |
 | **스타일링** | **Vanilla CSS Module** (.module.css) | Tailwind X — 컴포넌트별 스코프 CSS |
-| **백엔드** | Spring Boot 3.x, Java 17 | RESTful API |
+| **백엔드** | Spring Boot 3.x, Java 17 | 단일 앱, RESTful API |
 | **아키텍처 패턴** | **Hexagonal Architecture** (Ports & Adapters) | 기능별 UseCase 독립 확장 |
-| **API Gateway** | Spring Cloud Gateway | JWT 검증, 라우팅, 로드밸런싱 |
-| **서비스 간 통신** | OpenFeign | 동기 REST 호출 |
-| **DB** | PostgreSQL 15 | 서비스별 독립 DB (3개) |
+| **아키텍처 구조** | **Modular Monolith** | 패키지 기반 도메인 분리, 향후 MSA 전환 용이 |
+| **DB** | PostgreSQL 15 | 단일 DB (venueon_db), 테이블로 도메인 분리 |
 | **캐시** | Redis 7 | JWT 블랙리스트, 세션 캐시 |
 | **인증** | Spring Security + JWT | Access Token + Refresh Token |
-| **결제** | 포트원 (PortOne) API | 유료 티켓 결제 |
-
-| **파일 저장** | 로컬 스토리지 (MVP) | 향후 S3/MinIO 전환 |
+| **결제** | **더미 결제** (MVP) | PG 없이 즉시 PAID 처리, 향후 포트원 전환 |
+| **파일 저장** | 외부 볼륨 마운트 (MVP) | `dist/upload` 외부 폴더, 향후 S3/MinIO 전환 |
 | **컨테이너** | Docker + Docker Compose | 로컬 개발 환경 |
 | **CI/CD** | GitHub Actions | 빌드/테스트 자동화 |
 | **API 문서** | Swagger (SpringDoc) | 자동 API 문서 생성 |
@@ -404,239 +378,251 @@ team_project/
 │   │       └── variables.css              # CSS Custom Properties
 │   └── package.json
 │
-├── backend/
-│   ├── gateway/                           # API Gateway (:8080)
-│   │   └── src/main/java/.../gateway/
-│   │       ├── GatewayApplication.java
-│   │       └── config/
-│   │           ├── RouteConfig.java
-│   │           └── JwtAuthFilter.java
-│   │
-│   ├── user-service/                      # ── 헥사고날 구조 (:8081) ──
-│   │   └── src/main/java/com/venueon/user/
-│   │       │
-│   │       ├── domain/                    # 💎 도메인 (순수 비즈니스)
-│   │       │   ├── model/
-│   │       │   │   └── User.java          # 도메인 엔티티 (JPA 어노테이션 없음)
-│   │       │   └── exception/
-│   │       │       └── UserDomainException.java
-│   │       │
-│   │       ├── application/               # ⚙️ 유스케이스 + 포트
-│   │       │   ├── port/
-│   │       │   │   ├── in/                # --- Inbound Port (UseCase 인터페이스) ---
-│   │       │   │   │   ├── SignupUseCase.java
-│   │       │   │   │   ├── LoginUseCase.java
-│   │       │   │   │   ├── LogoutUseCase.java
-│   │       │   │   │   ├── GetProfileUseCase.java
-│   │       │   │   │   └── UpdateProfileUseCase.java
-│   │       │   │   └── out/               # --- Outbound Port (외부 의존 인터페이스) ---
-│   │       │   │       ├── LoadUserPort.java
-│   │       │   │       ├── SaveUserPort.java
-│   │       │   │       ├── TokenPort.java         # JWT 생성/검증
-│   │       │   │       └── TokenBlacklistPort.java # Redis 블랙리스트
-│   │       │   │
-│   │       │   ├── service/               # --- UseCase 구현체 ---
-│   │       │   │   ├── SignupService.java         # implements SignupUseCase
-│   │       │   │   ├── LoginService.java          # implements LoginUseCase
-│   │       │   │   ├── LogoutService.java         # implements LogoutUseCase
-│   │       │   │   ├── GetProfileService.java     # implements GetProfileUseCase
-│   │       │   │   └── UpdateProfileService.java   # implements UpdateProfileUseCase
-│   │       │   │
-│   │       │   └── dto/                   # --- 입출력 DTO ---
-│   │       │       ├── SignupCommand.java
-│   │       │       ├── LoginCommand.java
-│   │       │       └── UserInfo.java
-│   │       │
-│   │       └── adapter/                   # 🔌 어댑터 (외부 연결)
-│   │           ├── in/web/               # --- Inbound Adapter (REST) ---
-│   │           │   ├── AuthController.java
-│   │           │   ├── UserController.java
-│   │           │   └── dto/
-│   │           │       ├── SignupRequest.java      # → SignupCommand 변환
-│   │           │       ├── LoginRequest.java
-│   │           │       └── UserProfileResponse.java
-│   │           │
-│   │           └── out/                   # --- Outbound Adapter ---
-│   │               ├── persistence/       # DB 연결
-│   │               │   ├── UserJpaEntity.java     # @Entity (JPA 매핑)
-│   │               │   ├── UserJpaRepository.java # JpaRepository
-│   │               │   ├── UserPersistenceAdapter.java  # implements LoadUserPort, SaveUserPort
-│   │               │   └── UserMapper.java        # JpaEntity ↔ Domain 변환
-│   │               └── jwt/               # JWT 연결
-│   │                   ├── JwtTokenAdapter.java    # implements TokenPort
-│   │                   └── RedisBlacklistAdapter.java # implements TokenBlacklistPort
-│   │
-│   ├── event-service/                     # ── 헥사고날 구조 (:8082) ──
-│   │   └── src/main/java/com/venueon/event/
-│   │       │
-│   │       ├── domain/
-│   │       │   ├── model/
-│   │       │   │   ├── Event.java
-│   │       │   │   ├── Session.java
-│   │       │   │   ├── Ticket.java
-│   │       │   │   ├── Order.java
-│   │       │   │   ├── EventStatus.java   # enum: DRAFT, PUBLISHED, ONGOING, ENDED
-│   │       │   │   ├── TicketType.java    # enum: FREE, GENERAL, VIP, EARLY_BIRD
-│   │       │   │   └── OrderStatus.java   # enum: PENDING, PAID, CANCELLED...
-│   │       │   └── exception/
-│   │       │       └── EventDomainException.java
-│   │       │
-│   │       ├── application/
-│   │       │   ├── port/
-│   │       │   │   ├── in/                # --- UseCase 인터페이스 ---
-│   │       │   │   │   ├── CreateEventUseCase.java
-│   │       │   │   │   ├── GetEventUseCase.java
-│   │       │   │   │   ├── UpdateEventUseCase.java
-│   │       │   │   │   ├── DeleteEventUseCase.java
-│   │       │   │   │   ├── SearchEventUseCase.java
-│   │       │   │   │   ├── ManageSessionUseCase.java
-│   │       │   │   │   ├── ManageTicketUseCase.java
-│   │       │   │   │   ├── CreateOrderUseCase.java
-│   │       │   │   │   ├── CancelOrderUseCase.java
-│   │       │   │   │   └── GetMyOrdersUseCase.java
-│   │       │   │   └── out/               # --- 외부 의존 인터페이스 ---
-│   │       │   │       ├── LoadEventPort.java
-│   │       │   │       ├── SaveEventPort.java
-│   │       │   │       ├── LoadOrderPort.java
-│   │       │   │       ├── SaveOrderPort.java
-│   │       │   │       ├── LoadTicketPort.java
-│   │       │   │       ├── SaveTicketPort.java
-│   │       │   │       ├── PaymentPort.java        # 포트원 결제
-│   │       │   │       └── UserQueryPort.java       # 유저 정보 조회 (타 서비스)
-│   │       │   │
-│   │       │   ├── service/               # --- UseCase 구현체 ---
-│   │       │   │   ├── CreateEventService.java
-│   │       │   │   ├── GetEventService.java
-│   │       │   │   ├── UpdateEventService.java
-│   │       │   │   ├── DeleteEventService.java
-│   │       │   │   ├── SearchEventService.java
-│   │       │   │   ├── ManageSessionService.java
-│   │       │   │   ├── ManageTicketService.java
-│   │       │   │   ├── CreateOrderService.java
-│   │       │   │   ├── CancelOrderService.java
-│   │       │   │   └── GetMyOrdersService.java
-│   │       │   │
-│   │       │   └── dto/
-│   │       │       ├── CreateEventCommand.java
-│   │       │       ├── UpdateEventCommand.java
-│   │       │       ├── CreateOrderCommand.java
-│   │       │       ├── EventInfo.java
-│   │       │       └── OrderInfo.java
-│   │       │
-│   │       └── adapter/
-│   │           ├── in/web/
-│   │           │   ├── EventController.java
-│   │           │   ├── SessionController.java
-│   │           │   ├── TicketController.java
-│   │           │   ├── OrderController.java
-│   │           │   └── dto/               # Request/Response DTO
-│   │           │
-│   │           └── out/
-│   │               ├── persistence/
-│   │               │   ├── entity/        # JPA Entity (@Entity)
-│   │               │   │   ├── EventJpaEntity.java
-│   │               │   │   ├── SessionJpaEntity.java
-│   │               │   │   ├── TicketJpaEntity.java
-│   │               │   │   └── OrderJpaEntity.java
-│   │               │   ├── repository/    # Spring Data JPA
-│   │               │   │   ├── EventJpaRepository.java
-│   │               │   │   ├── SessionJpaRepository.java
-│   │               │   │   ├── TicketJpaRepository.java
-│   │               │   │   └── OrderJpaRepository.java
-│   │               │   ├── EventPersistenceAdapter.java
-│   │               │   ├── OrderPersistenceAdapter.java
-│   │               │   └── mapper/
-│   │               │       ├── EventMapper.java
-│   │               │       └── OrderMapper.java
-│   │               ├── payment/
-│   │               │   └── PortOnePaymentAdapter.java  # implements PaymentPort
-│   │               └── external/
-│   │                   └── UserFeignAdapter.java        # implements UserQueryPort
-│   │
-│   ├── community-service/                 # ── 헥사고날 구조 (:8083) ──
-│   │   └── src/main/java/com/venueon/community/
-│   │       │
-│   │       ├── domain/
-│   │       │   ├── model/
-│   │       │   │   ├── Community.java
-│   │       │   │   ├── CommunityMember.java
-│   │       │   │   ├── Post.java
-│   │       │   │   ├── Comment.java
-│   │       │   │   └── PostType.java      # enum: GENERAL, REVIEW, QUESTION, NOTICE
-│   │       │   └── exception/
-│   │       │       └── CommunityDomainException.java
-│   │       │
-│   │       ├── application/
-│   │       │   ├── port/
-│   │       │   │   ├── in/
-│   │       │   │   │   ├── CreateCommunityUseCase.java
-│   │       │   │   │   ├── GetCommunityUseCase.java
-│   │       │   │   │   ├── UpdateCommunityUseCase.java
-│   │       │   │   │   ├── DeleteCommunityUseCase.java
-│   │       │   │   │   ├── JoinCommunityUseCase.java
-│   │       │   │   │   ├── LeaveCommunityUseCase.java
-│   │       │   │   │   ├── CreatePostUseCase.java
-│   │       │   │   │   ├── GetPostUseCase.java
-│   │       │   │   │   ├── UpdatePostUseCase.java
-│   │       │   │   │   ├── DeletePostUseCase.java
-│   │       │   │   │   ├── CreateCommentUseCase.java
-│   │       │   │   │   └── DeleteCommentUseCase.java
-│   │       │   │   └── out/
-│   │       │   │       ├── LoadCommunityPort.java
-│   │       │   │       ├── SaveCommunityPort.java
-│   │       │   │       ├── LoadPostPort.java
-│   │       │   │       ├── SavePostPort.java
-│   │       │   │       ├── LoadCommentPort.java
-│   │       │   │       ├── SaveCommentPort.java
-│   │       │   │       ├── EventQueryPort.java     # 이벤트 정보 조회
-│   │       │   │       └── UserQueryPort.java       # 유저 정보 조회
-│   │       │   │
-│   │       │   ├── service/
-│   │       │   │   ├── CreateCommunityService.java
-│   │       │   │   ├── GetCommunityService.java
-│   │       │   │   ├── UpdateCommunityService.java
-│   │       │   │   ├── DeleteCommunityService.java
-│   │       │   │   ├── JoinCommunityService.java
-│   │       │   │   ├── LeaveCommunityService.java
-│   │       │   │   ├── CreatePostService.java
-│   │       │   │   ├── GetPostService.java
-│   │       │   │   ├── UpdatePostService.java
-│   │       │   │   ├── DeletePostService.java
-│   │       │   │   ├── CreateCommentService.java
-│   │       │   │   └── DeleteCommentService.java
-│   │       │   │
-│   │       │   └── dto/
-│   │       │       ├── CreateCommunityCommand.java
-│   │       │       ├── CreatePostCommand.java
-│   │       │       ├── CommunityInfo.java
-│   │       │       └── PostInfo.java
-│   │       │
-│   │       └── adapter/
-│   │           ├── in/web/
-│   │           │   ├── CommunityController.java
-│   │           │   ├── PostController.java
-│   │           │   ├── CommentController.java
-│   │           │   └── dto/
-│   │           │
-│   │           └── out/
-│   │               ├── persistence/
-│   │               │   ├── entity/
-│   │               │   ├── repository/
-│   │               │   ├── CommunityPersistenceAdapter.java
-│   │               │   ├── PostPersistenceAdapter.java
-│   │               │   └── mapper/
-│   │               └── external/
-│   │                   ├── EventFeignAdapter.java   # implements EventQueryPort
-│   │                   └── UserFeignAdapter.java    # implements UserQueryPort
-│   │
-│   └── common/                            # 공통 모듈
-│       └── src/main/java/.../common/
-│           ├── dto/ApiResponse.java
-│           ├── exception/
-│           │   ├── GlobalExceptionHandler.java
-│           │   └── ErrorCode.java
-│           └── annotation/
-│               └── UseCase.java           # @UseCase 커스텀 어노테이션
+├── backend/                               # 단일 Spring Boot Application (:8080)
+│   └── src/main/java/com/venueon/
+│       │
+│       ├── VenueOnApplication.java        # @SpringBootApplication 메인
+│       │
+│       ├── common/                        # 🔧 공통 모듈
+│       │   ├── dto/ApiResponse.java
+│       │   ├── exception/
+│       │   │   ├── GlobalExceptionHandler.java
+│       │   │   └── ErrorCode.java
+│       │   ├── annotation/
+│       │   │   └── UseCase.java           # @UseCase 커스텀 어노테이션
+│       │   └── config/
+│       │       ├── SecurityConfig.java    # Spring Security + JWT 필터
+│       │       ├── JwtAuthFilter.java     # JWT 인증 필터
+│       │       └── SwaggerConfig.java     # API 문서 설정
+│       │
+│       ├── user/                          # 👤 User 모듈 (헥사고날)
+│       │   ├── domain/                    # 💎 도메인 (순수 비즈니스)
+│       │   │   ├── model/
+│       │   │   │   ├── User.java          # 도메인 엔티티 (JPA 어노테이션 없음)
+│       │   │   │   └── UserRole.java      # enum: ADMIN, HOST, USER
+│       │   │   └── exception/
+│       │   │       └── UserDomainException.java
+│       │   │
+│       │   ├── application/               # ⚙️ 유스케이스 + 포트
+│       │   │   ├── port/
+│       │   │   │   ├── in/                # --- Inbound Port (UseCase 인터페이스) ---
+│       │   │   │   │   ├── SignupUseCase.java
+│       │   │   │   │   ├── LoginUseCase.java
+│       │   │   │   │   ├── LogoutUseCase.java
+│       │   │   │   │   ├── GetProfileUseCase.java
+│       │   │   │   │   └── UpdateProfileUseCase.java
+│       │   │   │   └── out/               # --- Outbound Port (외부 의존 인터페이스) ---
+│       │   │   │       ├── LoadUserPort.java
+│       │   │   │       ├── SaveUserPort.java
+│       │   │   │       ├── TokenPort.java         # JWT 생성/검증
+│       │   │   │       └── TokenBlacklistPort.java # Redis 블랙리스트
+│       │   │   │
+│       │   │   ├── service/               # --- UseCase 구현체 ---
+│       │   │   │   ├── SignupService.java
+│       │   │   │   ├── LoginService.java
+│       │   │   │   ├── LogoutService.java
+│       │   │   │   ├── GetProfileService.java
+│       │   │   │   └── UpdateProfileService.java
+│       │   │   │
+│       │   │   └── dto/                   # --- 입출력 DTO ---
+│       │   │       ├── SignupCommand.java
+│       │   │       ├── LoginCommand.java
+│       │   │       └── UserInfo.java
+│       │   │
+│       │   └── adapter/                   # 🔌 어댑터 (외부 연결)
+│       │       ├── in/web/               # --- Inbound Adapter (REST) ---
+│       │       │   ├── AuthController.java
+│       │       │   ├── UserController.java
+│       │       │   └── dto/
+│       │       │       ├── request/
+│       │       │       │   ├── SignupRequest.java
+│       │       │       │   └── LoginRequest.java
+│       │       │       └── response/
+│       │       │           └── UserProfileResponse.java
+│       │       │
+│       │       └── out/                   # --- Outbound Adapter ---
+│       │           ├── persistence/       # DB 연결
+│       │           │   ├── UserJpaEntity.java
+│       │           │   ├── UserJpaRepository.java
+│       │           │   ├── UserPersistenceAdapter.java
+│       │           │   └── UserMapper.java
+│       │           └── jwt/               # JWT 연결
+│       │               ├── JwtTokenAdapter.java
+│       │               └── RedisBlacklistAdapter.java
+│       │
+│       ├── event/                         # 📅 Event 모듈 (헥사고날)
+│       │   ├── domain/
+│       │   │   ├── model/
+│       │   │   │   ├── Event.java
+│       │   │   │   ├── Order.java
+│       │   │   │   ├── EventStatus.java   # enum
+│       │   │   │   └── OrderStatus.java   # enum
+│       │   │   └── exception/
+│       │   │       └── EventDomainException.java
+│       │   │
+│       │   ├── application/
+│       │   │   ├── port/
+│       │   │   │   ├── in/
+│       │   │   │   │   ├── CreateEventUseCase.java
+│       │   │   │   │   ├── GetEventUseCase.java
+│       │   │   │   │   ├── UpdateEventUseCase.java
+│       │   │   │   │   ├── DeleteEventUseCase.java
+│       │   │   │   │   ├── SearchEventUseCase.java
+│       │   │   │   │   ├── CreateOrderUseCase.java
+│       │   │   │   │   ├── CancelOrderUseCase.java
+│       │   │   │   │   └── GetMyOrdersUseCase.java
+│       │   │   │   └── out/
+│       │   │   │       ├── LoadEventPort.java
+│       │   │   │       ├── SaveEventPort.java
+│       │   │   │       ├── LoadOrderPort.java
+│       │   │   │       ├── SaveOrderPort.java
+│       │   │   │       └── UserQueryPort.java       # user 모듈 조회용 Port
+│       │   │   │
+│       │   │   ├── service/
+│       │   │   │   ├── CreateEventService.java
+│       │   │   │   ├── GetEventService.java
+│       │   │   │   ├── UpdateEventService.java
+│       │   │   │   ├── DeleteEventService.java
+│       │   │   │   ├── SearchEventService.java
+│       │   │   │   ├── CreateOrderService.java
+│       │   │   │   ├── CancelOrderService.java
+│       │   │   │   └── GetMyOrdersService.java
+│       │   │   │
+│       │   │   └── dto/
+│       │   │       ├── CreateEventCommand.java
+│       │   │       ├── UpdateEventCommand.java
+│       │   │       ├── CreateOrderCommand.java
+│       │   │       ├── EventInfo.java
+│       │   │       └── OrderInfo.java
+│       │   │
+│       │   └── adapter/
+│       │       ├── in/web/
+│       │       │   ├── EventController.java
+│       │       │   ├── OrderController.java
+│       │       │   └── dto/               # request/ + response/ 분리
+│       │       │
+│       │       └── out/
+│       │           ├── persistence/
+│       │           │   ├── entity/
+│       │           │   │   ├── EventJpaEntity.java
+│       │           │   │   └── OrderJpaEntity.java
+│       │           │   ├── repository/
+│       │           │   │   ├── EventJpaRepository.java
+│       │           │   │   └── OrderJpaRepository.java
+│       │           │   ├── EventPersistenceAdapter.java
+│       │           │   ├── OrderPersistenceAdapter.java
+│       │           │   └── mapper/
+│       │           │       ├── EventMapper.java
+│       │           │       └── OrderMapper.java
+│       │           └── internal/          # 모듈 간 통신 어댑터
+│       │               └── UserQueryAdapter.java    # implements UserQueryPort (직접 메서드 호출)
+│       │
+│       └── community/                     # 💬 Community 모듈 (헥사고날)
+│           ├── domain/
+│           │   ├── model/
+│           │   │   ├── Community.java
+│           │   │   ├── CommunityMember.java
+│           │   │   ├── Post.java
+│           │   │   ├── Comment.java
+│           │   │   └── PostType.java      # enum
+│           │   └── exception/
+│           │       └── CommunityDomainException.java
+│           │
+│           ├── application/
+│           │   ├── port/
+│           │   │   ├── in/
+│           │   │   │   ├── CreateCommunityUseCase.java
+│           │   │   │   ├── GetCommunityUseCase.java
+│           │   │   │   ├── UpdateCommunityUseCase.java
+│           │   │   │   ├── DeleteCommunityUseCase.java
+│           │   │   │   ├── JoinCommunityUseCase.java
+│           │   │   │   ├── LeaveCommunityUseCase.java
+│           │   │   │   ├── CreatePostUseCase.java
+│           │   │   │   ├── GetPostUseCase.java
+│           │   │   │   ├── UpdatePostUseCase.java
+│           │   │   │   ├── DeletePostUseCase.java
+│           │   │   │   ├── CreateCommentUseCase.java
+│           │   │   │   └── DeleteCommentUseCase.java
+│           │   │   └── out/
+│           │   │       ├── LoadCommunityPort.java
+│           │   │       ├── SaveCommunityPort.java
+│           │   │       ├── LoadPostPort.java
+│           │   │       ├── SavePostPort.java
+│           │   │       ├── LoadCommentPort.java
+│           │   │       ├── SaveCommentPort.java
+│           │   │       ├── EventQueryPort.java     # event 모듈 조회용 Port
+│           │   │       └── UserQueryPort.java       # user 모듈 조회용 Port
+│           │   │
+│           │   ├── service/
+│           │   │   ├── CreateCommunityService.java
+│           │   │   ├── GetCommunityService.java
+│           │   │   ├── UpdateCommunityService.java
+│           │   │   ├── DeleteCommunityService.java
+│           │   │   ├── JoinCommunityService.java
+│           │   │   ├── LeaveCommunityService.java
+│           │   │   ├── CreatePostService.java
+│           │   │   ├── GetPostService.java
+│           │   │   ├── UpdatePostService.java
+│           │   │   ├── DeletePostService.java
+│           │   │   ├── CreateCommentService.java
+│           │   │   └── DeleteCommentService.java
+│           │   │
+│           │   └── dto/
+│           │       ├── CreateCommunityCommand.java
+│           │       ├── CreatePostCommand.java
+│           │       ├── CommunityInfo.java
+│           │       └── PostInfo.java
+│           │
+│           └── adapter/
+│               ├── in/web/
+│               │   ├── CommunityController.java
+│               │   ├── PostController.java
+│               │   ├── CommentController.java
+│               │   └── dto/               # request/ + response/ 분리
+│               │
+│               └── out/
+│                   ├── persistence/
+│                   │   ├── entity/
+│                   │   ├── repository/
+│                   │   ├── CommunityPersistenceAdapter.java
+│                   │   ├── PostPersistenceAdapter.java
+│                   │   ├── CommentPersistenceAdapter.java
+│                   │   └── mapper/
+│                   └── internal/          # 모듈 간 통신 어댑터
+│                       ├── EventQueryAdapter.java   # implements EventQueryPort (직접 메서드 호출)
+│                       └── UserQueryAdapter.java    # implements UserQueryPort (직접 메서드 호출)
+│
+│       ├── host/                          # 🏢 Host 모듈 (기업 회원 전용)
+│       │   ├── domain/model/
+│       │   │   └── HostProfile.java       # 기업 프로필 도메인
+│       │   ├── application/
+│       │   │   ├── port/in/
+│       │   │   │   ├── GetHostDashboardUseCase.java
+│       │   │   │   ├── GetHostProfileUseCase.java
+│       │   │   │   └── UpdateHostProfileUseCase.java
+│       │   │   ├── port/out/
+│       │   │   ├── service/
+│       │   │   └── dto/
+│       │   └── adapter/
+│       │       ├── in/web/
+│       │       │   ├── HostDashboardController.java
+│       │       │   ├── HostProfileController.java
+│       │       │   ├── HostEventController.java   # /host/events 이벤트 관리
+│       │       │   └── dto/
+│       │       └── out/persistence/
+│       │
+│       └── admin/                         # 🔧 Admin 모듈 (관리자)
+│           ├── application/
+│           │   ├── port/in/
+│           │   │   └── GetAllUsersUseCase.java
+│           │   └── service/
+│           └── adapter/in/web/
+│               ├── AdminUserController.java
+│               └── dto/
+│
+├── dist/
+│   └── upload/                            # 📁 이미지 저장 (외부 볼륨)
+│       └── (Docker 볼륨 마운트 — 백엔드 이미지 외부)
 │
 ├── infra/
 │   ├── docker-compose.yml
@@ -646,6 +632,10 @@ team_project/
     └── workflows/
         └── ci.yml
 ```
+
+> **Upload 처리:** 이미지 업로드 API(`POST /upload/image`)는 `common/adapter/in/web/UploadController.java`에서 처리하고, 실제 파일은 `dist/upload/` 외부 볼륨에 저장됩니다. 백엔드 Docker 이미지 안에 파일이 쓰이지 않습니다.
+
+> **핵심 변경:** `external/` (OpenFeign) → `internal/` (같은 JVM 메서드 호출). 모듈 간 통신 어댑터가 네트워크 대신 직접 Port를 호출합니다.
 
 ### UseCase 추가 패턴 (기능 확장 시)
 
@@ -745,113 +735,133 @@ public class EventMapper {
 
 ## 📌 7. API 목록
 
-### User Service (8 APIs)
+### Auth (4 APIs)
 
 | Method | Endpoint | 설명 |
 |--------|----------|------|
-| POST | `/api/auth/signup` | 회원가입 |
-| POST | `/api/auth/login` | 로그인 → JWT 발급 |
-| POST | `/api/auth/refresh` | Access Token 갱신 |
-| POST | `/api/auth/logout` | 로그아웃 (토큰 블랙리스트) |
-| GET | `/api/users/me` | 내 프로필 조회 |
-| PUT | `/api/users/me` | 내 프로필 수정 |
-| GET | `/api/users/{id}` | 타 유저 프로필 조회 |
+| POST | `/auth/signup` | 회원가입 (role: ADMIN/HOST/USER) |
+| POST | `/auth/login` | 로그인 → JWT 발급 |
+| POST | `/auth/refresh` | Access Token 갱신 |
+| POST | `/auth/logout` | 로그아웃 (토큰 블랙리스트) |
 
-### Event Service (18 APIs)
+### MyPage (5 APIs)
 
 | Method | Endpoint | 설명 |
 |--------|----------|------|
-| **이벤트** | | |
-| POST | `/api/events` | 이벤트 생성 |
-| GET | `/api/events` | 이벤트 목록 (필터/검색/페이징) |
-| GET | `/api/events/{id}` | 이벤트 상세 |
-| PUT | `/api/events/{id}` | 이벤트 수정 (작성자만) |
-| DELETE | `/api/events/{id}` | 이벤트 삭제 (작성자만) |
-| PATCH | `/api/events/{id}/status` | 상태 변경 (작성자만) |
-| GET | `/api/events/my` | 내가 만든 이벤트 목록 (마이페이지) |
-| **세션** | | |
-| POST | `/api/events/{id}/sessions` | 세션 등록 (이벤트 작성자만) |
-| GET | `/api/events/{id}/sessions` | 세션 목록 |
-| PUT | `/api/sessions/{id}` | 세션 수정 (작성자만) |
-| DELETE | `/api/sessions/{id}` | 세션 삭제 (작성자만) |
-| **티켓** | | |
-| POST | `/api/events/{id}/tickets` | 티켓 생성 (이벤트 작성자만) |
-| GET | `/api/events/{id}/tickets` | 티켓 목록 |
-| **주문/결제** | | |
-| POST | `/api/orders` | 티켓 구매 (유료: 결제 / 무료: 즉시 등록) |
-| GET | `/api/orders/my` | 내 구매내역 목록 (마이페이지) |
-| GET | `/api/orders/{id}` | 주문 상세 (이벤트 정보 + 결제 정보) |
-| POST | `/api/orders/{id}/cancel` | 주문 취소/환불 |
-| POST | `/api/payments/confirm` | 포트원 결제 승인 웹훅 |
+| GET | `/mypage/profile` | 내 프로필 조회 |
+| PUT | `/mypage/profile` | 내 프로필 수정 |
+| GET | `/mypage/orders` | 내 구매/예약 내역 |
+| GET | `/mypage/communities` | 내 커뮤니티 목록 |
+| GET | `/mypage/events` | 내 참여 이벤트 목록 |
 
-### Community Service (17 APIs)
+### Events — 공개 조회 (2 APIs)
 
 | Method | Endpoint | 설명 |
 |--------|----------|------|
-| **커뮤니티** | | |
-| POST | `/api/communities` | 커뮤니티 생성 (이벤트 연동) |
-| GET | `/api/communities` | 커뮤니티 목록 |
-| GET | `/api/communities/{id}` | 커뮤니티 상세 |
-| PUT | `/api/communities/{id}` | 커뮤니티 수정 (작성자만) |
-| DELETE | `/api/communities/{id}` | 커뮤니티 삭제 (작성자만) |
-| POST | `/api/communities/{id}/join` | 커뮤니티 가입 |
-| DELETE | `/api/communities/{id}/leave` | 커뮤니티 탈퇴 |
-| GET | `/api/communities/{id}/members` | 멤버 목록 |
-| GET | `/api/communities/my` | 내 커뮤니티 목록 (마이페이지) |
-| **게시글** | | |
-| POST | `/api/communities/{id}/posts` | 게시글 작성 |
-| GET | `/api/communities/{id}/posts` | 게시글 목록 (타입별 필터) |
-| GET | `/api/posts/{id}` | 게시글 상세 |
-| PUT | `/api/posts/{id}` | 게시글 수정 (작성자만) |
-| DELETE | `/api/posts/{id}` | 게시글 삭제 (작성자만) |
-| **댓글** | | |
-| POST | `/api/posts/{id}/comments` | 댓글 작성 (대댓글 지원) |
-| GET | `/api/posts/{id}/comments` | 댓글 목록 |
-| DELETE | `/api/comments/{id}` | 댓글 삭제 (작성자만) |
+| GET | `/events` | 이벤트 목록 (검색/필터/페이징) |
+| GET | `/events/{id}` | 이벤트 상세 |
 
-**총 API: 42개** → PDF 요구사항(20개 이상) 충족 ✅
+### Orders — 참가 신청 (3 APIs)
+
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | `/orders` | 참가 신청 (유료: 더미 결제 → PAID / 무료: → REGISTERED) |
+| GET | `/orders/{id}` | 주문 상세 (본인만) |
+| POST | `/orders/{id}/cancel` | 참가 취소 |
+
+> **MVP 더미 결제:** `POST /orders` 시 PG 연동 없이 즉시 처리. 향후 포트원 연동 전환.
+
+### Communities (8 APIs)
+
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | `/communities` | 커뮤니티 생성 (이벤트 연동) |
+| GET | `/communities` | 커뮤니티 목록 |
+| GET | `/communities/{id}` | 커뮤니티 상세 |
+| PUT | `/communities/{id}` | 커뮤니티 수정 (작성자만) |
+| DELETE | `/communities/{id}` | 커뮤니티 삭제 (작성자만) |
+| POST | `/communities/{id}/join` | 커뮤니티 가입 |
+| DELETE | `/communities/{id}/leave` | 커뮤니티 탈퇴 |
+| GET | `/communities/{id}/members` | 멤버 목록 |
+
+### Posts (5 APIs)
+
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | `/communities/{communityId}/posts` | 게시글 작성 |
+| GET | `/communities/{communityId}/posts` | 게시글 목록 (타입별 필터) |
+| GET | `/posts/{id}` | 게시글 상세 |
+| PUT | `/posts/{id}` | 게시글 수정 (작성자만) |
+| DELETE | `/posts/{id}` | 게시글 삭제 (작성자만) |
+
+### Comments (3 APIs)
+
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | `/posts/{postId}/comments` | 댓글 작성 (대댓글 지원) |
+| GET | `/posts/{postId}/comments` | 댓글 목록 |
+| DELETE | `/comments/{id}` | 댓글 삭제 (작성자만) |
+
+### Host — 기업 회원 전용 (8 APIs)
+
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| GET | `/host` | Host 대시보드 (요약 정보) |
+| GET | `/host/profile` | 기업 프로필 조회 |
+| PUT | `/host/profile` | 기업 프로필 수정 |
+| GET | `/host/events` | 내가 주최한 이벤트 목록 |
+| POST | `/host/events` | 이벤트 생성 |
+| PUT | `/host/events/{id}` | 이벤트 수정 (본인만) |
+| DELETE | `/host/events/{id}` | 이벤트 삭제 (본인만) |
+| PATCH | `/host/events/{id}/status` | 상태 변경 (DRAFT→PUBLISHED) |
+
+### Admin — 관리자 (1 API)
+
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| GET | `/admin/users` | 전체 회원 리스트 조회 |
+
+### Upload — 이미지 업로드 (1 API)
+
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | `/upload/image` | 이미지 업로드 (외부 볼륨 `dist/upload` 저장) |
+
+**총 API: 40개** → PDF 요구사항(20개 이상) 충족 ✅
 
 ---
 
-## 📌 8. 티켓 구매 → 마이페이지 구매내역 흐름
+## 📌 8. 참가 신청 → 마이페이지 내역 흐름
 
 ```mermaid
 sequenceDiagram
     participant USER as 사용자
     participant FE as Frontend
-    participant GW as Gateway
-    participant ES as Event Service
-    participant PG as PortOne
+    participant BE as Backend (Spring Boot)
 
-    Note over USER,PG: 유료 티켓 구매
+    Note over USER,BE: 유료 이벤트 참가 신청 (더미 결제)
 
-    USER->>FE: 티켓 선택 → 결제 요청
-    FE->>PG: 포트원 결제창 오픈
-    PG-->>FE: 결제 완료 (imp_uid)
-    FE->>GW: POST /api/orders {ticketId, imp_uid}
-    GW->>ES: 주문 생성
-    ES->>PG: 결제 검증 (imp_uid)
-    PG-->>ES: 결제 확인 ✅
-    ES-->>FE: 주문 완료 {orderId, status: PAID}
-    FE->>FE: 마이페이지 구매내역으로 이동
+    USER->>FE: 이벤트 참가 신청
+    FE->>BE: POST /orders {eventId}
+    BE->>BE: 더미 결제 처리 (PG 없이 즉시 PAID)
+    BE-->>FE: 신청 완료 {orderId, status: PAID, amount}
+    FE->>FE: 마이페이지로 이동
 
-    Note over USER,PG: 무료 티켓 등록
+    Note over USER,BE: 무료 이벤트 등록
 
-    USER->>FE: 무료 티켓 → 등록 요청
-    FE->>GW: POST /api/orders {ticketId}
-    GW->>ES: 주문 생성 (결제 없이, status: FREE_REGISTERED)
-    ES-->>FE: 등록 완료 {orderId, status: FREE_REGISTERED}
-    FE->>FE: 마이페이지 구매내역으로 이동
+    USER->>FE: 무료 이벤트 → 등록 요청
+    FE->>BE: POST /orders {eventId}
+    BE-->>FE: 등록 완료 {orderId, status: REGISTERED}
+    FE->>FE: 마이페이지로 이동
 
-    Note over USER,PG: 마이페이지에서 구매내역 확인
+    Note over USER,BE: 마이페이지에서 내역 확인
 
     USER->>FE: 마이페이지 → 구매내역
-    FE->>GW: GET /api/orders/my
-    GW->>ES: 주문 목록
-    ES-->>FE: [{orderId, eventTitle, ticketName, status, amount, orderedAt}, ...]
+    FE->>BE: GET /mypage/orders
+    BE-->>FE: [{orderId, eventTitle, status, amount, orderedAt}, ...]
 ```
 
-> 구매 완료 시 **마이페이지 구매내역**에 자동으로 표시됩니다. 이벤트명, 티켓 종류, 결제 상태, 금액을 확인할 수 있습니다.
+> **MVP 더미 결제:** 실제 PG 연동 없이 즉시 `PAID` 처리됩니다. 향후 포트원(PortOne) 연동 시 `PaymentPort` + `PortOnePaymentAdapter`를 추가하면 됩니다.
 
 ---
 
@@ -980,39 +990,17 @@ export function EventCard({ event }) {
 version: '3.8'
 
 services:
-  # ─── Databases (서비스별 독립) ────────
-  user-db:
+  # ─── Database (단일 DB) ──────────────
+  postgres:
     image: postgres:15
     environment:
-      POSTGRES_DB: user_db
+      POSTGRES_DB: venueon_db
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
-      - user-db-data:/var/lib/postgresql/data
-
-  event-db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: event_db
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5434:5432"
-    volumes:
-      - event-db-data:/var/lib/postgresql/data
-
-  community-db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: community_db
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5435:5432"
-    volumes:
-      - community-db-data:/var/lib/postgresql/data
+      - pg-data:/var/lib/postgresql/data
 
   # ─── Cache ───────────────────────────
   redis:
@@ -1020,62 +1008,30 @@ services:
     ports:
       - "6379:6379"
 
-  # ─── Backend Services ────────────────
-  gateway:
-    build: ../backend/gateway
+  # ─── Backend (단일 Spring Boot 앱) ───
+  backend:
+    build: ../backend
     ports:
       - "8080:8080"
     depends_on:
-      - user-service
-      - event-service
-      - community-service
-
-  user-service:
-    build: ../backend/user-service
-    ports:
-      - "8081:8081"
-    depends_on:
-      - user-db
+      - postgres
       - redis
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/user_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/venueon_db
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_REDIS_HOST: redis
       JWT_SECRET: ${JWT_SECRET}
-
-  event-service:
-    build: ../backend/event-service
-    ports:
-      - "8082:8082"
-    depends_on:
-      - event-db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://event-db:5432/event_db
-      SPRING_DATASOURCE_USERNAME: ${DB_USER}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      PORTONE_API_KEY: ${PORTONE_API_KEY}
-      PORTONE_API_SECRET: ${PORTONE_API_SECRET}
-      USER_SERVICE_URL: http://user-service:8081
-
-  community-service:
-    build: ../backend/community-service
-    ports:
-      - "8083:8083"
-    depends_on:
-      - community-db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://community-db:5432/community_db
-      SPRING_DATASOURCE_USERNAME: ${DB_USER}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      EVENT_SERVICE_URL: http://event-service:8082
-      USER_SERVICE_URL: http://user-service:8081
+      UPLOAD_PATH: /app/upload          # 외부 볼륨 경로
+    volumes:
+      - upload-data:/app/upload         # 이미지 저장용 외부 볼륨
 
 volumes:
-  user-db-data:
-  event-db-data:
-  community-db-data:
+  pg-data:
+  upload-data:
 ```
+
+> **컨테이너 3개** (Backend + PostgreSQL + Redis) → MSA 대비 인프라 복잡도 대폭 감소
 
 ---
 
@@ -1111,20 +1067,25 @@ gantt
 ## 📌 요약
 
 ```
-┌────────────────────────────────────────────────────────┐
-│                    VenueOn MVP v3                    │
-├──────────────┬─────────────────┬───────────────────────┤
-│  User Service │  Event Service  │  Community Service    │
-│  회원/인증    │  이벤트 CRUD     │  커뮤니티 CRUD         │
-│  마이페이지   │  세션 관리       │  게시글 CRUD           │
-│  JWT/Redis   │  티켓/결제       │  댓글                 │
-│              │  QR/프라이빗링크  │  후기                 │
-├──────────────┴─────────────────┴───────────────────────┤
-│  Frontend: Next.js 14 + Vanilla CSS Module             │
-│  Infra: Docker Compose + PostgreSQL×3 + Redis          │
-│  통신: Spring Cloud Gateway + OpenFeign                 │
-└────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│              VenueOn MVP v3 (Modular Monolith)            │
+│                                                           │
+│  ┌─ src/main/java/com/venueon/ ────────────────────────┐  │
+│  │                                                     │  │
+│  │  user/           event/           community/        │  │
+│  │  회원/인증       이벤트 CRUD       커뮤니티 CRUD      │  │
+│  │  마이페이지      세션 관리          게시글 CRUD        │  │
+│  │  JWT/Redis      티켓/결제          댓글/후기          │  │
+│  │                                                     │  │
+│  │  common/ (공통 DTO, 예외처리, Security 설정)          │  │
+│  └─────────────────────────────────────────────────────┘  │
+│                                                           │
+│  Frontend: Next.js 14 + Vanilla CSS Module                │
+│  Infra: Docker Compose + PostgreSQL×1 + Redis             │
+│  통신: 모듈 간 Port 인터페이스 (같은 JVM 메서드 호출)       │
+└───────────────────────────────────────────────────────────┘
 
+아키텍처: Modular Monolith + Hexagonal Architecture
 타겟: 기업/공공기관(기획자) + 일반 사용자(참여자)
 등록: 에디터(폼) 기반 Step-by-Step 이벤트 직접 등록
 기능: 이벤트 CRUD → 티켓팅/결제 → 커뮤니티 → 소통
