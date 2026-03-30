@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VenueOn MVP v3 Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#6366f1;--primary-dark:#4f46e5;--accent:#f59e0b;--bg:#0a0e1a;--surface:#131829;--surface2:#1c2237;--text:#e8ecf4;--muted:#8892a8;--border:#2a3150;--success:#22c55e;--error:#ef4444;--gradient:linear-gradient(135deg,#6366f1,#8b5cf6,#a855f7)}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+.presentation{width:100%;height:100%;position:relative}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 80px;opacity:0;transform:translateX(60px);transition:all .5s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:auto}
+.slide.prev{opacity:0;transform:translateX(-60px)}
+.slide-header{text-align:center;margin-bottom:36px;width:100%}
+.slide-header .tag{display:inline-block;background:var(--gradient);padding:4px 16px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.slide-header h2{font-size:clamp(28px,3.5vw,44px);font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
+.slide-header p{color:var(--muted);font-size:15px;margin-top:8px}
+.content{width:100%;max-width:1100px;display:flex;flex-direction:column;gap:20px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .3s}
+.card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,.15)}
+.card h3{font-size:15px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card p,.card li{font-size:13px;color:var(--muted);line-height:1.6}
+.card ul{list-style:none;padding:0}
+.card ul li::before{content:'→';color:var(--primary);margin-right:6px;font-weight:700}
+.icon-circle{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ic-blue{background:rgba(99,102,241,.15)}
+.ic-amber{background:rgba(245,158,11,.15)}
+.ic-green{background:rgba(34,197,94,.15)}
+.ic-pink{background:rgba(236,72,153,.15)}
+.ic-cyan{background:rgba(6,182,212,.15)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table th{background:var(--surface2);padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--primary);white-space:nowrap}
+table td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--muted)}
+table tr:hover td{background:rgba(99,102,241,.04)}
+table td:first-child{color:var(--text);font-weight:500}
+.badge{display:inline-block;padding:2px 10px;border-radius:8px;font-size:11px;font-weight:600}
+.badge-primary{background:rgba(99,102,241,.15);color:#a5b4fc}
+.badge-amber{background:rgba(245,158,11,.15);color:#fbbf24}
+.badge-green{background:rgba(34,197,94,.15);color:#86efac}
+.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.flow-step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;font-weight:600;text-align:center;min-width:100px}
+.flow-step.highlight{border-color:var(--primary);background:rgba(99,102,241,.1)}
+.flow-arrow{color:var(--primary);font-size:18px;font-weight:700}
+.arch-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:center}
+.arch-box h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.arch-box p{font-size:11px;color:var(--muted)}
+.arch-box.domain{border-color:var(--primary);background:rgba(99,102,241,.08)}
+/* Navigation */
+.nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:8px 20px;z-index:100;backdrop-filter:blur(10px)}
+.nav button{width:40px;height:40px;border:none;background:var(--surface2);color:var(--text);border-radius:10px;cursor:pointer;font-size:16px;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.nav button:hover{background:var(--primary)}
+.nav .counter{font-size:13px;font-weight:600;color:var(--muted);min-width:60px;text-align:center}
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--gradient);transition:width .4s;z-index:100}
+/* Slide 1 special */
+.hero-title{font-size:clamp(40px,5vw,72px);font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;text-align:center}
+.hero-sub{font-size:clamp(16px,2vw,22px);color:var(--muted);margin-top:16px;text-align:center;font-weight:300}
+.hero-tags{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;justify-content:center}
+.hero-tags span{background:var(--surface);border:1px solid var(--border);padding:6px 18px;border-radius:10px;font-size:13px;font-weight:500}
+.compare-table td:nth-child(1){width:40%}
+.api-group{margin-bottom:4px}
+.api-group-title{font-size:12px;font-weight:700;color:var(--primary);padding:6px 14px;background:rgba(99,102,241,.06);border-radius:6px 6px 0 0}
+.compact-table{font-size:12px}
+.compact-table th,.compact-table td{padding:6px 10px}
+.timeline{display:flex;gap:12px;width:100%}
+.timeline-item{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative}
+.timeline-item::after{content:'';position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:6px solid var(--primary)}
+.timeline-item:last-child::after{display:none}
+.timeline-item h4{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:4px}
+.timeline-item p{font-size:11px;color:var(--muted);line-height:1.5}
+.stat-row{display:flex;gap:16px;justify-content:center;margin-top:12px}
+.stat{text-align:center}
+.stat .num{font-size:32px;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat .label{font-size:12px;color:var(--muted);margin-top:2px}
+.entity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.entity-chip{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;font-size:12px;font-weight:600}
+.entity-chip span{display:block;font-size:10px;color:var(--muted);font-weight:400;margin-top:3px}
+@media(max-width:900px){.slide{padding:24px 28px}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.timeline{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="presentation" id="pres">
+
+<!-- SLIDE 0: COVER -->
+<div class="slide active" id="s0">
+  <div style="text-align:center">
+    <div style="font-size:14px;letter-spacing:4px;color:var(--muted);margin-bottom:20px">CLOUD NATIVE PROJECT</div>
+    <h1 class="hero-title">VenueOn</h1>
+    <p class="hero-sub">유료·무료 이벤트 중계 + 커뮤니티 플랫폼</p>
+    <div class="hero-tags">
+      <span>🚀 Spring Boot</span><span>⚛️ Next.js 14</span><span>🎨 CSS Module</span><span>🐳 Docker</span>
+    </div>
+    <div class="stat-row" style="margin-top:32px">
+      <div class="stat"><div class="num">3</div><div class="label">MSA 서비스</div></div>
+      <div class="stat"><div class="num">11</div><div class="label">Entity</div></div>
+      <div class="stat"><div class="num">42</div><div class="label">API</div></div>
+      <div class="stat"><div class="num">8</div><div class="label">페이지</div></div>
+    </div>
+    <p style="color:var(--muted);font-size:12px;margin-top:28px">MVP 아키텍처 v3 · 2026-03-25</p>
+  </div>
+</div>
+
+<!-- SLIDE 1: MVP 기능 범위 -->
+<div class="slide" id="s1">
+  <div class="slide-header"><div class="tag">Section 01</div><h2>MVP 기능 범위</h2></div>
+  <div class="content">
+    <div class="grid-4">
+      <div class="card"><h3><span class="icon-circle ic-blue">🔐</span>회원가입/로그인</h3><p>JWT 인증, 기업·일반 사용자 구분 가입</p></div>
+      <div class="card"><h3><span class="icon-circle ic-amber">📝</span>이벤트 CRUD</h3><p>에디터(폼)로 직접 등록 — 생성·조회·수정·삭제, 세션 관리</p></div>
+      <div class="card"><h3><span class="icon-circle ic-green">👤</span>마이페이지</h3><p>내 이벤트 관리, 구매내역, 참여 이력</p></div>
+      <div class="card"><h3><span class="icon-circle ic-pink">🎟️</span>티켓팅 + 결제</h3><p>유료·무료 티켓 구매, 포트원 결제 연동</p></div>
+    </div>
+    <div class="grid-3">
+      <div class="card"><h3><span class="icon-circle ic-cyan">👥</span>이벤트 커뮤니티</h3><p>이벤트 기반 커뮤니티 생성·조회·수정·삭제</p></div>
+      <div class="card"><h3><span class="icon-circle ic-blue">💬</span>커뮤니티 글</h3><p>게시글 작성·조회·수정·삭제, 후기</p></div>
+      <div class="card"><h3><span class="icon-circle ic-amber">🏢</span>기업/기관 페이지</h3><p>기업·공공기관 전용 프로필, 주최 이벤트, 기관 소개</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: 타겟 사용자 -->
+<div class="slide" id="s2">
+  <div class="slide-header"><div class="tag">Section 02</div><h2>타겟 사용자 & 정책</h2></div>
+  <div class="content">
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--primary)">
+        <h3><span class="icon-circle ic-blue">🏢</span> 기획자 (HOST)</h3>
+        <ul>
+          <li>기업 · 공공기관 · 사업자</li>
+          <li>이벤트 생성 · 관리 · 티켓 판매</li>
+          <li>사업자등록번호 / 기관 인증 가입</li>
+          <li>기업/기관 전용 프로필 페이지 보유</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--accent)">
+        <h3><span class="icon-circle ic-amber">👤</span> 일반 사용자 (USER)</h3>
+        <ul>
+          <li>개인 사용자</li>
+          <li>이벤트 탐색 · 티켓 구매 · 커뮤니티 참여</li>
+          <li>이메일 기반 일반 가입</li>
+          <li>구매내역 · 참여 이력 관리</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="padding:14px 20px">
+      <table class="compact-table">
+        <tr><th>항목</th><th>정책</th></tr>
+        <tr><td>이벤트 생성</td><td><span class="badge badge-primary">HOST만</span> 이벤트 생성 가능 (사업자/기관 인증 필요)</td></tr>
+        <tr><td>이벤트 참여</td><td><span class="badge badge-amber">USER</span> 이벤트 탐색 · 티켓 구매 · 참여</td></tr>
+        <tr><td>작성자 검증</td><td>이벤트·커뮤니티·게시글 — 본인 작성 콘텐츠만 수정/삭제</td></tr>
+        <tr><td>향후 확장</td><td>관리자(ADMIN) 역할 추가 가능 구조 유지</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: 이벤트 등록 방식 -->
+<div class="slide" id="s3">
+  <div class="slide-header"><div class="tag">Section 02-1</div><h2>이벤트 등록 방식 (에디터/폼)</h2><p>폼에 데이터를 입력하면 상세 페이지, 캘린더, 일정 정보가 자동 구성</p></div>
+  <div class="content">
+    <div class="flow-row">
+      <div class="flow-step">📝 이벤트 생성</div><span class="flow-arrow">→</span>
+      <div class="flow-step">Step 1<br><small style="color:var(--muted)">기본 정보</small></div><span class="flow-arrow">→</span>
+      <div class="flow-step">Step 2<br><small style="color:var(--muted)">일정 & 장소</small></div><span class="flow-arrow">→</span>
+      <div class="flow-step">Step 3<br><small style="color:var(--muted)">세션/프로그램</small></div><span class="flow-arrow">→</span>
+      <div class="flow-step">Step 4<br><small style="color:var(--muted)">티켓 설정</small></div><span class="flow-arrow">→</span>
+      <div class="flow-step">Step 5<br><small style="color:var(--muted)">상세 설명</small></div><span class="flow-arrow">→</span>
+      <div class="flow-step highlight">✅ 발행<br><small style="color:var(--muted)">상세페이지 자동생성</small></div>
+    </div>
+    <div class="grid-3" style="margin-top:8px">
+      <div class="card"><h3>Step 1~2</h3><p>이벤트명, 카테고리, 유형(세미나/클래스/밋업/컨퍼런스), 썸네일, 시작일/종료일, 장소(온/오프라인), 최대 참석자 수</p></div>
+      <div class="card"><h3>Step 3~4</h3><p>세션 제목/발표자/시간 복수 등록, 드래그 정렬. 티켓: 무료/일반/VIP/얼리버드 복수 타입, 가격·수량·판매 기간</p></div>
+      <div class="card"><h3>Step 5 + 발행</h3><p>리치 텍스트 에디터(이미지·서식 지원). 미리보기 후 임시저장(DRAFT) 또는 발행(PUBLISHED) 선택</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: MSA 아키텍처 -->
+<div class="slide" id="s4">
+  <div class="slide-header"><div class="tag">Section 03</div><h2>MSA 서비스 분리 (3개)</h2></div>
+  <div class="content">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%">
+      <div class="arch-box" style="width:300px">🖥️ <b>Frontend</b><p>Next.js 14 + CSS Module</p></div>
+      <div style="font-size:20px;color:var(--primary)">↓ HTTP</div>
+      <div class="arch-box" style="width:400px">🔀 <b>API Gateway</b><p>Spring Cloud Gateway · JWT 검증 + 라우팅</p></div>
+      <div style="font-size:20px;color:var(--primary)">↓</div>
+      <div class="grid-3" style="width:100%">
+        <div class="arch-box domain"><h4>👤 User Service :8081</h4><p>회원가입, 로그인, JWT, 프로필, 마이페이지</p><p style="margin-top:6px"><span class="badge badge-primary">user_db</span> <span class="badge badge-green">Redis</span></p></div>
+        <div class="arch-box domain"><h4>📋 Event Service :8082</h4><p>이벤트 CRUD, 세션, 티켓, 주문/결제</p><p style="margin-top:6px"><span class="badge badge-primary">event_db</span> <span class="badge badge-amber">PortOne</span></p></div>
+        <div class="arch-box domain"><h4>💬 Community Service :8083</h4><p>커뮤니티 CRUD, 게시글, 댓글, 후기</p><p style="margin-top:6px"><span class="badge badge-primary">community_db</span></p></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">서비스 간 통신: OpenFeign (REST) · Event→User / Community→Event / Community→User</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: ERD -->
+<div class="slide" id="s5">
+  <div class="slide-header"><div class="tag">Section 04</div><h2>ERD — 11개 Entity</h2></div>
+  <div class="content">
+    <div class="entity-grid">
+      <div class="entity-chip" style="border-color:var(--primary)">👤 USER<span>email, password, nickname, profile_img</span></div>
+      <div class="entity-chip">📋 EVENT<span>title, type, status, location, dates</span></div>
+      <div class="entity-chip">📑 SESSION<span>title, speaker, time, sort_order</span></div>
+      <div class="entity-chip">🎟️ TICKET<span>name, type, price, quantity</span></div>
+      <div class="entity-chip" style="border-color:var(--accent)">🛒 ORDER<span>status, payment_id, amount</span></div>
+      <div class="entity-chip">👥 COMMUNITY<span>name, description, is_public</span></div>
+      <div class="entity-chip">🤝 COMMUNITY_MEMBER<span>role(ADMIN/MEMBER)</span></div>
+      <div class="entity-chip">📝 POST<span>title, content, type, counts</span></div>
+      <div class="entity-chip">💬 COMMENT<span>content, parent_id(대댓글)</span></div>
+    </div>
+    <div style="text-align:center;color:var(--muted);font-size:12px;margin-top:4px">
+      <b style="color:var(--text)">관계:</b> USER→EVENT(creates) · USER→ORDER(places) · EVENT→SESSION/TICKET/COMMUNITY · TICKET→ORDER · COMMUNITY→POST→COMMENT
+    </div>
+    <div class="grid-3">
+      <div class="card" style="text-align:center"><h3 style="justify-content:center">✅ Entity 11개</h3><p>요구사항 최소 5개 충족</p></div>
+      <div class="card" style="text-align:center"><h3 style="justify-content:center">✅ API 42개</h3><p>요구사항 최소 20개 충족</p></div>
+      <div class="card" style="text-align:center"><h3 style="justify-content:center">✅ 서비스 3개</h3><p>요구사항 최소 3개 충족</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: 기술 스택 -->
+<div class="slide" id="s6">
+  <div class="slide-header"><div class="tag">Section 05</div><h2>기술 스택</h2></div>
+  <div class="content">
+    <div class="grid-2">
+      <div class="card"><h3>⚛️ Frontend</h3><ul>
+        <li>Next.js 14+ (App Router, SSR/SSG)</li>
+        <li>Vanilla CSS Module (컴포넌트별 스코프)</li>
+        <li>React 18</li>
+      </ul></div>
+      <div class="card"><h3>☕ Backend</h3><ul>
+        <li>Spring Boot 3.x, Java 17</li>
+        <li>Hexagonal Architecture (Ports & Adapters)</li>
+        <li>Spring Cloud Gateway + OpenFeign</li>
+      </ul></div>
+      <div class="card"><h3>🗄️ Data & Cache</h3><ul>
+        <li>PostgreSQL 15 (서비스별 독립 DB ×3)</li>
+        <li>Redis 7 (JWT 블랙리스트, 캐시)</li>
+        <li>Spring Security + JWT (Access+Refresh)</li>
+      </ul></div>
+      <div class="card"><h3>🛠️ Infra & DevOps</h3><ul>
+        <li>Docker + Docker Compose</li>
+        <li>GitHub Actions (CI/CD)</li>
+        <li>포트원(PortOne) 결제 · Swagger 문서</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: 헥사고날 아키텍처 -->
+<div class="slide" id="s7">
+  <div class="slide-header"><div class="tag">Section 06</div><h2>헥사고날 아키텍처</h2><p>Ports & Adapters — 기능별 UseCase를 독립적으로 추가/수정/삭제</p></div>
+  <div class="content">
+    <div style="display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap">
+      <div class="arch-box" style="min-width:140px">🌐 <b>Adapter In</b><p>Web Controller<br>(REST API)</p></div>
+      <div style="color:var(--primary);font-size:24px">→</div>
+      <div class="arch-box" style="min-width:160px">⚙️ <b>Application</b><p>Port In → UseCase<br>UseCase → Port Out</p></div>
+      <div style="color:var(--primary);font-size:24px">→</div>
+      <div class="arch-box domain" style="min-width:130px">💎 <b>Domain</b><p>순수 도메인 모델<br>(JPA/Spring 무관)</p></div>
+      <div style="color:var(--primary);font-size:24px">←</div>
+      <div class="arch-box" style="min-width:140px">🗄️ <b>Adapter Out</b><p>JPA Repository<br>External API</p></div>
+    </div>
+    <div class="grid-2" style="margin-top:8px">
+      <div class="card"><h3>🔄 레이어드 (기존)</h3><ul>
+        <li>Controller → Service → Repository</li>
+        <li>계층 간 강결합</li>
+        <li>기능 추가 시 전 계층 수정</li>
+      </ul></div>
+      <div class="card" style="border-color:var(--primary)"><h3>🎯 헥사고날 (적용)</h3><ul>
+        <li>Adapter → Port → UseCase → Port → Adapter</li>
+        <li>도메인이 외부에 의존하지 않음</li>
+        <li><b>UseCase만 추가하면 끝 (OCP)</b></li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: API 목록 -->
+<div class="slide" id="s8">
+  <div class="slide-header"><div class="tag">Section 07</div><h2>API 목록 — 총 42개</h2></div>
+  <div class="content">
+    <div class="grid-3">
+      <div class="card" style="padding:14px">
+        <h3 style="margin-bottom:10px">👤 User Service <span class="badge badge-primary">7 APIs</span></h3>
+        <table class="compact-table"><tr><td>POST</td><td>/api/auth/signup</td></tr><tr><td>POST</td><td>/api/auth/login</td></tr><tr><td>POST</td><td>/api/auth/refresh</td></tr><tr><td>POST</td><td>/api/auth/logout</td></tr><tr><td>GET</td><td>/api/users/me</td></tr><tr><td>PUT</td><td>/api/users/me</td></tr><tr><td>GET</td><td>/api/users/{id}</td></tr></table>
+      </div>
+      <div class="card" style="padding:14px">
+        <h3 style="margin-bottom:10px">📋 Event Service <span class="badge badge-amber">18 APIs</span></h3>
+        <table class="compact-table"><tr><td>이벤트</td><td>CRUD + 상태변경 + 목록 (7)</td></tr><tr><td>세션</td><td>등록/목록/수정/삭제 (4)</td></tr><tr><td>티켓</td><td>생성/목록 (2)</td></tr><tr><td>주문</td><td>구매/내역/상세/취소 (4)</td></tr><tr><td>결제</td><td>포트원 웹훅 (1)</td></tr></table>
+      </div>
+      <div class="card" style="padding:14px">
+        <h3 style="margin-bottom:10px">💬 Community Service <span class="badge badge-green">17 APIs</span></h3>
+        <table class="compact-table"><tr><td>커뮤니티</td><td>CRUD + 가입/탈퇴/멤버 (9)</td></tr><tr><td>게시글</td><td>작성/목록/상세/수정/삭제 (5)</td></tr><tr><td>댓글</td><td>작성/목록/삭제 (3)</td></tr></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: 페이지 구성 + 기업페이지 흐름 -->
+<div class="slide" id="s9">
+  <div class="slide-header"><div class="tag">Section 09</div><h2>페이지 구성 & 기업페이지 흐름</h2></div>
+  <div class="content">
+    <div class="grid-4">
+      <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;margin-bottom:6px">🏠</div><h3 style="justify-content:center;font-size:13px">메인 홈 (공동 랜딩)</h3><p style="font-size:11px">/</p></div>
+      <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;margin-bottom:6px">🔐</div><h3 style="justify-content:center;font-size:13px">로그인/가입</h3><p style="font-size:11px">/auth/*</p></div>
+      <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;margin-bottom:6px">📄</div><h3 style="justify-content:center;font-size:13px">이벤트 상세</h3><p style="font-size:11px">/events/[id]</p></div>
+      <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;margin-bottom:6px">✏️</div><h3 style="justify-content:center;font-size:13px">이벤트 생성</h3><p style="font-size:11px">/events/new</p></div>
+    </div>
+    <div class="grid-4">
+      <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;margin-bottom:6px">👥</div><h3 style="justify-content:center;font-size:13px">커뮤니티</h3><p style="font-size:11px">/community/[id]</p></div>
+      <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;margin-bottom:6px">👤</div><h3 style="justify-content:center;font-size:13px">마이페이지</h3><p style="font-size:11px">/mypage/*</p></div>
+      <div class="card" style="padding:14px;text-align:center;border-color:var(--primary)"><div style="font-size:24px;margin-bottom:6px">🏢</div><h3 style="justify-content:center;font-size:13px">기업/기관 페이지</h3><p style="font-size:11px">/org/[id]</p></div>
+      <div class="card" style="padding:14px;text-align:center;border-color:var(--primary)"><div style="font-size:24px;margin-bottom:6px">📊</div><h3 style="justify-content:center;font-size:13px">기업 대시보드</h3><p style="font-size:11px">/org/dashboard</p></div>
+    </div>
+    <div class="flow-row" style="margin-top:4px">
+      <div class="flow-step highlight">🏠 공동 랜딩</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step" style="font-size:11px">헤더 "기업페이지" 버튼</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step highlight">🏢 기업 페이지<br><small style="color:var(--muted)">소개 · 이벤트 · 연락처</small></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: 일정 -->
+<div class="slide" id="s10">
+  <div class="slide-header"><div class="tag">Section 12</div><h2>프로젝트 일정 — MVP 1주 완성</h2></div>
+  <div class="content">
+    <div class="timeline">
+      <div class="timeline-item" style="border-top:3px solid var(--primary)">
+        <h4>🏗️ 1~2일차</h4><p><b>설계/세팅</b><br>요구사항/WBS/ERD/API 설계<br>아키텍처 구축 (Docker, 헥사고날)</p>
+      </div>
+      <div class="timeline-item" style="border-top:3px solid var(--accent)">
+        <h4>🔧 3~4일차</h4><p><b>핵심 백엔드</b><br>인증(User) & 이벤트(Event) API<br>커뮤니티(Community) API</p>
+      </div>
+      <div class="timeline-item" style="border-top:3px solid var(--success)">
+        <h4>🎨 5~6일차</h4><p><b>프론트/결제</b><br>Next.js UI 구현 & API 연동<br>포트원 결제 연동 (테스트)</p>
+      </div>
+      <div class="timeline-item" style="border-top:3px solid var(--error)">
+        <h4>🎯 7일차</h4><p><b>통합/마무리</b><br>통합 테스트 및 버그 수정<br>최종 시연/데모 준비</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px;text-align:center;padding:16px">
+      <p style="font-size:13px;color:var(--text)"><b>3/30 (월)</b> 시작 → <b>4/5 (일)</b> 최종 시연 · 데모</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: 요약 -->
+<div class="slide" id="s11">
+  <div class="slide-header"><h2 style="font-size:clamp(32px,4vw,52px)">Summary</h2></div>
+  <div class="content">
+    <div class="grid-3">
+      <div class="card" style="border-color:var(--primary)"><h3>👥 타겟</h3><p>기업/공공기관 (기획자·HOST)<br>+ 일반 사용자 (참여자·USER)</p></div>
+      <div class="card" style="border-color:var(--accent)"><h3>📝 등록</h3><p>에디터(폼) 기반<br>Step-by-Step 이벤트 직접 등록</p></div>
+      <div class="card" style="border-color:var(--success)"><h3>🏠 페이지 흐름</h3><p>공동 랜딩 → 헤더 기업페이지 버튼<br>→ 기업/기관 전용 페이지</p></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><h3>🏗️ 아키텍처</h3><p>MSA 3개 서비스 · 헥사고날 아키텍처<br>Spring Cloud Gateway · OpenFeign</p></div>
+      <div class="card"><h3>⚙️ 기술 스택</h3><p>Spring Boot 3 + Next.js 14 + CSS Module<br>PostgreSQL×3 + Redis + Docker Compose</p></div>
+    </div>
+    <div class="stat-row" style="margin-top:8px">
+      <div class="stat"><div class="num">3</div><div class="label">MSA 서비스</div></div>
+      <div class="stat"><div class="num">11</div><div class="label">Entity</div></div>
+      <div class="stat"><div class="num">42</div><div class="label">API</div></div>
+      <div class="stat"><div class="num">8</div><div class="label">페이지</div></div>
+      <div class="stat"><div class="num">7</div><div class="label">일 완성</div></div>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:14px;margin-top:14px">Thank you 🎉</p>
+  </div>
+</div>
+
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button onclick="prev()" id="prevBtn">◀</button>
+  <span class="counter" id="counter">1 / 12</span>
+  <button onclick="next()" id="nextBtn">▶</button>
+</nav>
+
+<script>
+let cur=0;const total=12;
+function go(n){
+  if(n<0||n>=total)return;
+  const slides=document.querySelectorAll('.slide');
+  const old=cur;
+  slides[old].classList.remove('active');
+  if(n>old) slides[old].classList.add('prev');
+  cur=n;
+  requestAnimationFrame(()=>{
+    slides[old].className='slide';
+    slides[cur].classList.add('active');
+  });
+  document.getElementById('counter').textContent=`${cur+1} / ${total}`;
+  document.getElementById('progress').style.width=((cur+1)/total*100)+'%';
+}
+function next(){go(cur+1)}
+function prev(){go(cur-1)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX});
+document.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-tx;if(d<-50)next();if(d>50)prev()});
+</script>
+</body>
+</html>
