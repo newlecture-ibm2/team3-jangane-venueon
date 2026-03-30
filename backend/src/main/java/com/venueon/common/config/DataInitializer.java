@@ -1,0 +1,375 @@
+package com.venueon.common.config;
+
+import com.venueon.event.adapter.out.persistence.entity.CategoryJpaEntity;
+import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
+import com.venueon.event.adapter.out.persistence.repository.CategoryJpaRepository;
+import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
+import com.venueon.event.domain.model.EventStatus;
+import com.venueon.event.domain.model.EventType;
+import com.venueon.user.adapter.out.persistence.UserJpaEntity;
+import com.venueon.user.adapter.out.persistence.UserJpaRepository;
+import com.venueon.user.domain.model.UserRole;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Slf4j
+@Component
+@Profile({"dev", "h2"})
+@RequiredArgsConstructor
+public class DataInitializer implements ApplicationRunner {
+
+    private final UserJpaRepository userRepository;
+    private final CategoryJpaRepository categoryRepository;
+    private final EventJpaRepository eventRepository;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @Override
+    @Transactional
+    public void run(ApplicationArguments args) {
+        if (userRepository.count() > 0) {
+            log.info("데이터가 이미 존재합니다. 초기화를 건너뜁니다.");
+            return;
+        }
+
+        log.info("=== 개발용 초기 데이터 생성 시작 ===");
+
+        UserJpaEntity admin = createAdmin();
+        List<UserJpaEntity> users = createUsers();
+        List<UserJpaEntity> hosts = createHosts();
+        List<CategoryJpaEntity> categories = createCategories();
+        List<EventJpaEntity> events = createEvents(hosts, categories);
+
+        log.info("=== 개발용 초기 데이터 생성 완료 ===");
+        log.info("Admin: 1명, User: {}명, Host: {}명", users.size(), hosts.size());
+        log.info("Category: {}개, Event: {}개", categories.size(), events.size());
+    }
+
+    private UserJpaEntity createAdmin() {
+        return userRepository.save(UserJpaEntity.builder()
+                .email("admin@venueon.com")
+                .password(passwordEncoder.encode("Admin1234!"))
+                .nickname("VenueOn관리자")
+                .role(UserRole.ADMIN)
+                .build());
+    }
+
+    private List<UserJpaEntity> createUsers() {
+        return userRepository.saveAll(List.of(
+                UserJpaEntity.builder()
+                        .email("user1@example.com")
+                        .password(passwordEncoder.encode("User1234!"))
+                        .nickname("김참여")
+                        .role(UserRole.USER)
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("user2@example.com")
+                        .password(passwordEncoder.encode("User1234!"))
+                        .nickname("이탐색")
+                        .role(UserRole.USER)
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("user3@example.com")
+                        .password(passwordEncoder.encode("User1234!"))
+                        .nickname("박이벤트")
+                        .role(UserRole.USER)
+                        .build()
+        ));
+    }
+
+    private List<UserJpaEntity> createHosts() {
+        String encodedPassword = passwordEncoder.encode("Host1234!");
+
+        return userRepository.saveAll(List.of(
+                UserJpaEntity.builder()
+                        .email("contact@nextcode.kr")
+                        .password(encodedPassword)
+                        .nickname("NextCode")
+                        .role(UserRole.HOST)
+                        .profileImg("nextcode.png")
+                        .phone("02-1234-5678")
+                        .orgName("넥스트코드")
+                        .orgNumber("123-45-67890")
+                        .orgDescription("AI와 클라우드 기술 전문 교육 기업. 현직 개발자가 이끄는 실무 중심 코딩 부트캠프와 기술 세미나를 운영합니다.")
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("hello@designbridge.co.kr")
+                        .password(encodedPassword)
+                        .nickname("DesignBridge")
+                        .role(UserRole.HOST)
+                        .profileImg("designbridge.png")
+                        .phone("02-2345-6789")
+                        .orgName("디자인브릿지")
+                        .orgNumber("234-56-78901")
+                        .orgDescription("UX/UI 디자인 전문 에이전시. 실무 프로젝트 기반의 디자인 워크숍과 포트폴리오 클래스를 제공합니다.")
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("info@sparkventures.io")
+                        .password(encodedPassword)
+                        .nickname("SparkVentures")
+                        .role(UserRole.HOST)
+                        .profileImg("sparkventures.png")
+                        .phone("02-3456-7890")
+                        .orgName("스파크벤처스")
+                        .orgNumber("345-67-89012")
+                        .orgDescription("초기 스타트업을 위한 액셀러레이터. 투자 유치 전략, 비즈니스 모델 설계, 네트워킹 이벤트를 정기적으로 개최합니다.")
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("wellness@greenlife.kr")
+                        .password(encodedPassword)
+                        .nickname("GreenLifeAcademy")
+                        .role(UserRole.HOST)
+                        .profileImg("greenlife-academy.png")
+                        .phone("02-4567-8901")
+                        .orgName("그린라이프 아카데미")
+                        .orgNumber("456-78-90123")
+                        .orgDescription("건강한 라이프스타일을 위한 웰니스 교육 플랫폼. 요가, 명상, 영양학 클래스와 건강 세미나를 운영합니다.")
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("art@artspaceseoul.com")
+                        .password(encodedPassword)
+                        .nickname("ArtSpaceSeoul")
+                        .role(UserRole.HOST)
+                        .profileImg("artspace-seoul.png")
+                        .phone("02-5678-9012")
+                        .orgName("아트스페이스 서울")
+                        .orgNumber("567-89-01234")
+                        .orgDescription("서울 성수동 소재 복합 문화 공간. 전시, 공연, 아트 워크숍 등 다양한 문화 이벤트를 기획하고 운영합니다.")
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("consulting@bizon.co.kr")
+                        .password(encodedPassword)
+                        .nickname("BizOnConsulting")
+                        .role(UserRole.HOST)
+                        .profileImg("bizon-consulting.png")
+                        .phone("02-6789-0123")
+                        .orgName("비즈온 컨설팅")
+                        .orgNumber("678-90-12345")
+                        .orgDescription("기업 성장 전략 전문 컨설팅 펌. 리더십, 마케팅, 데이터 기반 의사결정 등 비즈니스 컨퍼런스와 세미나를 개최합니다.")
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("chef@foodlabseoul.kr")
+                        .password(encodedPassword)
+                        .nickname("FoodLabSeoul")
+                        .role(UserRole.HOST)
+                        .profileImg("foodlab-seoul.png")
+                        .phone("02-7890-1234")
+                        .orgName("푸드랩 서울")
+                        .orgNumber("789-01-23456")
+                        .orgDescription("셰프와 미식가를 위한 쿠킹 스튜디오. 한식, 양식, 베이킹 클래스와 푸드 네트워킹 밋업을 정기적으로 운영합니다.")
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("invest@moneyflow.co.kr")
+                        .password(encodedPassword)
+                        .nickname("MoneyFlow")
+                        .role(UserRole.HOST)
+                        .profileImg("moneyflow.png")
+                        .phone("02-8901-2345")
+                        .orgName("머니플로우")
+                        .orgNumber("890-12-34567")
+                        .orgDescription("개인 투자자와 금융 전문가를 연결하는 핀테크 교육 플랫폼. 주식, 부동산, 가상자산 세미나와 재테크 컨퍼런스를 개최합니다.")
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("hello@creatorshub.kr")
+                        .password(encodedPassword)
+                        .nickname("CreatorsHub")
+                        .role(UserRole.HOST)
+                        .profileImg("creators-hub.png")
+                        .phone("02-9012-3456")
+                        .orgName("크리에이터즈 허브")
+                        .orgNumber("901-23-45678")
+                        .orgDescription("유튜버, 인플루언서, 콘텐츠 크리에이터를 위한 미디어 교육 기관. 영상 편집, SNS 마케팅, 브랜딩 클래스를 운영합니다.")
+                        .build(),
+                UserJpaEntity.builder()
+                        .email("forum@seoulscience.org")
+                        .password(encodedPassword)
+                        .nickname("SeoulScienceForum")
+                        .role(UserRole.HOST)
+                        .profileImg("seoul-science-forum.png")
+                        .phone("02-0123-4567")
+                        .orgName("서울사이언스포럼")
+                        .orgNumber("012-34-56789")
+                        .orgDescription("과학 기술 대중화를 위한 비영리 학술 단체. 최신 연구 동향 발표, 과학 강연, 학술 컨퍼런스를 주최합니다.")
+                        .build()
+        ));
+    }
+
+    private List<CategoryJpaEntity> createCategories() {
+        return categoryRepository.saveAll(List.of(
+                CategoryJpaEntity.builder().name("테크/개발 교육").sortOrder(1).build(),
+                CategoryJpaEntity.builder().name("디자인/크리에이티브").sortOrder(2).build(),
+                CategoryJpaEntity.builder().name("창업/스타트업").sortOrder(3).build(),
+                CategoryJpaEntity.builder().name("건강/웰니스").sortOrder(4).build(),
+                CategoryJpaEntity.builder().name("문화/예술").sortOrder(5).build(),
+                CategoryJpaEntity.builder().name("경영/비즈니스").sortOrder(6).build(),
+                CategoryJpaEntity.builder().name("요리/F&B").sortOrder(7).build(),
+                CategoryJpaEntity.builder().name("금융/투자").sortOrder(8).build(),
+                CategoryJpaEntity.builder().name("미디어/콘텐츠").sortOrder(9).build(),
+                CategoryJpaEntity.builder().name("과학/학술").sortOrder(10).build()
+        ));
+    }
+
+    private List<EventJpaEntity> createEvents(List<UserJpaEntity> hosts, List<CategoryJpaEntity> categories) {
+        return eventRepository.saveAll(List.of(
+                EventJpaEntity.builder()
+                        .creator(hosts.get(0))
+                        .category(categories.get(0))
+                        .title("AI & Cloud Bootcamp")
+                        .description("현직 개발자와 함께하는 2일 집중 부트캠프. AI 모델 배포부터 클라우드 인프라 설계까지, 실무에서 바로 쓸 수 있는 기술을 배웁니다. AWS, GCP 환경에서 직접 실습하며 포트폴리오를 완성합니다.")
+                        .type(EventType.SEMINAR)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 강남구 테헤란로 123 넥스트코드 교육센터")
+                        .isOnline(false)
+                        .price(150000)
+                        .maxAttendees(40)
+                        .thumbnailUrl("lecture-thumbnail/NC_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 4, 12, 10, 0))
+                        .endDate(LocalDateTime.of(2026, 4, 13, 18, 0))
+                        .build(),
+                EventJpaEntity.builder()
+                        .creator(hosts.get(1))
+                        .category(categories.get(1))
+                        .title("UX Design Workshop")
+                        .description("사용자 리서치부터 프로토타이핑까지, UX 디자인의 전 과정을 실습합니다. Figma를 활용한 와이어프레임 제작과 사용성 테스트 방법을 현업 디자이너에게 직접 배울 수 있습니다.")
+                        .type(EventType.CLASS)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 성동구 성수이로 45 디자인브릿지 스튜디오")
+                        .isOnline(false)
+                        .price(80000)
+                        .maxAttendees(25)
+                        .thumbnailUrl("lecture-thumbnail/DB_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 4, 26, 10, 0))
+                        .endDate(LocalDateTime.of(2026, 4, 27, 17, 0))
+                        .build(),
+                EventJpaEntity.builder()
+                        .creator(hosts.get(2))
+                        .category(categories.get(2))
+                        .title("Startup Demo Day")
+                        .description("스파크벤처스 5기 배치 스타트업 10팀의 데모데이. 투자자, 멘토, 예비 창업자가 한자리에 모여 혁신적인 비즈니스 모델을 발표하고 네트워킹합니다. 참관은 무료입니다.")
+                        .type(EventType.CONFERENCE)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 영등포구 여의대로 108 파크원타워 컨벤션홀")
+                        .isOnline(false)
+                        .price(0)
+                        .maxAttendees(200)
+                        .thumbnailUrl("lecture-thumbnail/SV_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 5, 10, 14, 0))
+                        .endDate(LocalDateTime.of(2026, 5, 10, 20, 0))
+                        .build(),
+                EventJpaEntity.builder()
+                        .creator(hosts.get(3))
+                        .category(categories.get(3))
+                        .title("마음챙김 요가 클래스")
+                        .description("바쁜 일상 속 나를 돌보는 시간. 호흡법과 명상을 결합한 빈야사 요가 클래스입니다. 초보자도 편하게 참여할 수 있으며, 요가 매트와 소도구는 현장에서 제공됩니다.")
+                        .type(EventType.CLASS)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 마포구 연남로 27 그린라이프 웰니스센터")
+                        .isOnline(false)
+                        .price(30000)
+                        .maxAttendees(20)
+                        .thumbnailUrl("lecture-thumbnail/GLA_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 5, 17, 9, 0))
+                        .endDate(LocalDateTime.of(2026, 5, 17, 11, 30))
+                        .build(),
+                EventJpaEntity.builder()
+                        .creator(hosts.get(4))
+                        .category(categories.get(4))
+                        .title("현대미술 워크숍")
+                        .description("추상표현주의부터 미디어아트까지, 현대미술의 주요 흐름을 이해하고 직접 작품을 제작합니다. 전시 큐레이터와 작가가 함께 진행하며, 완성 작품은 갤러리에서 전시됩니다.")
+                        .type(EventType.CLASS)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 성동구 서울숲2길 17 아트스페이스 서울")
+                        .isOnline(false)
+                        .price(120000)
+                        .maxAttendees(15)
+                        .thumbnailUrl("lecture-thumbnail/AS_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 5, 24, 10, 0))
+                        .endDate(LocalDateTime.of(2026, 5, 25, 17, 0))
+                        .build(),
+                EventJpaEntity.builder()
+                        .creator(hosts.get(5))
+                        .category(categories.get(5))
+                        .title("Business Growth Summit")
+                        .description("기업 성장의 핵심 전략을 다루는 비즈니스 서밋. 데이터 기반 의사결정, 조직 확장, 해외 진출 등 실전 경험을 가진 CEO와 임원진의 강연과 패널 토론으로 구성됩니다.")
+                        .type(EventType.CONFERENCE)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 중구 세종대로 110 프레스센터 국제회의장")
+                        .isOnline(true)
+                        .price(50000)
+                        .maxAttendees(150)
+                        .thumbnailUrl("lecture-thumbnail/BOC_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 5, 31, 9, 30))
+                        .endDate(LocalDateTime.of(2026, 5, 31, 18, 0))
+                        .build(),
+                EventJpaEntity.builder()
+                        .creator(hosts.get(6))
+                        .category(categories.get(6))
+                        .title("한식 마스터클래스")
+                        .description("전통 한식의 맛과 멋을 배우는 쿠킹 클래스. 계절 식재료를 활용한 상차림을 셰프와 함께 만들고, 한식 플레이팅 기법까지 배웁니다. 만든 음식은 현장에서 시식합니다.")
+                        .type(EventType.CLASS)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 종로구 인사동길 38 푸드랩 서울 쿠킹스튜디오")
+                        .isOnline(false)
+                        .price(65000)
+                        .maxAttendees(12)
+                        .thumbnailUrl("lecture-thumbnail/FLS_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 6, 7, 11, 0))
+                        .endDate(LocalDateTime.of(2026, 6, 7, 15, 0))
+                        .build(),
+                EventJpaEntity.builder()
+                        .creator(hosts.get(7))
+                        .category(categories.get(7))
+                        .title("Smart Investment Seminar 2026")
+                        .description("개인 투자자를 위한 스마트 투자 전략 세미나. 글로벌 매크로 분석, ETF 포트폴리오 구성, AI 기반 퀀트 투자까지 최신 투자 트렌드를 금융 전문가가 직접 해설합니다.")
+                        .type(EventType.SEMINAR)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 영등포구 국제금융로 10 머니플로우 세미나홀")
+                        .isOnline(true)
+                        .price(40000)
+                        .maxAttendees(100)
+                        .thumbnailUrl("lecture-thumbnail/MF_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 6, 14, 13, 0))
+                        .endDate(LocalDateTime.of(2026, 6, 14, 18, 0))
+                        .build(),
+                EventJpaEntity.builder()
+                        .creator(hosts.get(8))
+                        .category(categories.get(8))
+                        .title("Creator Academy: Video Editing")
+                        .description("유튜브·숏폼 콘텐츠 제작을 위한 영상 편집 아카데미. Premiere Pro와 DaVinci Resolve를 활용한 컷 편집, 색보정, 자막 디자인을 실습합니다. 개인 노트북 지참 필수.")
+                        .type(EventType.CLASS)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 강남구 논현로 515 크리에이터즈 허브 미디어랩")
+                        .isOnline(false)
+                        .price(90000)
+                        .maxAttendees(30)
+                        .thumbnailUrl("lecture-thumbnail/CH_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 6, 21, 10, 0))
+                        .endDate(LocalDateTime.of(2026, 6, 22, 17, 0))
+                        .build(),
+                EventJpaEntity.builder()
+                        .creator(hosts.get(9))
+                        .category(categories.get(9))
+                        .title("Future Science Conference")
+                        .description("미래 과학 기술의 최신 연구 성과를 공유하는 학술 컨퍼런스. 생명공학, 양자컴퓨팅, 우주과학 등 분야별 세션으로 구성되며, 국내외 연구자 발표와 포스터 세션이 진행됩니다.")
+                        .type(EventType.CONFERENCE)
+                        .status(EventStatus.PUBLISHED)
+                        .location("서울 동대문구 회기로 85 서울과학기술대 국제회의실")
+                        .isOnline(true)
+                        .price(0)
+                        .maxAttendees(300)
+                        .thumbnailUrl("lecture-thumbnail/SSF_thumbnail.jpg")
+                        .startDate(LocalDateTime.of(2026, 6, 28, 9, 0))
+                        .endDate(LocalDateTime.of(2026, 6, 29, 18, 0))
+                        .build()
+        ));
+    }
+}
