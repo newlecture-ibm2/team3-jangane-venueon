@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VenueOn MVP Mockup</title>
+    <style>
+        :root {
+            /* Colors from MVP Architecture */
+            --color-primary: #6366f1;
+            --color-primary-hover: #4f46e5;
+            --color-secondary: #f59e0b;
+            --color-bg: #0f172a;
+            --color-surface: #1e293b;
+            --color-surface-hover: #334155;
+            --color-text: #f1f5f9;
+            --color-text-muted: #94a3b8;
+            --color-border: #334155;
+            --color-success: #22c55e;
+            --color-error: #ef4444;
+
+            /* Typography */
+            --font-sans: 'Pretendard', 'Inter', -apple-system, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background-color: var(--color-surface);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: var(--color-text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-links button:hover, .nav-links button.active {
+            color: var(--color-primary);
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Page Views */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Common UI Elements */
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+
+        .card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            background-color: var(--color-bg);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab {
+            color: var(--color-text-muted);
+            cursor: pointer;
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+            font-weight: bold;
+            border-bottom: 2px solid var(--color-primary);
+        }
+
+        /* Specific Page Styles */
+        .event-cover {
+            width: 100%;
+            height: 200px;
+            background-color: var(--color-primary);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .badge {
+            background-color: var(--color-secondary);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo" onclick="switchPage('home')">VenueOn</div>
+        <div class="nav-links">
+            <button onclick="switchPage('home')" id="nav-home" class="active">홈</button>
+            <button onclick="switchPage('events-new')" id="nav-events-new">이벤트 생성</button>
+            <button onclick="switchPage('community')" id="nav-community">커뮤니티</button>
+            <button onclick="switchPage('mypage')" id="nav-mypage">마이페이지</button>
+            <button onclick="switchPage('auth')" id="nav-auth" class="btn-primary">로그인/가입</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 1. 메인 홈 -->
+        <div id="page-home" class="page active">
+            <h1>탐색하기</h1>
+            <div class="search-bar">
+                <input type="text" placeholder="어떤 이벤트를 찾으시나요?">
+                <button class="btn-primary">검색</button>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active">전체</div>
+                <div class="tab">IT/테크</div>
+                <div class="tab">디자인</div>
+                <div class="tab">마케팅</div>
+            </div>
+
+            <h2>🔥 인기 이벤트</h2>
+            <div class="grid">
+                <div class="card" style="cursor: pointer;" onclick="switchPage('event-detail')">
+                    <div class="event-cover" style="height: 150px; font-size: 1rem;">Spring Boot 3.x 마스터 클래스</div>
+                    <h3>백엔드 개발자를 위한 스프링 부트</h3>
+                    <p class="text-muted">2026. 04. 01 (수) 19:00</p>
+                    <p><span class="badge">유료</span> ₩50,000</p>
+                </div>
+                <div class="card" style="cursor: pointer;" onclick="switchPage('event-detail')">
+                    <div class="event-cover" style="height: 150px; font-size: 1rem; background-color: var(--color-secondary)">Next.js 14 네트워킹 데이</div>
+                    <h3>프론트엔드 모여라</h3>
+                    <p class="text-muted">2026. 04. 10 (금) 14:00</p>
+                    <p><span class="badge" style="background-color: var(--color-success)">무료</span></p>
+                </div>
+                <div class="card" style="cursor: pointer;" onclick="switchPage('event-detail')">
+                    <div class="event-cover" style="height: 150px; font-size: 1rem; background-color: var(--color-error)">스타트업 피칭 대회</div>
+                    <h3>투자 유치를 위한 데모데이 참가자 모집</h3>
+                    <p class="text-muted">2026. 05. 01 (금) 13:00</p>
+                    <p><span class="badge" style="background-color: var(--color-success)">무료</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 로그인/가입 -->
+        <div id="page-auth" class="page">
+            <div style="max-width: 400px; margin: 0 auto; text-align: center;">
+                <h1>VenueOn 시작하기</h1>
+                <p style="color: var(--color-text-muted); margin-bottom: 2rem;">모든 사용자가 자유롭게 이벤트를 만들고 참여할 수 있습니다.</p>
+                
+                <div class="card" style="text-align: left;">
+                    <label>이메일</label>
+                    <input type="email" placeholder="example@venueon.com">
+                    
+                    <label>비밀번호</label>
+                    <input type="password" placeholder="********">
+                    
+                    <button class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="alert('로그인되었습니다!'); switchPage('home');">로그인</button>
+                    
+                    <p style="text-align: center; margin-top: 1rem; color: var(--color-text-muted);">
+                        계정이 없으신가요? <a href="#" style="color: var(--color-primary)">회원가입</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 이벤트 상세 -->
+        <div id="page-event-detail" class="page">
+            <button onclick="switchPage('home')" style="background:none; border:none; color:var(--color-text-muted); cursor:pointer; margin-bottom: 1rem;">← 뒤로가기</button>
+            <div class="event-cover">
+                Spring Boot 3.x 마스터 클래스
+            </div>
+            
+            <div style="display: flex; gap: 2rem;">
+                <div style="flex: 2;">
+                    <h1>백엔드 개발자를 위한 스프링 부트</h1>
+                    <p style="color: var(--color-text-muted);">호스트: 김스프링</p>
+                    
+                    <div class="tabs" style="margin-top: 2rem;">
+                        <div class="tab active">상세정보</div>
+                        <div class="tab">프로그램/세션</div>
+                        <div class="tab" onclick="switchPage('community')">커뮤니티 이동</div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>이벤트 소개</h3>
+                        <p>이 강의에서는 Spring Boot 3.x의 새로운 기능과 헥사고날 아키텍처를 적용하는 실무적인 방법을 다룹니다.</p>
+                    </div>
+                </div>
+                
+                <div style="flex: 1;">
+                    <div class="card" style="position: sticky; top: 2rem;">
+                        <h3>티켓 구매</h3>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--color-primary);">₩ 50,000</p>
+                        <hr style="border-color: var(--color-border); margin: 1rem 0;">
+                        <p><strong>일시:</strong> 2026. 04. 01 19:00</p>
+                        <p><strong>장소:</strong> 온라인 (줌 링크 제공)</p>
+                        
+                        <div style="margin: 1.5rem 0;">
+                            <label>티켓 선택</label>
+                            <select>
+                                <option>일반 예매 (₩ 50,000)</option>
+                                <option>얼리버드 할인권 (₩ 40,000) - 품절</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn-primary" style="width: 100%; padding: 1rem;" onclick="alert('포트원 결제창 호출 -> 결제 완료 -> 주문 생성'); switchPage('mypage');">결제하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 이벤트 생성 -->
+        <div id="page-events-new" class="page">
+            <h1>새 이벤트 만들기</h1>
+            <p style="color: var(--color-text-muted);">이벤트 정보를 입력해주세요.</p>
+            
+            <div class="card">
+                <h3>1. 기본 정보</h3>
+                <label>이벤트 제목</label>
+                <input type="text" placeholder="멋진 이벤트 제목을 입력하세요">
+                
+                <label>카테고리</label>
+                <select>
+                    <option>IT / 개발</option>
+                    <option>디자인 / 기획</option>
+                    <option>마케팅 / 비즈니스</option>
+                </select>
+                
+                <label>상세 설명</label>
+                <textarea rows="5" placeholder="이벤트 내용을 자세히 적어주세요"></textarea>
+                
+                <h3>2. 티켓 설정</h3>
+                <div style="display: flex; gap: 1rem;">
+                    <div style="flex: 1;">
+                        <label>티켓 이름</label>
+                        <input type="text" placeholder="예: 일반 예매">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>가격 (무료인 경우 0)</label>
+                        <input type="number" placeholder="50000">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>수량제한</label>
+                        <input type="number" placeholder="100">
+                    </div>
+                </div>
+                
+                <hr style="border-color: var(--color-border); margin: 1rem 0;">
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button class="btn-primary" style="background: var(--color-surface-hover);" onclick="switchPage('home')">취소</button>
+                    <button class="btn-primary" onclick="alert('이벤트가 생성되었습니다!'); switchPage('home')">이벤트 등록하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 커뮤니티 -->
+        <div id="page-community" class="page">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <div>
+                    <span class="badge">연동된 이벤트</span>
+                    <h1 style="margin-top: 0.5rem; margin-bottom: 0;">Spring Boot 3.x 오픈 커뮤니티</h1>
+                </div>
+                <button class="btn-primary">커뮤니티 가입하기</button>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active">전체글</div>
+                <div class="tab">공지사항</div>
+                <div class="tab">질문/답변</div>
+                <div class="tab">후기</div>
+            </div>
+            
+            <div class="card" style="margin-bottom: 2rem;">
+                <input type="text" placeholder="게시글 작성하기..." style="margin-bottom: 0;" onclick="alert('게시글 작성 모달 팝업')">
+            </div>
+            
+            <div class="card">
+                <div style="display: flex; justify-content: space-between;">
+                    <h3 style="margin-bottom: 0.5rem;">[공지] 행사 시작 10분 전 줌 링크가 메일로 발송됩니다.</h3>
+                    <span class="badge" style="background-color: var(--color-error)">공지</span>
+                </div>
+                <p style="color: var(--color-text-muted); font-size: 0.9rem;">작성자: 김스프링 | 2시간 전 | 댓글 2</p>
+                <hr style="border-color: var(--color-border); margin: 1rem 0;">
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <input type="text" placeholder="댓글을 입력하세요..." style="margin: 0; padding: 0.5rem;">
+                    <button class="btn-primary" style="padding: 0.5rem 1rem;">등록</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 style="margin-bottom: 0.5rem;">헥사고날 아키텍처 예제 코드는 언제 제공되나요?</h3>
+                <p style="color: var(--color-text-muted); font-size: 0.9rem;">작성자: 박개발 | 1일 전 | 댓글 1</p>
+                <p>실습 코드를 미리 받아서 보고 싶습니다.</p>
+            </div>
+        </div>
+
+        <!-- 6. 마이페이지 -->
+        <div id="page-mypage" class="page">
+            <h1 style="margin-bottom: 2rem;">마이페이지</h1>
+            
+            <div style="display: flex; gap: 2rem;">
+                <!-- 사이드 메뉴 -->
+                <div style="width: 200px;">
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <button class="nav-links button active" style="text-align: left; padding: 0.5rem; background: var(--color-surface); border: 1px solid var(--color-border); color: white; border-radius: 4px;">나의 구매 내역</button>
+                        <button class="nav-links button" style="text-align: left; padding: 0.5rem; background: transparent; border: none; color: var(--color-text-muted); cursor: pointer;">내가 만든 이벤트</button>
+                        <button class="nav-links button" style="text-align: left; padding: 0.5rem; background: transparent; border: none; color: var(--color-text-muted); cursor: pointer;">참여 커뮤니티</button>
+                        <button class="nav-links button" style="text-align: left; padding: 0.5rem; background: transparent; border: none; color: var(--color-text-muted); cursor: pointer;">프로필 수정</button>
+                    </div>
+                </div>
+                
+                <!-- 콘텐츠 -->
+                <div style="flex: 1;">
+                    <h2>나의 구매 내역</h2>
+                    <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">결제하신 티켓 내역을 확인하고 이벤트에 참여하세요.</p>
+                    
+                    <div class="card" style="border-left: 4px solid var(--color-primary);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <span class="badge" style="background-color: var(--color-primary); margin-bottom: 0.5rem; display: inline-block;">결제완료</span>
+                                <h3>Spring Boot 3.x 마스터 클래스</h3>
+                                <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-top: 0;">일반 예매 (₩ 50,000) | 결제일시: 2026.03.25 10:00</p>
+                            </div>
+                            <button class="btn-primary">이벤트 페이지로 이동</button>
+                        </div>
+                        <div style="margin-top: 1rem; padding: 1rem; background-color: var(--color-bg); border-radius: 4px;">
+                            <p style="margin: 0; font-size: 0.9rem;">💡 <strong>참여 안내:</strong> 온라인 링크는 행사 시작 10분 전에 커뮤니티 공지로 안내됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function switchPage(pageId) {
+            // 모든 페이지 숨기기
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 네비게이션 액티브 상태 초기화 
+            document.querySelectorAll('.nav-links button').forEach(btn => {
+                if(btn.id !== 'nav-auth') btn.classList.remove('active');
+            });
+
+            // 선택된 페이지 보이기
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            // 해당 버튼 액티브 처리
+            const navBtn = document.getElementById('nav-' + pageId);
+            if(navBtn && pageId !== 'auth') {
+                navBtn.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

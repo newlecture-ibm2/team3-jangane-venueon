@@ -1,6 +1,3 @@
-# 문서 폴더 (Git 업로드 제외)
-doc/
-
 # Git Hooks (로컬 전용)
 .githooks/
 
