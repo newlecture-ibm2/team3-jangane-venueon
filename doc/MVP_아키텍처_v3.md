@@ -141,7 +141,7 @@ graph TB
 
 ---
 
-## 📌 4. ERD (8개 Entity)
+## 📌 4. ERD (9개 Entity)
 
 ```mermaid
 erDiagram
@@ -151,6 +151,7 @@ erDiagram
     USER ||--o{ COMMENT : "writes"
     USER ||--o{ COMMUNITY_MEMBER : "joins"
 
+    CATEGORY ||--o{ EVENT : "classifies"
     EVENT ||--o{ ORDER : "registered_via"
     EVENT ||--o{ COMMUNITY : "has"
 
@@ -168,18 +169,24 @@ erDiagram
         timestamp updated_at
     }
 
+    CATEGORY {
+        bigint id PK
+        string name UK "NOT NULL"
+        string description "NULL"
+        int sort_order "DEFAULT 0"
+    }
+
     EVENT {
         bigint id PK
         bigint creator_id FK
+        bigint category_id FK "NULL → CATEGORIES"
         string title
         text description
-        string category
         enum type "SEMINAR, CLASS, MEETUP, CONFERENCE"
         enum status "DRAFT, PUBLISHED, ONGOING, ENDED, CANCELLED"
         string location
         boolean is_online
-        boolean is_free
-        int price
+        int price "0이면 무료"
         int max_attendees
         string thumbnail_url
         timestamp start_date
@@ -225,7 +232,6 @@ erDiagram
         text content
         enum type "GENERAL, REVIEW, QUESTION, NOTICE"
         int view_count
-        int like_count
         int comment_count
         timestamp created_at
         timestamp updated_at
@@ -241,8 +247,9 @@ erDiagram
     }
 ```
 
-**Entity 수: 8개** → PDF 요구사항(최소 5개) 충족 ✅
+**Entity 수: 9개** → PDF 요구사항(최소 5개) 충족 ✅
 
+> **변경사항:** Category 엔티티 추가, `is_free` 제거(price==0이면 무료 판단), `like_count` 제거(MVP 미구현)  
 > **향후 확장:** Session(세션/프로그램), Ticket(티켓 등급별 가격) Entity는 MVP 이후 추가 예정
 
 ---
@@ -454,6 +461,7 @@ team_project/
 │       │   ├── domain/
 │       │   │   ├── model/
 │       │   │   │   ├── Event.java
+│       │   │   │   ├── Category.java          # 카테고리 도메인
 │       │   │   │   ├── Order.java
 │       │   │   │   ├── EventStatus.java   # enum
 │       │   │   │   └── OrderStatus.java   # enum
@@ -474,6 +482,7 @@ team_project/
 │       │   │   │   └── out/
 │       │   │   │       ├── LoadEventPort.java
 │       │   │   │       ├── SaveEventPort.java
+│       │   │   │       ├── LoadCategoryPort.java     # 카테고리 조회 Port
 │       │   │   │       ├── LoadOrderPort.java
 │       │   │   │       ├── SaveOrderPort.java
 │       │   │   │       └── UserQueryPort.java       # user 모듈 조회용 Port
@@ -505,14 +514,18 @@ team_project/
 │       │           ├── persistence/
 │       │           │   ├── entity/
 │       │           │   │   ├── EventJpaEntity.java
+│       │           │   │   ├── CategoryJpaEntity.java
 │       │           │   │   └── OrderJpaEntity.java
 │       │           │   ├── repository/
 │       │           │   │   ├── EventJpaRepository.java
+│       │           │   │   ├── CategoryJpaRepository.java
 │       │           │   │   └── OrderJpaRepository.java
 │       │           │   ├── EventPersistenceAdapter.java
+│       │           │   ├── CategoryPersistenceAdapter.java
 │       │           │   ├── OrderPersistenceAdapter.java
 │       │           │   └── mapper/
 │       │           │       ├── EventMapper.java
+│       │           │       ├── CategoryMapper.java
 │       │           │       └── OrderMapper.java
 │       │           └── internal/          # 모듈 간 통신 어댑터
 │       │               └── UserQueryAdapter.java    # implements UserQueryPort (직접 메서드 호출)
@@ -699,8 +712,13 @@ public @interface UseCase {
 public class Event {
     private Long id;
     private String title;
+    private Long categoryId;     // Category FK
     private EventStatus status;
-    private boolean isFree;
+    private int price;           // 0이면 무료
+
+    public boolean isFree() {
+        return this.price == 0;  // is_free 컬럼 대신 로직으로 판단
+    }
 
     public void publish() {
         if (this.status != EventStatus.DRAFT)
