@@ -1,0 +1,25 @@
+# 문서 폴더 (Git 업로드 제외)
+doc/
+
+# Git Hooks (로컬 전용)
+.githooks/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+target/
+build/
+node_modules/
+.next/
+dist/
+
+# Env
+.env
+.env.local
