@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/v1/:path*",
-        destination: `${backendUrl}/v1/:path*`,
+        destination: `${backendUrl}/:path*`, // ⭐ 백엔드에는 /v1 접두사가 없으므로 /:path* 로 전달
       },
       {
         source: "/images/:path*",
