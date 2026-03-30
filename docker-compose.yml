@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # ─── Database ────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: venueon-db
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ─── Backend (Spring Boot) ───────────────
+  backend:
+    image: venueon-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: venueon-backend
+    ports:
+      - "${BACKEND_PORT}:8080"
+    environment:
+      # DB 연결 (GitHub Secrets/Variables에서 주입)
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      # JPA — MVP: create-drop (실 서비스 시 validate + Flyway 전환)
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+      - SPRING_JPA_SHOW_SQL=false
+      # JWT
+      - JWT_SECRET=${JWT_SECRET}
+      # CORS
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+      # 이미지 업로드 (컨테이너 내부 경로)
+      - FILE_UPLOAD_DIR=/home/upload
+      - SPRING_WEB_RESOURCES_STATIC_LOCATIONS=file:/home/upload/,classpath:/static/
+      # 로깅 레벨
+      - LOGGING_LEVEL_ROOT=WARN
+      - LOGGING_LEVEL_COM_VENUEON=INFO
+    volumes:
+      - ~/dist/upload:/home/upload
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Frontend (Next.js) ──────────────────
+  frontend:
+    image: venueon-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: venueon-frontend
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      - SESSION_SECRET=${SESSION_SECRET}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  db-data:
+    name: venueon-db-data
