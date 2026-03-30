@@ -132,11 +132,15 @@ spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
 
 # JPA — 매 실행 시 테이블 재생성 + DataInitializer로 초기 데이터 삽입
+# ⚠️ MVP/데모 목적으로 create-drop 사용. 실 서비스 전환 시 validate + Flyway로 변경 필요
 spring.jpa.hibernate.ddl-auto=create-drop
 spring.jpa.show-sql=false
 
 # JWT — GitHub Secrets에서 주입
 jwt.secret=${JWT_SECRET}
+
+# CORS — GitHub Variables에서 주입
+cors.allowed-origins=${CORS_ALLOWED_ORIGINS}
 
 # 이미지 업로드 경로
 file.upload-dir=/home/upload
@@ -147,6 +151,12 @@ spring.web.resources.static-locations=file:/home/upload/, classpath:/static/
 
 > [!WARNING]
 > **민감 정보 관리:** `application-dev.properties` 및 `application-prod.properties` 파일에 실제 비밀번호를 노출하지 않도록 `${변수명}` 형식을 사용하고, 해당 파일들은 반드시 **`.gitignore`**에 추가할 것을 강력히 권장합니다. 실제 값은 Docker Compose의 `environment` 섹션 또는 GitHub Actions Secrets에서 주입합니다.
+
+> [!CAUTION]
+> **dev 환경 민감 정보:** 현재 `application-dev.properties`에 비밀번호(`venueon1234`)와 JWT 시크릿(`dev-secret-key`)이 하드코딩되어 있습니다. dev 설정 파일도 `.gitignore`에 포함하거나, 환경변수 주입 방식으로 변경하는 것을 권장합니다.
+
+> [!WARNING]
+> **MVP 단계 데이터 초기화 경고:** 현재 MVP 단계로, prod 환경도 `ddl-auto=create-drop`을 사용합니다. **서버 재시작 시 모든 데이터가 초기화**됩니다. 실 서비스 전환 시 `validate` + **Flyway** 마이그레이션으로 변경이 필요합니다.
 
 
 ### 4-2. DataInitializer (초기 데이터)
@@ -178,9 +188,9 @@ public class DataInitializer implements CommandLineRunner {
 ```
 
 > [!NOTE]
-> dev·prod 환경 모두 `ddl-auto=create-drop` + DataInitializer 조합으로, 매 실행 시 일관된 초기 상태를 보장합니다.
+> dev·prod 환경 모두 `ddl-auto=create-drop` + DataInitializer 조합으로, 매 실행 시 일관된 초기 상태를 보장합니다. **단, 이는 MVP/데모 목적이며, 실 서비스에서는 데이터 영속성을 위해 `validate` + Flyway 마이그레이션을 적용해야 합니다.**
 
-### 4-2. JWT + BFF (Next.js) 보안 전략
+### 4-3. JWT + BFF (Next.js) 보안 전략
 
 프론트엔드에서 토큰을 `localStorage`에 저장하는 대신, **BFF(Next.js Server Side)**에서 토큰을 관리하여 보안을 강화합니다.
 
@@ -199,26 +209,32 @@ npm install iron-session
 
 ```typescript
 // frontend/middleware.ts
+import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 
 export async function middleware(req: NextRequest) {
+  const res = NextResponse.next(); // ⭐ Next.js middleware에서는 NextResponse 사용
   const session = await getIronSession(req, res, {
     password: process.env.SESSION_SECRET!,  // ⭐ GitHub Secrets에서 주입
     cookieName: 'venueon_session',
     cookieOptions: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
     },
   });
   // session.jwt에서 원본 JWT 추출 → 백엔드 전달
+  return res;
 }
 ```
+
+> [!CAUTION]
+> **`iron-session` 코드 주의:** Next.js middleware에서는 전통적인 `res` 객체가 존재하지 않습니다. 반드시 `NextResponse.next()`로 응답 객체를 생성한 뒤 `getIronSession(req, res, ...)`에 전달해야 합니다. `NextRequest`와 `NextResponse`를 `next/server`에서 import하는 것을 잊지 마세요.
 
 > [!IMPORTANT]
 > `SESSION_SECRET`은 **32자 이상의 무작위 문자열**이어야 하며, GitHub Secrets에 등록하여 관리합니다.
 
-### 4-3. 프론트엔드 환경변수 주입 (No `.env` Files)
+### 4-4. 프론트엔드 환경변수 주입 (No `.env` Files)
 
 Next.js 빌드 시 필요한 환경변수는 별도의 `.env` 파일 대신 **Docker 빌드 인자(Build Args)** 또는 **실행 시 환경변수**를 통해 주입합니다.
 
@@ -266,6 +282,8 @@ GitHub에서는 **Variables** (공개, 설정값)과 **Secrets** (비공개, 민
 | `BACKEND_PORT` | 백엔드 포트 | `8080` |
 | `FRONTEND_PORT` | 프론트엔드 포트 | `30xx` |
 | `DB_PORT` | DB 포트 | `5432` |
+| `NEXT_PUBLIC_API_URL` | 프론트→백엔드 API URL | `http://backend:8080` |
+| `CORS_ALLOWED_ORIGINS` | CORS 허용 Origin | `http://배포서버IP:30xx` |
 
 > [!TIP]
 > **Variables**은 로그에 그대로 노출되어도 문제없는 설정값, **Secrets**는 노출되면 안되는 민감 정보입니다.
@@ -297,6 +315,8 @@ jobs:
       BACKEND_PORT: ${{ vars.BACKEND_PORT }}
       FRONTEND_PORT: ${{ vars.FRONTEND_PORT }}
       DB_PORT: ${{ vars.DB_PORT }}
+      NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+      CORS_ALLOWED_ORIGINS: ${{ vars.CORS_ALLOWED_ORIGINS }}
 
     steps:
       # 1. 최신 소스 반영
@@ -311,9 +331,25 @@ jobs:
           cd ~/team3-jangane-venueon
           docker-compose up -d --build
 
-      # 3. 불필요한 이미지 정리
+      # 3. Health Check (배포 정상 확인)
+      - name: Health Check
+        run: |
+          sleep 15
+          curl -f http://localhost:${FRONTEND_PORT} || exit 1
+          curl -f http://localhost:${BACKEND_PORT}/actuator/health || exit 1
+
+      # 4. 불필요한 이미지 정리
       - name: Cleanup
         run: docker image prune -f
+
+      # 5. 배포 실패 시 Rollback
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          cd ~/team3-jangane-venueon
+          docker-compose down
+          git revert HEAD --no-edit
+          docker-compose up -d --build
 ```
 
 > [!NOTE]
@@ -416,6 +452,11 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   backend:
@@ -432,10 +473,12 @@ services:
       - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
     volumes:
       - ~/dist/upload:/home/upload
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: unless-stopped
 
   frontend:
@@ -448,6 +491,7 @@ services:
       - "${FRONTEND_PORT}:3000"
     environment:
       - SESSION_SECRET=${SESSION_SECRET}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     depends_on:
       - backend
     restart: unless-stopped
@@ -463,41 +507,55 @@ volumes:
 
 ### 7-1. Next.js API 프록시 (next.config.ts)
 
-WBS 기준: 프론트→백 호출 시 경로에 `/api` **미포함** (프록시 rewrite)
+WBS 기준: 프론트→백 호출 시 백엔드 경로 prefix만 명시적으로 프록시합니다.
 
 ```typescript
 // next.config.ts
+const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+
 const nextConfig = {
+  output: 'standalone',  // ⭐ standalone 모드 (Docker 이미지 최적화)
   async rewrites() {
     return [
       {
-        source: '/:path*',                          
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
-        // 프론트 자체 라우트와 겹치지 않는 백엔드 경로만 프록시
+        source: '/v1/:path*',
+        destination: `${backendUrl}/v1/:path*`,
       },
+      {
+        source: '/images/:path*',
+        destination: `${backendUrl}/images/:path*`,
+      },
+      // 백엔드 경로 추가 시 여기에 명시적으로 추가
     ];
   },
 };
 export default nextConfig;
 ```
 
+> [!TIP]
+> 이전 방식(`/:path*`)은 모든 경로를 백엔드로 프록시하여, 프론트엔드 라우트(`/login`, `/events` 등)와 충돌할 위험이 있었습니다. 백엔드 경로 prefix(`/v1/`, `/images/`)만 명시적으로 나열하면 충돌을 방지하고 디버깅이 용이합니다.
+
 ### 7-2. Spring Boot CORS 설정
 
 ```java
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
+
+    @Value("${cors.allowed-origins:http://localhost:3000}")
+    private String allowedOrigins;  // ⭐ 환경변수에서 주입 (쉼표 구분)
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins(
-                "http://localhost:3000",           // dev
-                "http://배포서버IP:30xx"            // prod
-            )
+            .allowedOrigins(allowedOrigins.split(","))  // ⭐ 환경변수 기반
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
             .allowCredentials(true);
     }
 }
 ```
+
+> [!TIP]
+> CORS 허용 Origin을 하드코딩하면 서버 IP 변경 시마다 코드 수정과 재빌드가 필요합니다. 환경변수(`CORS_ALLOWED_ORIGINS`)로 관리하면 GitHub Variables에서 유연하게 변경 가능합니다. 여러 Origin은 쉼표(`,`)로 구분합니다. (예: `http://localhost:3000,http://배포서버IP:30xx`)
 
 ---
 
@@ -507,12 +565,15 @@ public class CorsConfig implements WebMvcConfigurer {
 |------|-----------|------------|
 | **프론트 포트** | `3000` | `30xx` (Host 외부 노출) |
 | **백엔드 포트** | `8080` | `8080` |
-| **환경변수** | 직접 수정/환경변수 | GitHub Secrets 주입 |
-| **보안 강화** | - | .gitignore 필수 적용 |
+| **환경변수** | 직접 수정/환경변수 | GitHub Secrets/Variables 주입 |
+| **보안 강화** | .gitignore 적용 권장 | .gitignore 필수 적용 |
 | **인증 방식** | JWT | JWT + BFF (httpOnly 쿠키) |
 | **DB** | PostgreSQL (`localhost:5432`) | PostgreSQL (`db:5432`, Docker) |
+| **DB Health Check** | - | `pg_isready` + `service_healthy` |
 | **이미지 저장** | `~/dist/upload` | `~/dist/upload` → 컨테이너 바인드 마운트 |
+| **CORS 관리** | 기본값 (`localhost:3000`) | 환경변수 (`CORS_ALLOWED_ORIGINS`) |
 | **Dockerfile** | 단일 Dockerfile (배포용) | 단일 Dockerfile (배포용) |
+| **Rollback** | - | `deploy.yml` failure 시 자동 rollback |
 
 ---
 
@@ -533,7 +594,36 @@ sequenceDiagram
 
 ---
 
-## 📌 10. 실행 체크리스트
+## 📌 10. Rollback 전략
+
+배포 실패 시 서비스를 빠르게 복구하기 위한 전략입니다.
+
+### 자동 Rollback (`deploy.yml` 내장)
+`deploy.yml`의 `Rollback on failure` step이 배포 실패(Health Check 실패 등) 시 자동으로 실행됩니다:
+1. `docker-compose down` — 실패한 컨테이너 정리
+2. `git revert HEAD --no-edit` — 마지막 커밋 되돌리기
+3. `docker-compose up -d --build` — 이전 상태로 재배포
+
+### 수동 Rollback
+```bash
+# 1. 현재 배포 중단
+cd ~/team3-jangane-venueon
+docker-compose down
+
+# 2. 이전 정상 커밋으로 되돌리기
+git log --oneline -5              # 정상 커밋 확인
+git revert HEAD --no-edit         # 또는 git reset --hard <정상커밋>
+
+# 3. 재배포
+docker-compose up -d --build
+```
+
+> [!TIP]
+> MVP 단계에서는 위 방식으로 충분합니다. 추후 Docker 이미지 태깅(`v1.0`, `v1.1` 등)을 도입하면, 특정 버전으로 빠르게 롤백할 수 있습니다.
+
+---
+
+## 📌 11. 실행 체크리스트
 
 ### Sprint 0 (Day 3 · Day 6) 기준 작업 순서
 
@@ -541,9 +631,9 @@ sequenceDiagram
 - [ ] **Step 2:** `.gitignore`에 `application-prod.properties` 추가 (민감 정보 보호)
 - [ ] **Step 3:** `backend/Dockerfile` 작성 (Multi-stage + Layer Caching)
 - [ ] **Step 4:** `frontend/Dockerfile` 작성 (Multi-stage, 환경변수 주입)
-- [ ] **Step 5:** `docker-compose.yml` (배포용) 작성 — 환경변수 주입 방식
-- [ ] **Step 6:** GitHub Repository에 Secrets 및 Variables 등록 (Secrets 3개 + Variables 7개)
-- [ ] **Step 7:** `.github/workflows/deploy.yml` 작성
+- [ ] **Step 5:** `docker-compose.yml` (배포용) 작성 — 환경변수 주입 + DB healthcheck
+- [ ] **Step 6:** GitHub Repository에 Secrets 및 Variables 등록 (Secrets 3개 + Variables 9개)
+- [ ] **Step 7:** `.github/workflows/deploy.yml` 작성 (Health Check + Rollback 포함)
 - [ ] **Step 8:** `main` 브랜치 push → 배포 파이프라인 동작 확인
-- [ ] **Step 9:** 배포 서버에서 정상 응답 확인 (Health Check)
+- [ ] **Step 9:** 배포 서버에서 정상 응답 확인 (Health Check — Frontend + Backend Actuator)
 - [ ] **Step 10:** CORS · 프록시 · 이미지 업로드 · BFF 쿠키 인증 E2E 검증
