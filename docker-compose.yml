@@ -5,8 +5,6 @@ services:
   db:
     image: postgres:15-alpine
     container_name: venueon-db
-    ports:
-      - "${DB_PORT}:5432"
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
@@ -14,7 +12,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d ${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d ${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -27,8 +25,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: venueon-backend
-    ports:
-      - "${BACKEND_PORT}:8080"
     environment:
       # DB 연결 (GitHub Secrets/Variables에서 주입)
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
