@@ -23,9 +23,6 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(AbstractHttpConfigurer::disable)
-            .headers(headers -> headers
-                .frameOptions(frame -> frame.sameOrigin())  // H2 Console iframe 허용
-            )
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().permitAll()
             );

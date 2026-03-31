@@ -1,10 +1,7 @@
 package com.venueon.common.config;
 
-import com.venueon.event.adapter.out.persistence.entity.CategoryJpaEntity;
-import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.adapter.out.persistence.repository.CategoryJpaRepository;
+import com.venueon.category.adapter.out.persistence.repository.CategoryJpaRepository;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
-import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;

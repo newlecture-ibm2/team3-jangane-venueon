@@ -1,4 +1,4 @@
-package com.venueon.event.domain.model;
+package com.venueon.category.domain.model;
 
 /**
  * Category 도메인 모델 (순수 POJO)

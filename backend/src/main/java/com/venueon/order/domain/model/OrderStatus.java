@@ -1,4 +1,4 @@
-package com.venueon.event.domain.model;
+package com.venueon.order.domain.model;
 
 /**
  * 주문/참가 상태 enum

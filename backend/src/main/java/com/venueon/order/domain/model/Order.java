@@ -1,4 +1,4 @@
-package com.venueon.event.domain.model;
+package com.venueon.order.domain.model;
 
 import java.time.LocalDateTime;
 

@@ -1,6 +1,7 @@
-package com.venueon.event.adapter.out.persistence.entity;
+package com.venueon.order.adapter.out.persistence.entity;
 
-import com.venueon.event.domain.model.OrderStatus;
+import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
+import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;

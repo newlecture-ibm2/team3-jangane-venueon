@@ -1,6 +1,6 @@
-package com.venueon.event.adapter.out.persistence.repository;
+package com.venueon.category.adapter.out.persistence.repository;
 
-import com.venueon.event.adapter.out.persistence.entity.CategoryJpaEntity;
+import com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,5 +1,6 @@
 package com.venueon.event.adapter.out.persistence.entity;
 
+import com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;

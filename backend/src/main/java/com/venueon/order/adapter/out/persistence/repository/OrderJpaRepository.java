@@ -1,7 +1,7 @@
-package com.venueon.event.adapter.out.persistence.repository;
+package com.venueon.order.adapter.out.persistence.repository;
 
-import com.venueon.event.adapter.out.persistence.entity.OrderJpaEntity;
-import com.venueon.event.domain.model.OrderStatus;
+import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
+import com.venueon.order.domain.model.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package com.venueon.event.adapter.out.persistence.entity;
+package com.venueon.category.adapter.out.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

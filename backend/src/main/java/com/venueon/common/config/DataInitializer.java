@@ -1,8 +1,8 @@
 package com.venueon.common.config;
 
-import com.venueon.event.adapter.out.persistence.entity.CategoryJpaEntity;
+import com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity;
+import com.venueon.category.adapter.out.persistence.repository.CategoryJpaRepository;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.adapter.out.persistence.repository.CategoryJpaRepository;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
