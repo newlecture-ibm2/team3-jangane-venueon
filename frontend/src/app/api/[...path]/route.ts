@@ -3,7 +3,7 @@ import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { SessionData, sessionOptions } from "@/lib/session";
 
-const SPRING_BOOT_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const SPRING_BOOT_URL = process.env.NEXT_PUBLIC_API_URL || "http://venueon-backend:8080";
 
 async function proxyHandler(
   req: NextRequest,
@@ -13,7 +13,7 @@ async function proxyHandler(
   const resolvedParams = await params;
   const pathArray = resolvedParams.path || [];
   const joinedPath = pathArray.join("/");
-  
+
   // /api/* -> /api 제거하고 Spring Boot로 전달
   let targetUrl = `${SPRING_BOOT_URL}/${joinedPath}`;
 
@@ -35,14 +35,14 @@ async function proxyHandler(
   // BFF: JWT 세션에서 토큰 자동 주입
   const cookieStore = await cookies();
   const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
-  
+
   if (session.jwt) {
-      headers.set("Authorization", `Bearer ${session.jwt}`);
+    headers.set("Authorization", `Bearer ${session.jwt}`);
   }
 
   try {
     const body = req.method !== "GET" && req.method !== "HEAD" ? await req.blob() : undefined;
-    
+
     const response = await fetch(targetUrl, {
       method: req.method,
       headers,
@@ -58,7 +58,7 @@ async function proxyHandler(
   } catch (error) {
     console.error("Proxy error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error", details: error instanceof Error ? error.message : "Unknown error" }, 
+      { error: "Internal Server Error", details: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }
