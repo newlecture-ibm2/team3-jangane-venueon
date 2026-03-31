@@ -1,6 +1,7 @@
-package com.venueon.community.adapter.out.persistence.entity;
+package com.venueon.member.adapter.out.persistence.entity;
 
-import com.venueon.community.domain.model.MemberRole;
+import com.venueon.community.adapter.out.persistence.entity.CommunityJpaEntity;
+import com.venueon.member.domain.model.MemberRole;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class CommunityMemberJpaEntity {
+public class MemberJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

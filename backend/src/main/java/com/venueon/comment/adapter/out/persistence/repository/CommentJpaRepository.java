@@ -1,6 +1,6 @@
-package com.venueon.community.adapter.out.persistence.repository;
+package com.venueon.comment.adapter.out.persistence.repository;
 
-import com.venueon.community.adapter.out.persistence.entity.CommentJpaEntity;
+import com.venueon.comment.adapter.out.persistence.entity.CommentJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

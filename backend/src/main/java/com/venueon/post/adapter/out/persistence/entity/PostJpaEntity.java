@@ -1,6 +1,7 @@
-package com.venueon.community.adapter.out.persistence.entity;
+package com.venueon.post.adapter.out.persistence.entity;
 
-import com.venueon.community.domain.model.PostType;
+import com.venueon.community.adapter.out.persistence.entity.CommunityJpaEntity;
+import com.venueon.post.domain.model.PostType;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;

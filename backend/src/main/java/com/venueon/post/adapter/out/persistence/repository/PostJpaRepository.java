@@ -1,7 +1,7 @@
-package com.venueon.community.adapter.out.persistence.repository;
+package com.venueon.post.adapter.out.persistence.repository;
 
-import com.venueon.community.adapter.out.persistence.entity.PostJpaEntity;
-import com.venueon.community.domain.model.PostType;
+import com.venueon.post.adapter.out.persistence.entity.PostJpaEntity;
+import com.venueon.post.domain.model.PostType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
