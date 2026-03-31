@@ -1,0 +1,8 @@
+package com.venueon.event.domain.model;
+
+/**
+ * 주문/참가 상태 enum
+ */
+public enum OrderStatus {
+    PENDING, PAID, CANCELLED, REFUNDED, REGISTERED
+}

@@ -1,11 +1,19 @@
 package com.venueon.common.config;
 
+import com.venueon.event.adapter.out.persistence.entity.CategoryJpaEntity;
+import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
+import com.venueon.event.adapter.out.persistence.repository.CategoryJpaRepository;
+import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
+import com.venueon.event.domain.model.EventStatus;
+import com.venueon.event.domain.model.EventType;
+import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
+import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
+import com.venueon.user.domain.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +30,7 @@ public class DataInitializer implements ApplicationRunner {
     private final UserJpaRepository userRepository;
     private final CategoryJpaRepository categoryRepository;
     private final EventJpaRepository eventRepository;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional

@@ -3,7 +3,7 @@
 ## 개요
 
 이벤트 플랫폼 VenueOn의 데이터베이스 설계 문서입니다.  
-`MVP_아키텍처_v3.md` 기반으로 설계되었으며, 총 **9개 테이블**로 구성됩니다.  
+`MVP_아키텍처_v3.md` 기반으로 설계되었으며, 총 **8개 테이블**로 구성됩니다.  
 Admin / Host / User 3가지 역할을 기반으로 동작합니다.
 
 > **기술 스택:** H2 (개발) / PostgreSQL 15 (운영)  
@@ -389,7 +389,7 @@ stateDiagram-v2
 | 8 | Post에 `community_id FK` 추가, `event_id` 제거 | Post → Community → Event 구조로 변경 (아키텍처 v3 구조) |
 | 9 | Post에 `type`, `comment_count` 추가 (`like_count` 제거 — MVP에서 좋아요 미구현) | 아키텍처 v3 ERD 기반 + 정규화 반영 |
 | 10 | 컬럼명 통일 (`host_id`→`creator_id`, `event_start`→`start_date` 등) | 아키텍처 v3의 네이밍 컨벤션에 맞춤 |
-| 11 | 테이블 수 9개 | Categories 테이블 추가로 8→9개. PDF 요구사항(최소 5개) 충족 |
+| 11 | 테이블 수 8개 | Tickets+Payments→Orders 통합, Tags/Files 제거, Categories·Communities·CommunityMembers 추가. PDF 요구사항(최소 5개) 충족 |
 
 ---
 
