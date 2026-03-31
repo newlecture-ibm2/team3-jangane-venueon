@@ -3,7 +3,7 @@
 ## 개요
 
 이벤트 플랫폼 VenueOn의 데이터베이스 설계 문서입니다.  
-`MVP_아키텍처_v3.md` 기반으로 설계되었으며, 총 **8개 테이블**로 구성됩니다.  
+`MVP_아키텍처_v3.md` 기반으로 설계되었으며, 총 **9개 테이블**로 구성됩니다.  
 Admin / Host / User 3가지 역할을 기반으로 동작합니다.
 
 > **기술 스택:** H2 (개발) / PostgreSQL 15 (운영)  
@@ -22,6 +22,7 @@ erDiagram
     USERS ||--o{ COMMENTS : "writes"
     USERS ||--o{ COMMUNITY_MEMBERS : "joins"
 
+    CATEGORIES ||--o{ EVENTS : "classifies"
     EVENTS ||--o{ ORDERS : "registered_via"
     EVENTS ||--o{ COMMUNITIES : "has"
 
@@ -42,17 +43,23 @@ erDiagram
         timestamp updated_at "NOT NULL"
     }
 
+    CATEGORIES {
+        bigint category_id PK
+        varchar name UK "NOT NULL"
+        varchar description "NULL"
+        int sort_order "NOT NULL DEFAULT 0"
+    }
+
     EVENTS {
         bigint event_id PK
         bigint creator_id FK "NOT NULL → USERS"
+        bigint category_id FK "NULL → CATEGORIES"
         varchar title "NOT NULL"
         text description "NOT NULL"
-        varchar category "NULL"
         varchar type "NOT NULL (SEMINAR, CLASS, MEETUP, CONFERENCE)"
         varchar status "NOT NULL (DRAFT, PUBLISHED, ONGOING, ENDED, CANCELLED)"
         varchar location "NULL"
         boolean is_online "NOT NULL DEFAULT FALSE"
-        boolean is_free "NOT NULL DEFAULT FALSE"
         int price "NOT NULL DEFAULT 0"
         int max_attendees "NOT NULL"
         varchar thumbnail_url "NULL"
@@ -99,7 +106,6 @@ erDiagram
         text content "NOT NULL"
         varchar type "NOT NULL (GENERAL, REVIEW, QUESTION, NOTICE)"
         int view_count "NOT NULL DEFAULT 0"
-        int like_count "NOT NULL DEFAULT 0"
         int comment_count "NOT NULL DEFAULT 0"
         timestamp created_at "NOT NULL"
         timestamp updated_at "NOT NULL"
@@ -147,21 +153,37 @@ erDiagram
 
 ---
 
-### 2. EVENTS (이벤트)
+### 2. CATEGORIES (카테고리)
+
+| 컬럼 | 타입 | 제약조건 | 설명 |
+|------|------|----------|------|
+| category_id | BIGINT | PK, AUTO_INCREMENT | 카테고리 고유 ID |
+| name | VARCHAR(50) | UNIQUE, NOT NULL | 카테고리명 (예: IT/개발, 비즈니스, 디자인 등) |
+| description | VARCHAR(200) | NULL | 카테고리 설명 |
+| sort_order | INT | NOT NULL, DEFAULT 0 | 정렬 순서 (낮을수록 먼저 표시) |
+
+**인덱스:**
+- `UK_categories_name` — UNIQUE (name)
+
+> **참고:** 카테고리는 관리자(ADMIN)가 사전 등록하는 마스터 데이터입니다.  
+> DataInitializer에서 초기 카테고리를 seed 합니다.
+
+---
+
+### 3. EVENTS (이벤트)
 
 | 컬럼 | 타입 | 제약조건 | 설명 |
 |------|------|----------|------|
 | event_id | BIGINT | PK, AUTO_INCREMENT | 이벤트 고유 ID |
 | creator_id | BIGINT | FK → USERS(user_id), NOT NULL | 이벤트 생성자 (HOST) |
+| category_id | BIGINT | FK → CATEGORIES(category_id), NULL | 이벤트 카테고리 |
 | title | VARCHAR(200) | NOT NULL | 이벤트 제목 |
 | description | TEXT | NOT NULL | 이벤트 상세 설명 (리치 텍스트) |
-| category | VARCHAR(100) | NULL | 카테고리 (자유 입력) |
 | type | VARCHAR(20) | NOT NULL | 이벤트 유형 |
 | status | VARCHAR(20) | NOT NULL, DEFAULT 'DRAFT' | 이벤트 상태 |
 | location | VARCHAR(300) | NULL | 오프라인 장소 |
 | is_online | BOOLEAN | NOT NULL, DEFAULT FALSE | 온라인 여부 |
-| is_free | BOOLEAN | NOT NULL, DEFAULT FALSE | 무료 여부 |
-| price | INT | NOT NULL, DEFAULT 0 | 가격 (원) — 무료면 0 |
+| price | INT | NOT NULL, DEFAULT 0 | 가격 (원) — 0이면 무료로 판단 |
 | max_attendees | INT | NOT NULL | 최대 참석자 수 |
 | thumbnail_url | VARCHAR(500) | NULL | 썸네일 이미지 URL |
 | start_date | TIMESTAMP | NOT NULL | 이벤트 시작 일시 |
@@ -171,6 +193,7 @@ erDiagram
 
 **인덱스:**
 - `IX_events_creator` — (creator_id)
+- `IX_events_category` — (category_id)
 - `IX_events_status` — (status)
 - `IX_events_start_date` — (start_date)
 
@@ -197,7 +220,7 @@ stateDiagram-v2
 
 ---
 
-### 3. ORDERS (주문/참가 신청)
+### 4. ORDERS (주문/참가 신청)
 
 | 컬럼 | 타입 | 제약조건 | 설명 |
 |------|------|----------|------|
@@ -235,7 +258,7 @@ stateDiagram-v2
 
 ---
 
-### 4. COMMUNITIES (커뮤니티)
+### 5. COMMUNITIES (커뮤니티)
 
 | 컬럼 | 타입 | 제약조건 | 설명 |
 |------|------|----------|------|
@@ -258,7 +281,7 @@ stateDiagram-v2
 
 ---
 
-### 5. COMMUNITY_MEMBERS (커뮤니티 멤버)
+### 6. COMMUNITY_MEMBERS (커뮤니티 멤버)
 
 | 컬럼 | 타입 | 제약조건 | 설명 |
 |------|------|----------|------|
@@ -281,7 +304,7 @@ stateDiagram-v2
 
 ---
 
-### 6. POSTS (게시글)
+### 7. POSTS (게시글)
 
 | 컬럼 | 타입 | 제약조건 | 설명 |
 |------|------|----------|------|
@@ -292,7 +315,6 @@ stateDiagram-v2
 | content | TEXT | NOT NULL | 글 내용 |
 | type | VARCHAR(20) | NOT NULL, DEFAULT 'GENERAL' | 게시글 유형 |
 | view_count | INT | NOT NULL, DEFAULT 0 | 조회수 |
-| like_count | INT | NOT NULL, DEFAULT 0 | 좋아요 수 |
 | comment_count | INT | NOT NULL, DEFAULT 0 | 댓글 수 (비정규화) |
 | created_at | TIMESTAMP | NOT NULL, DEFAULT NOW | 작성일시 |
 | updated_at | TIMESTAMP | NOT NULL, DEFAULT NOW | 수정일시 |
@@ -313,7 +335,7 @@ stateDiagram-v2
 
 ---
 
-### 7. COMMENTS (댓글)
+### 8. COMMENTS (댓글)
 
 | 컬럼 | 타입 | 제약조건 | 설명 |
 |------|------|----------|------|
@@ -339,6 +361,7 @@ stateDiagram-v2
 | 관계 | 유형 | FK 위치 | 설명 |
 |------|------|---------|------|
 | USERS → EVENTS | 1:N | EVENTS.creator_id | HOST가 이벤트 생성 |
+| CATEGORIES → EVENTS | 1:N | EVENTS.category_id | 카테고리별 이벤트 분류 |
 | USERS → ORDERS | 1:N | ORDERS.user_id | USER가 참가 신청 |
 | USERS → POSTS | 1:N | POSTS.author_id | 누구나 글 작성 |
 | USERS → COMMENTS | 1:N | COMMENTS.author_id | 누구나 댓글 작성 |
@@ -359,14 +382,14 @@ stateDiagram-v2
 | 1 | `Tickets` + `Payments` → **`ORDERS`** 단일 테이블로 통합 | 아키텍처 v3의 Order 엔티티와 일치시킴. MVP 더미 결제에는 단일 테이블이 적합 |
 | 2 | **`COMMUNITIES`** 테이블 추가 | 아키텍처 v3의 핵심 엔티티. community 모듈의 CRUD 기능 구현에 필수 |
 | 3 | **`COMMUNITY_MEMBERS`** 테이블 추가 | 커뮤니티 가입/탈퇴, 멤버 관리 기능에 필수 |
-| 4 | `Categories` / `Tags` / `Event_Tags` 테이블 제거 | 아키텍처 v3에서는 `category`를 Event의 문자열 필드로 처리. MVP 범위 축소 |
+| 4 | `Tags` / `Event_Tags` 테이블 제거, `Categories` 테이블은 유지 | Tags는 MVP 범위 축소로 제거. Categories는 이벤트 필터링에 필수로 별도 테이블 유지 |
 | 5 | `Files` 테이블 제거 | 아키텍처 v3에서는 외부 볼륨(`dist/upload`)에 저장하고 URL만 반환. 별도 테이블 불필요 |
 | 6 | Event `status` 값 통일 | `OPEN/CLOSED` → `PUBLISHED/ONGOING/ENDED` (아키텍처 v3에 맞춤) |
-| 7 | Event에 `type`, `is_online`, `is_free`, `price` 컬럼 추가 | 아키텍처 v3 ERD에 정의된 필수 컬럼 |
+| 7 | Event에 `type`, `is_online`, `price` 컬럼 추가 (`is_free` 제거 — `price==0`이면 무료 판단) | 아키텍처 v3 ERD 기반 + 3NF 정규화 반영 |
 | 8 | Post에 `community_id FK` 추가, `event_id` 제거 | Post → Community → Event 구조로 변경 (아키텍처 v3 구조) |
-| 9 | Post에 `type`, `like_count`, `comment_count` 추가 | 아키텍처 v3 ERD에 정의된 컬럼 |
+| 9 | Post에 `type`, `comment_count` 추가 (`like_count` 제거 — MVP에서 좋아요 미구현) | 아키텍처 v3 ERD 기반 + 정규화 반영 |
 | 10 | 컬럼명 통일 (`host_id`→`creator_id`, `event_start`→`start_date` 등) | 아키텍처 v3의 네이밍 컨벤션에 맞춤 |
-| 11 | 테이블 수 8개로 통일 | 아키텍처 v3 명시: "Entity 수: 8개 → PDF 요구사항(최소 5개) 충족" |
+| 11 | 테이블 수 9개 | Categories 테이블 추가로 8→9개. PDF 요구사항(최소 5개) 충족 |
 
 ---
 
@@ -377,6 +400,7 @@ stateDiagram-v2
 | 테이블 | Domain Entity | JPA Entity | 모듈 |
 |--------|--------------|------------|------|
 | USERS | `User.java` | `UserJpaEntity.java` | `user/` |
+| CATEGORIES | `Category.java` | `CategoryJpaEntity.java` | `event/` |
 | EVENTS | `Event.java` | `EventJpaEntity.java` | `event/` |
 | ORDERS | `Order.java` | `OrderJpaEntity.java` | `event/` |
 | COMMUNITIES | `Community.java` | `CommunityJpaEntity.java` | `community/` |
@@ -398,39 +422,25 @@ stateDiagram-v2
 |--------|------|------|
 | **1NF** | ✅ 통과 | 모든 컬럼 원자값, PK 존재, 반복 그룹 없음 |
 | **2NF** | ✅ 통과 | 모든 테이블이 단일 대리키(PK) 사용 → 부분 종속 구조적 불가 |
-| **3NF** | ⚠️ 이슈 4건 | 아래 상세 참고 |
+| **3NF** | ✅ 해결 완료 | `like_count` 제거, `is_free` 제거. `member_count`·`comment_count`는 의도적 비정규화 유지 |
 | **BCNF** | ✅ 통과 | 모든 함수 종속의 결정자가 슈퍼키 |
 | **4NF** | ✅ 통과 | 다치 종속 없음, 모든 M:N 관계가 별도 테이블로 분리됨 |
 
 ---
 
-### ⚠️ 3NF 이슈 — 팀 결정 필요
+### ✅ 3NF 이슈 — 팀 결정 완료
 
-#### 이슈 1. 🟠 POSTS.`like_count` — 원본 테이블(LIKES) 부재
+#### 이슈 1. ✅ POSTS.`like_count` — 컬럼 제거 (확정)
 
-`like_count` 컬럼이 있지만, **누가 좋아요 했는지 기록하는 LIKES 테이블이 없습니다.**
-
-| 문제 | 설명 |
-|------|------|
-| 중복 좋아요 | 같은 사용자가 여러 번 좋아요 가능 (방지 불가) |
-| 좋아요 취소 | 구현 불가 (누가 눌렀는지 모름) |
-
-**선택지:**
-
-- [ ] **A안) `like_count` 컬럼 제거** — MVP에서 좋아요 기능 미구현 (가장 간단)
-- [ ] **B안) LIKES 테이블 추가** — `(post_id, user_id, created_at)` 구조로 추가 (테이블 9개로 증가)
+> **결정:** A안 채택 — MVP에서 좋아요 기능 미구현. `like_count` 컬럼 제거.  
+> 향후 좋아요 기능 추가 시 `LIKES` 테이블과 함께 재도입 예정.
 
 ---
 
-#### 이슈 2. 🟡 EVENTS.`is_free` ↔ `price` 상호 종속
+#### 이슈 2. ✅ EVENTS.`is_free` — 컬럼 제거 (확정)
 
-`is_free = TRUE`이면 `price`는 반드시 0이고, `price = 0`이면 `is_free`는 TRUE입니다.  
-두 컬럼이 서로 종속되므로 엄밀하게는 3NF 위반입니다.
-
-**선택지:**
-
-- [ ] **A안) `is_free` 컬럼 제거** — `price == 0`이면 무료로 판단 (애플리케이션 로직에서 처리)
-- [ ] **B안) 현행 유지** — 개발 편의를 위해 `is_free` 유지 (쿼리 시 `WHERE is_free = TRUE`가 직관적)
+> **결정:** A안 채택 — `is_free` 컬럼 제거. `price == 0`이면 무료로 판단하는 애플리케이션 로직 추가.  
+> 도메인 모델에 `isFree()` 메서드로 구현: `return this.price == 0;`
 
 ---
 
