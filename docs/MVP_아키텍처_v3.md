@@ -141,7 +141,7 @@ graph TB
 
 ---
 
-## 📌 4. ERD (9개 Entity)
+## 📌 4. ERD (8개 Entity)
 
 ```mermaid
 erDiagram
@@ -247,7 +247,7 @@ erDiagram
     }
 ```
 
-**Entity 수: 9개** → PDF 요구사항(최소 5개) 충족 ✅
+**Entity 수: 8개** → PDF 요구사항(최소 5개) 충족 ✅
 
 > **변경사항:** Category 엔티티 추가, `is_free` 제거(price==0이면 무료 판단), `like_count` 제거(MVP 미구현)  
 > **향후 확장:** Session(세션/프로그램), Ticket(티켓 등급별 가격) Entity는 MVP 이후 추가 예정
