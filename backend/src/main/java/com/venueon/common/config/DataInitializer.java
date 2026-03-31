@@ -1,14 +1,5 @@
 package com.venueon.common.config;
 
-import com.venueon.event.adapter.out.persistence.entity.CategoryJpaEntity;
-import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.adapter.out.persistence.repository.CategoryJpaRepository;
-import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
-import com.venueon.event.domain.model.EventStatus;
-import com.venueon.event.domain.model.EventType;
-import com.venueon.user.adapter.out.persistence.UserJpaEntity;
-import com.venueon.user.adapter.out.persistence.UserJpaRepository;
-import com.venueon.user.domain.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -24,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-@Profile({"dev", "h2"})
+@Profile("dev")
 @RequiredArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 
