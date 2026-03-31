@@ -1,4 +1,4 @@
-package com.venueon.community.domain.model;
+package com.venueon.member.domain.model;
 
 /**
  * 커뮤니티 멤버 역할 enum

@@ -1,11 +1,11 @@
-package com.venueon.community.domain.model;
+package com.venueon.member.domain.model;
 
 import java.time.LocalDateTime;
 
 /**
- * CommunityMember 도메인 모델 (순수 POJO)
+ * Member 도메인 모델 (순수 POJO)
  */
-public class CommunityMember {
+public class Member {
 
     private Long id;
     private Long communityId;
@@ -13,10 +13,10 @@ public class CommunityMember {
     private MemberRole role;
     private LocalDateTime joinedAt;
 
-    protected CommunityMember() {}
+    protected Member() {}
 
-    public CommunityMember(Long id, Long communityId, Long userId,
-                           MemberRole role, LocalDateTime joinedAt) {
+    public Member(Long id, Long communityId, Long userId,
+                  MemberRole role, LocalDateTime joinedAt) {
         this.id = id;
         this.communityId = communityId;
         this.userId = userId;

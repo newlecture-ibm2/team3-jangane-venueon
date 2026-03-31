@@ -1,4 +1,4 @@
-package com.venueon.community.domain.model;
+package com.venueon.post.domain.model;
 
 import java.time.LocalDateTime;
 
