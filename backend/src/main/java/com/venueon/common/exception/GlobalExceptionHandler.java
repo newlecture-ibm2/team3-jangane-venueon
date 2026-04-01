@@ -3,6 +3,7 @@ package com.venueon.common.exception;
 import com.venueon.common.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -16,6 +17,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(e.getErrorCode().getStatus())
                 .body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("입력값이 올바르지 않습니다.");
+        log.warn("Validation Error: {}", message);
+        return ResponseEntity
+                .status(ErrorCode.INVALID_INPUT_VALUE.getStatus())
+                .body(ApiResponse.error(message));
     }
 
     @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
@@ -32,3 +45,4 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
     }
 }
+
