@@ -1,7 +1,7 @@
 # ============================================================
 # VenueOn CI/CD Pipeline (Self-hosted Runner)
 # ============================================================
-# 트리거: main 브랜치 push
+# 트리거: dev 브랜치 push
 # 흐름: git pull → docker-compose build → health check
 # 실패 시: 자동 rollback (git revert → 재배포)
 # ============================================================
@@ -10,7 +10,7 @@ name: VenueOn Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev ]
 
 jobs:
   deploy:
@@ -31,18 +31,19 @@ jobs:
       DB_PORT: ${{ vars.DB_PORT }}
       NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
       CORS_ALLOWED_ORIGINS: ${{ vars.CORS_ALLOWED_ORIGINS }}
+      API_BASE_URL: ${{ vars.API_BASE_URL }}
 
     steps:
       # 1. 최신 소스 반영
       - name: Pull latest code
         run: |
-          cd ~/team3-jangane-venueon
-          git pull origin main
+          cd ~/workspace/team3-jangane-venueon
+          git pull origin dev
 
       # 2. Docker Compose로 빌드 & 배포
       - name: Build and Deploy
         run: |
-          cd ~/team3-jangane-venueon
+          cd ~/workspace/team3-jangane-venueon
           docker-compose down
           docker-compose up -d --build
 
@@ -69,7 +70,7 @@ jobs:
         if: failure()
         run: |
           echo "❌ Deployment failed! Rolling back..."
-          cd ~/team3-jangane-venueon
+          cd ~/workspace/team3-jangane-venueon
           docker-compose down
           git revert HEAD --no-edit
           docker-compose up -d --build

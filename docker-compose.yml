@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # ─── Database ────────────────────────────
   db:
-    image: postgres:15-alpine
+    image: venueon-postgres
     container_name: venueon-db
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
@@ -20,7 +20,7 @@ services:
 
   # ─── Backend (Spring Boot) ───────────────
   backend:
-    image: venueon-backend:latest
+    image: venueon-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -52,7 +52,7 @@ services:
 
   # ─── Frontend (Next.js) ──────────────────
   frontend:
-    image: venueon-frontend:latest
+    image: venueon-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
