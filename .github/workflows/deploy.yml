@@ -75,7 +75,6 @@ jobs:
           docker compose up -d --build
 
       # 5. Health Check (배포 정상 확인)
-      # ⚠️ 안정화 전까지 실패해도 워크플로우는 성공으로 처리
       - name: Health Check
         run: |
           cd ~/workspace/team3-jangane-venueon
