@@ -34,8 +34,15 @@ public class OrderJpaEntity {
     @Builder.Default
     private OrderStatus status = OrderStatus.PENDING;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private int quantity = 1;
+
     @Builder.Default
     private int amount = 0;
+
+    @Column(name = "payment_method")
+    private String paymentMethod;
 
     @CreationTimestamp
     @Column(name = "ordered_at", nullable = false, updatable = false)

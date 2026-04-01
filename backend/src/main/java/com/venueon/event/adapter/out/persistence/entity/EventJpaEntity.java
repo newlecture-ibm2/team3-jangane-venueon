@@ -61,6 +61,10 @@ public class EventJpaEntity {
     @Column(name = "thumbnail_url")
     private String thumbnailUrl;
 
+    @Column(name = "is_hidden", nullable = false)
+    @Builder.Default
+    private boolean isHidden = false;
+
     @Column(name = "start_date")
     private LocalDateTime startDate;
 

@@ -49,6 +49,10 @@ public class PostJpaEntity {
     @Builder.Default
     private int commentCount = 0;
 
+    @Column(name = "is_hidden", nullable = false)
+    @Builder.Default
+    private boolean isHidden = false;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

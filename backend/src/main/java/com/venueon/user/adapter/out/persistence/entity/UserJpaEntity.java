@@ -47,6 +47,10 @@ public class UserJpaEntity {
     @Column(name = "org_description", length = 1000)
     private String orgDescription;
 
+    @Column(name = "is_active", nullable = false)
+    @Builder.Default
+    private boolean isActive = true;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
