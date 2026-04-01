@@ -6,6 +6,17 @@ import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
+import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
+import com.venueon.order.adapter.out.persistence.repository.OrderJpaRepository;
+import com.venueon.order.domain.model.OrderStatus;
+import com.venueon.report.adapter.out.persistence.entity.RefundJpaEntity;
+import com.venueon.report.adapter.out.persistence.entity.ReportJpaEntity;
+import com.venueon.report.adapter.out.persistence.repository.RefundJpaRepository;
+import com.venueon.report.adapter.out.persistence.repository.ReportJpaRepository;
+import com.venueon.report.domain.model.AdminAction;
+import com.venueon.report.domain.model.RefundStatus;
+import com.venueon.report.domain.model.ReportStatus;
+import com.venueon.report.domain.model.ReportTargetType;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import com.venueon.user.domain.model.UserRole;
@@ -30,6 +41,9 @@ public class DataInitializer implements ApplicationRunner {
     private final UserJpaRepository userRepository;
     private final CategoryJpaRepository categoryRepository;
     private final EventJpaRepository eventRepository;
+    private final OrderJpaRepository orderRepository;
+    private final ReportJpaRepository reportRepository;
+    private final RefundJpaRepository refundRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -47,10 +61,14 @@ public class DataInitializer implements ApplicationRunner {
         List<UserJpaEntity> hosts = createHosts();
         List<CategoryJpaEntity> categories = createCategories();
         List<EventJpaEntity> events = createEvents(hosts, categories);
+        List<OrderJpaEntity> orders = createOrders(users, events);
+        List<ReportJpaEntity> reports = createReports(users, events);
+        List<RefundJpaEntity> refunds = createRefunds(users, orders);
 
         log.info("=== 개발용 초기 데이터 생성 완료 ===");
         log.info("Admin: 1명, User: {}명, Host: {}명", users.size(), hosts.size());
         log.info("Category: {}개, Event: {}개", categories.size(), events.size());
+        log.info("Order: {}개, Report: {}개, Refund: {}개", orders.size(), reports.size(), refunds.size());
     }
 
     private UserJpaEntity createAdmin() {
@@ -368,6 +386,131 @@ public class DataInitializer implements ApplicationRunner {
                         .thumbnailUrl("lecture-thumbnail/SSF_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 6, 28, 9, 0))
                         .endDate(LocalDateTime.of(2026, 6, 29, 18, 0))
+                        .build()
+        ));
+    }
+
+    private List<OrderJpaEntity> createOrders(List<UserJpaEntity> users, List<EventJpaEntity> events) {
+        return orderRepository.saveAll(List.of(
+                // user1(김참여) — AI & Cloud Bootcamp 수강 (유료, PAID)
+                OrderJpaEntity.builder()
+                        .user(users.get(0))
+                        .event(events.get(0))
+                        .status(OrderStatus.PAID)
+                        .quantity(1)
+                        .amount(150000)
+                        .paymentMethod("CARD")
+                        .build(),
+                // user1(김참여) — 마음챙김 요가 클래스 수강 (유료, PAID)
+                OrderJpaEntity.builder()
+                        .user(users.get(0))
+                        .event(events.get(3))
+                        .status(OrderStatus.PAID)
+                        .quantity(2)
+                        .amount(60000)
+                        .paymentMethod("KAKAO_PAY")
+                        .build(),
+                // user2(이탐색) — UX Design Workshop 수강 (유료, PAID)
+                OrderJpaEntity.builder()
+                        .user(users.get(1))
+                        .event(events.get(1))
+                        .status(OrderStatus.PAID)
+                        .quantity(1)
+                        .amount(80000)
+                        .paymentMethod("NAVER_PAY")
+                        .build(),
+                // user2(이탐색) — Startup Demo Day 참가 (무료, REGISTERED)
+                OrderJpaEntity.builder()
+                        .user(users.get(1))
+                        .event(events.get(2))
+                        .status(OrderStatus.REGISTERED)
+                        .quantity(1)
+                        .amount(0)
+                        .build(),
+                // user3(박이벤트) — Business Growth Summit 수강 (유료, CANCELLED → 환불 대상)
+                OrderJpaEntity.builder()
+                        .user(users.get(2))
+                        .event(events.get(5))
+                        .status(OrderStatus.CANCELLED)
+                        .quantity(1)
+                        .amount(50000)
+                        .paymentMethod("CARD")
+                        .build(),
+                // user3(박이벤트) — 한식 마스터클래스 수강 (유료, PAID)
+                OrderJpaEntity.builder()
+                        .user(users.get(2))
+                        .event(events.get(6))
+                        .status(OrderStatus.PAID)
+                        .quantity(1)
+                        .amount(65000)
+                        .paymentMethod("BANK_TRANSFER")
+                        .build()
+        ));
+    }
+
+    private List<ReportJpaEntity> createReports(List<UserJpaEntity> users, List<EventJpaEntity> events) {
+        return reportRepository.saveAll(List.of(
+                // 신고 1: user1이 이벤트(AI & Cloud Bootcamp)를 허위 정보로 신고 — 대기중
+                ReportJpaEntity.builder()
+                        .reporter(users.get(0))
+                        .targetType(ReportTargetType.EVENT)
+                        .targetId(events.get(0).getId())
+                        .reason("허위 정보")
+                        .detail("강의 내용과 실제 진행 내용이 전혀 다릅니다. 설명에는 AWS, GCP 실습이라고 되어 있지만 실제로는 이론 수업만 진행됩니다.")
+                        .status(ReportStatus.PENDING)
+                        .build(),
+                // 신고 2: user2가 user3을 스팸/광고로 신고 — 대기중
+                ReportJpaEntity.builder()
+                        .reporter(users.get(1))
+                        .targetType(ReportTargetType.USER)
+                        .targetId(users.get(2).getId())
+                        .reason("스팸/광고")
+                        .detail("커뮤니티에서 반복적으로 외부 사이트 링크를 게시하고 있습니다. 광고성 글을 지속적으로 작성합니다.")
+                        .status(ReportStatus.PENDING)
+                        .build(),
+                // 신고 3: user3이 이벤트(현대미술 워크숍)를 부적절한 콘텐츠로 신고 — 처리 완료
+                ReportJpaEntity.builder()
+                        .reporter(users.get(2))
+                        .targetType(ReportTargetType.EVENT)
+                        .targetId(events.get(4).getId())
+                        .reason("부적절한 콘텐츠")
+                        .detail("이벤트 설명에 부적절한 이미지가 포함되어 있습니다.")
+                        .status(ReportStatus.RESOLVED)
+                        .adminAction(AdminAction.WARN)
+                        .resolvedAt(LocalDateTime.now().minusDays(2))
+                        .build(),
+                // 신고 4: user1이 이벤트(Business Growth Summit)를 저작권 침해로 신고 — 반려
+                ReportJpaEntity.builder()
+                        .reporter(users.get(0))
+                        .targetType(ReportTargetType.EVENT)
+                        .targetId(events.get(5).getId())
+                        .reason("저작권 침해")
+                        .detail("이벤트 썸네일 이미지가 타사의 저작물을 무단으로 사용한 것 같습니다.")
+                        .status(ReportStatus.REJECTED)
+                        .adminAction(AdminAction.DISMISS)
+                        .resolvedAt(LocalDateTime.now().minusDays(1))
+                        .build()
+        ));
+    }
+
+    private List<RefundJpaEntity> createRefunds(List<UserJpaEntity> users, List<OrderJpaEntity> orders) {
+        return refundRepository.saveAll(List.of(
+                // 환불 1: user3(박이벤트)의 Business Growth Summit 취소 → 환불 요청 (대기중)
+                RefundJpaEntity.builder()
+                        .order(orders.get(4))  // CANCELLED 상태인 주문
+                        .user(users.get(2))
+                        .amount(50000)
+                        .status(RefundStatus.PENDING)
+                        .reason("일정이 변경되어 참석이 어렵습니다.")
+                        .build(),
+                // 환불 2: user1(김참여)의 마음챙김 요가 클래스 환불 (승인 완료)
+                RefundJpaEntity.builder()
+                        .order(orders.get(1))  // 요가 클래스 주문
+                        .user(users.get(0))
+                        .amount(60000)
+                        .status(RefundStatus.APPROVED)
+                        .reason("개인 사정으로 참석이 어렵습니다.")
+                        .processedAt(LocalDateTime.now().minusDays(3))
                         .build()
         ));
     }
