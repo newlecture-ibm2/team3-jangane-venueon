@@ -86,8 +86,7 @@ jobs:
           echo "✅ Frontend OK"
 
           echo "🔍 Checking Backend..."
-          BACKEND_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' venueon-backend)
-          curl -f http://${BACKEND_IP}:8080/actuator/health || exit 1
+          curl -f http://localhost:8080/actuator/health || exit 1
           echo "✅ Backend OK"
 
       # 6. 불필요한 이미지 정리
