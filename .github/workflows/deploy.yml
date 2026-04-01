@@ -26,9 +26,7 @@ jobs:
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      BACKEND_PORT: ${{ vars.BACKEND_PORT }}
       FRONTEND_PORT: ${{ vars.FRONTEND_PORT }}
-      DB_PORT: ${{ vars.DB_PORT }}
       NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
       CORS_ALLOWED_ORIGINS: ${{ vars.CORS_ALLOWED_ORIGINS }}
       API_BASE_URL: ${{ vars.API_BASE_URL }}
@@ -84,6 +82,7 @@ jobs:
           echo "✅ Frontend OK"
 
           echo "🔍 Checking Backend..."
+          # ✅ 핵심: Docker 내부 IP를 조회하여 직접 curl을 보냅니다. (포트 노출 없이도 가능)
           BACKEND_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' venueon-backend)
           curl -f http://${BACKEND_IP}:8080/actuator/health || exit 1
           echo "✅ Backend OK"
