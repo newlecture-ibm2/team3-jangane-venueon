@@ -67,7 +67,7 @@ jobs:
           # 앞쪽 공백 제거
           sed -i 's/^[[:space:]]*//' .env
 
-      # 4. Docker Compose로 빌드 & 배포
+      # 4. Docker Compose 로 빌드 & 배포
       - name: Build and Deploy
         run: |
           cd ~/workspace/team3-jangane-venueon
