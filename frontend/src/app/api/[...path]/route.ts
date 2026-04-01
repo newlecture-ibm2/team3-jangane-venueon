@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { SessionData, sessionOptions } from "@/lib/session";
 
 // ✅ 환경 변수: 런타임 변수(API_BASE_URL)를 우선 참조합니다.
-const API_BASE = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || "http://backend:8080";
+const API_BASE = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 async function proxyRequest(req: NextRequest) {
   // 요청 경로 및 쿼리 파라미터 추출
