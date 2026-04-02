@@ -15,12 +15,12 @@ html,
 body {
   height: 100%;
   font-family: var(--font-sans);
-  font-size: var(--font-size-base);
-  color: var(--color-text);
+  font-size: var(--font-size-body---regular);
+  color: var(--color-text-gray-900);
   background-color: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
+  line-height: var(--main-line-height);
 }
 
 a {
@@ -45,11 +45,14 @@ img {
   display: block;
 }
 
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   font-family: inherit;
   font-size: inherit;
 }
@@ -69,5 +72,238 @@ input, textarea, select {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+  background: var(--color-text-gray-500);
+}
+
+/* -----------------------------
+   Button Styles
+----------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-body---bold);
+  /* 14px */
+  font-weight: 700;
+  line-height: var(--main-line-height);
+  /* 150% */
+  border: none;
+  cursor: pointer;
+  transition: opacity var(--transition), background-color var(--transition);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Button Sizes */
+.btn-large {
+  padding: 0.875rem var(--space-24);
+  /* 14px 24px */
+  border-radius: var(--radius-md);
+  /* 8px */
+  height: var(--space-48);
+  /* 48px */
+}
+
+.btn-medium {
+  padding: var(--space-8) var(--space-16);
+  /* 8px 16px */
+  border-radius: 6px;
+  /* 6px */
+  height: var(--space-36);
+  /* 36px */
+}
+
+/* Button Colors */
+.btn-primary {
+  background-color: var(--color-primary);
+  /* #374151 */
+  color: var(--color-text-white);
+  /* #FFFFFF */
+}
+
+.btn-secondary {
+  background-color: var(--color-surface);
+  /* #F3F4F6 */
+  color: var(--color-text-gray-900);
+  /* #111827 */
+}
+
+.btn-danger {
+  background-color: var(--color-error);
+  /* #EF4444 */
+  color: var(--color-text-white);
+  /* #FFFFFF */
+}
+
+/* -----------------------------
+    Toggle Button Styles
+----------------------------- */
+
+.toggle {
+  --toggle-width: 36px;
+  --toggle-height: 20px;
+  --toggle-padding: 2px;
+  --toggle-circle-size: 16px;
+  --toggle-transition: var(--transition);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8); /* 라벨과 토글 사이 간격 */
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+}
+
+/* 실제 체크박스 숨기기 */
+.toggle-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 토글 트랙 (배경) */
+.toggle-track {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: var(--toggle-width);
+  height: var(--toggle-height);
+  padding: var(--toggle-padding);
+  
+  /* 디자인 시스템 수치 적용 */
+  background-color: var(--color-text-gray-300); /* Gray/300 */
+  border-radius: var(--radius-lg);
+  transition: background-color var(--toggle-transition);
+}
+
+/* 토글 원 (스위치) */
+.toggle-circle {
+  width: var(--toggle-circle-size);
+  height: var(--toggle-circle-size);
+  background-color: var(--color-bg); /* theme/bg/surface */
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--toggle-transition);
+  
+  /* 레이아웃 유지 */
+  flex-shrink: 0;
+}
+
+/* 활성화 상태 (Active) */
+.toggle-input:checked + .toggle-track {
+  background-color: var(--color-primary); /* Brand/primary (#374151) */
+  justify-content: flex-end; /* 피그마의 active 레이아웃 반영 */
+}
+
+/* 스위치 이동 애니메이션 */
+.toggle-input:checked + .toggle-track .toggle-circle {
+  /* 트랙 너비(36) - 원 너비(16) - 패딩(2*2) = 16px 이동 */
+  transform: translateX(calc(var(--toggle-width) - var(--toggle-circle-size) - (var(--toggle-padding) * 2)));
+}
+
+/* 포커스 상태 (접근성) */
+.toggle-input:focus-visible + .toggle-track {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+
+/* -----------------------------
+    Checkbox Styles
+----------------------------- */
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+}
+
+/* 실제 체크박스 숨기기 */
+.checkbox-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 커스텀 체크박스 박스 */
+.checkbox-box {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-bg); /* #FFFFFF */
+  border: 1px solid var(--color-text-gray-500); /* Gray/500 */
+  border-radius: var(--radius-sm); /* 4px */
+  transition: all var(--transition);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* 체크 마크 (가상 요소) */
+.checkbox-box::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--color-primary);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Checked 상태 */
+.checkbox-input:checked + .checkbox-box {
+  border-color: var(--color-primary);
+}
+.checkbox-input:checked + .checkbox-box::after {
+  display: block; /* 체크 마크 표시 */
+}
+
+/* Hover 상태 */
+.checkbox:hover .checkbox-input:not(:disabled) + .checkbox-box,
+.checkbox-input:not(:disabled) + .checkbox-box:hover {
+  background-color: var(--color-surface); /* #F3F4F6 */
+  border-color: var(--color-primary);
+}
+
+/* Focus 상태 (접근성) */
+.checkbox-input:focus-visible + .checkbox-box {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Disabled 상태 */
+.checkbox-input:disabled + .checkbox-box {
+  background-color: var(--color-surface); /* Gray/100 */
+  border-color: var(--color-text-gray-300); /* Gray/300 */
+  cursor: not-allowed;
+}
+
+.checkbox:has(.checkbox-input:disabled) {
+  cursor: not-allowed;
+  color: var(--color-gray-disabled-text);
+}
+
+/* Disabled + Checked 상태 체크 마크 색상 */
+.checkbox-input:disabled:checked + .checkbox-box::after {
+  border-color: var(--color-text-gray-300);
 }
