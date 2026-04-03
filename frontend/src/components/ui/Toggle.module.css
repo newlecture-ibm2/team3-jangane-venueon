@@ -61,10 +61,7 @@
 }
 
 .toggleLabel {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-body---regular);
-  font-weight: 400;
+  font: var(--text-body-regular);
   color: var(--color-text-gray-700);
-  line-height: var(--main-line-height);
   margin-left: var(--space-8);
 }

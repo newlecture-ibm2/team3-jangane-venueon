@@ -1,0 +1,103 @@
+/* src/components/ui/modal/InputModal.module.css */
+/* 상단 텍스트 + 닫기 버튼 */
+.textWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.titleBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  flex-grow: 1;
+}
+
+.title {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+  width: 100%;
+}
+
+.subtitle {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-500);
+  margin: 0;
+  width: 100%;
+}
+
+/* User Role 영역 */
+.inputFieldWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.inputLabel {
+  font: var(--text-caption-medium);
+  color: var(--color-text-gray-700);
+}
+
+.textAreaWrapper {
+  width: 100%;
+}
+
+/* Admin Role 영역 */
+.adminBox {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-24);
+}
+
+.infoLine {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.infoLabel {
+  font: var(--text-caption-medium);
+  color: var(--color-text-gray-500);
+}
+
+.infoValue {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-900);
+  word-break: break-all;
+}
+
+.adminRow {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.adminCol {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--space-4);
+}
+
+/* 하단 버튼 */
+.buttonGroup {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+  height: 48px;
+}

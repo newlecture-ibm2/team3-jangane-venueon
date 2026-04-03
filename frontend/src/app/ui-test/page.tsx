@@ -2,8 +2,12 @@
 
 import React, { useState } from 'react';
 import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField } from '@/components/ui';
+import { ConfirmModal, InputModal, UploadModal, PaymentModal } from '@/components/modal';
+import { useUIStore } from '@/store/useUIStore';
 
 export default function UITestPage() {
+  const { showToast } = useUIStore();
+  
   const [checked, setChecked] = useState(false);
   const [toggled, setToggled] = useState(false);
   const [radioVal, setRadioVal] = useState('option1');
@@ -11,6 +15,15 @@ export default function UITestPage() {
   const [dropdownVal, setDropdownVal] = useState('');
   const [activeLineTab, setActiveLineTab] = useState('menu1');
   const [activePillTab, setActivePillTab] = useState('tech');
+
+  // 모달 상태 관리
+  const [isConfirm1Open, setIsConfirm1Open] = useState(false);
+  const [isConfirm2Open, setIsConfirm2Open] = useState(false);
+  const [isConfirm3Open, setIsConfirm3Open] = useState(false);
+  const [isInputUserOpen, setIsInputUserOpen] = useState(false);
+  const [isInputAdminOpen, setIsInputAdminOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
   // Tailwind CSS가 없는 환경이므로 순수 인라인 스타일로 깔끔한 테스트 레이아웃 구성
   const containerStyle: React.CSSProperties = {
@@ -401,9 +414,129 @@ export default function UITestPage() {
             accept="image/*,.pdf"
             onFileSelect={(file) => console.log('Selected file:', file.name)}
           />
-          
         </div>
       </div>
+
+      {/* 15. Modals */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>15. Modals (모달 창들)</h2>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <Button variant="outlined" onClick={() => setIsConfirm1Open(true)}>1. 일반 모달</Button>
+          <Button variant="primary" onClick={() => setIsConfirm2Open(true)}>1. 경고성 모달</Button>
+          <Button variant="primary" onClick={() => setIsConfirm3Open(true)}>1. 체크 경고 모달</Button>
+          <Button variant="outlined" onClick={() => setIsInputUserOpen(true)}>2. 입력 폼 모달 (User)</Button>
+          <Button variant="outlined" onClick={() => setIsInputAdminOpen(true)}>2. 상세 내역 모달 (Admin)</Button>
+          <Button variant="primary" onClick={() => setIsUploadOpen(true)}>3. 파일업로드 모달</Button>
+          <Button variant="primary" onClick={() => setIsPaymentOpen(true)}>4. 결제 모달</Button>
+        </div>
+      </div>
+      
+      {/* 16. Toast Messages */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>16. Toast Messages (토스트 알림)</h2>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <Button variant="primary" onClick={() => showToast('저장이 완료되었습니다.', 'success', '성공적으로 데이터를 저장했습니다.')}>Success 토스트</Button>
+          <Button variant="outlined" onClick={() => showToast('결제에 실패했습니다.', 'error', '잔액이 부족하거나 네트웍 오류입니다.')}>Fail 토스트</Button>
+        </div>
+      </div>
+
+      {/* =============== 모달 컴포넌트들 =============== */}
+      
+      {/* 1-1. 일반 모달 */}
+      <ConfirmModal 
+        isOpen={isConfirm1Open} 
+        onClose={() => setIsConfirm1Open(false)}
+        title="등록 완료"
+        subtitle="입력하신 정보가 등록되었습니다."
+        status="default"
+        confirmText="확인"
+        onConfirm={() => { alert('OK!'); setIsConfirm1Open(false); }}
+      />
+
+      {/* 1-2. 경고 모달 */}
+      <ConfirmModal 
+        isOpen={isConfirm2Open} 
+        onClose={() => setIsConfirm2Open(false)}
+        title="정말 삭제하시겠습니까?"
+        subtitle="삭제된 데이터는 복구할 수 없습니다."
+        status="danger"
+        confirmText="삭제"
+        onConfirm={() => { alert('삭제!'); setIsConfirm2Open(false); }}
+      />
+
+      {/* 1-3. 체크박스 경고 모달 */}
+      <ConfirmModal 
+        isOpen={isConfirm3Open} 
+        onClose={() => setIsConfirm3Open(false)}
+        title="계정을 영구 삭제하시겠습니까?"
+        subtitle="모든 데이터가 삭제되며 복구가 불가능합니다."
+        status="danger"
+        requireCheckbox={true}
+        checkboxLabel="네, 모든 데이터가 삭제되는 것에 동의합니다."
+        confirmText="영구 삭제"
+        onConfirm={() => { alert('영구 삭제!'); setIsConfirm3Open(false); }}
+      />
+
+      {/* 2-1. InputModal (User Role) */}
+      <InputModal
+        isOpen={isInputUserOpen}
+        onClose={() => setIsInputUserOpen(false)}
+        role="user"
+        title="신고 사유를 작성해주세요"
+        subtitle="부적절한 내용일 경우 운영진 확인 후 조치됩니다."
+        onConfirm={(data) => {
+          console.log('Report Data:', data);
+          alert('신고가 접수되었습니다.');
+          setIsInputUserOpen(false);
+        }}
+      />
+
+      {/* 2-2. InputModal (Admin Role) */}
+      <InputModal
+        isOpen={isInputAdminOpen}
+        onClose={() => setIsInputAdminOpen(false)}
+        role="admin"
+        title="신고 상세 내역"
+        adminData={{
+          date1: '2026-04-16',
+          userName: '홍길동',
+          statusText: '대기 중',
+          date2: '2026-04-16',
+          reasonDetail: '해당 강의의 사업자 번호가 존재하지 않는 번호입니다. 확인 부탁드립니다.'
+        }}
+        onConfirm={() => setIsInputAdminOpen(false)}
+      />
+
+      {/* 3. UploadModal */}
+      <UploadModal 
+        isOpen={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
+        title="사업자 등록증 업로드"
+        subtitle="가입 승인을 위해 반드시 업로드해 주세요."
+        uploadLabel="파일 찾아보기"
+        accept="image/*,.pdf"
+        requireCheckbox={true}
+        checkboxLabel="위 서류가 위조되지 않은 진본임을 확인합니다."
+        confirmText="업로드 완료"
+        onConfirm={(file) => {
+          console.log('Uploaded File:', file?.name);
+          alert('업로드 성공!');
+          setIsUploadOpen(false);
+        }}
+      />
+
+      {/* 4. PaymentModal */}
+      <PaymentModal
+        isOpen={isPaymentOpen}
+        onClose={() => setIsPaymentOpen(false)}
+        title="결제하기"
+        pricePerUnit={80000}
+        onConfirm={(data) => {
+          console.log('Payment Data:', data);
+          alert(`결제 완료! \n- 수량: ${data.quantity}개 \n- 총액: ${data.totalPrice}원\n- 수단: ${data.paymentMethod}`);
+          setIsPaymentOpen(false);
+        }}
+      />
 
     </div>
   );

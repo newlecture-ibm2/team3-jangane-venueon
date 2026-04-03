@@ -45,9 +45,8 @@
 }
 
 .large .userName {
-  font-weight: 700;
-  font-size: var(--font-size-body---bold);
-  line-height: var(--main-line-height); /* 150% */
+  font: var(--text-body-bold);
+  /* 150% */
 }
 
 /* ===========================
@@ -64,7 +63,6 @@
 }
 
 .medium .userName {
-  font-weight: 500;
-  font-size: var(--font-size-caption---medium);
-  line-height: var(--main-line-height); /* 150% */
+  font: var(--text-caption-medium);
+  /* 150% */
 }

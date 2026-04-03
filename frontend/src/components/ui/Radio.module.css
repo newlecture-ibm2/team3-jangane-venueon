@@ -26,7 +26,7 @@
   height: 20px;
   background: var(--color-bg); /* #FFFFFF */
   border: 1px solid var(--color-text-gray-500); 
-  border-radius: 123px; 
+  border-radius: var(--radius-full); 
   transition: all var(--transition);
   display: inline-flex;
   align-items: center;
@@ -41,7 +41,7 @@
   width: 10px;
   height: 10px;
   background-color: var(--color-primary); /* #374151 */
-  border-radius: 123px;
+  border-radius: var(--radius-full);
 }
 
 /* state=default, checked=true */
@@ -85,9 +85,6 @@
 }
 
 .radioLabel {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-body---medium);
-  font-weight: 500;
+  font: var(--text-body-medium);
   color: var(--color-text-gray-700);
-  line-height: var(--main-line-height);
-}
+  }

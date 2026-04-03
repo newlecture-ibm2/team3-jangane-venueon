@@ -2,9 +2,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-size-body---bold);
-  font-weight: 700;
-  line-height: var(--main-line-height);
+  font: var(--text-body-bold);
   border: none;
   cursor: pointer;
   transition: opacity var(--transition), background-color var(--transition), filter var(--transition);

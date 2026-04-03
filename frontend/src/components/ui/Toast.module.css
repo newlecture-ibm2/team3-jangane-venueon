@@ -1,0 +1,70 @@
+/* src/components/ui/Toast.module.css */
+.toast {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 24px;
+  gap: 12px;
+  
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  background: var(--color-bg, #ffffff);
+  border-radius: var(--radius-lg); /* 12px */
+  
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  animation: slideDown 0.3s ease;
+}
+
+.success {
+  border: 2px solid var(--color-success); /* #10B981 */
+}
+
+.error, .warning, .info {
+  border: 2px solid var(--color-error); /* #EF4444 */
+}
+
+.iconWrapper {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.textGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  flex-grow: 1;
+}
+
+.title {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900); /* #111827 */
+  margin: 0;
+  width: 100%;
+}
+
+.subtitle {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-500); /* #6B7280 */
+  margin: 0;
+  width: 100%;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

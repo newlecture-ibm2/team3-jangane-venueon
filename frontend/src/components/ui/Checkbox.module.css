@@ -79,9 +79,6 @@
 }
 
 .checkboxLabel {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-body---medium); /* 14px */
-  font-weight: 500;
+  font: var(--text-body-medium); /* 14px */
   color: var(--color-text-gray-700);
-  line-height: var(--main-line-height);
-}
+  }

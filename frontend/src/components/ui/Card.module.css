@@ -33,9 +33,7 @@
 }
 
 .title {
-  font-family: var(--font-sans);
-  font-weight: 400;
-  font-size: var(--font-size-h1---bold);
+  font: var(--text-h1-bold);
   /* 24px로 렌더링됨 */
   line-height: 1.2;
   color: var(--color-text-gray-900);
@@ -91,11 +89,8 @@
 }
 
 .infoText {
-  font-family: var(--font-sans);
-  font-weight: 400;
-  font-size: var(--font-size-body---regular);
+  font: var(--text-body-regular);
   /* 14px */
-  line-height: var(--main-line-height);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -108,11 +103,8 @@
 }
 
 .price {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 18px;
+  font: var(--text-h2-bold);
   /* H2/Bold 사이즈 (피그마 18px 지원) */
-  line-height: var(--main-line-height);
   color: var(--color-text-gray-900);
   margin: 0;
 }

@@ -9,11 +9,11 @@
 }
 
 .variantLine {
-  gap: 24px;
+  gap: var(--space-24);
 }
 
 .variantPill {
-  gap: 12px;
+  gap: var(--space-12);
 }
 
 /* Base Tab Button */
@@ -32,37 +32,35 @@
 
 /* --------- Line Variant --------- */
 .lineTab {
-  padding: 4px 8px;
+  padding: var(--space-4) var(--space-8);
   height: 29px; /* 피그마 고정 스펙 */
-  font-family: var(--font-sans);
-  font-weight: 400; /* Body/Regular */
-  font-size: 14px; /* var(--font-size-body---regular) */
-  line-height: var(--main-line-height); /* 150% */
+  /* Body/Regular */
+  font: var(--text-body-medium); /* var(--font-size-body---regular) */
+  /* 150% */
   color: var(--color-text-gray-700); /* #374151 */
   border-bottom: 2px solid transparent;
 }
 
 .lineTabActive {
-  font-weight: 700; /* Body/Bold */
+  /* Body/Bold */
   color: var(--color-text-gray-900); /* #111827 */
   border-bottom: 2px solid var(--color-text-gray-900);
 }
 
 /* --------- Pill Variant --------- */
 .pillTab {
-  padding: 8px 16px;
+  padding: var(--space-8) var(--space-16);
   height: 36px;
   background: var(--color-surface); /* #F3F4F6 (Gray/100) */
-  border-radius: 123px;
-  font-family: var(--font-sans);
-  font-weight: 500; /* Body/Medium */
-  font-size: 14px;
-  line-height: var(--main-line-height); /* 150% */
+  border-radius: var(--radius-full);
+  /* Body/Medium */
+  font: var(--text-body-medium);
+  /* 150% */
   color: var(--color-text-gray-500); /* #6B7280 */
 }
 
 .pillTabActive {
   background: var(--color-secondary); /* #4B5563 (Brand/secondary) */
-  font-weight: 700; /* Body/Bold */
+  /* Body/Bold */
   color: var(--color-text-white); /* #FFFFFF */
 }
