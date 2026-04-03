@@ -29,12 +29,12 @@ export default function SidebarTestPage() {
   return (
     <div style={containerStyle}>
       <div>
-         <h1 style={{ fontSize: 'var(--font-size-h1---bold)', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '8px' }}>
-           Sidebar Component Design Test
-         </h1>
-         <p style={{ color: 'var(--color-text-gray-500)', fontSize: 'var(--font-size-body---medium)' }}>
-           각 역할(Role)별 사이드바 렌더링 및 내부 SidebarItem 리스트 (Tailwind 완전 제거 버전)
-         </p>
+        <h1 style={{ fontSize: 'var(--font-size-h1---bold)', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '8px' }}>
+          Sidebar Component Design Test
+        </h1>
+        <p style={{ color: 'var(--color-text-gray-500)', fontSize: 'var(--font-size-body---medium)' }}>
+          각 역할(Role)별 사이드바 렌더링 및 내부 SidebarItem 리스트 (Tailwind 완전 제거 버전)
+        </p>
       </div>
 
       {/* Role: User */}
@@ -60,8 +60,8 @@ export default function SidebarTestPage() {
         <div style={wrapperStyle}>
           <Sidebar role="host" fakePathname="/host/dashboard" />
           <div style={{ flex: 1, padding: '40px', background: '#fff', borderRadius: '12px', minHeight: '400px' }}>
-             <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>호스트 대시보드 화면</h3>
-             <p style={{ marginTop: '10px', color: '#666' }}>이번 달 매출, 예약률 통계 그래프가 들어가는 공간입니다.</p>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>호스트 대시보드 화면</h3>
+            <p style={{ marginTop: '10px', color: '#666' }}>이번 달 매출, 예약률 통계 그래프가 들어가는 공간입니다.</p>
           </div>
         </div>
       </div>
@@ -75,8 +75,8 @@ export default function SidebarTestPage() {
           {/* 아무것도 선택되지 않은 Hover 애니메이션 관찰용 */}
           <Sidebar role="admin" fakePathname="/empty/state" />
           <div style={{ flex: 1, padding: '40px', background: '#fff', borderRadius: '12px', minHeight: '400px' }}>
-             <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>데이터 미선택 상태</h3>
-             <p style={{ marginTop: '10px', color: '#666' }}>사이드바 각 메뉴 위에 마우스를 올려(Hover) 보시면 부드러운 하이라이트 전환을 보실 수 있습니다!</p>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>데이터 미선택 상태</h3>
+            <p style={{ marginTop: '10px', color: '#666' }}>사이드바 각 메뉴 위에 마우스를 올려(Hover) 보시면 부드러운 하이라이트 전환을 보실 수 있습니다!</p>
           </div>
         </div>
       </div>

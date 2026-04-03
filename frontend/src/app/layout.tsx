@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
-import Header from "@/components/layout/Header";
+import Header from "@/app/components/layout/Header";
 import Toast from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
