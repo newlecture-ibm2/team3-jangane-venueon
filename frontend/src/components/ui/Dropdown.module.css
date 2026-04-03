@@ -1,0 +1,140 @@
+/* src/components/ui/Dropdown.module.css */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 4px;
+  width: 100%;
+  position: relative; /* 자식인 드롭다운 리스트를 absolute로 띄우기 위함 */
+}
+
+/* --------- 라벨 영역 --------- */
+.labelWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 4px;
+  height: 18px;
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 150%;
+  color: var(--color-text-gray-500); /* #6B7280 */
+  margin: 0;
+}
+
+/* --------- 드롭다운 트리거 박스 --------- */
+.trigger {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  width: 100%;
+  height: 48px;
+  background: var(--color-bg); /* #FFFFFF */
+  border: 1px solid var(--color-text-gray-300); /* #D1D5DB */
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color var(--transition);
+}
+
+.trigger:hover {
+  border-color: var(--color-text-gray-500);
+}
+
+.textPlaceholder {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+  color: var(--color-text-gray-500); /* #6B7280 */
+}
+
+.textSelected {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 150%;
+  color: var(--color-text-gray-700); /* #374151 */
+}
+
+/* 화살표 아이콘 영역 */
+.iconWrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text-gray-500);
+  transition: transform var(--transition);
+}
+
+.iconExpanded {
+  transform: rotate(180deg);
+}
+
+/* --------- 드롭다운 메뉴 리스트 (팝업) --------- */
+.list {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 1px;
+  gap: 4px;
+  
+  position: absolute;
+  top: 100%; /* 트리거 박스 바로 아래로 띄움 */
+  left: 0;
+  width: 100%;
+  margin-top: 4px; /* 트리거와 4px 간격 */
+  z-index: 50; /* 다른 UI 요소들 위에 뜨도록 z-index 부여 */
+
+  background: var(--color-bg); /* #FFFFFF */
+  border: 1px solid var(--color-text-gray-300); /* #D1D5DB */
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+/* --------- 드롭다운 아이템 (옵션 1개) --------- */
+.menuItem {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 8px;
+  width: 100%;
+  height: 37px;
+  cursor: pointer;
+  background: var(--color-bg); /* #FFFFFF */
+  user-select: none;
+  transition: background var(--transition);
+}
+
+.menuItem:hover {
+  background: var(--color-surface); /* #F3F4F6 (Grey/100 호버 시) */
+}
+
+.menuItemText {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 150%;
+  color: var(--color-text-gray-500); /* #6B7280 */
+}
+
+/* 선택된 아이템의 경우 글씨를 좀 더 진하게 하는 등 처리 가능 */
+.menuItemSelected .menuItemText {
+  color: var(--color-text-gray-700); /* #374151 */
+}

@@ -1,0 +1,94 @@
+.selectBox {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 14px 24px;
+  gap: var(--space-8);
+  width: 352px;
+  height: var(--space-48);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+  user-select: none;
+  background: var(--color-surface); /* 공통 배경 */
+  border: 1px solid var(--color-text-gray-500); /* 공통 테두리 */
+}
+
+/* 실제 라디오 인풋 숨기기 */
+.hiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Payment/default (선택 안 되었을 때) */
+.default {
+  opacity: 0.4;
+}
+
+.default:hover {
+  opacity: 0.7;
+}
+
+/* state=selected (선택되었을 때) */
+.selected {
+  opacity: 1; 
+}
+
+/* 접근성 포커스 */
+.hiddenInput:focus-visible + .radioCircle {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* 래디오버튼 외곽원 */
+.radioCircle {
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  background: var(--color-bg);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  position: relative;
+  transition: all var(--transition);
+}
+
+.radioDefault {
+  border: 1px solid var(--color-text-gray-500); 
+}
+
+.radioSelected {
+  border: 1px solid var(--color-primary); 
+}
+
+/* Center Check (8x8) */
+.radioCheck {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+}
+
+/* 텍스트 라벨 (Body/Bold) */
+.textLabel {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 700;
+  font-size: var(--font-size-body---bold); /* 14px */
+  line-height: var(--main-line-height); /* 150% */
+  color: var(--color-text-gray-900);
+  display: flex;
+  align-items: center;
+  flex: none;
+}

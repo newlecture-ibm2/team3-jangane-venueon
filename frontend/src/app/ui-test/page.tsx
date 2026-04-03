@@ -1,0 +1,410 @@
+'use client';
+
+import React, { useState } from 'react';
+import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField } from '@/components/ui';
+
+export default function UITestPage() {
+  const [checked, setChecked] = useState(false);
+  const [toggled, setToggled] = useState(false);
+  const [radioVal, setRadioVal] = useState('option1');
+  const [selectVal, setSelectVal] = useState('');
+  const [dropdownVal, setDropdownVal] = useState('');
+  const [activeLineTab, setActiveLineTab] = useState('menu1');
+  const [activePillTab, setActivePillTab] = useState('tech');
+
+  // Tailwind CSS가 없는 환경이므로 순수 인라인 스타일로 깔끔한 테스트 레이아웃 구성
+  const containerStyle: React.CSSProperties = {
+    padding: '40px',
+    maxWidth: '900px',
+    margin: '0 auto',
+    fontFamily: 'var(--font-sans)',
+  };
+
+  const sectionStyle: React.CSSProperties = {
+    marginBottom: '40px',
+    padding: '30px',
+    backgroundColor: '#fff',
+    border: '1px solid var(--color-text-gray-300)',
+    borderRadius: 'var(--radius-lg)',
+    boxShadow: 'var(--shadow-sm)'
+  };
+
+  const titleStyle: React.CSSProperties = {
+    fontSize: 'var(--font-size-h2---bold)',
+    fontWeight: 'bold',
+    marginBottom: '24px',
+    borderBottom: '2px solid var(--color-surface)',
+    paddingBottom: '12px',
+    color: 'var(--color-primary)'
+  };
+
+  const flexRow: React.CSSProperties = {
+    display: 'flex',
+    gap: '20px',
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  };
+
+  return (
+    <div style={containerStyle}>
+      <h1 style={{ fontSize: 'var(--font-size-h1---bold)', fontWeight: 700, marginBottom: '40px', color: 'var(--color-primary)' }}>
+        UI Component Design System
+      </h1>
+
+      {/* 1. Button */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>1. Button</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Primary:</strong>
+            <Button variant="primary" size="large">Large 버튼</Button>
+            <Button variant="primary" size="medium">Medium 버튼</Button>
+            <Button variant="primary" size="large" disabled>Large 지연</Button>
+            <Button variant="primary" size="medium" disabled>Medium 지연</Button>
+          </div>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Secondary:</strong>
+            <Button variant="secondary" size="large">Large 버튼</Button>
+            <Button variant="secondary" size="medium">Medium 버튼</Button>
+            <Button variant="secondary" size="large" disabled>Large 지연</Button>
+            <Button variant="secondary" size="medium" disabled>Medium 지연</Button>
+          </div>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Outlined:</strong>
+            <Button variant="outlined" size="large">Large 버튼</Button>
+            <Button variant="outlined" size="medium">Medium 버튼</Button>
+            <Button variant="outlined" size="large" disabled>Large 지연</Button>
+            <Button variant="outlined" size="medium" disabled>Medium 지연</Button>
+          </div>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Danger:</strong>
+            <Button variant="danger" size="large">Large 버튼</Button>
+            <Button variant="danger" size="medium">Medium 버튼</Button>
+            <Button variant="danger" size="large" disabled>Large 지연</Button>
+            <Button variant="danger" size="medium" disabled>Medium 지연</Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Checkbox, Toggle, Radio */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>2. Form Controls</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+          
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Checkbox:</strong>
+            <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', alignItems: 'center' }}>
+              <Checkbox checked={checked} onChange={(e) => setChecked(e.target.checked)} />
+              <span>동의합니다</span>
+            </label>
+            <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', alignItems: 'center', color: 'var(--color-text-gray-500)' }}>
+              <Checkbox checked={true} readOnly disabled />
+              <span>필수 동의 (Disabled)</span>
+            </label>
+          </div>
+
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Radio:</strong>
+            <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', alignItems: 'center' }}>
+              <Radio name="demoRadio" value="option1" checked={radioVal === 'option1'} onChange={(e) => setRadioVal(e.target.value)} />
+            </label>
+            <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', alignItems: 'center' }}>
+              <Radio name="demoRadio" value="option2" checked={radioVal === 'option2'} onChange={(e) => setRadioVal(e.target.value)} />
+            </label>
+            <label style={{ display: 'flex', gap: '8px', cursor: 'not-allowed', alignItems: 'center', color: 'var(--color-text-gray-500)' }}>
+              <Radio name="demoRadio_disabled" checked={true} readOnly disabled />
+              <span>선택 불가 (Disabled)</span>
+            </label>
+          </div>
+
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Toggle:</strong>
+            <label style={{ display: 'flex', gap: '12px', alignItems: 'center', cursor: 'pointer' }}>
+              <Toggle checked={toggled} onChange={() => setToggled(!toggled)} />
+              <span>{toggled ? '알림 켜짐' : '알림 꺼짐'}</span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 3. SelectBox */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>3. SelectBox</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <SelectBox 
+            name="payment"
+            value="card"
+            label="신용/체크카드"
+            checked={selectVal === 'card'}
+            onChange={(e) => setSelectVal(e.target.value)}
+          />
+          <SelectBox 
+            name="payment"
+            value="bank"
+            label="무통장입금"
+            checked={selectVal === 'bank'}
+            onChange={(e) => setSelectVal(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* 4. Pagination */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>4. Pagination</h2>
+        <Pagination currentPage={2} totalPages={10} onPageChange={() => {}} />
+      </div>
+
+      {/* 5. UserProfile */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>5. UserProfile</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Large:</strong>
+            <UserProfile name="장회원" size="large" />
+            <UserProfile name="이미지유저" size="large" imageUrl="https://i.pravatar.cc/150?img=12" />
+          </div>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Medium:</strong>
+            <UserProfile name="댓글유저" size="medium" />
+            <UserProfile name="이미지유저" size="medium" imageUrl="https://i.pravatar.cc/150?img=11" />
+          </div>
+        </div>
+      </div>
+
+      {/* 6. Logo */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>6. Logo</h2>
+        <div style={{ padding: '20px', background: 'var(--color-surface)', display: 'inline-block', borderRadius: '8px' }}>
+          <Logo />
+        </div>
+      </div>
+
+      {/* 7. Tag (Badge) */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>7. Tag (Badge)</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Red:</strong>
+            <Tag variant="red">대기 중</Tag>
+            <Tag variant="red">신고된 게시글</Tag>
+            <Tag variant="red">승인 대기</Tag>
+          </div>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Purple:</strong>
+            <Tag variant="purple">검토 중</Tag>
+            <Tag variant="purple">숨김 처리됨</Tag>
+            <Tag variant="purple">환불 대기</Tag>
+            <Tag variant="purple">진행 중</Tag>
+          </div>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Green:</strong>
+            <Tag variant="green">처리 완료</Tag>
+            <Tag variant="green">모집 중</Tag>
+            <Tag variant="green">승인 완료</Tag>
+            <Tag variant="green">결제 완료</Tag>
+          </div>
+          <div style={flexRow}>
+            <strong style={{ width: '100px' }}>Gray:</strong>
+            <Tag variant="gray">게시 전</Tag>
+            <Tag variant="gray">준비 중</Tag>
+            <Tag variant="gray">종료</Tag>
+            <Tag variant="gray">취소됨</Tag>
+            <Tag variant="gray">환불 완료</Tag>
+            <Tag variant="gray">반려</Tag>
+          </div>
+        </div>
+      </div>
+
+
+
+      {/* 8. Card & CardGrid */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>8. Card & CardGrid (2-Cols Layout)</h2>
+        <p style={{ marginBottom: '16px', color: '#6B7280' }}>사이드바가 있는 페이지 공간에서 사용하는 2열 그리드입니다.</p>
+        <CardGrid layout="2-cols">
+          <Card 
+            status="모집 중"
+            title="나만의 디자인 시스템으로 시작하는 프론트엔드 레벨업 가이드"
+            organizer="UX/UI KOREA"
+            dateTime="2026.04.15 (토) 14:00"
+            location="강남역 TOZ 3호점"
+            price={80000}
+            actionButtonText="스터디룸 입장"
+          />
+          <Card 
+            status="종료"
+            title="스프링 부트(Spring Boot) 백엔드 파이프라인 구축 세미나 - 심화편"
+            organizer="Java Developer Group"
+            dateTime="2026.03.11 (수) 19:00"
+            location="온라인 (Zoom)"
+            price={0}
+            actionButtonText="스터디룸 입장"
+          />
+        </CardGrid>
+        <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'center' }}>
+          <Pagination currentPage={1} totalPages={5} onPageChange={() => {}} />
+        </div>
+      </div>
+
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>9. Card & CardGrid (3-Cols Layout)</h2>
+        <p style={{ marginBottom: '16px', color: '#6B7280' }}>메인 페이지나 넓은 공간에서 사용하는 3열 그리드입니다.</p>
+        <CardGrid layout="3-cols">
+          <Card 
+            status="게시 전"
+            title="TypeScript 심화반: 고급 타입 시스템과 제네릭 마스터하기"
+            organizer="토스 프론트엔드 팀"
+            dateTime="2026.05.01 (금) 19:30"
+            location="테헤란로 공유오피스"
+            price={150000}
+          />
+          <Card 
+            status="진행 중"
+            title="Figma 완전 정복: 실무에서 쓰이는 컴포넌트 설계"
+            organizer="디자인 스펙트럼"
+            dateTime="2026.04.05 (수) 13:00"
+            location="온라인 (Google Meet)"
+            price={45000}
+          />
+          <Card 
+            status="준비 중"
+            title="2026 AI 트렌드 리포트: ChatGPT 이후의 세계"
+            organizer="미래기술연구소"
+            dateTime="2026.06.10 (수) 10:00"
+            location="코엑스 오디토리움"
+            price={0}
+          />
+        </CardGrid>
+        <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'center' }}>
+          <Pagination currentPage={1} totalPages={10} onPageChange={() => {}} />
+        </div>
+      </div>
+
+      {/* 10. Tabs */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>10. Tabs</h2>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <div>
+            <p style={{ marginBottom: '16px', color: '#6B7280' }}>Line Variant (주로 대메뉴나 최상위 계층)</p>
+            <Tabs 
+              variant="line"
+              activeValue={activeLineTab}
+              onChange={setActiveLineTab}
+              options={[
+                { value: 'menu1', label: '카테고리' },
+                { value: 'menu2', label: '카테고리' },
+                { value: 'menu3', label: '카테고리' },
+                { value: 'menu4', label: '카테고리' },
+              ]}
+            />
+          </div>
+
+          <div>
+            <p style={{ marginBottom: '16px', color: '#6B7280' }}>Pill Variant (주로 서브 필터나 보조 계층)</p>
+            <Tabs 
+              variant="pill"
+              activeValue={activePillTab}
+              onChange={setActivePillTab}
+              options={[
+                { value: 'all', label: '전체' },
+                { value: 'tech', label: '개발/IT' },
+                { value: 'data', label: '데이터' },
+                { value: 'design', label: '디자인' },
+              ]}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 11. InputField */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>11. InputField (자동 레이아웃 팽창 방지)</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '410px' }}>
+          
+          <InputField 
+            label="1. 일반 상태 (공간 미확보)" 
+            placeholder="제목을 입력하세요" 
+          />
+
+          <InputField 
+            label="2. 에러가 날 수 있는 공간 (공간 사전 확보)" 
+            placeholder="제목을 입력하세요" 
+            reserveError={true}
+          />
+
+          <InputField 
+            label="3. 에러 발생 상태" 
+            placeholder="입력 중 오류가 난 상태" 
+            reserveError={true}
+            error="에러 메세지는 여기에 나옵니다."
+            defaultValue="잘못된 데이터"
+          />
+
+          <InputField 
+            label="4. 비활성화 상태" 
+            placeholder="수정 불가 상태입니다." 
+            disabled 
+          />
+
+          <InputField 
+            variant="search"
+            placeholder="검색어를 입력하세요" 
+          />
+
+        </div>
+      </div>
+
+      {/* 12. TextareaField */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>12. TextareaField (긴 텍스트 입력)</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '410px' }}>
+          
+          <TextareaField 
+            label="강의 소개" 
+            placeholder="강의에 대한 상세한 소개를 입력해주세요." 
+            showCount={true}
+          />
+          
+        </div>
+      </div>
+
+      {/* 13. Dropdown */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>13. Dropdown (Select Menu)</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '410px' }}>
+          
+          <Dropdown
+            label="카테고리 선택"
+            placeholder="옵션을 선택하세요."
+            value={dropdownVal}
+            onChange={setDropdownVal}
+            options={[
+              { value: 'opt1', label: '개발/IT' },
+              { value: 'opt2', label: '디자인' },
+              { value: 'opt3', label: '기획/경영' },
+              { value: 'opt4', label: '마케팅' },
+            ]}
+          />
+          
+        </div>
+      </div>
+
+      {/* 14. UploadField */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>14. UploadField (파일 업로드)</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '410px' }}>
+          
+          <UploadField
+            label="사업자등록증명 업로드"
+            accept="image/*,.pdf"
+            onFileSelect={(file) => console.log('Selected file:', file.name)}
+          />
+          
+        </div>
+      </div>
+
+    </div>
+  );
+}

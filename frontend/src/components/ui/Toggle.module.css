@@ -1,0 +1,70 @@
+.toggle {
+  --toggle-width: 36px;
+  --toggle-height: 20px;
+  --toggle-padding: 2px;
+  --toggle-circle-size: 16px;
+  --toggle-transition: var(--transition);
+
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+}
+
+.toggleInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.toggleTrack {
+  box-sizing: border-box; /* 패딩을 너비에 포함 */
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: var(--toggle-width);
+  height: var(--toggle-height);
+  padding: var(--toggle-padding);
+  background-color: var(--color-text-gray-300);
+  border-radius: var(--radius-full); /* Figma 스펙 12px (원형 캡슐) */
+  transition: background-color var(--toggle-transition);
+}
+
+.toggleCircle {
+  width: var(--toggle-circle-size);
+  height: var(--toggle-circle-size);
+  background-color: var(--color-bg);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--toggle-transition);
+  flex-shrink: 0;
+}
+
+.toggleInput:checked + .toggleTrack {
+  background-color: var(--color-primary);
+}
+
+.toggleInput:checked + .toggleTrack .toggleCircle {
+  transform: translateX(calc(var(--toggle-width) - var(--toggle-circle-size) - (var(--toggle-padding) * 2)));
+}
+
+.toggleInput:focus-visible + .toggleTrack {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.toggleLabel {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body---regular);
+  font-weight: 400;
+  color: var(--color-text-gray-700);
+  line-height: var(--main-line-height);
+  margin-left: var(--space-8);
+}

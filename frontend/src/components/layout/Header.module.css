@@ -1,0 +1,19 @@
+.header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px var(--space-24);
+  width: 100%;
+  height: var(--space-60); /* 60px 강제 지정 요청 반영 */
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-text-gray-300);
+}
+
+.actionGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-12); /* 우측 몰림 시 12px 고정 간격 */
+}
