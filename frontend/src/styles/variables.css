@@ -2,11 +2,12 @@
 :root {
   /* Colors */
   --color-primary: #374151;
-  --color-primary-hover: #4f46e5;
+  --color-primary-hover: #6B7280;
   --color-secondary: #4B5563;
   --color-bg: #ffffff;
   --color-surface: #F3F4F6;
   --color-surface-hover: #334155;
+
   --color-text-gray-900: #111827;
   --color-text-gray-700: #374151;
   --color-text-gray-500: #6B7280;
@@ -16,19 +17,21 @@
   --color-text-white: #FFFFFF;
   --color-gray-disabled-text: #9CA3AF;
   --color-gray-disabled-fill: #E5E7EB;
+
   --color-border: #334155;
   --color-success: #10B981;
   --color-error: #EF4444;
   --color-warning: #F59E0B;
   --color-info: #3B82F6;
-  --color-badge-background-green: #F0FDF4;
-  --color-badge-background-red: #FEF2F2;
-  --color-badge-background-gray: #F3F4F6;
-  --color-badge-background-violet: #F5F3FF;
-  --color-badge-text-green: #166534;
-  --color-badge-text-red: #991B1B;
-  --color-badge-text-gray: #374151;
-  --color-badge-text-violet: #5B21B6;
+
+  --color-tag-background-green: #F0FDF4;
+  --color-tag-background-red: #FEF2F2;
+  --color-tag-background-gray: #F3F4F6;
+  --color-tag-background-violet: #F5F3FF;
+  --color-tag-text-green: #166534;
+  --color-tag-text-red: #991B1B;
+  --color-tag-text-gray: #374151;
+  --color-tag-text-violet: #5B21B6;
 
   /* Typography */
   --font-sans: 'Pretendard', 'Inter', -apple-system, sans-serif;

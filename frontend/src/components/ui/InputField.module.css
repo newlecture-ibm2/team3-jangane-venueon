@@ -1,0 +1,135 @@
+/* src/components/ui/InputField.module.css */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  width: 100%;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px; /* 라벨과 인풋 박스 사이의 간격 */
+  width: 100%;
+}
+
+/* 레이아웃 시프트 방지용 높이 확보 (70px + 2px gap + 18px error = 90px) */
+.reserveError {
+  min-height: 90px;
+}
+
+/* --------- 라벨 영역 --------- */
+.labelWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 4px;
+  width: 100%;
+  height: 18px;
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 500; /* Caption/Medium */
+  font-size: 12px;
+  line-height: 150%;
+  color: var(--color-text-gray-500); /* #6B7280 */
+}
+
+/* --------- 인풋 컨트롤 영역 --------- */
+.inputContainer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 16px;
+  width: 100%;
+  height: 48px;
+  background: var(--color-text-white, #FFFFFF);
+  border: 1px solid var(--color-text-gray-300); /* #D1D5DB */
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* 에러 상태 */
+.inputContainerError {
+  border: 1px solid var(--color-error); /* #EF4444 */
+}
+
+/* 비활성 상태 (F3F4F6) */
+.inputContainerDisabled {
+  background: var(--color-surface); 
+  border: 1px solid var(--color-text-gray-300);
+}
+
+/* 실제 input 태그 (초기화) */
+.inputElement {
+  flex-grow: 1;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 150%;
+  color: var(--color-text-gray-700); /* #374151 */
+}
+
+.inputElement::placeholder {
+  font-weight: 400; /* Body/Regular */
+  color: var(--color-text-gray-500); /* #6B7280 */
+}
+
+.inputElement:disabled {
+  font-weight: 500; /* 비활성 시 입력된 텍스트 스펙: Body/Medium, 500 */
+  color: var(--color-text-gray-500); 
+  cursor: not-allowed;
+}
+
+/* --------- 에러 메시지 영역 --------- */
+.errorWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 4px;
+  margin-top: 2px; /* 상단 그룹(70px)과의 간격 */
+  height: 18px;
+  width: 100%;
+}
+
+.errorText {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 150%;
+  color: var(--color-error); /* #EF4444 */
+}
+
+/* --------- 검색바 형태 (Variant: search) --------- */
+.searchContainer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 16px;
+  width: 100%;
+  height: 48px;
+  background: #F9FAFB; /* Gray/50 */
+  border: 1px solid var(--color-text-gray-300);
+  border-radius: 8px;
+  gap: 8px;
+}
+
+.searchIconWrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text-gray-500);
+  flex-shrink: 0;
+}

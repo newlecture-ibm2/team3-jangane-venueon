@@ -1,0 +1,125 @@
+/* src/components/ui/Card.module.css */
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--space-24);
+  /* 24px */
+  gap: var(--space-16);
+  /* 16px */
+  width: 100%;
+  max-width: 410px;
+  background-color: var(--color-surface);
+  /* #F3F4F6 */
+  border-radius: var(--radius-xl);
+  /* 24px */
+  box-sizing: border-box;
+  text-decoration: none;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  /* 호버 시 떠오르는 효과 */
+}
+
+/* 상단 뱃지 및 제목 묶음. 뱃지와 간격이 조금 있을 수 있음 */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--font-size-h1---bold);
+  /* 24px로 렌더링됨 */
+  line-height: 1.2;
+  color: var(--color-text-gray-900);
+  margin: 0;
+  /* 2줄 이상 넘어갈 시 말줄임표 처리 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  /* 표준 호환성용 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.imageWrapper {
+  width: 100%;
+  aspect-ratio: 362 / 204;
+  background-color: var(--color-text-gray-300);
+  /* #D1D5DB 썸네일 플레이스홀더 */
+  border-radius: var(--space-16);
+  /* 16px */
+  overflow: hidden;
+  flex: none;
+  /* 이미지 찌그러짐 방지 */
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--space-12);
+  gap: var(--space-4);
+}
+
+.infoRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-8);
+  color: var(--color-text-gray-700);
+}
+
+.infoIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  /* 아이콘 찌그러짐 방지 */
+}
+
+.infoText {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--font-size-body---regular);
+  /* 14px */
+  line-height: var(--main-line-height);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.priceSection {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.price {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 18px;
+  /* H2/Bold 사이즈 (피그마 18px 지원) */
+  line-height: var(--main-line-height);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.actionWrapper {
+  width: 100%;
+  margin-top: auto;
+  /* 카드 내용이 짧아도 버튼을 항상 맨 밑으로 밀어줌 */
+  padding-top: var(--space-8);
+}

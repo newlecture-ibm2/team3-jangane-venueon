@@ -1,0 +1,35 @@
+/* src/components/ui/CardGrid.module.css */
+.grid {
+  display: grid;
+  column-gap: var(--space-24); /* 24px */
+  row-gap: var(--space-36); /* 36px */
+  width: 100%;
+}
+
+/* 2열 레이아웃 (ex: 사이드바 있는 페이지) */
+.twoCols {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 844px; /* 410 + 24 + 410 */
+}
+
+/* 3열 레이아웃 (ex: 메인 강의 목록 페이지) */
+.threeCols {
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 1278px; /* 410 + 24 + 410 + 24 + 410 */
+}
+
+/* 반응형 모바일: 무조건 1열로 펴주기 */
+@media screen and (max-width: 1024px) {
+  .threeCols {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 844px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .twoCols,
+  .threeCols {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+}
