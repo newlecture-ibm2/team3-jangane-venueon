@@ -5,11 +5,12 @@ export type ToastType = 'info' | 'success' | 'warning' | 'error';
 interface ToastState {
   isToastOpen: boolean;
   toastMessage: string;
+  toastSubtitle?: string;
   toastType: ToastType;
 }
 
 interface UIStore extends ToastState {
-  showToast: (message: string, type?: ToastType) => void;
+  showToast: (message: string, type?: ToastType, subtitle?: string) => void;
   hideToast: () => void;
 }
 
@@ -17,10 +18,11 @@ export const useUIStore = create<UIStore>((set) => ({
   isToastOpen: false,
   toastMessage: '',
   toastType: 'info',
-  showToast: (message, type = 'info') => {
+  showToast: (message, type = 'info', subtitle) => {
     set({
       isToastOpen: true,
       toastMessage: message,
+      toastSubtitle: subtitle,
       toastType: type,
     });
 

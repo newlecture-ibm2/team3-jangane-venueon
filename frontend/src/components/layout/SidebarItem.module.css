@@ -1,5 +1,5 @@
 /* src/components/layout/SidebarItem.module.css */
-.item {
+.item  {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -18,52 +18,49 @@
   /* 부모 width(240px - 패딩 24px = 216px)를 알아서 맞추도록 */
 }
 
-.default {
+.default  {
   background-color: transparent;
   color: var(--color-text-gray-500);
 }
 
-.default:hover {
+.default:hover  {
   background-color: var(--color-surface);
   /* #F3F4F6 */
   color: var(--color-text-gray-500);
 }
 
-.selected {
+.selected  {
   background-color: var(--color-text-gray-900);
   color: var(--color-text-white);
 }
 
-.selected:hover {
+.selected:hover  {
   color: var(--color-text-white);
 }
 
-.icon {
+.icon  {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
 }
 
-.label {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: var(--font-size-body---bold);
+.label  {
   /* 14px */
-  line-height: var(--main-line-height);
+  font: var(--text-body-medium);
 }
 
 /* state=danger (로그아웃 등 빨간색 경고 항목) */
-.danger {
+.danger  {
   background-color: transparent;
   color: var(--color-error);
   /* #EF4444 */
 }
 
 /* state=danger 내부 SVG 패스나 선 색상을 강제로 맞춤 */
-.danger .icon {
+.danger .icon  {
   stroke: var(--color-error);
 }
 
-.danger:hover {
+.danger:hover  {
   background-color: var(--color-surface);
 }

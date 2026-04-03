@@ -41,6 +41,10 @@ export default function Footer() {
           </ul>
         </div>
       </div>
+
+      <div className={styles.copyright}>
+        © 2026 VenueOn. All rights reserved.
+      </div>
     </footer>
   );
 }

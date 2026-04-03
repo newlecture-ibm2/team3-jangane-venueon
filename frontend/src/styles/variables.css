@@ -33,19 +33,19 @@
   --color-tag-text-gray: #374151;
   --color-tag-text-violet: #5B21B6;
 
-  /* Typography */
+  /* Typography Tokens (font: weight size/line-height font-family) */
   --font-sans: 'Pretendard', 'Inter', -apple-system, sans-serif;
   --main-line-height: 1.5;
-  --font-size-hero---bold: 2.25rem;
-  --font-size-hero---regular: 2.25rem;
-  --font-size-h1---bold: 1.5rem;
-  --font-size-h1--card: 1.5rem;
-  --font-size-h2---bold: 1.125rem;
-  --font-size-body---bold: 0.875rem;
-  --font-size-body---medium: 0.875rem;
-  --font-size-body---regular: 0.875rem;
-  --font-size-caption---medium: 0.75rem;
-  --font-size-caption---regular: 0.75rem;
+  --text-hero-bold: 700 2.25rem/1.5 var(--font-sans);
+  --text-hero-regular: 400 2.25rem/1.5 var(--font-sans);
+  --text-h1-bold: 700 1.5rem/1.5 var(--font-sans);
+  --text-h1-card-regular: 400 1.5rem/1.5 var(--font-sans);
+  --text-h2-bold: 700 1.125rem/1.5 var(--font-sans);
+  --text-body-bold: 700 0.875rem/1.5 var(--font-sans);
+  --text-body-medium: 500 0.875rem/1.5 var(--font-sans);
+  --text-body-regular: 400 0.875rem/1.5 var(--font-sans);
+  --text-caption-medium: 500 0.75rem/1.5 var(--font-sans);
+  --text-caption-regular: 400 0.75rem/1.5 var(--font-sans);
 
   /* Spacing */
   --space-4: 0.25rem;
@@ -58,6 +58,7 @@
   --space-48: 3rem;
   --space-60: 3.75rem;
   --space-80: 5rem;
+  --space-100: 6.25rem;
   --space-160: 10rem;
   --space-240: 15rem;
 
