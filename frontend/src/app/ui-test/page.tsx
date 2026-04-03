@@ -7,7 +7,7 @@ import { useUIStore } from '@/store/useUIStore';
 
 export default function UITestPage() {
   const { showToast } = useUIStore();
-  
+
   const [checked, setChecked] = useState(false);
   const [toggled, setToggled] = useState(false);
   const [radioVal, setRadioVal] = useState('option1');
@@ -103,7 +103,7 @@ export default function UITestPage() {
       <div style={sectionStyle}>
         <h2 style={titleStyle}>2. Form Controls</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-          
+
           <div style={flexRow}>
             <strong style={{ width: '100px' }}>Checkbox:</strong>
             <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', alignItems: 'center' }}>
@@ -145,14 +145,14 @@ export default function UITestPage() {
       <div style={sectionStyle}>
         <h2 style={titleStyle}>3. SelectBox</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <SelectBox 
+          <SelectBox
             name="payment"
             value="card"
             label="신용/체크카드"
             checked={selectVal === 'card'}
             onChange={(e) => setSelectVal(e.target.value)}
           />
-          <SelectBox 
+          <SelectBox
             name="payment"
             value="bank"
             label="무통장입금"
@@ -165,7 +165,7 @@ export default function UITestPage() {
       {/* 4. Pagination */}
       <div style={sectionStyle}>
         <h2 style={titleStyle}>4. Pagination</h2>
-        <Pagination currentPage={2} totalPages={10} onPageChange={() => {}} />
+        <Pagination currentPage={2} totalPages={10} onPageChange={() => { }} />
       </div>
 
       {/* 5. UserProfile */}
@@ -236,7 +236,7 @@ export default function UITestPage() {
         <h2 style={titleStyle}>8. Card & CardGrid (2-Cols Layout)</h2>
         <p style={{ marginBottom: '16px', color: '#6B7280' }}>사이드바가 있는 페이지 공간에서 사용하는 2열 그리드입니다.</p>
         <CardGrid layout="2-cols">
-          <Card 
+          <Card
             status="모집 중"
             title="나만의 디자인 시스템으로 시작하는 프론트엔드 레벨업 가이드"
             organizer="UX/UI KOREA"
@@ -245,7 +245,7 @@ export default function UITestPage() {
             price={80000}
             actionButtonText="스터디룸 입장"
           />
-          <Card 
+          <Card
             status="종료"
             title="스프링 부트(Spring Boot) 백엔드 파이프라인 구축 세미나 - 심화편"
             organizer="Java Developer Group"
@@ -256,7 +256,7 @@ export default function UITestPage() {
           />
         </CardGrid>
         <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'center' }}>
-          <Pagination currentPage={1} totalPages={5} onPageChange={() => {}} />
+          <Pagination currentPage={1} totalPages={5} onPageChange={() => { }} />
         </div>
       </div>
 
@@ -264,7 +264,7 @@ export default function UITestPage() {
         <h2 style={titleStyle}>9. Card & CardGrid (3-Cols Layout)</h2>
         <p style={{ marginBottom: '16px', color: '#6B7280' }}>메인 페이지나 넓은 공간에서 사용하는 3열 그리드입니다.</p>
         <CardGrid layout="3-cols">
-          <Card 
+          <Card
             status="게시 전"
             title="TypeScript 심화반: 고급 타입 시스템과 제네릭 마스터하기"
             organizer="토스 프론트엔드 팀"
@@ -272,7 +272,7 @@ export default function UITestPage() {
             location="테헤란로 공유오피스"
             price={150000}
           />
-          <Card 
+          <Card
             status="진행 중"
             title="Figma 완전 정복: 실무에서 쓰이는 컴포넌트 설계"
             organizer="디자인 스펙트럼"
@@ -280,7 +280,7 @@ export default function UITestPage() {
             location="온라인 (Google Meet)"
             price={45000}
           />
-          <Card 
+          <Card
             status="준비 중"
             title="2026 AI 트렌드 리포트: ChatGPT 이후의 세계"
             organizer="미래기술연구소"
@@ -290,18 +290,18 @@ export default function UITestPage() {
           />
         </CardGrid>
         <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'center' }}>
-          <Pagination currentPage={1} totalPages={10} onPageChange={() => {}} />
+          <Pagination currentPage={1} totalPages={10} onPageChange={() => { }} />
         </div>
       </div>
 
       {/* 10. Tabs */}
       <div style={sectionStyle}>
         <h2 style={titleStyle}>10. Tabs</h2>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           <div>
             <p style={{ marginBottom: '16px', color: '#6B7280' }}>Line Variant (주로 대메뉴나 최상위 계층)</p>
-            <Tabs 
+            <Tabs
               variant="line"
               activeValue={activeLineTab}
               onChange={setActiveLineTab}
@@ -316,7 +316,7 @@ export default function UITestPage() {
 
           <div>
             <p style={{ marginBottom: '16px', color: '#6B7280' }}>Pill Variant (주로 서브 필터나 보조 계층)</p>
-            <Tabs 
+            <Tabs
               variant="pill"
               activeValue={activePillTab}
               onChange={setActivePillTab}
@@ -335,35 +335,35 @@ export default function UITestPage() {
       <div style={sectionStyle}>
         <h2 style={titleStyle}>11. InputField (자동 레이아웃 팽창 방지)</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '410px' }}>
-          
-          <InputField 
-            label="1. 일반 상태 (공간 미확보)" 
-            placeholder="제목을 입력하세요" 
+
+          <InputField
+            label="1. 일반 상태 (공간 미확보)"
+            placeholder="제목을 입력하세요"
           />
 
-          <InputField 
-            label="2. 에러가 날 수 있는 공간 (공간 사전 확보)" 
-            placeholder="제목을 입력하세요" 
+          <InputField
+            label="2. 에러가 날 수 있는 공간 (공간 사전 확보)"
+            placeholder="제목을 입력하세요"
             reserveError={true}
           />
 
-          <InputField 
-            label="3. 에러 발생 상태" 
-            placeholder="입력 중 오류가 난 상태" 
+          <InputField
+            label="3. 에러 발생 상태"
+            placeholder="입력 중 오류가 난 상태"
             reserveError={true}
             error="에러 메세지는 여기에 나옵니다."
             defaultValue="잘못된 데이터"
           />
 
-          <InputField 
-            label="4. 비활성화 상태" 
-            placeholder="수정 불가 상태입니다." 
-            disabled 
+          <InputField
+            label="4. 비활성화 상태"
+            placeholder="수정 불가 상태입니다."
+            disabled
           />
 
-          <InputField 
+          <InputField
             variant="search"
-            placeholder="검색어를 입력하세요" 
+            placeholder="검색어를 입력하세요"
           />
 
         </div>
@@ -373,13 +373,13 @@ export default function UITestPage() {
       <div style={sectionStyle}>
         <h2 style={titleStyle}>12. TextareaField (긴 텍스트 입력)</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '410px' }}>
-          
-          <TextareaField 
-            label="강의 소개" 
-            placeholder="강의에 대한 상세한 소개를 입력해주세요." 
+
+          <TextareaField
+            label="강의 소개"
+            placeholder="강의에 대한 상세한 소개를 입력해주세요."
             showCount={true}
           />
-          
+
         </div>
       </div>
 
@@ -387,7 +387,7 @@ export default function UITestPage() {
       <div style={sectionStyle}>
         <h2 style={titleStyle}>13. Dropdown (Select Menu)</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '410px' }}>
-          
+
           <Dropdown
             label="카테고리 선택"
             placeholder="옵션을 선택하세요."
@@ -400,7 +400,7 @@ export default function UITestPage() {
               { value: 'opt4', label: '마케팅' },
             ]}
           />
-          
+
         </div>
       </div>
 
@@ -408,7 +408,7 @@ export default function UITestPage() {
       <div style={sectionStyle}>
         <h2 style={titleStyle}>14. UploadField (파일 업로드)</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '410px' }}>
-          
+
           <UploadField
             label="사업자등록증명 업로드"
             accept="image/*,.pdf"
@@ -430,7 +430,7 @@ export default function UITestPage() {
           <Button variant="primary" onClick={() => setIsPaymentOpen(true)}>4. 결제 모달</Button>
         </div>
       </div>
-      
+
       {/* 16. Toast Messages */}
       <div style={sectionStyle}>
         <h2 style={titleStyle}>16. Toast Messages (토스트 알림)</h2>
@@ -441,10 +441,10 @@ export default function UITestPage() {
       </div>
 
       {/* =============== 모달 컴포넌트들 =============== */}
-      
+
       {/* 1-1. 일반 모달 */}
-      <ConfirmModal 
-        isOpen={isConfirm1Open} 
+      <ConfirmModal
+        isOpen={isConfirm1Open}
         onClose={() => setIsConfirm1Open(false)}
         title="등록 완료"
         subtitle="입력하신 정보가 등록되었습니다."
@@ -454,8 +454,8 @@ export default function UITestPage() {
       />
 
       {/* 1-2. 경고 모달 */}
-      <ConfirmModal 
-        isOpen={isConfirm2Open} 
+      <ConfirmModal
+        isOpen={isConfirm2Open}
         onClose={() => setIsConfirm2Open(false)}
         title="정말 삭제하시겠습니까?"
         subtitle="삭제된 데이터는 복구할 수 없습니다."
@@ -465,8 +465,8 @@ export default function UITestPage() {
       />
 
       {/* 1-3. 체크박스 경고 모달 */}
-      <ConfirmModal 
-        isOpen={isConfirm3Open} 
+      <ConfirmModal
+        isOpen={isConfirm3Open}
         onClose={() => setIsConfirm3Open(false)}
         title="계정을 영구 삭제하시겠습니까?"
         subtitle="모든 데이터가 삭제되며 복구가 불가능합니다."
@@ -508,7 +508,7 @@ export default function UITestPage() {
       />
 
       {/* 3. UploadModal */}
-      <UploadModal 
+      <UploadModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
         title="사업자 등록증 업로드"
