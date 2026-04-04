@@ -1,8 +1,8 @@
 'use client'; // URL 경로 추적을 위해 클라이언트 렌더링 필요
 
 import React from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import SidebarItem from './SidebarItem';
 import styles from './Sidebar.module.css';
 
 import { 
@@ -20,8 +20,34 @@ import {
 export interface SidebarProps {
   role?: 'admin' | 'host' | 'user';
   className?: string;
-  // 테스트 페이지에서 강제로 Active 탭을 시각적으로 고정해주기 위해 주입하는 변수 (실 서버에선 무시됨)
   fakePathname?: string; 
+}
+
+interface SidebarItemProps {
+  icon: React.ElementType;
+  label: string;
+  href: string;
+  isActive?: boolean;
+  isDanger?: boolean;
+}
+
+function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = false }: SidebarItemProps) {
+  let itemStyle = styles.default;
+  if (isDanger) {
+    itemStyle = styles.danger;
+  } else if (isActive) {
+    itemStyle = styles.selected;
+  }
+
+  return (
+    <Link 
+      href={href} 
+      className={`${styles.item} ${itemStyle}`}
+    >
+      <Icon className={styles.icon} />
+      <span className={styles.label}>{label}</span>
+    </Link>
+  );
 }
 
 export default function Sidebar({ role = 'user', className = '', fakePathname }: SidebarProps) {
@@ -63,7 +89,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
   return (
     <aside 
       className={`${styles.sidebar} ${className}`.trim()}
-      style={{ height: 'calc(100vh - 40px)' }} // 유동적 높이 브라우저 뷰포트 지원
+      style={{ height: 'calc(100vh - 40px)' }}
     >
       {menus.map((menu) => {
         const isActive = pathname === menu.href || pathname.startsWith(`${menu.href}/`);
@@ -74,7 +100,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
             label={menu.label}
             href={menu.href}
             isActive={isActive}
-            isDanger={menu.href === '/logout'} // 로그아웃 특수 스타일용 프롭
+            isDanger={menu.href === '/logout'}
           />
         );
       })}

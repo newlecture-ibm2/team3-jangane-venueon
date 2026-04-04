@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import Toast from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
@@ -23,21 +24,5 @@ export default function RootLayout({
         <Toast />
       </body>
     </html>
-  );
-}
-
-function Footer() {
-  return (
-    <footer
-      style={{
-        textAlign: "center",
-        padding: "var(--space-6)",
-        borderTop: "1px solid var(--color-border)",
-        color: "var(--color-text-muted)",
-        fontSize: "var(--font-size-sm)",
-      }}
-    >
-      © 2026 VenueOn. All rights reserved.
-    </footer>
   );
 }
