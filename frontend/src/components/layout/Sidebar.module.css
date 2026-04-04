@@ -7,13 +7,68 @@
   gap: var(--space-8);
   width: 240px;
   background-color: var(--color-text-gray-50);
-  /* #F9FAFB */
   border-radius: var(--radius-xl);
-  /* 12px */
   flex: none;
   flex-shrink: 0;
   box-sizing: border-box;
   min-height: 400px;
 }
 
-/* 메뉴 래퍼 삭제. 부모(.sidebar)가 직접 정렬 담당. */
+/* ── SidebarItem ── */
+.item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: var(--space-8);
+  gap: var(--space-8);
+  width: 216px;
+  height: 37px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition);
+  text-decoration: none;
+  box-sizing: border-box;
+  flex: none;
+  align-self: stretch;
+}
+
+.default {
+  background-color: transparent;
+  color: var(--color-text-gray-500);
+}
+
+.default:hover {
+  background-color: var(--color-surface);
+  color: var(--color-text-gray-500);
+}
+
+.selected {
+  background-color: var(--color-text-gray-900);
+  color: var(--color-text-white);
+}
+
+.selected:hover {
+  color: var(--color-text-white);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.label {
+  font: var(--text-body-medium);
+}
+
+.danger {
+  background-color: transparent;
+  color: var(--color-error);
+}
+
+.danger .icon {
+  stroke: var(--color-error);
+}
+
+.danger:hover {
+  background-color: var(--color-surface);
+}
