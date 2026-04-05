@@ -6,7 +6,7 @@ import { authAPI } from "@/lib/auth-api";
 import { useUIStore } from "@/store/useUIStore";
 import InputField from "@/components/ui/InputField";
 import AuthFormLayout from "../_components/AuthFormLayout";
-import AgreementSection, { AgreementState, isRequiredAgreed } from "./_components/AgreementSection";
+import AgreementSection, { AgreementState, isRequiredAgreed } from "./_components/AgreementSection/AgreementSection";
 
 export default function SignupPage() {
   const router = useRouter();

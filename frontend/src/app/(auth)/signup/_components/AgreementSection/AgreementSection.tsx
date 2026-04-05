@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Checkbox from "@/components/ui/Checkbox";
-import TermsModal, { TermType } from "./TermsModal";
+import TermsModal, { TermType } from "../TermsModal/TermsModal";
 import styles from "./AgreementSection.module.css";
 
 export interface AgreementState {
