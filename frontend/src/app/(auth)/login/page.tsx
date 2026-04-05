@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { authAPI } from "@/lib/auth-api";
 import { useAuth } from "@/store/useAuthStore";
 import { useUIStore } from "@/store/useUIStore";
-import styles from "../auth.module.css";
+import InputField from "@/components/ui/InputField";
+import AuthFormLayout from "../_components/AuthFormLayout";
 import React from "react";
 
 function LoginContent() {
@@ -42,51 +42,36 @@ function LoginContent() {
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>로그인</h1>
-      <p className={styles.subtitle}>이메일과 비밀번호를 입력해주세요.</p>
-
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="email">이메일</label>
-          <input
-            id="email"
-            type="email"
-            required
-            className={styles.input}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="이메일을 입력하세요"
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="password">비밀번호</label>
-          <input
-            id="password"
-            type="password"
-            required
-            className={styles.input}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="비밀번호를 입력하세요"
-          />
-        </div>
-
-        {error && <div className={styles.error}>{error}</div>}
-
-        <button type="submit" className={styles.button} disabled={loading}>
-          {loading ? "로그인 중..." : "로그인"}
-        </button>
-      </form>
-
-      <div className={styles.footer}>
-        계정이 없으신가요? 
-        <Link href="/signup" className={styles.link}>
-          회원가입하기
-        </Link>
-      </div>
-    </div>
+    <AuthFormLayout
+      title="로그인"
+      onSubmit={handleSubmit}
+      loading={loading}
+      submitText="로그인"
+      loadingText="로그인 중..."
+      error={error}
+      footerText="비밀번호를 잊으셨나요?"
+      footerLinkText="비밀번호 찾기"
+      footerLinkHref="#"
+    >
+      <InputField
+        id="email"
+        label="아이디"
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="아이디를 입력하세요."
+      />
+      <InputField
+        id="password"
+        label="비밀번호"
+        type="password"
+        required
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="********"
+      />
+    </AuthFormLayout>
   );
 }
 
@@ -97,3 +82,4 @@ export default function LoginPage() {
     </React.Suspense>
   );
 }
+
