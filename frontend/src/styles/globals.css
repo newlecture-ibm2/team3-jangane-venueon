@@ -13,13 +13,15 @@
 
 html {
   height: 100%;
-  font-size: 16px; /* 브라우저 기본 1rem = 16px 기준 고정 (가장 중요) */
+  font-size: 16px;
+  /* 브라우저 기본 1rem = 16px 기준 고정 (가장 중요) */
 }
 
 body {
   height: 100%;
   font-family: var(--font-sans);
-  font-size: var(--font-size-body---regular); /* 내부 기본 텍스트는 14px */
+  font-size: var(--font-size-body---regular);
+  /* 내부 기본 텍스트는 14px */
   color: var(--color-text-gray-900);
   background-color: var(--color-bg);
   -webkit-font-smoothing: antialiased;
@@ -63,7 +65,7 @@ select {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -71,7 +73,7 @@ select {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: var(--color-text-gray-300);
   border-radius: var(--radius-full);
 }
 

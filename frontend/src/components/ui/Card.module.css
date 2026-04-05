@@ -33,9 +33,7 @@
 }
 
 .title {
-  font: var(--text-h1-bold);
-  /* 24px로 렌더링됨 */
-  line-height: 1.2;
+  font: var(--text-h1-card-regular);
   color: var(--color-text-gray-900);
   margin: 0;
   /* 2줄 이상 넘어갈 시 말줄임표 처리 */
@@ -52,8 +50,8 @@
   aspect-ratio: 362 / 204;
   background-color: var(--color-text-gray-300);
   /* #D1D5DB 썸네일 플레이스홀더 */
-  border-radius: var(--space-16);
-  /* 16px */
+  border-radius: var(--radius-xl);
+  /* 24px */
   overflow: hidden;
   flex: none;
   /* 이미지 찌그러짐 방지 */

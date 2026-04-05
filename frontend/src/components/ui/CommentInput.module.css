@@ -1,0 +1,40 @@
+/* src/components/ui/CommentInput.module.css */
+
+.wrapper {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  padding: var(--space-16);
+  gap: var(--space-8);
+  width: 100%;
+
+  background: var(--color-bg);
+  /* #FFFFFF */
+  border: 1px solid var(--color-text-gray-300);
+  /* #D1D5DB */
+  border-radius: var(--radius-lg);
+  /* 12px */
+}
+
+/* --------- 텍스트 입력 영역 --------- */
+.textarea {
+  flex: 1;
+  height: 63px;
+  /* 고정 높이 */
+  border: none;
+  outline: none;
+  background: transparent;
+  resize: none;
+
+  font: var(--text-body-medium);
+  /* 500 14px/150% */
+  color: var(--color-text-gray-700);
+  /* #374151 */
+  overflow-y: auto;
+}
+
+.textarea::placeholder {
+  color: var(--color-text-gray-500);
+  /* #6B7280 */
+}
