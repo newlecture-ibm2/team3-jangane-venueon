@@ -6,6 +6,7 @@ import { authAPI } from "@/lib/auth-api";
 import { useUIStore } from "@/store/useUIStore";
 import InputField from "@/components/ui/InputField";
 import AuthFormLayout from "../_components/AuthFormLayout";
+import AgreementSection, { AgreementState, isRequiredAgreed } from "./_components/AgreementSection";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -15,12 +16,24 @@ export default function SignupPage() {
   const [nickname, setNickname] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [agreements, setAgreements] = useState<AgreementState>({
+    termsOfService: false,
+    privacyPolicy: false,
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // 필수 약관 동의 확인
+    if (!isRequiredAgreed(agreements)) {
+      setError("필수 약관에 모두 동의해 주세요.");
+      showToast("필수 약관에 모두 동의해 주세요.", "error");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -31,7 +44,6 @@ export default function SignupPage() {
         throw new Error("비밀번호는 8자 이상이어야 합니다.");
       }
       
-      // Defaulting role to USER as per the new design which hides role selection
       await authAPI.signup({ email, password, nickname, role: "USER" });
       showToast("회원가입이 완료되었습니다. 로그인해주세요.", "success");
       router.push("/login");
@@ -93,6 +105,7 @@ export default function SignupPage() {
         onChange={(e) => setPasswordConfirm(e.target.value)}
         placeholder="********"
       />
+      <AgreementSection agreements={agreements} onChange={setAgreements} />
     </AuthFormLayout>
   );
 }
