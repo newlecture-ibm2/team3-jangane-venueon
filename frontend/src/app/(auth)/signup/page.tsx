@@ -2,19 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { authAPI } from "@/lib/auth-api";
 import { useUIStore } from "@/store/useUIStore";
-import styles from "../auth.module.css";
+import InputField from "@/components/ui/InputField";
+import AuthFormLayout from "../_components/AuthFormLayout";
 
 export default function SignupPage() {
   const router = useRouter();
   const { showToast } = useUIStore();
   
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
-  const [role, setRole] = useState("USER"); // "USER" | "HOST"
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,11 +24,15 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
+      if (password !== passwordConfirm) {
+        throw new Error("비밀번호가 일치하지 않습니다.");
+      }
       if (password.length < 8) {
         throw new Error("비밀번호는 8자 이상이어야 합니다.");
       }
       
-      await authAPI.signup({ email, password, nickname, role });
+      // Defaulting role to USER as per the new design which hides role selection
+      await authAPI.signup({ email, password, nickname, role: "USER" });
       showToast("회원가입이 완료되었습니다. 로그인해주세요.", "success");
       router.push("/login");
     } catch (err: any) {
@@ -41,90 +45,55 @@ export default function SignupPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>회원가입</h1>
-      <p className={styles.subtitle}>기획자(HOST) 또는 일반 사용자(USER)로 가입할 수 있습니다.</p>
-
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="email">이메일</label>
-          <input
-            id="email"
-            type="email"
-            required
-            className={styles.input}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="이메일을 입력하세요"
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="password">비밀번호</label>
-          <input
-            id="password"
-            type="password"
-            required
-            minLength={8}
-            className={styles.input}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="비밀번호(8자 이상)"
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="nickname">닉네임</label>
-          <input
-            id="nickname"
-            type="text"
-            required
-            className={styles.input}
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            placeholder="닉네임을 입력하세요"
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <span className={styles.label}>회원 유형</span>
-          <div className={styles.radioGroup}>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="role"
-                value="USER"
-                checked={role === "USER"}
-                onChange={(e) => setRole(e.target.value)}
-              />
-              일반 사용자
-            </label>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="role"
-                value="HOST"
-                checked={role === "HOST"}
-                onChange={(e) => setRole(e.target.value)}
-              />
-              기획자 (HOST)
-            </label>
-          </div>
-        </div>
-
-        {error && <div className={styles.error}>{error}</div>}
-
-        <button type="submit" className={styles.button} disabled={loading}>
-          {loading ? "처리 중..." : "가입하기"}
-        </button>
-      </form>
-
-      <div className={styles.footer}>
-        이미 계정이 있으신가요? 
-        <Link href="/login" className={styles.link}>
-          로그인하기
-        </Link>
-      </div>
-    </div>
+    <AuthFormLayout
+      title="회원가입"
+      onSubmit={handleSubmit}
+      loading={loading}
+      submitText="회원 가입"
+      error={error}
+      footerText="이미 계정이 있으신가요?"
+      footerLinkText="로그인 하기"
+      footerLinkHref="/login"
+    >
+      <InputField
+        id="email"
+        label="아이디"
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="아이디를 입력하세요."
+      />
+      <InputField
+        id="nickname"
+        label="이름"
+        type="text"
+        required
+        value={nickname}
+        onChange={(e) => setNickname(e.target.value)}
+        placeholder="이름을 입력하세요."
+      />
+      <InputField
+        id="password"
+        label="비밀번호"
+        type="password"
+        required
+        minLength={8}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="********"
+      />
+      <InputField
+        id="passwordConfirm"
+        label="비밀번호 확인"
+        type="password"
+        required
+        minLength={8}
+        value={passwordConfirm}
+        onChange={(e) => setPasswordConfirm(e.target.value)}
+        placeholder="********"
+      />
+    </AuthFormLayout>
   );
 }
+
