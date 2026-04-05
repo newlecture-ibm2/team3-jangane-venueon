@@ -22,9 +22,6 @@ public class UserMapper {
                 .role(user.getRole())
                 .profileImg(user.getProfileImg())
                 .phone(user.getPhone())
-                .orgName(user.getOrgName())
-                .orgNumber(user.getOrgNumber())
-                .orgDescription(user.getOrgDescription())
                 .build();
     }
 
@@ -40,11 +37,9 @@ public class UserMapper {
                 entity.getRole(),
                 entity.getProfileImg(),
                 entity.getPhone(),
-                entity.getOrgName(),
-                entity.getOrgNumber(),
-                entity.getOrgDescription(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
     }
 }
+

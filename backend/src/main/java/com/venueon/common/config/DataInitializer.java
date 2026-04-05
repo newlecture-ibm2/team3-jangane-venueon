@@ -17,7 +17,9 @@ import com.venueon.report.domain.model.AdminAction;
 import com.venueon.report.domain.model.RefundStatus;
 import com.venueon.report.domain.model.ReportStatus;
 import com.venueon.report.domain.model.ReportTargetType;
+import com.venueon.user.adapter.out.persistence.entity.HostProfileJpaEntity;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
+import com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import com.venueon.user.domain.model.UserRole;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,7 @@ import java.util.List;
 public class DataInitializer implements ApplicationRunner {
 
     private final UserJpaRepository userRepository;
+    private final HostProfileJpaRepository hostProfileRepository;
     private final CategoryJpaRepository categoryRepository;
     private final EventJpaRepository eventRepository;
     private final OrderJpaRepository orderRepository;
@@ -106,118 +109,69 @@ public class DataInitializer implements ApplicationRunner {
     private List<UserJpaEntity> createHosts() {
         String encodedPassword = passwordEncoder.encode("Host1234!");
 
-        return userRepository.saveAll(List.of(
-                UserJpaEntity.builder()
-                        .email("contact@nextcode.kr")
+        // 호스트 정보 배열 (User + HostProfile 데이터)
+        record HostData(String email, String nickname, String profileImg, String phone,
+                        String orgName, String orgNumber, String managerName, String orgDescription) {}
+
+        List<HostData> hostDataList = List.of(
+                new HostData("contact@nextcode.kr", "NextCode", "nextcode.png", "02-1234-5678",
+                        "넥스트코드", "123-45-67890", "김개발",
+                        "AI와 클라우드 기술 전문 교육 기업. 현직 개발자가 이끄는 실무 중심 코딩 부트캠프와 기술 세미나를 운영합니다."),
+                new HostData("hello@designbridge.co.kr", "DesignBridge", "designbridge.png", "02-2345-6789",
+                        "디자인브릿지", "234-56-78901", "이디자인",
+                        "UX/UI 디자인 전문 에이전시. 실무 프로젝트 기반의 디자인 워크숍과 포트폴리오 클래스를 제공합니다."),
+                new HostData("info@sparkventures.io", "SparkVentures", "sparkventures.png", "02-3456-7890",
+                        "스파크벤처스", "345-67-89012", "박벤처",
+                        "초기 스타트업을 위한 액셀러레이터. 투자 유치 전략, 비즈니스 모델 설계, 네트워킹 이벤트를 정기적으로 개최합니다."),
+                new HostData("wellness@greenlife.kr", "GreenLifeAcademy", "greenlife-academy.png", "02-4567-8901",
+                        "그린라이프 아카데미", "456-78-90123", "최건강",
+                        "건강한 라이프스타일을 위한 웰니스 교육 플랫폼. 요가, 명상, 영양학 클래스와 건강 세미나를 운영합니다."),
+                new HostData("art@artspaceseoul.com", "ArtSpaceSeoul", "artspace-seoul.png", "02-5678-9012",
+                        "아트스페이스 서울", "567-89-01234", "정예술",
+                        "서울 성수동 소재 복합 문화 공간. 전시, 공연, 아트 워크숍 등 다양한 문화 이벤트를 기획하고 운영합니다."),
+                new HostData("consulting@bizon.co.kr", "BizOnConsulting", "bizon-consulting.png", "02-6789-0123",
+                        "비즈온 컨설팅", "678-90-12345", "강전략",
+                        "기업 성장 전략 전문 컨설팅 펌. 리더십, 마케팅, 데이터 기반 의사결정 등 비즈니스 컨퍼런스와 세미나를 개최합니다."),
+                new HostData("chef@foodlabseoul.kr", "FoodLabSeoul", "foodlab-seoul.png", "02-7890-1234",
+                        "푸드랩 서울", "789-01-23456", "한요리",
+                        "셰프와 미식가를 위한 쿠킹 스튜디오. 한식, 양식, 베이킹 클래스와 푸드 네트워킹 밋업을 정기적으로 운영합니다."),
+                new HostData("invest@moneyflow.co.kr", "MoneyFlow", "moneyflow.png", "02-8901-2345",
+                        "머니플로우", "890-12-34567", "윤재테크",
+                        "개인 투자자와 금융 전문가를 연결하는 핀테크 교육 플랫폼. 주식, 부동산, 가상자산 세미나와 재테크 컨퍼런스를 개최합니다."),
+                new HostData("hello@creatorshub.kr", "CreatorsHub", "creators-hub.png", "02-9012-3456",
+                        "크리에이터즈 허브", "901-23-45678", "신미디어",
+                        "유튜버, 인플루언서, 콘텐츠 크리에이터를 위한 미디어 교육 기관. 영상 편집, SNS 마케팅, 브랜딩 클래스를 운영합니다."),
+                new HostData("forum@seoulscience.org", "SeoulScienceForum", "seoul-science-forum.png", "02-0123-4567",
+                        "서울사이언스포럼", "012-34-56789", "조과학",
+                        "과학 기술 대중화를 위한 비영리 학술 단체. 최신 연구 동향 발표, 과학 강연, 학술 컨퍼런스를 주최합니다.")
+        );
+
+        // 1) User 엔티티 저장
+        List<UserJpaEntity> hostUsers = userRepository.saveAll(
+                hostDataList.stream().map(d -> UserJpaEntity.builder()
+                        .email(d.email())
                         .password(encodedPassword)
-                        .nickname("NextCode")
+                        .nickname(d.nickname())
                         .role(UserRole.HOST)
-                        .profileImg("nextcode.png")
-                        .phone("02-1234-5678")
-                        .orgName("넥스트코드")
-                        .orgNumber("123-45-67890")
-                        .orgDescription("AI와 클라우드 기술 전문 교육 기업. 현직 개발자가 이끄는 실무 중심 코딩 부트캠프와 기술 세미나를 운영합니다.")
-                        .build(),
-                UserJpaEntity.builder()
-                        .email("hello@designbridge.co.kr")
-                        .password(encodedPassword)
-                        .nickname("DesignBridge")
-                        .role(UserRole.HOST)
-                        .profileImg("designbridge.png")
-                        .phone("02-2345-6789")
-                        .orgName("디자인브릿지")
-                        .orgNumber("234-56-78901")
-                        .orgDescription("UX/UI 디자인 전문 에이전시. 실무 프로젝트 기반의 디자인 워크숍과 포트폴리오 클래스를 제공합니다.")
-                        .build(),
-                UserJpaEntity.builder()
-                        .email("info@sparkventures.io")
-                        .password(encodedPassword)
-                        .nickname("SparkVentures")
-                        .role(UserRole.HOST)
-                        .profileImg("sparkventures.png")
-                        .phone("02-3456-7890")
-                        .orgName("스파크벤처스")
-                        .orgNumber("345-67-89012")
-                        .orgDescription("초기 스타트업을 위한 액셀러레이터. 투자 유치 전략, 비즈니스 모델 설계, 네트워킹 이벤트를 정기적으로 개최합니다.")
-                        .build(),
-                UserJpaEntity.builder()
-                        .email("wellness@greenlife.kr")
-                        .password(encodedPassword)
-                        .nickname("GreenLifeAcademy")
-                        .role(UserRole.HOST)
-                        .profileImg("greenlife-academy.png")
-                        .phone("02-4567-8901")
-                        .orgName("그린라이프 아카데미")
-                        .orgNumber("456-78-90123")
-                        .orgDescription("건강한 라이프스타일을 위한 웰니스 교육 플랫폼. 요가, 명상, 영양학 클래스와 건강 세미나를 운영합니다.")
-                        .build(),
-                UserJpaEntity.builder()
-                        .email("art@artspaceseoul.com")
-                        .password(encodedPassword)
-                        .nickname("ArtSpaceSeoul")
-                        .role(UserRole.HOST)
-                        .profileImg("artspace-seoul.png")
-                        .phone("02-5678-9012")
-                        .orgName("아트스페이스 서울")
-                        .orgNumber("567-89-01234")
-                        .orgDescription("서울 성수동 소재 복합 문화 공간. 전시, 공연, 아트 워크숍 등 다양한 문화 이벤트를 기획하고 운영합니다.")
-                        .build(),
-                UserJpaEntity.builder()
-                        .email("consulting@bizon.co.kr")
-                        .password(encodedPassword)
-                        .nickname("BizOnConsulting")
-                        .role(UserRole.HOST)
-                        .profileImg("bizon-consulting.png")
-                        .phone("02-6789-0123")
-                        .orgName("비즈온 컨설팅")
-                        .orgNumber("678-90-12345")
-                        .orgDescription("기업 성장 전략 전문 컨설팅 펌. 리더십, 마케팅, 데이터 기반 의사결정 등 비즈니스 컨퍼런스와 세미나를 개최합니다.")
-                        .build(),
-                UserJpaEntity.builder()
-                        .email("chef@foodlabseoul.kr")
-                        .password(encodedPassword)
-                        .nickname("FoodLabSeoul")
-                        .role(UserRole.HOST)
-                        .profileImg("foodlab-seoul.png")
-                        .phone("02-7890-1234")
-                        .orgName("푸드랩 서울")
-                        .orgNumber("789-01-23456")
-                        .orgDescription("셰프와 미식가를 위한 쿠킹 스튜디오. 한식, 양식, 베이킹 클래스와 푸드 네트워킹 밋업을 정기적으로 운영합니다.")
-                        .build(),
-                UserJpaEntity.builder()
-                        .email("invest@moneyflow.co.kr")
-                        .password(encodedPassword)
-                        .nickname("MoneyFlow")
-                        .role(UserRole.HOST)
-                        .profileImg("moneyflow.png")
-                        .phone("02-8901-2345")
-                        .orgName("머니플로우")
-                        .orgNumber("890-12-34567")
-                        .orgDescription("개인 투자자와 금융 전문가를 연결하는 핀테크 교육 플랫폼. 주식, 부동산, 가상자산 세미나와 재테크 컨퍼런스를 개최합니다.")
-                        .build(),
-                UserJpaEntity.builder()
-                        .email("hello@creatorshub.kr")
-                        .password(encodedPassword)
-                        .nickname("CreatorsHub")
-                        .role(UserRole.HOST)
-                        .profileImg("creators-hub.png")
-                        .phone("02-9012-3456")
-                        .orgName("크리에이터즈 허브")
-                        .orgNumber("901-23-45678")
-                        .orgDescription("유튜버, 인플루언서, 콘텐츠 크리에이터를 위한 미디어 교육 기관. 영상 편집, SNS 마케팅, 브랜딩 클래스를 운영합니다.")
-                        .build(),
-                UserJpaEntity.builder()
-                        .email("forum@seoulscience.org")
-                        .password(encodedPassword)
-                        .nickname("SeoulScienceForum")
-                        .role(UserRole.HOST)
-                        .profileImg("seoul-science-forum.png")
-                        .phone("02-0123-4567")
-                        .orgName("서울사이언스포럼")
-                        .orgNumber("012-34-56789")
-                        .orgDescription("과학 기술 대중화를 위한 비영리 학술 단체. 최신 연구 동향 발표, 과학 강연, 학술 컨퍼런스를 주최합니다.")
+                        .profileImg(d.profileImg())
+                        .phone(d.phone())
                         .build()
-        ));
+                ).toList()
+        );
+
+        // 2) HostProfile 엔티티 저장
+        for (int i = 0; i < hostUsers.size(); i++) {
+            HostData d = hostDataList.get(i);
+            hostProfileRepository.save(HostProfileJpaEntity.builder()
+                    .user(hostUsers.get(i))
+                    .orgName(d.orgName())
+                    .orgNumber(d.orgNumber())
+                    .managerName(d.managerName())
+                    .orgDescription(d.orgDescription())
+                    .build());
+        }
+
+        return hostUsers;
     }
 
     private List<CategoryJpaEntity> createCategories() {

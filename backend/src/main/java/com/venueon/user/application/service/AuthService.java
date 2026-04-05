@@ -5,9 +5,12 @@ import com.venueon.common.exception.BusinessException;
 import com.venueon.common.exception.ErrorCode;
 import com.venueon.user.adapter.in.security.JwtTokenProvider;
 import com.venueon.user.application.port.in.GetUserInfoUseCase;
+import com.venueon.user.application.port.in.HostSignUpUseCase;
 import com.venueon.user.application.port.in.LoginUseCase;
 import com.venueon.user.application.port.in.SignUpUseCase;
+import com.venueon.user.application.port.out.HostProfileRepositoryPort;
 import com.venueon.user.application.port.out.UserRepositoryPort;
+import com.venueon.user.domain.model.HostProfile;
 import com.venueon.user.domain.model.User;
 import com.venueon.user.domain.model.UserRole;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +22,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * - BCrypt 비밀번호 암호화
  * - 이메일 중복 체크
  * - JWT 발급 위임
+ * - 호스트 가입 시 HostProfile 분리 저장
  */
 @Slf4j
 @UseCase
 @RequiredArgsConstructor
-public class AuthService implements SignUpUseCase, LoginUseCase, GetUserInfoUseCase {
+public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCase, GetUserInfoUseCase {
 
     private final UserRepositoryPort userRepositoryPort;
+    private final HostProfileRepositoryPort hostProfileRepositoryPort;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -51,10 +56,39 @@ public class AuthService implements SignUpUseCase, LoginUseCase, GetUserInfoUseC
 
         // 도메인 모델 생성 및 저장
         User user = new User(null, email, encodedPassword, nickname, userRole,
-                null, null, null, null, null, null, null);
+                null, null, null, null);
         User savedUser = userRepositoryPort.save(user);
 
         log.info("회원가입 완료: email={}, role={}", email, userRole);
+        return savedUser;
+    }
+
+    @Override
+    public User hostSignUp(String email, String password, String managerName,
+                           String orgName, String orgNumber, String orgDescription) {
+        log.debug("호스트 회원가입 시도: email={}", email);
+
+        // 이메일 중복 체크
+        if (userRepositoryPort.existsByEmail(email)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL, "이미 사용 중인 이메일입니다.");
+        }
+
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(password);
+
+        // User 저장 (role=HOST)
+        User user = new User(null, email, encodedPassword, managerName, UserRole.HOST,
+                null, null, null, null);
+        User savedUser = userRepositoryPort.save(user);
+
+        // HostProfile 저장
+        HostProfile hostProfile = new HostProfile(
+                null, savedUser.getId(), orgName, orgNumber,
+                managerName, orgDescription, null, null
+        );
+        hostProfileRepositoryPort.save(hostProfile);
+
+        log.info("호스트 회원가입 완료: email={}, orgName={}", email, orgName);
         return savedUser;
     }
 
@@ -84,3 +118,4 @@ public class AuthService implements SignUpUseCase, LoginUseCase, GetUserInfoUseC
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
     }
 }
+

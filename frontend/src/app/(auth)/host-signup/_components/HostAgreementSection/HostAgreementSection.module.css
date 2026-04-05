@@ -1,0 +1,67 @@
+.agreementSection {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  border: 1px solid var(--color-text-gray-300);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.allAgree {
+  padding: 14px 16px;
+  background-color: #f1f3f5;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.allAgree:hover {
+  background-color: #e9ecef;
+}
+
+.allAgreeLabel {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.agreementList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 8px;
+}
+
+.agreementItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.itemLabel {
+  font-size: 14px;
+  color: var(--color-text-gray-700);
+}
+
+.requiredBadge {
+  font-size: 13px;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.viewLink {
+  font-size: 13px;
+  color: var(--color-text-gray-400);
+  text-decoration: underline;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 12px;
+  background: none;
+  border: none;
+}
+
+.viewLink:hover {
+  color: var(--color-text-gray-700);
+}

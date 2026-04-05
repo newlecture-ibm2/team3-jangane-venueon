@@ -14,6 +14,9 @@ interface AuthFormLayoutProps {
   footerText: string;
   footerLinkText: string;
   footerLinkHref: string;
+  secondaryFooterText?: string;
+  secondaryFooterLinkText?: string;
+  secondaryFooterLinkHref?: string;
 }
 
 export default function AuthFormLayout({
@@ -27,6 +30,9 @@ export default function AuthFormLayout({
   footerText,
   footerLinkText,
   footerLinkHref,
+  secondaryFooterText,
+  secondaryFooterLinkText,
+  secondaryFooterLinkHref,
 }: AuthFormLayoutProps) {
   return (
     <div className={styles.container}>
@@ -48,6 +54,16 @@ export default function AuthFormLayout({
           {footerLinkText}
         </Link>
       </div>
+
+      {secondaryFooterText && secondaryFooterLinkText && secondaryFooterLinkHref && (
+        <div className={styles.footer} style={{ marginTop: '8px' }}>
+          {secondaryFooterText}{" "}
+          <Link href={secondaryFooterLinkHref} className={styles.link}>
+            {secondaryFooterLinkText}
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
+

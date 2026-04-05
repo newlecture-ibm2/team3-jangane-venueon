@@ -42,7 +42,6 @@ public class DevDataController {
                     map.put("email", u.getEmail());
                     map.put("nickname", u.getNickname());
                     map.put("role", u.getRole().name());
-                    map.put("orgName", u.getOrgName());
                     return map;
                 }).collect(Collectors.toList());
 

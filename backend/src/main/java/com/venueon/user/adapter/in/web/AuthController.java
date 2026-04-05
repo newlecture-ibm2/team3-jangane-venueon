@@ -3,6 +3,7 @@ package com.venueon.user.adapter.in.web;
 import com.venueon.common.dto.ApiResponse;
 import com.venueon.user.adapter.in.web.dto.*;
 import com.venueon.user.application.port.in.GetUserInfoUseCase;
+import com.venueon.user.application.port.in.HostSignUpUseCase;
 import com.venueon.user.application.port.in.LoginUseCase;
 import com.venueon.user.application.port.in.SignUpUseCase;
 import com.venueon.user.domain.model.User;
@@ -15,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * /auth/signup, /auth/login, /auth/me 엔드포인트
+ * /auth/signup, /auth/host/signup, /auth/login, /auth/me 엔드포인트
  */
 @Slf4j
 @RestController
@@ -24,11 +25,12 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final SignUpUseCase signUpUseCase;
+    private final HostSignUpUseCase hostSignUpUseCase;
     private final LoginUseCase loginUseCase;
     private final GetUserInfoUseCase getUserInfoUseCase;
 
     /**
-     * POST /auth/signup — 회원가입
+     * POST /auth/signup — 일반 회원가입
      */
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<UserInfoResponse>> signUp(@Valid @RequestBody SignUpRequest request) {
@@ -39,6 +41,32 @@ public class AuthController {
                 request.password(),
                 request.nickname(),
                 request.role()
+        );
+
+        UserInfoResponse response = new UserInfoResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getRole().name()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
+    }
+
+    /**
+     * POST /auth/host/signup — 호스트 회원가입
+     */
+    @PostMapping("/host/signup")
+    public ResponseEntity<ApiResponse<UserInfoResponse>> hostSignUp(@Valid @RequestBody HostSignUpRequest request) {
+        log.debug("호스트 회원가입 요청: email={}, orgName={}", request.email(), request.orgName());
+
+        User user = hostSignUpUseCase.hostSignUp(
+                request.email(),
+                request.password(),
+                request.managerName(),
+                request.orgName(),
+                request.orgNumber(),
+                request.orgDescription()
         );
 
         UserInfoResponse response = new UserInfoResponse(

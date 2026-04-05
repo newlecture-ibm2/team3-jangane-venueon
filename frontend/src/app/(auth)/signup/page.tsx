@@ -66,6 +66,9 @@ export default function SignupPage() {
       footerText="이미 계정이 있으신가요?"
       footerLinkText="로그인 하기"
       footerLinkHref="/login"
+      secondaryFooterText="호스트로 가입하시겠어요?"
+      secondaryFooterLinkText="호스트 가입"
+      secondaryFooterLinkHref="/host-signup"
     >
       <InputField
         id="email"

@@ -1,6 +1,5 @@
 package com.venueon.user.adapter.out.persistence.entity;
 
-import com.venueon.user.domain.model.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,38 +8,32 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "host_profiles")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class UserJpaEntity {
+public class HostProfileJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private UserJpaEntity user;
 
-    @Column(nullable = false)
-    private String password;
+    @Column(name = "org_name", nullable = false)
+    private String orgName;
 
-    @Column(nullable = false)
-    private String nickname;
+    @Column(name = "org_number", nullable = false)
+    private String orgNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
+    @Column(name = "manager_name")
+    private String managerName;
 
-    @Column(name = "profile_img")
-    private String profileImg;
-
-    private String phone;
-
-    @Column(name = "is_active", nullable = false)
-    @Builder.Default
-    private boolean isActive = true;
+    @Column(name = "org_description", length = 1000)
+    private String orgDescription;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -50,4 +43,3 @@ public class UserJpaEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
-
