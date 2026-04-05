@@ -9,6 +9,16 @@ export const authAPI = {
     if (!res.ok) throw new Error(result.message || result.error || '회원가입 실패');
     return result;
   },
+  hostSignup: async (data: any) => {
+    const res = await fetch('/api/auth/host/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.message || result.error || '호스트 가입 실패');
+    return result;
+  },
   login: async (email: string, password: string) => {
     const res = await fetch('/api/auth/login', {
       method: 'POST',

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 /**
  * User 도메인 모델 (순수 POJO)
  * JPA/Spring 의존 없음 — 비즈니스 로직만 포함
+ * 호스트 전용 프로필 정보는 HostProfile 도메인에서 관리
  */
 public class User {
 
@@ -15,9 +16,6 @@ public class User {
     private UserRole role;
     private String profileImg;
     private String phone;
-    private String orgName;
-    private String orgNumber;
-    private String orgDescription;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -26,8 +24,8 @@ public class User {
 
     // 전체 필드 생성자
     public User(Long id, String email, String password, String nickname, UserRole role,
-                String profileImg, String phone, String orgName, String orgNumber,
-                String orgDescription, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                String profileImg, String phone,
+                LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -35,9 +33,6 @@ public class User {
         this.role = role;
         this.profileImg = profileImg;
         this.phone = phone;
-        this.orgName = orgName;
-        this.orgNumber = orgNumber;
-        this.orgDescription = orgDescription;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -58,16 +53,6 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateHostProfile(String orgName, String orgDescription, String phone) {
-        if (!isHost()) {
-            throw new IllegalStateException("HOST 역할만 기업 프로필을 수정할 수 있습니다.");
-        }
-        this.orgName = orgName;
-        this.orgDescription = orgDescription;
-        this.phone = phone;
-        this.updatedAt = LocalDateTime.now();
-    }
-
     // --- Getters ---
 
     public Long getId() { return id; }
@@ -77,9 +62,7 @@ public class User {
     public UserRole getRole() { return role; }
     public String getProfileImg() { return profileImg; }
     public String getPhone() { return phone; }
-    public String getOrgName() { return orgName; }
-    public String getOrgNumber() { return orgNumber; }
-    public String getOrgDescription() { return orgDescription; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
+
