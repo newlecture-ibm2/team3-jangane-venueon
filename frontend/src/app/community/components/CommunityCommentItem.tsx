@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import styles from './CommunityCommentItem.module.css';
-import UserProfile from './UserProfile';
-import PopoverMenu, { PopoverMenuItem } from './PopoverMenu';
+import UserProfile from '@/components/ui/UserProfile';
+import PopoverMenu from '@/components/ui/PopoverMenu';
+import type { PopoverMenuItem } from '@/components/ui/PopoverMenu';
 import { MoreIcon } from '@/components/icons';
 
 export interface CommunityCommentItemProps {
