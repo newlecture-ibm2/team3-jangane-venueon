@@ -29,16 +29,16 @@ public class PostService {
     // ──────────────────────────────────────────
 
     @Transactional
-    public CreatePostResponse createPost(CreatePostRequest request) {
+    public CreatePostResponse createPost(CreatePostRequest request, String email) {
         // 커뮤니티(방) 존재 확인
         CommunityJpaEntity community = communityJpaRepository.findById(request.communityId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Community not found with id: " + request.communityId()));
 
-        // 작성자(유저) 존재 확인
-        UserJpaEntity author = userJpaRepository.findById(request.authorId())
+        // 로그인된 사용자의 email로 작성자 조회
+        UserJpaEntity author = userJpaRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "User not found with id: " + request.authorId()));
+                        "User not found with email: " + email));
 
         // Entity 조립 및 저장
         PostJpaEntity postEntity = PostJpaEntity.builder()

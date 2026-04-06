@@ -4,7 +4,6 @@ import com.venueon.post.domain.model.PostType;
 
 public record CreatePostRequest(
         Long communityId,
-        Long authorId,
         String title,
         String content,
         PostType type

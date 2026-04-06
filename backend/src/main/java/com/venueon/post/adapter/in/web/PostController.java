@@ -12,10 +12,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/posts")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
@@ -27,7 +30,11 @@ public class PostController {
      */
     @PostMapping
     public ResponseEntity<CreatePostResponse> createPost(@RequestBody CreatePostRequest request) {
-        CreatePostResponse response = postService.createPost(request);
+        // SecurityContext에서 로그인된 사용자의 email 추출
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+        CreatePostResponse response = postService.createPost(request, email);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
