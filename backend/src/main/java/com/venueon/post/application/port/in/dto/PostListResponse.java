@@ -13,6 +13,7 @@ public record PostListResponse(
         String title,
         PostType type,
         String authorNickname,
+        String content,
         int viewCount,
         int commentCount,
         LocalDateTime createdAt

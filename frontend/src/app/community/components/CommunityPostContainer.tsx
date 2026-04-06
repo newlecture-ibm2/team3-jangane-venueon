@@ -12,6 +12,7 @@ interface PostListResponse {
   title: string;
   type: string;
   authorNickname: string;
+  content: string;
   viewCount: number;
   commentCount: number;
   createdAt: string;
@@ -140,10 +141,12 @@ export default function CommunityPostContainer({ communityId }: Props) {
                         <UserProfile name={selectedPost.authorNickname} size="medium" />
                     </div>
                     <div className={styles.contentWrapper}>
-                        {/* 더미 내용 (나중에 4단계 상세조회 API 구현 시 대체될 예정!) */}
-                        안녕하세요! 이번 마케팅 전략 세미나 듣고 실무에 바로 적용해봤습니다.<br/><br/>
-                        작업 시간이 훨씬 단축되는 걸 체험했어요. 다만 보이스를 유지하면서 페르소나를 세밀하게 설정하는 단계에서 프롬프트가 조금 어렵게 느껴지네요.<br/><br/>
-                        혹시 다른 분들은 챗GPT 외에 이미지 생성용으로 다른 툴 중 어떤 걸 더 선호하시나요? 궁금합니다! 다들 열공하세요.
+                        {selectedPost.content.split('\n').map((line, index) => (
+                            <React.Fragment key={index}>
+                                {line}
+                                <br />
+                            </React.Fragment>
+                        ))}
                     </div>
                 </div>
 
