@@ -55,6 +55,7 @@ public class EventMapper {
                 : null;
 
         return EventJpaEntity.builder()
+                .id(domain.getId())
                 .creator(creatorRef)
                 .category(categoryRef)
                 .title(domain.getTitle())
@@ -68,6 +69,8 @@ public class EventMapper {
                 .thumbnailUrl(domain.getThumbnailUrl())
                 .startDate(domain.getStartDate())
                 .endDate(domain.getEndDate())
+                .createdAt(domain.getCreatedAt())
+                .updatedAt(domain.getUpdatedAt())
                 .build();
     }
 }

@@ -9,7 +9,13 @@ import styles from './EventForm.module.css';
 import { useUIStore } from '@/store/useUIStore';
 import Image from 'next/image';
 
-export default function EventForm() {
+export interface EventFormProps {
+  mode?: 'create' | 'edit';
+  eventId?: string;
+  initialData?: any;
+}
+
+export default function EventForm({ mode = 'create', eventId, initialData }: EventFormProps) {
   const router = useRouter();
   const { showToast } = useUIStore();
   const [loading, setLoading] = useState(false);
@@ -21,13 +27,21 @@ export default function EventForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    price: '',
-    date: '',
-    isOnlineStr: '',
-    location: '',
+    title: initialData?.title || '',
+    description: initialData?.description || '',
+    price: initialData?.price !== undefined ? initialData.price.toString() : '',
+    date: initialData?.startDate ? initialData.startDate.substring(0, 10) : '',
+    isOnlineStr: initialData?.isOnline !== undefined ? String(initialData.isOnline) : '',
+    location: initialData?.location || '',
   });
+
+  React.useEffect(() => {
+    if (initialData?.thumbnailUrl) {
+      const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+      setPreviewUrl(`${BACKEND_URL}/upload/${initialData.thumbnailUrl}`);
+      setThumbnailUrl(initialData.thumbnailUrl);
+    }
+  }, [initialData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -87,8 +101,21 @@ export default function EventForm() {
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileUpload(e.dataTransfer.files[0]);
+    e.stopPropagation();
+    
+    let droppedFile: File | null = null;
+    
+    if (e.dataTransfer.items) {
+      const item = Array.from(e.dataTransfer.items).find(i => i.kind === 'file');
+      if (item) droppedFile = item.getAsFile();
+    } else if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      droppedFile = e.dataTransfer.files[0];
+    }
+    
+    if (droppedFile) {
+      handleFileUpload(droppedFile);
+    } else {
+      showToast('파일을 인식할 수 없습니다. (브라우저 지원 문제일 수 있습니다)', 'error');
     }
   };
 
@@ -105,33 +132,44 @@ export default function EventForm() {
         endDateStr = `${formData.date}T18:00:00`;
       }
 
-      // API 요청
-      const res = await fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          categoryId: 1, // 테스트용 하드코딩
-          title: formData.title || '새 이벤트',
-          description: formData.description,
-          type: 'SEMINAR', // 기본값
-          location: formData.location,
-          isOnline: isOnline,
-          price: parseInt(formData.price || '0', 10),
-          maxAttendees: 50,
-          thumbnailUrl: thumbnailUrl,
-          startDate: startDateStr,
-          endDate: endDateStr,
-        })
-      });
+      // API 요청 분기 (create / edit)
+      const payload = {
+        categoryId: 1, // 테스트용 하드코딩
+        title: formData.title || '새 이벤트',
+        description: formData.description,
+        type: 'SEMINAR',
+        location: formData.location,
+        isOnline: isOnline,
+        price: parseInt(formData.price || '0', 10),
+        maxAttendees: initialData?.maxAttendees || 50,
+        thumbnailUrl: thumbnailUrl,
+        startDate: startDateStr,
+        endDate: endDateStr,
+      };
 
-      if (!res.ok) throw new Error('이벤트 생성 실패');
+      let res;
+      if (mode === 'create') {
+        res = await fetch('/api/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        res = await fetch(`/api/events/${eventId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      if (!res.ok) throw new Error(`이벤트 ${mode === 'create' ? '생성' : '수정'} 실패`);
       
       const resData = await res.json();
-      const newEventId = resData.data.id;
+      const targetId = mode === 'create' ? resData.data.id : eventId;
 
-      if (!isDraft) {
-        // 바로 게시하기
-        const publishRes = await fetch(`/api/events/${newEventId}/status`, {
+      if (mode === 'create' && !isDraft) {
+        // 바로 게시하기 (새로 만들 때만)
+        const publishRes = await fetch(`/api/events/${targetId}/status`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'PUBLISHED' })
@@ -139,8 +177,8 @@ export default function EventForm() {
         if (!publishRes.ok) throw new Error('상태 변경 실패');
       }
 
-      showToast(isDraft ? '임시 저장되었습니다.' : '이벤트가 성공적으로 게시되었습니다.', 'success');
-      router.push(`/events`);
+      showToast(mode === 'create' ? (isDraft ? '임시 저장되었습니다.' : '이벤트가 성공적으로 게시되었습니다.') : '이벤트가 성공적으로 수정되었습니다.', 'success');
+      router.push(`/events/${targetId}`);
     } catch (err: any) {
       showToast(err.message, 'error');
     } finally {
@@ -180,10 +218,10 @@ export default function EventForm() {
           <div
             className={`${styles.uploadArea} ${isDragOver ? styles.dragOver : ''}`}
             onClick={() => fileInputRef.current?.click()}
-            onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-            onDragEnter={(e) => { e.preventDefault(); setIsDragOver(true); }}
-            onDragLeave={() => setIsDragOver(false)}
-            onDrop={(e) => { setIsDragOver(false); handleDrop(e); }}
+            onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(true); }}
+            onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(true); }}
+            onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(false); }}
+            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(false); handleDrop(e); }}
           >
             <FileUp size={32} className={styles.uploadIcon} />
             <p>{isDragOver ? '여기에 놓으세요' : '클릭하거나 파일을 여기로 끌어다 놓으세요'}</p>
@@ -299,7 +337,7 @@ export default function EventForm() {
               onClick={() => handleSubmit(false)}
               disabled={loading}
             >
-              {loading ? '게시 중...' : '게시하기'}
+              {loading ? (mode === 'create' ? '게시 중...' : '수정 중...') : (mode === 'create' ? '게시하기' : '수정하기')}
             </button>
           </div>
           <button 

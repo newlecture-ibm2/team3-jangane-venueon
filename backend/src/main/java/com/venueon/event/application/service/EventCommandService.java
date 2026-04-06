@@ -2,7 +2,9 @@ package com.venueon.event.application.service;
 
 import com.venueon.common.annotation.UseCase;
 import com.venueon.event.application.port.in.CreateEventUseCase;
+import com.venueon.event.application.port.in.DeleteEventUseCase;
 import com.venueon.event.application.port.in.UpdateEventStatusUseCase;
+import com.venueon.event.application.port.in.UpdateEventUseCase;
 import com.venueon.event.application.port.out.EventRepositoryPort;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventStatus;
@@ -12,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 /**
- * 이벤트 생성/수정 서비스 (Command 전용)
+ * 이벤트 생성/수정/삭제 서비스 (Command 전용)
  */
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class EventCommandService implements CreateEventUseCase, UpdateEventStatusUseCase {
+public class EventCommandService implements CreateEventUseCase, UpdateEventStatusUseCase, DeleteEventUseCase, UpdateEventUseCase {
 
     private final EventRepositoryPort eventRepositoryPort;
 
@@ -64,5 +66,43 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
         }
 
         return eventRepositoryPort.save(event);
+    }
+
+    @Override
+    public Event updateEvent(UpdateEventCommand command) {
+        Event event = eventRepositoryPort.findById(command.eventId())
+                .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다. ID: " + command.eventId()));
+
+        if (!"ADMIN".equals(command.requesterRole()) && !event.isOwnedBy(command.requesterId())) {
+            throw new IllegalStateException("이벤트 수정 권한이 없습니다.");
+        }
+
+        event.updateDetails(
+                command.categoryId(),
+                command.title(),
+                command.description(),
+                command.type(),
+                command.location(),
+                command.isOnline(),
+                command.price(),
+                command.maxAttendees(),
+                command.thumbnailUrl(),
+                command.startDate(),
+                command.endDate()
+        );
+
+        return eventRepositoryPort.save(event);
+    }
+
+    @Override
+    public void deleteEvent(Long eventId, Long requesterId, String requesterRole) {
+        Event event = eventRepositoryPort.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다. ID: " + eventId));
+
+        if (!"ADMIN".equals(requesterRole) && !event.isOwnedBy(requesterId)) {
+            throw new IllegalStateException("이벤트 삭제 권한이 없습니다.");
+        }
+
+        eventRepositoryPort.deleteById(eventId);
     }
 }
