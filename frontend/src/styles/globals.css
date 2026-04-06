@@ -90,7 +90,6 @@ select {
 /* ── Layout: 콘텐츠 컨테이너 ── */
 .container-full {
   width: 100%;
-  padding: var(--space-24);
 }
 
 .container-single {
@@ -114,9 +113,6 @@ select {
 
 /* ── 반응형 ── */
 @media (max-width: 768px) {
-  .container-full {
-    padding: var(--space-16);
-  }
   .container-single {
     max-width: 100%;
     padding: var(--space-16);

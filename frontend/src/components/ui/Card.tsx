@@ -34,6 +34,13 @@ export default function Card({
 }: CardProps) {
   // 강의 상태별 기본 태그 매핑
   const STATUS_MAP: Record<string, { variant: 'red' | 'purple' | 'green' | 'gray', label: string }> = {
+    // Backend Enums
+    'DRAFT': { variant: 'gray', label: '게시 전' },
+    'PUBLISHED': { variant: 'green', label: '모집 중' },
+    'ONGOING': { variant: 'purple', label: '진행 중' },
+    'ENDED': { variant: 'gray', label: '종료' },
+    'CANCELLED': { variant: 'red', label: '취소' },
+    // Frontend Original
     '게시 전': { variant: 'gray', label: '게시 전' },
     '모집 중': { variant: 'green', label: '모집 중' },
     '준비 중': { variant: 'gray', label: '준비 중' },
