@@ -3,8 +3,11 @@ package com.venueon.event.presentation;
 import com.venueon.common.dto.ApiResponse;
 import com.venueon.event.adapter.in.web.dto.EventCreateRequest;
 import com.venueon.event.adapter.in.web.dto.EventDetailResponse;
+import com.venueon.event.adapter.in.web.dto.EventUpdateRequest;
 import com.venueon.event.application.port.in.CreateEventUseCase;
+import com.venueon.event.application.port.in.DeleteEventUseCase;
 import com.venueon.event.application.port.in.UpdateEventStatusUseCase;
+import com.venueon.event.application.port.in.UpdateEventUseCase;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventStatus;
 import jakarta.validation.Valid;
@@ -22,6 +25,8 @@ public class HostEventController {
 
     private final CreateEventUseCase createEventUseCase;
     private final UpdateEventStatusUseCase updateEventStatusUseCase;
+    private final DeleteEventUseCase deleteEventUseCase;
+    private final UpdateEventUseCase updateEventUseCase;
 
     /**
      * 이벤트 생성
@@ -52,6 +57,35 @@ public class HostEventController {
             @RequestParam EventStatus status
     ) {
         Event updated = updateEventStatusUseCase.updateStatus(id, requesterId, status);
+        return ApiResponse.success(EventDetailResponse.from(updated));
+    }
+
+    /**
+     * 이벤트 삭제
+     * DELETE /host/events/{id}
+     */
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEvent(
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long requesterId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String requesterRole
+    ) {
+        deleteEventUseCase.deleteEvent(id, requesterId, requesterRole);
+    }
+
+    /**
+     * 이벤트 수정
+     * PUT /host/events/{id}
+     */
+    @PutMapping("/{id}")
+    public ApiResponse<EventDetailResponse> updateEvent(
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long requesterId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String requesterRole,
+            @Valid @RequestBody EventUpdateRequest request
+    ) {
+        Event updated = updateEventUseCase.updateEvent(request.toCommand(id, requesterId, requesterRole));
         return ApiResponse.success(EventDetailResponse.from(updated));
     }
 }

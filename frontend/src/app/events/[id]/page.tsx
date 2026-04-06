@@ -6,6 +6,7 @@ import Link from 'next/link';
 import styles from './page.module.css';
 import { Tag, Button } from '@/components/ui';
 import { format } from 'date-fns';
+import EventActionMenu from './_components/EventActionMenu';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -81,7 +82,7 @@ export default async function EventDetailPage({ params }: Props) {
         <Tag variant={statusInfo.variant}>{statusInfo.label}</Tag>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>{event.title}</h1>
-          <button className={styles.moreButton}>...</button>
+          <EventActionMenu eventId={event.id.toString()} creatorId={event.creatorId} />
         </div>
       </div>
 

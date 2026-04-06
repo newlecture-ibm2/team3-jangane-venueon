@@ -48,6 +48,11 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
         return eventMapper.toDomain(saved);
     }
 
+    @Override
+    public void deleteById(Long id) {
+        eventJpaRepository.deleteById(id);
+    }
+
     /**
      * 검색/필터 조건을 JPA Specification으로 변환
      */
