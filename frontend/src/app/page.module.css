@@ -1,79 +1,121 @@
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 140px);
-  padding: var(--space-8);
+  gap: var(--space-48);
+  padding: var(--space-48) var(--space-24);
+  width: 100%;
+  max-width: 1760px;
+  margin: 0 auto;
 }
 
-.hero {
-  text-align: center;
-  max-width: 720px;
-}
-
-.title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: var(--space-4);
-  color: var(--color-text);
-}
-
-.highlight {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.subtitle {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-8);
-  line-height: 1.6;
-}
-
-.actions {
+.heroSection {
+  width: 100%;
+  background-color: var(--color-surface);
+  /* 회색 배경 가로로 꽉 차게 */
+  padding: 100px 0;
+  /* 위아래 여백을 아주 충분히 줌 */
   display: flex;
-  gap: var(--space-4);
   justify-content: center;
-  flex-wrap: wrap;
 }
 
-.primaryButton {
-  display: inline-flex;
+.heroInner {
+  width: 100%;
+  max-width: 1278px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  padding: var(--space-3) var(--space-6);
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: var(--font-size-base);
-  transition: background var(--transition), transform var(--transition);
+  gap: 80px;
+  /* 텍스트 영역과 오른쪽 이미지 박스 사이 공간 더 충분히 넓힘 */
+  padding: 0 var(--space-24);
 }
 
-.primaryButton:hover {
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
-  color: #fff;
+.heroContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  max-width: 50%;
 }
 
-.secondaryButton {
-  display: inline-flex;
+.heroTitle {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-text-gray-900);
+}
+
+.heroSubtitle {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text-gray-500);
+}
+
+.heroImageBox {
+  width: 440px;
+  height: 300px;
+  background-color: #D1D5DB;
+  /* placeholder color */
+  border-radius: var(--radius-xl);
+}
+
+.filterSection {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  padding: var(--space-3) var(--space-6);
-  background: transparent;
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: var(--font-size-base);
-  transition: background var(--transition), color var(--transition), transform var(--transition);
+  width: 100%;
 }
 
-.secondaryButton:hover {
-  background: var(--color-primary);
-  color: #fff;
-  transform: translateY(-1px);
+.searchBox {
+  width: 400px;
+}
+
+.tagGroup {
+  display: flex;
+  gap: var(--space-8);
+}
+
+.content {
+  width: 100%;
+  padding-bottom: var(--space-48);
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-48);
+}
+
+/* 반응형 모바일 */
+@media screen and (max-width: 1024px) {
+  .heroSection {
+    padding: var(--space-32) 0;
+  }
+
+  .heroInner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .heroContent {
+    max-width: 100%;
+    align-items: center;
+  }
+
+  .heroImageBox {
+    width: 100%;
+    max-width: 600px;
+    height: 250px;
+  }
+
+  .filterSection {
+    flex-direction: column;
+    gap: var(--space-16);
+    align-items: flex-start;
+  }
+
+  .searchBox {
+    width: 100%;
+  }
 }

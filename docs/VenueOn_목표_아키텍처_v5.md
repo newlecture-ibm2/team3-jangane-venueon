@@ -77,7 +77,7 @@
 | **이벤트 관리** | 본인 이벤트만 수정/삭제 + ADMIN 숨김/삭제 | ✅ |
 | **리뷰 작성** | 수강 완료 USER만 (1인 1리뷰) | 🆕 |
 | **커뮤니티 관리** | 관리자/부관리자/읽기쓰기/읽기/접근제한 5단계 | 🆕 확장 |
-| **커뮤니티 개설** | 뱃지 기반 개설 → 어드민 승인 | 🆕 |
+| **커뮤니티 개설** | 뱃지 기반 가입 조건 설정 가능, 어드민 승인 필요 | 🆕 |
 | **뱃지 기반 권한** | 관리자가 뱃지 보유 여부로 읽기/쓰기 권한 설정 | 🆕 |
 | **신고** | USER/HOST → 이벤트·게시물·댓글·사용자 신고 | ✅ |
 | **신고 처리** | ADMIN → 접수→검토→조치→완료 4단계 | 🆕 확장 |
@@ -98,7 +98,8 @@ graph TB
     subgraph Backend["⚙️ Spring Boot Application :8080"]
         SEC["Spring Security<br/>JWT + Google OAuth2"]
         UM["user 모듈<br/>회원/인증/마이페이지<br/>🆕 이메일검증/OAuth2"]
-        EM["event 모듈<br/>이벤트/티켓/결제<br/>🆕 토스/세션/할인/리뷰"]
+        EM["event 모듈<br/>이벤트/세션/할인<br/>🆕 리뷰/패키지"]
+        OM["order 모듈<br/>주문/결제/환불<br/>🆕 토스/장바구니"]
         CM["community 모듈<br/>커뮤니티/게시글<br/>🆕 좋아요/공지/인기글"]
         RM["report 모듈<br/>신고/환불<br/>🆕 제재/이의제기"]
         AM["admin 모듈<br/>관리자 대시보드<br/>🆕 정지/권한/카테고리"]
@@ -126,12 +127,14 @@ graph TB
     SEC --> NM
     SEC --> WM
     SEC --> NTM
+    SEC --> OM
 
     UM --> PG
     UM --> RD
     UM --> MAIL
     EM --> PG
-    EM --> TOSS
+    OM --> PG
+    OM --> TOSS
     CM --> PG
     RM --> PG
     AM --> PG
@@ -140,7 +143,8 @@ graph TB
     WM --> PG
     NTM --> PG
 
-    EM -.->|"메서드 호출"| UM
+    OM -.->|"메서드 호출"| EM
+    OM -.->|"메서드 호출"| UM
     CM -.->|"메서드 호출"| EM
     RM -.->|"메서드 호출"| EM
     RM -.->|"메서드 호출"| CM
@@ -160,7 +164,8 @@ graph TB
 | 모듈 (패키지) | 담당 | 상태 |
 |--------------|------|------|
 | **com.venueon.user** | 회원가입, 로그인, JWT, 프로필, 마이페이지, 🆕 이메일 검증, Google OAuth2, 임시 비밀번호, 관심 카테고리 | ✅ → 🆕 확장 |
-| **com.venueon.event** | 이벤트 CRUD, 티켓, 주문/결제, 🆕 토스 연동, 세션 구성, 할인, 리뷰 | ✅ → 🆕 확장 |
+| **com.venueon.event** | 이벤트 CRUD, 세션 구성, 🆕 할인, 리뷰, 패키지 | ✅ → 🆕 확장 |
+| **com.venueon.order** | 주문/결제, 🆕 토스 연동, 장바구니 일괄 결제 | ✅ → 🆕 확장 |
 | **com.venueon.community** | 커뮤니티 CRUD, 게시글, 댓글, 🆕 좋아요, 대댓글, 공지 고정, 인기글, 권한 체계 | ✅ → 🆕 확장 |
 | **com.venueon.report** | 신고 CRUD, 환불 관리, 🆕 처리 단계, 제재 상태, 이의 제기 | ✅ → 🆕 확장 |
 | **com.venueon.admin** | 관리자 대시보드, 🆕 회원 정지/권한, 카테고리 관리, 관심 카테고리, 리뷰 관리, 커뮤니티 제재 | ✅ → 🆕 대폭 확장 |
@@ -170,13 +175,14 @@ graph TB
 | **🆕 com.venueon.notice** | 통합 공지, 요청 게시판, 이의 제기 게시판 | 🆕 신규 |
 | **com.venueon.common** | ApiResponse, 예외 처리, @UseCase 등 공통 | ✅ 변경 없음 |
 
-**도메인 모듈: 9개** (v4 5개 → v5 +4: badge, notification, wishlist, notice) / **DB: 1개**
+**도메인 모듈: 10개** (user, event, order, community, report, admin, badge, notification, wishlist, notice) / **DB: 1개**
 
 ### 모듈 간 통신 (v5)
 
 | 호출 방향 | 방식 | 목적 | 상태 |
 |-----------|------|------|------|
-| event → user | 메서드 호출 (Port) | 주문 시 유저 정보 확인 | ✅ |
+| order → user | 메서드 호출 (Port) | 주문 시 유저 정보 확인 | ✅ |
+| order → event | 메서드 호출 (Port) | 주문 시 이벤트 정보 확인 | ✅ |
 | community → event | 메서드 호출 (Port) | 커뮤니티 생성 시 이벤트 참조 | ✅ |
 | community → user | 메서드 호출 (Port) | 게시글 작성자 정보 조회 | ✅ |
 | report → event | 메서드 호출 (Port) | 강의 신고 시 이벤트 정보 참조 | ✅ |
@@ -190,7 +196,7 @@ graph TB
 | 🆕 notification → community | 이벤트 수신 | 댓글/좋아요 알림 트리거 | 🆕 |
 | 🆕 notification → report | 이벤트 수신 | 신고 처리/제재 알림 트리거 | 🆕 |
 | 🆕 wishlist → event | 메서드 호출 (Port) | 찜/장바구니 이벤트 정보 | 🆕 |
-| 🆕 event → toss | HTTP 호출 | 토스 페이먼츠 결제 API | 🆕 |
+| 🆕 order → toss | HTTP 호출 | 토스 페이먼츠 결제 API | 🆕 |
 | 🆕 user → mail | SMTP | 이메일 인증/임시 비밀번호 발송 | 🆕 |
 
 ---
@@ -297,7 +303,7 @@ erDiagram
         bigint id PK
         bigint user_id FK
         bigint event_id FK
-        enum status "PENDING, PAID, CANCELLED, REFUNDED, REGISTERED"
+        enum status "PENDING, PAID, REGISTERED, COMPLETED, CANCELLED, REFUNDED"
         int quantity "DEFAULT 1"
         int amount
         string payment_method "CARD, KAKAO_PAY, TOSS_PAY"
@@ -639,8 +645,8 @@ com.venueon.notice/
 |---|--------|------|------|
 | 5 | 강의 리스트 | `/events` | ✅ → 🆕 지역/날짜/페이지네이션 |
 | 6 | 강의 상세 | `/events/[id]` | ✅ → 🆕 할인, 세션, 리뷰, 찜 |
-| 7 | 이벤트 생성 | `/host/seminars/new` | ✅ → 🆕 Step 1~4, Rich Editor |
-| 8 | 이벤트 수정 | `/host/seminars/[id]/edit` | ✅ → 🆕 프리필, 변경 감지 |
+| 7 | 이벤트 생성 | `/events/new` | ✅ → 🆕 Step 1~4, Rich Editor |
+| 8 | 이벤트 수정 | `/events/[id]/edit` | ✅ → 🆕 프리필, 변경 감지 |
 | 9 | 리뷰 (이벤트 상세 내 섹션) | `/events/[id]#reviews` | 🆕 |
 
 ### 커뮤니티 (4)
@@ -728,7 +734,10 @@ frontend/src/app/
 │   └── components/
 ├── events/
 │   ├── page.tsx                       # ✅ → 🆕 지역/날짜/페이지네이션
-│   ├── [id]/page.tsx                  # ✅ → 🆕 리뷰, 찜, 할인, 세션
+│   ├── [id]/
+│   │   ├── page.tsx                  # ✅ → 🆕 리뷰, 찜, 할인, 세션
+│   │   └── edit/page.tsx             # ✅ → 🆕 프리필, 변경 감지
+│   ├── new/page.tsx                  # ✅ → 🆕 Step 1~4, Rich Editor
 │   └── components/
 │       ├── EnrollmentModal.tsx         # ✅ 수강 신청 모달
 │       ├── ReportModal.tsx            # ✅ 신고 모달
@@ -770,10 +779,7 @@ frontend/src/app/
 │   ├── login/page.tsx                 # ✅ → 🆕 이메일 검증
 │   ├── signup/page.tsx                # ✅ → 🆕 이메일 검증
 │   ├── dashboard/page.tsx             # ✅
-│   ├── seminars/
-│   │   ├── new/page.tsx               # ✅ → 🆕 Step 1~4, Rich Editor
-│   │   └── [id]/edit/page.tsx         # ✅ → 🆕 프리필
-│   ├── events/page.tsx                # ✅
+│   ├── events/page.tsx                # ✅ 내가 등록한 이벤트 관리
 │   ├── payments/page.tsx              # 🆕 결제 내역/환불
 │   ├── requests/page.tsx              # 🆕 요청 게시판
 │   ├── profile/page.tsx               # ✅
@@ -899,8 +905,8 @@ volumes:
 │  통신: 모듈 간 Port 인터페이스 (같은 JVM 메서드 호출)       │
 │                                                           │
 │  📊 v4 → v5 변경 요약:                                    │
-│  ├── 모듈: 5개 → 9개 (+badge, notification, wishlist,     │
-│  │                      notice)                           │
+│  ├── 모듈: 6개 → 10개 (+badge, notification, wishlist,    │
+│  │                       notice, order 독립)               │
 │  ├── 엔티티: 10개 → 20개 (+10개)                          │
 │  ├── 페이지: 15개 → 46개 (+31개)                          │
 │  ├── 인증: JWT → + Google OAuth2 + 이메일 검증            │
