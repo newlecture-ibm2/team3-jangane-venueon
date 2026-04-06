@@ -8,7 +8,7 @@
   gap: var(--space-16);
   /* 16px */
   width: 100%;
-  max-width: 410px;
+  max-width: 100%;
   background-color: var(--color-surface);
   /* #F3F4F6 */
   border-radius: var(--radius-xl);
