@@ -1,0 +1,222 @@
+.checkoutCard {
+  background-color: var(--color-bg);
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-gray-disabled-fill);
+  padding: var(--space-32);
+  box-shadow: var(--shadow-lg);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-36);
+}
+
+.title {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-gray-disabled-text);
+  padding: var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  border-radius: var(--radius-full);
+}
+
+.closeBtn:hover {
+  color: var(--color-text-gray-900);
+  background-color: var(--color-text-gray-100);
+}
+
+.section {
+  margin-bottom: var(--space-24);
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  background-color: var(--color-text-gray-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-text-gray-100);
+}
+
+.itemTitle {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-700);
+  letter-spacing: -0.01em;
+}
+
+.itemPrice {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+  white-space: nowrap;
+}
+
+.summarySection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  margin-bottom: var(--space-24);
+  padding: 0 var(--space-8);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font: var(--text-body-medium);
+  color: var(--color-secondary);
+  letter-spacing: -0.01em;
+}
+
+.summaryRow span:last-child {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+}
+
+.highlight {
+  color: var(--color-error) !important;
+}
+
+.divider {
+  border: none;
+  border-top: 1px dashed var(--color-gray-disabled-fill);
+  margin: var(--space-24) 0;
+}
+
+.totalSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-32);
+  padding: 0 var(--space-8);
+}
+
+.totalLabel {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+}
+
+.totalAmount {
+  font: var(--text-h1-bold);
+  font-size: 1.75rem;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+.sectionTitle {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+  margin: 0 0 var(--space-16) 0;
+  letter-spacing: -0.01em;
+}
+
+.paymentMethods {
+  display: flex;
+  gap: var(--space-12);
+}
+
+.methodBtn {
+  flex: 1;
+  background-color: var(--color-bg);
+  border: 1.5px solid var(--color-gray-disabled-fill);
+  border-radius: var(--radius-lg);
+  padding: var(--space-16) var(--space-12);
+  font: var(--text-body-medium);
+  color: var(--color-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+.subText {
+  font: var(--text-caption-regular);
+  color: var(--color-gray-disabled-text);
+  margin-top: var(--space-4);
+  display: inline-block;
+}
+
+.methodBtn:hover {
+  border-color: var(--color-gray-disabled-text);
+  background-color: var(--color-text-gray-50);
+}
+
+.methodBtn.active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.methodBtn.active .subText {
+  color: var(--color-secondary);
+}
+
+.cardFormWrapper {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.cardFormWrapper.show {
+  max-height: 400px;
+  opacity: 1;
+  margin-bottom: var(--space-24);
+}
+
+.cardForm {
+  background-color: var(--color-text-gray-50);
+  padding: var(--space-24);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-disabled-fill);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.formRow {
+  display: flex;
+  gap: var(--space-16);
+}
+
+.flex1 {
+  flex: 1;
+  min-width: 0;
+}
+
+.agreementSection {
+  margin-bottom: var(--space-36);
+  padding-top: var(--space-16);
+}
+
+.submitBtn {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .checkoutCard {
+    padding: var(--space-24) var(--space-16);
+    border-radius: var(--radius-lg);
+  }
+  
+  .paymentMethods {
+    flex-direction: column;
+  }
+}
