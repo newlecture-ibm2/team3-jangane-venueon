@@ -1,0 +1,64 @@
+/* src/components/ui/CommunityPostItem.module.css */
+
+/* --------- 기본(default) 상태 --------- */
+.item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: var(--space-16);
+  gap: var(--space-12);
+  width: 100%;
+  box-sizing: border-box;
+
+  background: var(--color-text-gray-50);  /* #F9FAFB */
+  border-radius: var(--radius-md);        /* 8px */
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* --------- 선택(selected) 상태 --------- */
+.selected {
+  background: var(--color-text-gray-900); /* #111827 */
+}
+
+/* --------- 제목 --------- */
+.title {
+  font: var(--text-body-bold);            /* 700 14px/150% */
+  color: var(--color-text-gray-900);      /* #111827 */
+  margin: 0;
+  align-self: stretch;
+
+  /* 2줄 말줄임 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.selected .title {
+  color: var(--color-text-white);         /* #FFFFFF */
+}
+
+/* --------- 하단 메타 행 (프로필 + 날짜) --------- */
+.meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-8);
+  align-self: stretch;
+}
+
+/* --------- 날짜 --------- */
+.date {
+  font: var(--text-caption-regular);      /* 400 12px/150% */
+  color: var(--color-text-gray-500);      /* #6B7280 */
+  margin-left: auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.selected .date {
+  color: var(--color-text-gray-300);      /* #D1D5DB */
+}
