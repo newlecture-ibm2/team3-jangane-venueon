@@ -1,0 +1,93 @@
+/* src/app/mypage/profile/page.module.css */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-24);
+  width: 100%;
+}
+
+.pageTitle {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--font-size-h1);
+  /* 24px */
+  line-height: var(--main-line-height);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.profileSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 458px;
+  /* Figma: 458px */
+  padding-top: var(--space-24);
+  gap: var(--space-32);
+}
+
+/* 프로필 이미지 (Frame 93) */
+.imageRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-24);
+}
+
+/* 공용 UserProfile 72px 커스텀 및 이름 숨김 처리 */
+.customProfile {
+  height: 72px; 
+}
+
+/* UserProfile 내 이미지 컨테이너 크기 강제 */
+.customProfile > div { 
+  width: 72px !important;
+  height: 72px !important;
+}
+
+/* 프로필 컴포넌트 내 텍스트(이름) 숨김 (Figma엔 사진만 있음) */
+.customProfile > span {
+  display: none !important;
+}
+
+/* 이미지 조작 버튼 영역 (Frame 94) */
+.imageButtons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-12); /* 12px gap! */
+}
+
+/* 두 버튼 모두 130px 너비로 고정 */
+.imageButtons > button {
+  width: 130px !important;
+}
+
+/* 입력 필드 폼 영역 */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 410px;
+  gap: var(--space-24); /* 입력 필드 사이 간격 */
+}
+
+/* 하단 버튼 영역 (Frame 54) */
+.actionButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: var(--space-12);
+  width: 100%;
+  max-width: 410px;
+  margin-top: var(--space-8);
+}
+
+.actionButtons>button {
+  flex: 1;
+  /* 너비를 똑같이 반반씩 나눠가짐 */
+}

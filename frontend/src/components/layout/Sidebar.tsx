@@ -1,9 +1,10 @@
 'use client'; // URL 경로 추적을 위해 클라이언트 렌더링 필요
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import styles from './Sidebar.module.css';
+import ConfirmModal from '@/components/modal/ConfirmModal';
 
 import { 
   DashboardIcon, 
@@ -14,7 +15,8 @@ import {
   LogoutIcon,
   SeminarSettingIcon,
   ReportIcon,
-  DelayedRefundIcon
+  DelayedRefundIcon,
+  SecurityIcon
 } from '@/components/icons';
 
 export interface SidebarProps {
@@ -29,9 +31,10 @@ interface SidebarItemProps {
   href: string;
   isActive?: boolean;
   isDanger?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
-function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = false }: SidebarItemProps) {
+function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = false, onClick }: SidebarItemProps) {
   let itemStyle = styles.default;
   if (isDanger) {
     itemStyle = styles.danger;
@@ -39,13 +42,32 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
     itemStyle = styles.selected;
   }
 
+  const content = (
+    <>
+      <Icon className={styles.icon} />
+      <span className={styles.label}>{label}</span>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button 
+        type="button"
+        onClick={onClick}
+        className={`${styles.item} ${itemStyle}`}
+        style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}
+      >
+        {content}
+      </button>
+    );
+  }
+
   return (
     <Link 
       href={href} 
       className={`${styles.item} ${itemStyle}`}
     >
-      <Icon className={styles.icon} />
-      <span className={styles.label}>{label}</span>
+      {content}
     </Link>
   );
 }
@@ -53,6 +75,16 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
 export default function Sidebar({ role = 'user', className = '', fakePathname }: SidebarProps) {
   const actualPathname = usePathname() || '';
   const pathname = fakePathname || actualPathname;
+  const router = useRouter();
+
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  // 로그아웃 확인 클릭 시 동작 (가상의 로그아웃 후 로그인 페이지 이동)
+  const handleLogoutConfirm = () => {
+    setIsLogoutModalOpen(false);
+    // TODO: 실제 로그아웃 로직(API 호출, 토큰 삭제 등)은 이곳에 추가
+    router.push('/login');
+  };
 
   const getMenus = () => {
     switch(role) {
@@ -77,8 +109,9 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
       case 'user':
       default:
         return [
-          { label: '내 강의 목록', href: '/seminars', icon: SeminarIcon },
-          { label: '프로필 설정', href: '/profile', icon: ProfileIcon },
+          { label: '내 강의 목록', href: '/mypage', icon: SeminarIcon },
+          { label: '프로필 설정', href: '/mypage/profile', icon: ProfileIcon },
+          { label: '계정 보안', href: '/mypage/security', icon: SecurityIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
     }
@@ -86,13 +119,25 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
 
   const menus = getMenus();
 
+  // 현재 pathname에 대해 가장 구체적으로 일치하는(가장 긴) 메뉴를 찾습니다.
+  // 예: /mypage/profile 이면 /mypage 보다는 /mypage/profile 이 선택되도록 합니다.
+  const activeMenu = menus.reduce((bestMatch, menu) => {
+    if (pathname === menu.href || pathname.startsWith(`${menu.href}/`)) {
+      if (!bestMatch || menu.href.length > bestMatch.href.length) {
+        return menu;
+      }
+    }
+    return bestMatch;
+  }, null as any);
+
   return (
     <aside 
       className={`${styles.sidebar} ${className}`.trim()}
       style={{ height: 'calc(100vh - 40px)' }}
     >
       {menus.map((menu) => {
-        const isActive = pathname === menu.href || pathname.startsWith(`${menu.href}/`);
+        const isActive = activeMenu?.href === menu.href;
+        const isLogout = menu.href === '/logout';
         return (
           <SidebarItem
             key={menu.href}
@@ -100,10 +145,20 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
             label={menu.label}
             href={menu.href}
             isActive={isActive}
-            isDanger={menu.href === '/logout'}
+            isDanger={isLogout}
+            onClick={isLogout ? (e) => { e.preventDefault(); setIsLogoutModalOpen(true); } : undefined}
           />
         );
       })}
+
+      <ConfirmModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogoutConfirm}
+        title="로그아웃 하시겠습니까?"
+        cancelText="취소"
+        confirmText="로그아웃"
+      />
     </aside>
   );
 }
