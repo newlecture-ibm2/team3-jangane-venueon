@@ -16,7 +16,9 @@ import {
   SeminarSettingIcon,
   ReportIcon,
   DelayedRefundIcon,
-  SecurityIcon
+  SecurityIcon,
+  OrderIcon,
+  WishlistIcon
 } from '@/components/icons';
 
 export interface SidebarProps {
@@ -110,6 +112,8 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
       default:
         return [
           { label: '내 강의 목록', href: '/mypage', icon: SeminarIcon },
+          { label: '결제 내역', href: '/mypage/orders', icon: OrderIcon },
+          { label: '관심 목록', href: '/mypage/wishlist', icon: WishlistIcon },
           { label: '프로필 설정', href: '/mypage/profile', icon: ProfileIcon },
           { label: '계정 보안', href: '/mypage/security', icon: SecurityIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },

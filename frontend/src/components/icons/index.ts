@@ -28,3 +28,5 @@ export { default as AttentionIcon } from './AttentionIcon';
 export { default as ToastSuccessIcon } from './ToastSuccessIcon';
 export { default as ToastFailIcon } from './ToastFailIcon';
 export { default as SecurityIcon } from './SecurityIcon';
+export { default as OrderIcon } from './OrderIcon';
+export { default as WishlistIcon } from './WishlistIcon';

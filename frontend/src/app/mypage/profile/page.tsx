@@ -1,33 +1,61 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Button, InputField, UserProfile } from '@/components/ui';
 import UploadModal from '@/components/modal/UploadModal';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useUIStore } from '@/store/useUIStore';
+import { useAuth } from '@/store/useAuthStore';
 import styles from './page.module.css';
 
 export default function ProfileSettingsPage() {
   const { showToast } = useUIStore();
 
-  // 실제 DB에서 가져온 초기 데이터라고 가정 (저장 후 기준점을 바꾸기 위해 상태로 관리)
-  const [baseImage, setBaseImage] = useState<string | undefined>('https://i.pravatar.cc/150?img=11');
-  const [baseId, setBaseId] = useState('user123');
-  const [baseName, setBaseName] = useState('장회원');
+  const [baseImage, setBaseImage] = useState<string | undefined>(undefined);
+  const [baseEmail, setBaseEmail] = useState('');
+  const [baseName, setBaseName] = useState('');
 
   const [profileImage, setProfileImage] = useState<string | undefined>(baseImage);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [userId, setUserId] = useState(baseId);
+  const [userEmail, setUserEmail] = useState(baseEmail);
   const [userName, setUserName] = useState(baseName);
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
+  // 초기 프로필 데이터 로드
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch('/api/auth/me'); // BFF proxy (iron-session) handles JWT
+        if (res.ok) {
+          const data = await res.json();
+          // Assume data is { id, email, nickname, profileImg, role }
+          const fetchedEmail = data.email || '';
+          const fetchedName = data.nickname || '';
+          // DB에 null이면 기본 아바타 아이콘이 뜨도록 undefined 로 세팅
+          const fetchedImg = data.profileImg || undefined;
+
+          setBaseEmail(fetchedEmail);
+          setBaseName(fetchedName);
+          setBaseImage(fetchedImg);
+
+          setUserEmail(fetchedEmail);
+          setUserName(fetchedName);
+          setProfileImage(fetchedImg);
+        }
+      } catch (err) {
+        console.error("Failed to load profile", err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   // 수정된 사항이 하나라도 있는지 확인 (버튼 활성화 여부 판별)
   const isDirty =
     profileImage !== baseImage ||
-    userId !== baseId ||
     userName !== baseName;
 
   // '사진 변경' 클릭 시 모달 열기
@@ -69,22 +97,47 @@ export default function ProfileSettingsPage() {
     }
     setProfileImage(baseImage);
     setSelectedFile(null);
-    setUserId(baseId);
     setUserName(baseName);
     setIsCancelModalOpen(false);
   };
 
-  // '저장' 버튼 클릭 시 (백엔드 연동 전 임시 로직)
-  const handleSave = () => {
-    // TODO: 백엔드 연결 시 여기에 fetch(API) 로직 추가
+  // 저장(확인) 클릭 - 실제 백엔드 연동 부분
+  const handleSave = async () => {
+    try {
+      // 프론트 Proxy 경로 (자동으로 /v1/users/me/profile 로 치환되며, 헤더에 토큰 자동 포함됨)
+      const res = await fetch('/api/v1/users/me/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nickname: userName,
+          profileImg: profileImage, // 원본 로직 유지 (단순 문자열로 이미지 전송)
+        }),
+      });
 
-    // 저장 성공 후 현재 상태를 '초기 상태'로 갱신 (빠른 화면 반영)
-    setBaseImage(profileImage);
-    setBaseId(userId);
-    setBaseName(userName);
-
-    // 촌스러운 브라우저 alert 대신 디자인 시스템의 Toast 메시지를 띄움
-    showToast('성공적으로 저장되었습니다.', 'success');
+      if (res.ok) {
+        setBaseImage(profileImage);
+        setBaseEmail(userEmail);
+        setBaseName(userName);
+        showToast('내 정보 수정이 완료되었습니다.', 'success');
+        
+        // 헤더 갱신 (저장 성공 시) - 강제로 로컬 스토어의 유저 정보 동기화
+        const { updateUser } = useAuth.getState();
+        updateUser({ nickname: userName, profileImg: profileImage });
+      } else {
+        const errorText = await res.text();
+        try {
+          const errorData = JSON.parse(errorText);
+          showToast(errorData.message || '저장 중 오류가 발생했습니다.', 'error');
+        } catch {
+          showToast(`오류가 발생했습니다: ${res.status} ${errorText.substring(0, 50)}`, 'error');
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      showToast('네트워크 오류가 발생했습니다.', 'error');
+    }
   };
 
   return (
@@ -117,14 +170,13 @@ export default function ProfileSettingsPage() {
               </div>
             </div>
 
-            {/* 입력 폼 (Frame 92) */}
+            {/* 입력 폼 */}
             <div className={styles.formGroup}>
-              {/* 아이디 확인/수정 폼 */}
+              {/* 이메일 (수정 불가) */}
               <InputField
-                label="아이디"
-                placeholder="아이디를 입력하세요"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
+                label="이메일"
+                value={userEmail}
+                disabled
               />
               {/* 이름 확인/수정 폼 */}
               <InputField

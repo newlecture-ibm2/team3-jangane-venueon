@@ -5,6 +5,7 @@ interface User {
   id?: number;
   email?: string;
   nickname?: string;
+  profileImg?: string;
   role?: "ADMIN" | "HOST" | "USER";
 }
 
@@ -14,6 +15,7 @@ interface AuthState {
   isLoading: boolean;
   checkSession: () => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 export const useAuth = create<AuthState>((set) => ({
@@ -41,5 +43,10 @@ export const useAuth = create<AuthState>((set) => ({
     } catch (e) {
       console.error(e);
     }
+  },
+  updateUser: (updates) => {
+    set((state) => ({
+      user: state.user ? { ...state.user, ...updates } : null
+    }));
   }
 }));

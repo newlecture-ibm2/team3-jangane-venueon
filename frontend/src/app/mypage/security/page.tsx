@@ -36,19 +36,43 @@ export default function SecuritySettingsPage() {
     setIsCancelModalOpen(false);
   };
 
-  const handleSave = () => {
-    if (isPasswordMismatch) {
+  const handleSave = async () => {
+    if (isPasswordMismatch || !currentPassword || !newPassword) {
+      showToast('비밀번호 입력을 확인해주세요.', 'error');
       return;
     }
     
-    // TODO: 백엔드 연결 시 실제 비밀번호 검증 및 변경 API 호출
+    try {
+      const res = await fetch('/api/v1/users/me/password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
 
-    // 2. 초기화 동작
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-
-    showToast('비밀번호가 성공적으로 변경되었습니다.', 'success');
+      if (res.ok) {
+        // 성공 시 초기화
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        showToast('비밀번호가 성공적으로 변경되었습니다.', 'success');
+      } else {
+        const errorText = await res.text();
+        try {
+          const errorData = JSON.parse(errorText);
+          showToast(errorData.message || '비밀번호 변경 중 오류가 발생했습니다.', 'error');
+        } catch {
+          showToast(`오류가 발생했습니다: ${res.status} ${errorText.substring(0, 50)}`, 'error');
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      showToast('네트워크 오류가 발생했습니다.', 'error');
+    }
   };
 
   return (

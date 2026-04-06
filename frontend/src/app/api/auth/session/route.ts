@@ -14,6 +14,7 @@ export async function GET() {
         id: session.userId,
         email: session.email,
         nickname: session.nickname,
+        profileImg: session.profileImg,
         role: session.role,
       },
     });
