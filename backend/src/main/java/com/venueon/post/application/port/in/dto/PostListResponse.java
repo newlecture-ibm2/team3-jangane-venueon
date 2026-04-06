@@ -1,6 +1,5 @@
 package com.venueon.post.application.port.in.dto;
 
-import com.venueon.post.adapter.out.persistence.entity.PostJpaEntity;
 import com.venueon.post.domain.model.PostType;
 
 import java.time.LocalDateTime;
@@ -18,18 +17,4 @@ public record PostListResponse(
         int commentCount,
         LocalDateTime createdAt
 ) {
-    /**
-     * JPA Entity → 응답 DTO 변환 정적 팩토리 메서드
-     */
-    public static PostListResponse from(PostJpaEntity entity) {
-        return new PostListResponse(
-                entity.getId(),
-                entity.getTitle(),
-                entity.getType(),
-                entity.getAuthor().getNickname(),
-                entity.getViewCount(),
-                entity.getCommentCount(),
-                entity.getCreatedAt()
-        );
-    }
 }
