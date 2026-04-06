@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getIronSession } from "iron-session";
+import { cookies } from "next/headers";
+import { SessionData, sessionOptions } from "@/lib/session";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -33,3 +36,39 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const cookieStore = await cookies();
+    const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
+    
+    // 임시로 로그인 안된 경우 테스트용 5번 유저 (추후 수정)
+    const userId = session.userId || 5;
+
+    const body = await request.json();
+
+    const response = await fetch(`${API_BASE_URL}/host/events`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-User-Id": userId.toString()
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return NextResponse.json(errorData, { status: response.status });
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: 201 });
+  } catch (error) {
+    console.error("Failed to create event:", error);
+    return NextResponse.json(
+      { status: "ERROR", message: "Failed to create event", data: null },
+      { status: 500 }
+    );
+  }
+}
+
