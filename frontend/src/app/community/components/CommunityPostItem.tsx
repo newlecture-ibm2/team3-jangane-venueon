@@ -2,7 +2,7 @@
 
 import React from 'react';
 import styles from './CommunityPostItem.module.css';
-import UserProfile from './UserProfile';
+import UserProfile from '@/components/ui/UserProfile';
 
 export interface CommunityPostItemProps {
   /** 게시글 제목 */
