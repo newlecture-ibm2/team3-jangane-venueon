@@ -3,7 +3,8 @@
 > **작성일:** 2026-04-02  
 > **기반:** 목표 아키텍처 v5 + 최종 기능·페이지 정의서 v2  
 > **이전 버전:** VenueOn_최종_API_스펙_v5.md  
-> **Base URL:** `/api/v1`  
+> **규칙:** 모든 백엔드 경로에 `/api` 미포함 (프론트엔드 BFF에서만 `/api/` 접두사 사용)
+> **Base URL:** `/v1`
 > **인증:** JWT Bearer Token (`Authorization: Bearer {token}`)  
 > **공통 응답:** `{ "status": "SUCCESS|ERROR", "data": {...}, "message": "..." }`
 
@@ -70,7 +71,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 
 ---
 
-## 📌 1. User 모듈 (`/api/v1/auth`, `/api/v1/users`)
+## 📌 1. User 모듈 (`/v1/auth`, `/v1/users`)
 
 ### 1-1. 인증 API
 
@@ -203,7 +204,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 
 ---
 
-## 📌 2. Event 모듈 (`/api/v1/events`)
+## 📌 2. Event 모듈 (`/v1/events`)
 
 ### 2-1. 이벤트 목록/검색 API
 
@@ -418,7 +419,7 @@ Query Parameters:
 
 ---
 
-## 📌 3. Community 모듈 (`/api/v1/communities`)
+## 📌 3. Community 모듈 (`/v1/communities`)
 
 ### 3-1. 커뮤니티 CRUD API
 
@@ -518,7 +519,7 @@ Query Parameters:
 
 ---
 
-## 📌 4. Order 모듈 (`/api/v1/orders`) — 결제/환불
+## 📌 4. Order 모듈 (`/v1/orders`) — 결제/환불
 
 ### 4-1. 주문/결제 API
 
@@ -631,7 +632,7 @@ Query Parameters:
 }
 ```
 
-## 📌 5. Wishlist / Cart 모듈 (`/api/v1/wishlist`, `/api/v1/cart`)
+## 📌 5. Wishlist / Cart 모듈 (`/v1/wishlist`, `/v1/cart`)
 
 ### 5-1. 찜 목록 API
 
@@ -696,7 +697,7 @@ Query Parameters:
 
 ---
 
-## 📌 6. Badge 모듈 (`/api/v1/badges`)
+## 📌 6. Badge 모듈 (`/v1/badges`)
 
 ### 6-1. 뱃지 관리 API
 
@@ -736,7 +737,7 @@ Query Parameters:
 
 ---
 
-## 📌 7. Notification 모듈 (`/api/v1/notifications`)
+## 📌 7. Notification 모듈 (`/v1/notifications`)
 
 ### 7-1. 알림 API
 
@@ -786,7 +787,7 @@ Query Parameters:
 
 ---
 
-## 📌 8. Report 모듈 (`/api/v1/reports`)
+## 📌 8. Report 모듈 (`/v1/reports`)
 
 ### 8-1. 신고 API
 
@@ -824,7 +825,7 @@ Query Parameters:
 
 ---
 
-## 📌 9. Admin 모듈 (`/api/v1/admin`)
+## 📌 9. Admin 모듈 (`/v1/admin`)
 
 ### 9-1. 대시보드 API
 
@@ -959,7 +960,7 @@ Query Parameters:
 
 ---
 
-## 📌 10. Notice 모듈 (`/api/v1/notices`, `/api/v1/requests`)
+## 📌 10. Notice 모듈 (`/v1/notices`, `/v1/requests`)
 
 ### 10-1. 공지사항 API
 
@@ -1019,7 +1020,7 @@ GET /notices Query Parameters:
 
 ---
 
-## 📌 11. 마이페이지 통합 API (`/api/v1/mypage`)
+## 📌 11. 마이페이지 통합 API (`/v1/mypage`)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -1033,7 +1034,7 @@ GET /notices Query Parameters:
 
 ---
 
-## 📌 12. 파일 업로드 API (`/api/v1/upload`)
+## 📌 12. 파일 업로드 API (`/v1/upload`)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
