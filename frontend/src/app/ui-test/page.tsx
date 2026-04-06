@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommunityPostItem, CommentInput, CommunityCommentItem } from '@/components/ui';
+import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput } from '@/components/ui';
+import CommunityPostItem from '@/app/community/components/CommunityPostItem';
+import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import { ConfirmModal, InputModal, UploadModal, PaymentModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 
