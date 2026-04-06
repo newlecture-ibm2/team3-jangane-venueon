@@ -18,6 +18,16 @@ interface PostListResponse {
   createdAt: string;
 }
 
+interface CommentResponse {
+  id: number;
+  postId: number;
+  authorId: number;
+  authorNickname: string;
+  content: string;
+  parentId: number | null;
+  createdAt: string;
+}
+
 interface PageData {
   content: PostListResponse[];
   totalPages: number;
@@ -37,6 +47,9 @@ export default function CommunityPostContainer({ communityId }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [comments, setComments] = useState<CommentResponse[]>([]);
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false);
+  const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -64,9 +77,57 @@ export default function CommunityPostContainer({ communityId }: Props) {
     }
   };
 
+  const fetchComments = async (postId: number) => {
+    setIsCommentsLoading(true);
+    try {
+      const response = await fetch(`/api/comments?postId=${postId}`);
+      if (!response.ok) throw new Error('댓글을 불러오는데 실패했습니다.');
+      const data = await response.json();
+      setComments(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsCommentsLoading(false);
+    }
+  };
+
+  const handleCommentSubmit = async (value: string) => {
+    if (!selectedPostId || isCommentSubmitting) return;
+
+    setIsCommentSubmitting(true);
+    try {
+      const response = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postId: selectedPostId,
+          content: value,
+          parentId: null // 나중에 대댓글 구현 시 확장
+        }),
+      });
+
+      if (!response.ok) throw new Error('댓글 등록 실패');
+
+      showToast('댓글 등록 완료', 'success');
+      // 댓글 목록 갱신
+      fetchComments(selectedPostId);
+    } catch (error) {
+      console.error(error);
+      showToast('댓글 등록 실패', 'error', '서버 오류가 발생했습니다.');
+    } finally {
+      setIsCommentSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     fetchPosts();
   }, [communityId, currentPage]);
+
+  useEffect(() => {
+    if (selectedPostId) {
+      fetchComments(selectedPostId);
+    }
+  }, [selectedPostId]);
 
   const selectedPost = posts.find(p => p.id === selectedPostId) || null;
 
@@ -141,7 +202,7 @@ export default function CommunityPostContainer({ communityId }: Props) {
                         <UserProfile name={selectedPost.authorNickname} size="medium" />
                     </div>
                     <div className={styles.contentWrapper}>
-                        {selectedPost.content.split('\n').map((line, index) => (
+                        {selectedPost.content?.split('\n').map((line, index) => (
                             <React.Fragment key={index}>
                                 {line}
                                 <br />
@@ -152,23 +213,30 @@ export default function CommunityPostContainer({ communityId }: Props) {
 
                 {/* 2-3. 댓글 입력 영역 */}
                 <div className={styles.commentInputWrapper}>
-                   <CommentInput onSubmit={() => showToast('댓글 등록 준비중', 'success')} />
+                   <CommentInput 
+                     onSubmit={handleCommentSubmit} 
+                     disabled={isCommentSubmitting}
+                     placeholder={isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요.."}
+                   />
                 </div>
 
-                {/* 2-4. 댓글 리스트 영역 (더미 데이터) */}
+                {/* 2-4. 댓글 리스트 영역 */}
                 <div className={styles.commentList}>
-                     <CommunityCommentItem
-                        username="디자인킴"
-                        date="2026.03.30 / 10:45"
-                        content="저도 프롬프트 지니 쓰다가 최근에는 클로드로 넘어왔는데, 마케팅 문구는 클로드가 훨씬 자연스러운 것 같아요!"
-                        menuItems={[{ value: 'report', label: '신고하기' }]}
-                     />
-                     <CommunityCommentItem
-                        username="데이터분석가"
-                        date="2026.03.30 / 10:55"
-                        content="프롬프트 고도화 관련해서는 강사님이 지난주에 올려주신 보충 자료 영상 보시면 완전 도움 될 거예요!"
-                        menuItems={[{ value: 'report', label: '신고하기' }]}
-                     />
+                     {isCommentsLoading ? (
+                        <div className={styles.commentStatus}>댓글을 불러오는 중...</div>
+                     ) : comments.length === 0 ? (
+                        <div className={styles.commentStatus}>첫 번째 댓글을 남겨보세요!</div>
+                     ) : (
+                        comments.map(comment => (
+                          <CommunityCommentItem
+                             key={comment.id}
+                             username={comment.authorNickname}
+                             date={new Date(comment.createdAt).toLocaleDateString() + ' / ' + new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                             content={comment.content}
+                             menuItems={[{ value: 'report', label: '신고하기' }]}
+                          />
+                        ))
+                     )}
                 </div>
               </>
           ) : (
