@@ -16,6 +16,7 @@ public class User {
     private UserRole role;
     private String profileImg;
     private String phone;
+    private boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -24,7 +25,7 @@ public class User {
 
     // 전체 필드 생성자
     public User(Long id, String email, String password, String nickname, UserRole role,
-                String profileImg, String phone,
+                String profileImg, String phone, boolean active,
                 LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.email = email;
@@ -33,6 +34,7 @@ public class User {
         this.role = role;
         this.profileImg = profileImg;
         this.phone = phone;
+        this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -53,6 +55,46 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * 역할 변경 (어드민 전용)
+     */
+    public void changeRole(UserRole newRole) {
+        this.role = newRole;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 닉네임 변경 (어드민 전용)
+     */
+    public void changeNickname(String newNickname) {
+        this.nickname = newNickname;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 전화번호 변경 (어드민 전용)
+     */
+    public void changePhone(String newPhone) {
+        this.phone = newPhone;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 계정 비활성화 (정지)
+     */
+    public void deactivate() {
+        this.active = false;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 계정 활성화 (정지 해제)
+     */
+    public void activate() {
+        this.active = true;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     // --- Getters ---
 
     public Long getId() { return id; }
@@ -62,7 +104,7 @@ public class User {
     public UserRole getRole() { return role; }
     public String getProfileImg() { return profileImg; }
     public String getPhone() { return phone; }
+    public boolean isActive() { return active; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
-

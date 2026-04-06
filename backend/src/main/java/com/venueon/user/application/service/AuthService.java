@@ -56,7 +56,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
 
         // 도메인 모델 생성 및 저장
         User user = new User(null, email, encodedPassword, nickname, userRole,
-                null, null, null, null);
+                null, null, true, null, null);
         User savedUser = userRepositoryPort.save(user);
 
         log.info("회원가입 완료: email={}, role={}", email, userRole);
@@ -78,7 +78,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
 
         // User 저장 (role=HOST)
         User user = new User(null, email, encodedPassword, managerName, UserRole.HOST,
-                null, null, null, null);
+                null, null, true, null, null);
         User savedUser = userRepositoryPort.save(user);
 
         // HostProfile 저장

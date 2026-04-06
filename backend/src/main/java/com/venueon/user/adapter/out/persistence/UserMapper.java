@@ -22,6 +22,7 @@ public class UserMapper {
                 .role(user.getRole())
                 .profileImg(user.getProfileImg())
                 .phone(user.getPhone())
+                .isActive(user.isActive())
                 .build();
     }
 
@@ -37,9 +38,9 @@ public class UserMapper {
                 entity.getRole(),
                 entity.getProfileImg(),
                 entity.getPhone(),
+                entity.isActive(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
     }
 }
-

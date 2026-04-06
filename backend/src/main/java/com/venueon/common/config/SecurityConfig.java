@@ -41,6 +41,8 @@ public class SecurityConfig {
                 .requestMatchers("/images/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
                 // /auth/me — 인증 필요
                 .requestMatchers("/auth/me").authenticated()
+                // /admin/** — ADMIN 권한 필요
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 // 그 외 기존 경로는 일단 허용 (점진적으로 보호 추가 예정)
                 .anyRequest().permitAll()
             )
