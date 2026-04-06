@@ -16,4 +16,6 @@ public interface EventRepositoryPort {
     Page<Event> findAll(EventSearchCondition condition, Pageable pageable);
 
     Optional<Event> findById(Long id);
+
+    Event save(Event event);
 }
