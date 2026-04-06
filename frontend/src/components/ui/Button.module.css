@@ -21,7 +21,7 @@
 
 .medium {
   padding: var(--space-8) var(--space-16);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   height: var(--space-36);
 }
 
