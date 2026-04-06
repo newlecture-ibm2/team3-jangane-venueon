@@ -1,0 +1,142 @@
+.container {
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 탭과 검색바를 같은 행에 배치하기 위한 헤더 영역 */
+.tableHeaderArea {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* 강조선 높이 일치 */
+  margin-bottom: var(--space-24);
+  border-bottom: 1px solid transparent; /* 가로선은 탭에만 위치 */
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-24);
+}
+
+.tab {
+  padding-bottom: var(--space-8);
+  font-family: 'Inter';
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 150%;
+  color: #6B7280;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-bottom: -1px; /* 부모 경계와 겹침 처리 */
+}
+
+.activeTab {
+  color: #111827;
+  border-bottom-color: #111827;
+}
+
+.searchWrapper {
+  width: 320px;
+  padding-bottom: var(--space-4); /* 탭 강조선과 대략적인 수평 균형 */
+}
+
+.tableContainer {
+  width: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 14px;
+  color: #6B7280;
+  padding: 16px 8px;
+  text-align: left;
+  border-bottom: 1px solid #D1D5DB;
+}
+
+.table td {
+  height: 80px;
+  padding: 16px 8px;
+  border-bottom: 1px solid #F3F4F6;
+  vertical-align: middle;
+}
+
+/* 퍼센티지 기반으로 반응형 확보 */
+.colStudent { width: 25%; }
+.colLecture { width: 45%; }
+.colAmount { width: 15%; }
+.colStatus { width: 10%; }
+.colMore { width: 5%; text-align: right; }
+
+.reportTitleCol { width: 65%; font-weight: 500; }
+.reportAuthorCol { width: 15%; }
+.reportCountCol { width: 15%; }
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  background: #1B10B9;
+  border-radius: 123px;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-weight: 700;
+  font-size: 14px;
+  color: #374151;
+}
+
+.lectureTitle {
+  font-size: 14px;
+  color: #374151;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.amount {
+  font-weight: 700;
+  color: #374151;
+}
+
+.statusBadge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 8px;
+  background: #FEF2F2;
+  border: 1px solid #991B1B;
+  border-radius: 4px;
+  color: #991B1B;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.iconButton {
+  border: none;
+  background: transparent;
+  padding: 8px;
+  cursor: pointer;
+  color: #6B7280;
+}
+
+.paginationArea {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
