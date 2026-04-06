@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './Dropdown.module.css';
 import { ArrowDownIcon } from '@/components/icons';
+import PopoverMenu from './PopoverMenu';
 
 export interface DropdownOption {
   value: string;
@@ -54,7 +55,7 @@ export default function Dropdown({
     if (onChange) {
       onChange(val);
     }
-    setIsOpen(false); // 선택 후 메뉴 닫기
+    setIsOpen(false);
   };
 
   return (
@@ -80,24 +81,19 @@ export default function Dropdown({
         </div>
       </div>
 
-      {/* 3. 드롭다운 팝업 리스트 */}
+      {/* 3. 드롭다운 팝업 리스트 — PopoverMenu 재사용 */}
       {isOpen && (
-        <div className={styles.list}>
-          {options.map((opt) => {
-            const isSelected = opt.value === value;
-            return (
-              <div 
-                key={opt.value} 
-                className={`${styles.menuItem} ${isSelected ? styles.menuItemSelected : ''}`}
-                onClick={() => handleSelect(opt.value)}
-              >
-                <span className={styles.menuItemText}>{opt.label}</span>
-              </div>
-            );
-          })}
-        </div>
+        <PopoverMenu
+          items={options}
+          onSelect={handleSelect}
+          onClose={() => setIsOpen(false)}
+          selectedValue={value}
+          width="100%"
+          style={{ top: '100%', left: 0, marginTop: '4px' }}
+        />
       )}
       
     </div>
   );
 }
+

@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField } from '@/components/ui';
+import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput } from '@/components/ui';
+import CommunityPostItem from '@/app/community/components/CommunityPostItem';
+import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import { ConfirmModal, InputModal, UploadModal, PaymentModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 
@@ -437,6 +439,78 @@ export default function UITestPage() {
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <Button variant="primary" onClick={() => showToast('저장이 완료되었습니다.', 'success', '성공적으로 데이터를 저장했습니다.')}>Success 토스트</Button>
           <Button variant="outlined" onClick={() => showToast('결제에 실패했습니다.', 'error', '잔액이 부족하거나 네트웍 오류입니다.')}>Fail 토스트</Button>
+        </div>
+      </div>
+
+      {/* 17. Community Components */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>17. Community Components</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+
+          {/* CommunityPostItem */}
+          <div>
+            <p style={{ marginBottom: '12px', color: '#6B7280' }}>CommunityPostItem (게시글 목록 아이템)</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '400px' }}>
+              <CommunityPostItem
+                title="이번 세미나 듣고 실무에 바로 적용해본 후기 + 궁금한 점"
+                username="사용자 이름"
+                date="2026.03.30 / 10:35"
+                selected={true}
+              />
+              <CommunityPostItem
+                title="이번 세미나 듣고 실무에 바로 적용해본 후기 + 궁금한 점"
+                username="사용자 이름"
+                date="2026.03.30 / 10:35"
+                selected={false}
+              />
+              <CommunityPostItem
+                title="프론트엔드 개발자가 알아야 할 디자인 시스템 구축 방법론과 실전 사례 공유"
+                username="김디자인"
+                date="2026.04.01 / 09:15"
+                selected={false}
+              />
+            </div>
+          </div>
+
+          {/* CommentInput */}
+          <div>
+            <p style={{ marginBottom: '12px', color: '#6B7280' }}>CommentInput (댓글 입력)</p>
+            <div style={{ maxWidth: '600px' }}>
+              <CommentInput
+                onSubmit={(value) => alert(`댓글 등록: ${value}`)}
+              />
+            </div>
+          </div>
+
+          {/* CommunityCommentItem */}
+          <div>
+            <p style={{ marginBottom: '12px', color: '#6B7280' }}>CommunityCommentItem (댓글 표시)</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '600px' }}>
+              <CommunityCommentItem
+                username="사용자 이름"
+                date="2026.03.30 / 10:35"
+                content="저도 프롬프트 지니 쓰다가 최근에는 클로드로 넘어왔는데, 마케팅 문구는 클로드가 훨씬 자연스러운 것 같아요!"
+                menuItems={[
+                  { value: 'edit', label: '수정하기' },
+                  { value: 'delete', label: '삭제하기' },
+                  { value: 'report', label: '신고하기' },
+                ]}
+                onMenuSelect={(v) => alert(`선택: ${v}`)}
+              />
+              <CommunityCommentItem
+                username="김개발"
+                date="2026.04.02 / 14:20"
+                content="세미나 자료 공유해주실 수 있나요? 정말 유익한 내용이었습니다."
+                menuItems={[
+                  { value: 'edit', label: '수정하기' },
+                  { value: 'delete', label: '삭제하기' },
+                  { value: 'report', label: '신고하기' },
+                ]}
+                onMenuSelect={(v) => alert(`선택: ${v}`)}
+              />
+            </div>
+          </div>
+
         </div>
       </div>
 
