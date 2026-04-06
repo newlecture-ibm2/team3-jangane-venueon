@@ -84,7 +84,9 @@ graph TB
         SEC["Spring Security<br/>JWT 검증 + 인가"]
         UM["user 모듈<br/>회원/인증/마이페이지"]
         EM["event 모듈<br/>이벤트/티켓/결제"]
-        CM["community 모듈<br/>커뮤니티/게시글"]
+        CM["community 모듈<br/>커뮤니티 CRUD/멤버"]
+        PM["post 모듈<br/>게시글 CRUD"]
+        CMT["comment 모듈<br/>댓글/대댓글"]
         RM["🆕 report 모듈<br/>신고/환불"]
         AM["🆕 admin 모듈<br/>관리자 대시보드"]
         COMMON["common 모듈<br/>공통 DTO/예외/어노테이션"]
@@ -99,6 +101,8 @@ graph TB
     SEC --> UM
     SEC --> EM
     SEC --> CM
+    SEC --> PM
+    SEC --> CMT
     SEC --> RM
     SEC --> AM
 
@@ -106,13 +110,17 @@ graph TB
     UM --> RD
     EM --> PG
     CM --> PG
+    PM --> PG
+    CMT --> PG
     RM --> PG
     AM --> PG
 
     EM -.->|"메서드 호출 (같은 JVM)"| UM
     CM -.->|"메서드 호출 (같은 JVM)"| EM
+    PM -.->|"메서드 호출 (같은 JVM)"| CM
+    CMT -.->|"메서드 호출 (같은 JVM)"| PM
     RM -.->|"메서드 호출 (같은 JVM)"| EM
-    RM -.->|"메서드 호출 (같은 JVM)"| CM
+    RM -.->|"메서드 호출 (같은 JVM)"| PM
     AM -.->|"메서드 호출 (같은 JVM)"| UM
     AM -.->|"메서드 호출 (같은 JVM)"| EM
     AM -.->|"메서드 호출 (같은 JVM)"| RM
@@ -124,12 +132,14 @@ graph TB
 |--------------|------|---------|
 | **com.venueon.user** | 회원가입, 로그인, JWT, 프로필, 마이페이지 | 프로필 사진 변경/삭제 추가 |
 | **com.venueon.event** | 이벤트 CRUD, 티켓, 주문/결제, 구매내역 | 수강 취소 + 환불 신청 연계 |
-| **com.venueon.community** | 커뮤니티 CRUD, 게시글, 댓글 | 변경 없음 |
+| **com.venueon.community** | 커뮤니티 CRUD, 멤버 관리 | 변경 없음 |
+| **com.venueon.post** | 게시글 CRUD (communityId FK로 연결) | 독립 모듈로 분리 |
+| **com.venueon.comment** | 댓글/대댓글 CRUD (postId FK로 연결) | 독립 모듈로 분리 |
 | **🆕 com.venueon.report** | **신고 CRUD, 환불 관리** | **신규 모듈** |
 | **🆕 com.venueon.admin** | **관리자 대시보드, 사용자·강의·신고·환불 관리** | **대폭 확장** |
 | **com.venueon.common** | ApiResponse, 예외 처리, @UseCase 등 공통 | 변경 없음 |
 
-**도메인 모듈: 5개** / **DB: 1개** (테이블로 분리)
+**도메인 모듈: 7개** (user, event, community, post, comment, report, admin) / **DB: 1개** (테이블로 분리)
 
 ### 모듈 간 통신
 
@@ -137,9 +147,11 @@ graph TB
 |-----------|------|------|
 | event → user | 메서드 호출 (Port) | 주문 시 유저 정보 확인 |
 | community → event | 메서드 호출 (Port) | 커뮤니티 생성 시 이벤트 참조 |
-| community → user | 메서드 호출 (Port) | 게시글 작성자 정보 조회 |
+| post → community | 메서드 호출 (Port) | 게시글 작성 시 커뮤니티 존재 확인 |
+| comment → post | 메서드 호출 (Port) | 댓글 작성 시 게시글 존재 확인 |
 | **report → event** | 메서드 호출 (Port) | 강의 신고 시 이벤트 정보 참조 |
-| **report → community** | 메서드 호출 (Port) | 게시물/댓글 신고 시 해당 정보 참조 |
+| **report → post** | 메서드 호출 (Port) | 게시물 신고 시 해당 정보 참조 |
+| **report → comment** | 메서드 호출 (Port) | 댓글 신고 시 해당 정보 참조 |
 | **admin → user** | 메서드 호출 (Port) | 회원 관리 (목록/삭제/경고) |
 | **admin → event** | 메서드 호출 (Port) | 강의 관리 (숨김/삭제/상세) |
 | **admin → report** | 메서드 호출 (Port) | 신고 처리, 환불 승인/거절 |
@@ -163,7 +175,7 @@ erDiagram
     EVENT ||--o{ REPORT : "reported"
 
     COMMUNITY ||--o{ COMMUNITY_MEMBER : "has"
-    COMMUNITY ||--o{ POST : "contains"
+    COMMUNITY ||--o{ POST : "has_posts"
     POST ||--o{ COMMENT : "has"
     POST ||--o{ REPORT : "reported"
     COMMENT ||--o{ REPORT : "reported"

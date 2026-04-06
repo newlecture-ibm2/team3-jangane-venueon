@@ -100,7 +100,9 @@ graph TB
         UM["user 모듈<br/>회원/인증/마이페이지<br/>🆕 이메일검증/OAuth2"]
         EM["event 모듈<br/>이벤트/세션/할인<br/>🆕 리뷰/패키지"]
         OM["order 모듈<br/>주문/결제/환불<br/>🆕 토스/장바구니"]
-        CM["community 모듈<br/>커뮤니티/게시글<br/>🆕 좋아요/공지/인기글"]
+        CM["community 모듈<br/>커뮤니티 CRUD/멤버"]
+        PM["post 모듈<br/>게시글 CRUD<br/>🆕 좋아요/공지/인기글"]
+        CMT["comment 모듈<br/>댓글/대댓글 CRUD<br/>🆕 좋아요"]
         RM["report 모듈<br/>신고/환불<br/>🆕 제재/이의제기"]
         AM["admin 모듈<br/>관리자 대시보드<br/>🆕 정지/권한/카테고리"]
         BM["🆕 badge 모듈<br/>뱃지 발급/검색/매칭"]
@@ -166,7 +168,9 @@ graph TB
 | **com.venueon.user** | 회원가입, 로그인, JWT, 프로필, 마이페이지, 🆕 이메일 검증, Google OAuth2, 임시 비밀번호, 관심 카테고리 | ✅ → 🆕 확장 |
 | **com.venueon.event** | 이벤트 CRUD, 세션 구성, 🆕 할인, 리뷰, 패키지 | ✅ → 🆕 확장 |
 | **com.venueon.order** | 주문/결제, 🆕 토스 연동, 장바구니 일괄 결제 | ✅ → 🆕 확장 |
-| **com.venueon.community** | 커뮤니티 CRUD, 게시글, 댓글, 🆕 좋아요, 대댓글, 공지 고정, 인기글, 권한 체계 | ✅ → 🆕 확장 |
+| **com.venueon.community** | 커뮤니티 CRUD, 멤버 관리, 권한 체계 | ✅ → 🆕 확장 |
+| **com.venueon.post** | 게시글 CRUD, 🆕 좋아요, 공지 고정, 인기글, 북마크 | ✅ → 🆕 독립 모듈 |
+| **com.venueon.comment** | 댓글/대댓글 CRUD, 🆕 좋아요 | ✅ → 🆕 독립 모듈 |
 | **com.venueon.report** | 신고 CRUD, 환불 관리, 🆕 처리 단계, 제재 상태, 이의 제기 | ✅ → 🆕 확장 |
 | **com.venueon.admin** | 관리자 대시보드, 🆕 회원 정지/권한, 카테고리 관리, 관심 카테고리, 리뷰 관리, 커뮤니티 제재 | ✅ → 🆕 대폭 확장 |
 | **🆕 com.venueon.badge** | 뱃지 자동 발급, 노출 설정, 보유자 검색/초대, 커뮤니티 매칭 | 🆕 신규 |
@@ -175,7 +179,7 @@ graph TB
 | **🆕 com.venueon.notice** | 통합 공지, 요청 게시판, 이의 제기 게시판 | 🆕 신규 |
 | **com.venueon.common** | ApiResponse, 예외 처리, @UseCase 등 공통 | ✅ 변경 없음 |
 
-**도메인 모듈: 10개** (user, event, order, community, report, admin, badge, notification, wishlist, notice) / **DB: 1개**
+**도메인 모듈: 12개** (user, event, order, community, post, comment, report, admin, badge, notification, wishlist, notice) / **DB: 1개**
 
 ### 모듈 간 통신 (v5)
 
@@ -228,7 +232,7 @@ erDiagram
     EVENT ||--o{ EVENT_SESSION : "has_sessions"
 
     COMMUNITY ||--o{ COMMUNITY_MEMBER : "has"
-    COMMUNITY ||--o{ POST : "contains"
+    COMMUNITY ||--o{ POST : "has_posts"
     POST ||--o{ COMMENT : "has"
     POST ||--o{ REPORT : "reported"
     POST ||--o{ POST_LIKE : "liked"
