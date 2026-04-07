@@ -15,7 +15,7 @@ export interface CommunityCommentItemProps {
   content: string;
   /** 프로필 이미지 URL (없으면 기본 배경색 원) */
   avatarUrl?: string;
-  /** 더보기 메뉴 항목 목록 */
+  /** 더보기 메뉴 항목 목록 ..*/
   menuItems?: PopoverMenuItem[];
   /** 더보기 메뉴 항목 선택 시 콜백 */
   onMenuSelect?: (value: string) => void;
