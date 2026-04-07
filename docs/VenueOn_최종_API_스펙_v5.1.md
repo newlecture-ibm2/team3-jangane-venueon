@@ -4,7 +4,6 @@
 > **기반:** 목표 아키텍처 v5 + 최종 기능·페이지 정의서 v2  
 > **이전 버전:** VenueOn_최종_API_스펙_v5.md  
 > **규칙:** 모든 백엔드 경로에 `/api` 미포함 (프론트엔드 BFF에서만 `/api/` 접두사 사용)
-> **Base URL:** `/v1`
 > **인증:** JWT Bearer Token (`Authorization: Bearer {token}`)  
 > **공통 응답:** `{ "status": "SUCCESS|ERROR", "data": {...}, "message": "..." }`
 
