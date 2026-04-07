@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from '../checkout.module.css';
 import { Button } from '@/components/ui';
+
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
@@ -126,8 +127,8 @@ function CheckoutSuccessContent() {
 
 export default function CheckoutSuccessPage() {
   return (
-    <React.Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className={styles.checkoutContainer}><div className={styles.checkoutCard}><p style={{ textAlign: 'center', padding: '40px 0' }}>로딩 중...</p></div></div>}>
       <CheckoutSuccessContent />
-    </React.Suspense>
+    </Suspense>
   );
 }

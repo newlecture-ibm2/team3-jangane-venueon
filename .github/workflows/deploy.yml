@@ -32,6 +32,7 @@ jobs:
       API_BASE_URL: ${{ vars.API_BASE_URL }}
       TOSS_CLIENT_KEY: ${{ vars.TOSS_CLIENT_KEY }}
       TOSS_SECRET_KEY: ${{ secrets.TOSS_SECRET_KEY }}
+      GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
 
     steps:
       # 1. ✅ 소스코드 체크아웃 (GitHub Actions 표준 방식)
@@ -63,6 +64,7 @@ jobs:
           API_BASE_URL=${{ vars.API_BASE_URL }}
           TOSS_CLIENT_KEY=${{ vars.TOSS_CLIENT_KEY }}
           TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}
+          GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
           ENVEOF
           # 앞쪽 공백 제거
           sed -i 's/^[[:space:]]*//' .env

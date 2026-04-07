@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from '../checkout.module.css';
 import { Button } from '@/components/ui';
@@ -35,8 +35,8 @@ function CheckoutFailContent() {
 
 export default function CheckoutFailPage() {
   return (
-    <React.Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className={styles.checkoutContainer}><div className={styles.checkoutCard}><p>로딩 중...</p></div></div>}>
       <CheckoutFailContent />
-    </React.Suspense>
+    </Suspense>
   );
 }

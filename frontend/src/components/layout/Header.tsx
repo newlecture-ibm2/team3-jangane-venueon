@@ -71,6 +71,7 @@ export default function Header({
           <div className={styles.actionGroup}>
             <Link href="/mypage"><Button variant="outlined" size="medium">내 강의실</Button></Link>
             <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
           </div>
         );
       }

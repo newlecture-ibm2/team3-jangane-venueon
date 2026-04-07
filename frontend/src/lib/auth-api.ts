@@ -29,6 +29,31 @@ export const authAPI = {
     if (!res.ok) throw new Error(result.message || result.error || '로그인 실패');
     return result;
   },
+  googleLogin: async (idToken: string) => {
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.message || result.error || '구글 로그인 실패');
+    return result;
+  },
+  upgradeToHost: async (data: {
+    managerName: string;
+    orgName: string;
+    orgNumber: string;
+    orgDescription?: string;
+  }) => {
+    const res = await fetch('/api/auth/host/upgrade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.message || result.error || '호스트 가입 처리에 실패했습니다.');
+    return result;
+  },
   logout: async () => {
     const res = await fetch('/api/auth/logout', { method: 'POST' });
     return res.json().catch(() => ({}));
