@@ -63,4 +63,33 @@ public class TossPaymentClient {
             throw new BusinessException(ErrorCode.PAYMENT_FAILED, "토스 결제 승인 실패: " + e.getMessage());
         }
     }
+
+    /**
+     * 토스 결제 취소 요청
+     * @param paymentKey 토스가 발급한 결제 키
+     * @param cancelReason 취소 사유
+     * @return 토스 응답 Map
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> cancelPayment(String paymentKey, String cancelReason) {
+        String encodedKey = Base64.getEncoder()
+                .encodeToString((secretKey + ":").getBytes());
+
+        try {
+            Map<String, Object> response = restClient.post()
+                    .uri("/v1/payments/{paymentKey}/cancel", paymentKey)
+                    .header(HttpHeaders.AUTHORIZATION, "Basic " + encodedKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("cancelReason", cancelReason))
+                    .retrieve()
+                    .body(Map.class);
+
+            log.info("토스 결제 취소 성공: paymentKey={}", paymentKey);
+            return response;
+
+        } catch (Exception e) {
+            log.error("토스 결제 취소 실패: paymentKey={}, error={}", paymentKey, e.getMessage());
+            throw new BusinessException(ErrorCode.REFUND_FAILED, "토스 결제 취소 실패: " + e.getMessage());
+        }
+    }
 }

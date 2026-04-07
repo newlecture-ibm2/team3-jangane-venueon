@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -206,6 +207,57 @@ public class OrderService {
     public Page<OrderDetailResponse> getMyOrders(Long userId, Pageable pageable) {
         return orderRepository.findByUserId(userId, pageable)
                 .map(this::toOrderDetailResponse);
+    }
+
+    /**
+     * 참가 취소 (환불)
+     * API 스펙: POST /orders/{id}/refund
+     */
+    @Transactional
+    public CancelOrderResponse cancelOrder(Long orderId, Long userId, String reason) {
+        // 1. 주문 조회
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+
+        // 2. 본인 주문인지 검증
+        if (!order.isOwnedBy(userId)) {
+            throw new BusinessException(ErrorCode.ORDER_ACCESS_DENIED);
+        }
+
+        // 3. 이미 환불된 주문인지 검증
+        if (order.getStatus() == OrderStatus.REFUNDED || order.getStatus() == OrderStatus.CANCELLED) {
+            throw new BusinessException(ErrorCode.ALREADY_REFUNDED);
+        }
+
+        // 4. 환불 가능한 상태인지 검증 (PAID 상태만 환불 가능)
+        if (order.getStatus() != OrderStatus.PAID) {
+            throw new BusinessException(ErrorCode.REFUND_NOT_ALLOWED);
+        }
+
+        // 5. 토스 결제 취소 API 호출 (실제 결제건만)
+        if (order.getTossPaymentKey() != null && !"dummy_key".equals(order.getTossPaymentKey())) {
+            tossPaymentClient.cancelPayment(order.getTossPaymentKey(), reason);
+        }
+
+        // 6. 도메인 상태 변경
+        order.refund();
+        orderRepository.save(order);
+
+        log.info("환불 완료: orderId={}, reason={}", orderId, reason);
+
+        // 이벤트명 조회
+        String eventTitle = eventRepository.findById(order.getEventId())
+                .map(EventJpaEntity::getTitle)
+                .orElse("알 수 없는 이벤트");
+
+        return CancelOrderResponse.builder()
+                .orderId(order.getId())
+                .eventTitle(eventTitle)
+                .amount(order.getAmount())
+                .status(order.getStatus().name())
+                .reason(reason)
+                .cancelledAt(LocalDateTime.now())
+                .build();
     }
 
     // --- Private Helper ---

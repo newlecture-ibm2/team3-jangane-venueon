@@ -81,4 +81,18 @@ public class OrderController {
         Page<OrderDetailResponse> response = orderService.getMyOrders(userId, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+
+    /**
+     * 참가 취소 (환불 요청)
+     * POST /orders/{id}/refund
+     */
+    @PostMapping("/{id}/refund")
+    public ResponseEntity<ApiResponse<CancelOrderResponse>> cancelOrder(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1") Long userId,  // TODO: @AuthenticationPrincipal로 교체
+            @Valid @RequestBody CancelOrderRequest request) {
+
+        CancelOrderResponse response = orderService.cancelOrder(id, userId, request.getReason());
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 }
