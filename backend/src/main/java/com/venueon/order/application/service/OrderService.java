@@ -6,6 +6,7 @@ import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
 import com.venueon.order.adapter.out.payment.TossPaymentClient;
 import com.venueon.order.application.port.out.OrderRepositoryPort;
+import com.venueon.order.application.port.out.RefundSavePort;
 import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.order.adapter.in.web.dto.*;
@@ -33,6 +34,7 @@ public class OrderService {
     private final EventJpaRepository eventRepository;
     private final UserJpaRepository userRepository;
     private final TossPaymentClient tossPaymentClient;
+    private final RefundSavePort refundSavePort;
 
     @Value("${toss.client-key}")
     private String tossClientKey;
@@ -242,6 +244,9 @@ public class OrderService {
         // 6. 도메인 상태 변경
         order.refund();
         orderRepository.save(order);
+
+        // 7. refunds 테이블에 환불 이력 저장
+        refundSavePort.saveRefundRecord(orderId, userId, order.getAmount(), reason);
 
         log.info("환불 완료: orderId={}, reason={}", orderId, reason);
 
