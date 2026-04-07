@@ -69,7 +69,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
         ];
       case 'host':
         return [
-          { label: '대시보드', href: '/host/dashboard', icon: DashboardIcon },
+          { label: '대시보드', href: '/host', icon: DashboardIcon },
           { label: '내 강의 목록', href: '/host/seminars', icon: SeminarIcon },
           { label: '프로필 설정', href: '/host/profile', icon: ProfileIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
@@ -92,7 +92,9 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
       style={{ height: 'calc(100vh - 40px)' }}
     >
       {menus.map((menu) => {
-        const isActive = pathname === menu.href || pathname.startsWith(`${menu.href}/`);
+        const isActive = menu.href === '/host' || menu.href === '/admin' || menu.href === '/seminars'
+          ? pathname === menu.href 
+          : pathname === menu.href || pathname.startsWith(`${menu.href}/`);
         return (
           <SidebarItem
             key={menu.href}
