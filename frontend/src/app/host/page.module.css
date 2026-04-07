@@ -156,8 +156,36 @@
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+.orderStatusPaid {
   background: #dcfce7;
   color: #16a34a;
+}
+
+.orderStatusRegistered {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.orderStatusCancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.orderStatusRefunded {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+.orderStatusPending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.orderStatusDefault {
+  background: #e2e8f0;
+  color: #334155;
 }
 
 /* Responsive */

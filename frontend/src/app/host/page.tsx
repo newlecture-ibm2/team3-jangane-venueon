@@ -6,6 +6,53 @@ import Sidebar from '@/components/layout/Sidebar';
 import { hostApi } from '@/lib/host-api';
 import styles from './page.module.css';
 
+interface RecentOrder {
+  orderId: number;
+  eventTitle: string;
+  amount: number;
+  orderedAt: string;
+  status: string;
+}
+
+function getOrderStatusLabel(status: string) {
+  switch (status) {
+    case 'PAID':
+      return '결제완료';
+    case 'REGISTERED':
+      return '신청완료';
+    case 'CANCELLED':
+      return '주문취소';
+    case 'REFUNDED':
+      return '환불완료';
+    case 'PENDING':
+      return '결제대기';
+    default:
+      return status;
+  }
+}
+
+function getOrderStatusClass(status: string) {
+  switch (status) {
+    case 'PAID':
+      return styles.orderStatusPaid;
+    case 'REGISTERED':
+      return styles.orderStatusRegistered;
+    case 'CANCELLED':
+      return styles.orderStatusCancelled;
+    case 'REFUNDED':
+      return styles.orderStatusRefunded;
+    case 'PENDING':
+      return styles.orderStatusPending;
+    default:
+      return styles.orderStatusDefault;
+  }
+}
+
+function formatOrderDate(isoDateTime: string) {
+  if (!isoDateTime) return '-';
+  return isoDateTime.slice(0, 10);
+}
+
 export default function HostDashboardPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [stats, setStats] = useState({
@@ -15,29 +62,27 @@ export default function HostDashboardPage() {
     totalRevenue: 0,
     pendingRefunds: 0
   });
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
 
   useEffect(() => {
     async function fetchDashboardStats() {
       try {
         const publishedRes = await hostApi.get<{ status: string; data: { totalElements: number } }>('/host/seminars?size=1');
         const draftRes = await hostApi.get<{ status: string; data: { totalElements: number } }>('/host/seminars/drafts?size=1');
+        const recentOrdersRes = await hostApi.get<{ status: string; data: RecentOrder[] }>('/host/orders/recent?size=5');
         
         setStats(prev => ({
           ...prev,
           publishedCount: publishedRes.data?.totalElements || 0,
           draftCount: draftRes.data?.totalElements || 0,
         }));
+        setRecentOrders(recentOrdersRes.data || []);
       } catch (error) {
         console.error('Failed to fetch dashboard stats:', error);
       }
     }
     fetchDashboardStats();
   }, []);
-
-  const MOCK_ORDERS = [
-    { orderId: 100, eventTitle: "ID 5번 호스트의 프로젝트", amount: 150000, orderedAt: "2026-04-07" },
-    { orderId: 101, eventTitle: "데이터 연동 테스트", amount: 0, orderedAt: "2026-04-07" },
-  ];
 
   return (
     <div className="container-sidebar">
@@ -91,7 +136,7 @@ export default function HostDashboardPage() {
           <div className={styles.sectionsGrid}>
             <section className={styles.sectionBox}>
               <div className={styles.sectionHeader}>
-                <h3 className={styles.sectionTitle}>최근 결제 내역</h3>
+                <h3 className={styles.sectionTitle}>최근 주문 내역</h3>
                 <Link href="/host/payments" className={styles.viewAllBtn}>전체 보기 &gt;</Link>
               </div>
               
@@ -101,21 +146,32 @@ export default function HostDashboardPage() {
                     <tr>
                       <th>주문번호</th>
                       <th>강의명</th>
-                      <th>결제금액</th>
-                      <th>결제일</th>
+                      <th>주문금액</th>
+                      <th>주문일</th>
                       <th>상태</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {MOCK_ORDERS.map(order => (
+                    {recentOrders.map(order => (
                       <tr key={order.orderId}>
                         <td>#{order.orderId}</td>
                         <td>{order.eventTitle}</td>
                         <td>{order.amount.toLocaleString()}원</td>
-                        <td>{order.orderedAt}</td>
-                        <td><span className={styles.orderStatus}>결제완료</span></td>
+                        <td>{formatOrderDate(order.orderedAt)}</td>
+                        <td>
+                          <span className={`${styles.orderStatus} ${getOrderStatusClass(order.status)}`}>
+                            {getOrderStatusLabel(order.status)}
+                          </span>
+                        </td>
                       </tr>
                     ))}
+                    {recentOrders.length === 0 && (
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>
+                          주문 내역이 없습니다.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
