@@ -70,7 +70,9 @@ export default function Header({
         return (
           <div className={styles.actionGroup}>
             <Link href="/mypage"><Button variant="outlined" size="medium">내 강의실</Button></Link>
-            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
             <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
           </div>
         );
@@ -79,7 +81,9 @@ export default function Header({
         return (
           <div className={styles.actionGroup}>
             <Link href="/"><Button variant="outlined" size="medium">강의 목록</Button></Link>
-            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
           </div>
         );
       }
@@ -101,7 +105,9 @@ export default function Header({
             <Link href="/host/dashboard">
               <Button variant="outlined" size="medium">내 강의실</Button>
             </Link>
-            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
           </div>
         );
       }
@@ -111,7 +117,9 @@ export default function Header({
     if (role === 'admin') {
       return (
         <div className={styles.actionGroup}>
-          <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+          <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
         </div>
       );
     }
@@ -122,7 +130,9 @@ export default function Header({
           <Link href="/host/dashboard">
             <Button variant="outlined" size="medium">내 강의실</Button>
           </Link>
-          <UserProfile name={user?.nickname || '호스트'} size="large" />
+          <Link href="/mypage/profile">
+            <UserProfile name={user?.nickname || '호스트'} size="large" />
+          </Link>
           <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
         </div>
       );
@@ -132,7 +142,9 @@ export default function Header({
     return (
       <div className={styles.actionGroup}>
         <Link href="/mypage"><Button variant="outlined" size="medium">내 강의실</Button></Link>
-        <UserProfile name={user?.nickname || '사용자'} size="large" />
+        <Link href="/mypage/profile">
+          <UserProfile name={user?.nickname || '사용자'} size="large" />
+        </Link>
         <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
       </div>
     );
