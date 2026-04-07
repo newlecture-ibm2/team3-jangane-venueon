@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import styles from '../checkout.module.css';
 import { Button } from '@/components/ui';
 
-export default function CheckoutFailPage() {
+function CheckoutFailContent() {
   const searchParams = useSearchParams();
   const code = searchParams.get('code') || '알 수 없는 오류';
   const message = searchParams.get('message') || '결제 처리 중 문제가 발생했습니다.';
@@ -30,5 +30,13 @@ export default function CheckoutFailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutFailPage() {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <CheckoutFailContent />
+    </React.Suspense>
   );
 }

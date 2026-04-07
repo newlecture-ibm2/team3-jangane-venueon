@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import styles from '../checkout.module.css';
 import { Button } from '@/components/ui';
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('결제를 승인하는 중입니다...');
@@ -121,5 +121,13 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <CheckoutSuccessContent />
+    </React.Suspense>
   );
 }
