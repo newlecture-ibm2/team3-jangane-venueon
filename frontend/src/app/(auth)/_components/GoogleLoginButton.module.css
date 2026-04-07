@@ -47,12 +47,3 @@
   display: flex;
   justify-content: center;
 }
-
-/* Google 렌더 버튼이 width 100%를 차지하도록 */
-.googleButton > div {
-  width: 100% !important;
-}
-
-.googleButton iframe {
-  width: 100% !important;
-}
