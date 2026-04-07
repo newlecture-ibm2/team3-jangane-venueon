@@ -1,20 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button, UserProfile, Logo } from '@/components/ui';
 import { useAuth } from '@/store/useAuthStore';
 import styles from './Header.module.css';
 
-export interface HeaderProps {
-  role?: 'user' | 'host' | 'admin';
-  status?: 'public' | 'signedIn' | 'myPage' | 'auth';
-  // 프로필에 표시될 이름이나 사진을 부모에서 전달받을 수 있도록 설정 (기본값 제공)
-  userName?: string;
-  userImageUrl?: string;
-  className?: string;
-}
+export default function Header({ className = '' }: { className?: string }) {
+  const pathname = usePathname();
+  const { user, isLoggedIn, isLoading, checkSession, logout } = useAuth();
+
+  // 최초 마운트 시 세션 확인
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
+
+  // 현재 경로가 로그인/회원가입 페이지인지 확인
+  const isAuthPage = ['/login', '/signup', '/host/signup'].includes(pathname);
+
+  // Auth 상태에서 role 파생
+  const role = user?.role?.toLowerCase() as 'user' | 'host' | 'admin' | undefined;
 
 export default function Header({
   role = 'user',
@@ -108,7 +114,7 @@ export default function Header({
       }
     }
 
-    // Role: Admin (관리자)
+    // 로그인 상태: Role별 분기
     if (role === 'admin') {
       return (
         <div className={styles.actionGroup}>
@@ -117,7 +123,26 @@ export default function Header({
       );
     }
 
-    return null;
+    if (role === 'host') {
+      return (
+        <div className={styles.actionGroup}>
+          <Link href="/host/dashboard">
+            <Button variant="outlined" size="medium">내 강의실</Button>
+          </Link>
+          <UserProfile name={user?.nickname || '호스트'} size="large" />
+          <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
+        </div>
+      );
+    }
+
+    // 기본: USER
+    return (
+      <div className={styles.actionGroup}>
+        <Link href="/dashboard"><Button variant="outlined" size="medium">내 강의실</Button></Link>
+        <UserProfile name={user?.nickname || '사용자'} size="large" />
+        <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
+      </div>
+    );
   };
 
   return (
@@ -127,3 +152,4 @@ export default function Header({
     </header>
   );
 }
+

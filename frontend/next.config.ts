@@ -9,8 +9,7 @@ const nextConfig: NextConfig = {
       {
         source: "/images/:path*",
         destination: `${backendUrl}/upload/:path*`,
-      },
-      // 백엔드 경로 추가 시 여기에 명시적으로 추가
+      }
     ];
   },
 };

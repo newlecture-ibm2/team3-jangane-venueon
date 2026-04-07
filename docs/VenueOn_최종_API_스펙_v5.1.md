@@ -3,7 +3,8 @@
 > **작성일:** 2026-04-02  
 > **기반:** 목표 아키텍처 v5 + 최종 기능·페이지 정의서 v2  
 > **이전 버전:** VenueOn_최종_API_스펙_v5.md  
-> **Base URL:** `/api/v1`  
+> **규칙:** 모든 백엔드 경로에 `/api` 미포함 (프론트엔드 BFF에서만 `/api/` 접두사 사용)
+> **Base URL:** `/v1`
 > **인증:** JWT Bearer Token (`Authorization: Bearer {token}`)  
 > **공통 응답:** `{ "status": "SUCCESS|ERROR", "data": {...}, "message": "..." }`
 
@@ -70,7 +71,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 
 ---
 
-## 📌 1. User 모듈 (`/api/v1/auth`, `/api/v1/users`)
+## 📌 1. User 모듈 (`/v1/auth`, `/v1/users`)
 
 ### 1-1. 인증 API
 
@@ -203,7 +204,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 
 ---
 
-## 📌 2. Event 모듈 (`/api/v1/events`)
+## 📌 2. Event 모듈 (`/v1/events`)
 
 ### 2-1. 이벤트 목록/검색 API
 
@@ -418,7 +419,7 @@ Query Parameters:
 
 ---
 
-## 📌 3. Community 모듈 (`/api/v1/communities`)
+## 📌 3. Community 모듈 (`/v1/communities`)
 
 ### 3-1. 커뮤니티 CRUD API
 
@@ -453,6 +454,8 @@ Query Parameters:
   "data": { "id": 1, "name": "Spring 마스터 모임", "approvalStatus": "PENDING" }
 }
 ```
+
+> **📌 `requiredBadgeIds` 안내:** 이 필드는 커뮤니티 **가입 조건**으로 사용됩니다 (개설 조건이 아님). 지정된 뱃지를 보유한 사용자만 해당 커뮤니티에 가입할 수 있습니다. 비워두면 누구나 가입 가능.
 
 ### 3-2. 커뮤니티 멤버 관리 API
 
@@ -516,7 +519,7 @@ Query Parameters:
 
 ---
 
-## 📌 4. Payment 모듈 (`/api/v1/orders`)
+## 📌 4. Order 모듈 (`/v1/orders`) — 결제/환불
 
 ### 4-1. 주문/결제 API
 
@@ -597,6 +600,8 @@ Query Parameters:
 }
 ```
 
+> **📌 v5 확장 예정 필드:** 환불 응답에 `processedBy` (처리자 ID: Admin 또는 Host), `refundSource` (환불 출처: `USER`, `HOST`, `ADMIN`) 필드가 추가될 예정입니다.
+
 ### 4-3. 호스트 결제/환불 관리 API
 
 | # | Method | Path | Auth | 설명 | 에러 |
@@ -627,7 +632,7 @@ Query Parameters:
 }
 ```
 
-## 📌 5. Wishlist / Cart 모듈 (`/api/v1/wishlist`, `/api/v1/cart`)
+## 📌 5. Wishlist / Cart 모듈 (`/v1/wishlist`, `/v1/cart`)
 
 ### 5-1. 찜 목록 API
 
@@ -692,7 +697,7 @@ Query Parameters:
 
 ---
 
-## 📌 6. Badge 모듈 (`/api/v1/badges`)
+## 📌 6. Badge 모듈 (`/v1/badges`)
 
 ### 6-1. 뱃지 관리 API
 
@@ -732,7 +737,7 @@ Query Parameters:
 
 ---
 
-## 📌 7. Notification 모듈 (`/api/v1/notifications`)
+## 📌 7. Notification 모듈 (`/v1/notifications`)
 
 ### 7-1. 알림 API
 
@@ -782,7 +787,7 @@ Query Parameters:
 
 ---
 
-## 📌 8. Report 모듈 (`/api/v1/reports`)
+## 📌 8. Report 모듈 (`/v1/reports`)
 
 ### 8-1. 신고 API
 
@@ -820,7 +825,7 @@ Query Parameters:
 
 ---
 
-## 📌 9. Admin 모듈 (`/api/v1/admin`)
+## 📌 9. Admin 모듈 (`/v1/admin`)
 
 ### 9-1. 대시보드 API
 
@@ -955,7 +960,7 @@ Query Parameters:
 
 ---
 
-## 📌 10. Notice 모듈 (`/api/v1/notices`, `/api/v1/requests`)
+## 📌 10. Notice 모듈 (`/v1/notices`, `/v1/requests`)
 
 ### 10-1. 공지사항 API
 
@@ -1015,7 +1020,7 @@ GET /notices Query Parameters:
 
 ---
 
-## 📌 11. 마이페이지 통합 API (`/api/v1/mypage`)
+## 📌 11. 마이페이지 통합 API (`/v1/mypage`)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -1029,7 +1034,7 @@ GET /notices Query Parameters:
 
 ---
 
-## 📌 12. 파일 업로드 API (`/api/v1/upload`)
+## 📌 12. 파일 업로드 API (`/v1/upload`)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -1058,8 +1063,8 @@ GET /notices Query Parameters:
 |------|--------|--------|----------|
 | **User** (인증/프로필) | #1~26 | 26개 | 회원가입, 로그인, OAuth2, 프로필, 공개 프로필 |
 | **Event** (이벤트) | #27~50 | 24개 | CRUD, 필터/검색, 세션, 🆕패키지, 🆕Draft, 리뷰 |
-| **Community** (커뮤니티) | #51~76 | 26개 | CRUD, 🆕커뮤니티 북마크, 멤버 관리, 게시글, 댓글(✅통합) |
-| **Payment** (결제) | #77~88 | 12개 | 토스 결제, 🆕Webhook 보안, 환불, 🆕호스트 대시보드 |
+| **Community** (커뮤니티) | #51~76 | 26개 | 커뮤니티 CRUD, 🆕북마크, 멤버 관리 + **Post/Comment 독립 모듈** (게시글, 댓글 ✅통합) |
+| **Order** (결제) | #77~88 | 12개 | 토스 결제, 🆕Webhook 보안, 환불, 🆕호스트 대시보드 |
 | **Wishlist/Cart** (찜/장바구니) | #89~97 | 9개 | 찜, 장바구니 |
 | **Badge** (뱃지) | #98~101 | 4개 | 뱃지 조회, 노출 설정, 검색/초대 |
 | **Notification** (알림) | #102~105 | 4개 | 알림 5종, 읽음 처리 |

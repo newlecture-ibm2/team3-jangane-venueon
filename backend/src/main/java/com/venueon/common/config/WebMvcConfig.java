@@ -28,7 +28,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 절대 경로로 정규화 + 끝에 / 보장
         Path absolutePath = Paths.get(resolved).toAbsolutePath().normalize();
-        String location = "file:" + absolutePath + "/";
+        
+        // 경로 끝에 / 추가
+        String location = absolutePath.toUri().toString();
+        if (!location.endsWith("/")) {
+            location += "/";
+        }
 
         registry.addResourceHandler("/upload/**")
                 .addResourceLocations(location);
