@@ -7,8 +7,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -26,8 +28,11 @@ public class OrderController {
      */
     @PostMapping
     public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrder(
-            @RequestParam(defaultValue = "1") Long userId,  // TODO: @AuthenticationPrincipal로 교체
+            Authentication authentication,
             @Valid @RequestBody CreateOrderRequest request) {
+
+        String email = authentication.getName();
+        Long userId = orderService.getUserIdByEmail(email);
 
         CreateOrderResponse response = orderService.createOrder(userId, request);
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -63,7 +68,10 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<OrderDetailResponse>> getOrderDetail(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "1") Long userId) {  // TODO: @AuthenticationPrincipal로 교체
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        Long userId = orderService.getUserIdByEmail(email);
 
         OrderDetailResponse response = orderService.getOrderDetail(id, userId);
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -75,8 +83,11 @@ public class OrderController {
      */
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<Page<OrderDetailResponse>>> getMyOrders(
-            @RequestParam(defaultValue = "1") Long userId,  // TODO: @AuthenticationPrincipal로 교체
-            @PageableDefault(size = 10) Pageable pageable) {
+            Authentication authentication,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        String email = authentication.getName();
+        Long userId = orderService.getUserIdByEmail(email);
 
         Page<OrderDetailResponse> response = orderService.getMyOrders(userId, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));

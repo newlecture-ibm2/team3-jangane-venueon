@@ -1,0 +1,59 @@
+.detailContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-32);
+  width: 100%;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  border: 1px solid var(--color-gray-disabled-fill);
+  border-radius: var(--radius-md);
+  padding: var(--space-24);
+  background-color: var(--color-bg);
+}
+
+.sectionTitle {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+  margin: 0 0 var(--space-8) 0;
+  border-bottom: 1px solid var(--color-gray-disabled-fill);
+  padding-bottom: var(--space-12);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-500);
+}
+
+.value {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+}
+
+.totalRow {
+  margin-top: var(--space-8);
+  padding-top: var(--space-16);
+  border-top: 1px dashed var(--color-gray-disabled-fill);
+}
+
+.totalValue {
+  font: var(--text-h2-bold);
+  color: var(--color-error); /* 결제 금액 하이라이트 */
+}
+
+/* 환불 버튼 등 하단 액션 */
+.actionArea {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-16);
+  margin-top: var(--space-24);
+}

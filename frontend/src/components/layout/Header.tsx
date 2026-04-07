@@ -33,10 +33,9 @@ export default function Header({
   const displayUserName = user?.nickname || userName;
   const displayUserImage = user?.profileImg || userImageUrl;
 
-  // /mypage 경로일 때는 항상 'signedIn' 해더(내 강의실 + 프로필)를 보여주도록 강제
+  // /mypage 경로일 때는 항상 'myPage' 해더(강의 목록 + 프로필)를 보여주도록 강제
   const isMyPage = pathname?.startsWith('/mypage');
-  // user가 로그인되어 있으면 signedIn, 아니면 public (propStatus가 있으면 우선)
-  const status = propStatus || (user ? 'signedIn' : (isMyPage ? 'signedIn' : 'public'));
+  const status = propStatus || (isMyPage ? 'myPage' : (user ? 'signedIn' : 'public'));
 
   // 우측에 렌더링될 버튼/프로필 그룹 로직
   const renderActions = () => {
@@ -70,8 +69,10 @@ export default function Header({
       if (status === 'signedIn') {
         return (
           <div className={styles.actionGroup}>
-            <Link href="/dashboard"><Button variant="outlined" size="medium">내 강의실</Button></Link>
-            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            <Link href="/mypage"><Button variant="outlined" size="medium">내 강의실</Button></Link>
+            <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
             <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
           </div>
         );
@@ -79,9 +80,10 @@ export default function Header({
       if (status === 'myPage') {
         return (
           <div className={styles.actionGroup}>
-            <Link href="/seminars"><Button variant="secondary" size="medium">강의 목록</Button></Link>
-            <Link href="/dashboard"><Button variant="outlined" size="medium">내 강의실</Button></Link>
-            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            <Link href="/"><Button variant="outlined" size="medium">강의 목록</Button></Link>
+            <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
           </div>
         );
       }
@@ -103,7 +105,9 @@ export default function Header({
             <Link href="/host/dashboard">
               <Button variant="outlined" size="medium">내 강의실</Button>
             </Link>
-            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
           </div>
         );
       }
@@ -113,7 +117,9 @@ export default function Header({
     if (role === 'admin') {
       return (
         <div className={styles.actionGroup}>
-          <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+          <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
         </div>
       );
     }
@@ -124,7 +130,9 @@ export default function Header({
           <Link href="/host/dashboard">
             <Button variant="outlined" size="medium">내 강의실</Button>
           </Link>
-          <UserProfile name={user?.nickname || '호스트'} size="large" />
+          <Link href="/mypage/profile">
+            <UserProfile name={user?.nickname || '호스트'} size="large" />
+          </Link>
           <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
         </div>
       );
@@ -133,8 +141,10 @@ export default function Header({
     // 기본: USER
     return (
       <div className={styles.actionGroup}>
-        <Link href="/dashboard"><Button variant="outlined" size="medium">내 강의실</Button></Link>
-        <UserProfile name={user?.nickname || '사용자'} size="large" />
+        <Link href="/mypage"><Button variant="outlined" size="medium">내 강의실</Button></Link>
+        <Link href="/mypage/profile">
+          <UserProfile name={user?.nickname || '사용자'} size="large" />
+        </Link>
         <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
       </div>
     );

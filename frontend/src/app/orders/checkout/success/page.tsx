@@ -6,13 +6,6 @@ import styles from '../checkout.module.css';
 import successStyles from './success.module.css';
 import { Button } from '@/components/ui';
 
-export default function CheckoutSuccessPage() {
-  return (
-    <Suspense fallback={<div className={styles.checkoutContainer}><div className={styles.checkoutCard}><p style={{ textAlign: 'center', padding: '40px 0' }}>로딩 중...</p></div></div>}>
-      <CheckoutSuccessContent />
-    </Suspense>
-  );
-}
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
@@ -70,10 +63,10 @@ function CheckoutSuccessContent() {
       } catch (err: any) {
         console.error('결제 승인 에러:', err);
         setStatus('error');
-        
+
         let friendlyMessage = '결제 승인 중 오류가 발생했습니다.';
         const rawError = err.message || '';
-        
+
         // 백엔드에서 뱉는 형태: "토스 결제 승인 실패: 400 Bad Request: "{...}"" 에서 메시지 추출
         try {
           const messageMatch = rawError.match(/"message":"([^"]+)"/);
@@ -84,10 +77,10 @@ function CheckoutSuccessContent() {
           } else {
             // 다른 텍스트만 있다면 그대로 노출 방지(안전을 위해 일반화)
           }
-        } catch(e) {
+        } catch (e) {
           // 파싱 실패시 기본 메시지
         }
-        
+
         setMessage(friendlyMessage);
       }
     };
@@ -167,7 +160,6 @@ function CheckoutSuccessContent() {
               <p>{message}</p>
             </>
           )}
-
           {status === 'error' && (
             <>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>❌</div>
@@ -185,5 +177,13 @@ function CheckoutSuccessContent() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<div className={styles.checkoutContainer}><div className={styles.checkoutCard}><p style={{ textAlign: 'center', padding: '40px 0' }}>로딩 중...</p></div></div>}>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }

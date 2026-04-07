@@ -78,7 +78,6 @@ function GoogleLoginButtonContent({ position = "bottom", redirectTo }: GoogleLog
         text: "continue_with",
         shape: "rectangular",
         logo_alignment: "left",
-        width: googleButtonRef.current.offsetWidth,
         locale: "ko",
       });
     }
