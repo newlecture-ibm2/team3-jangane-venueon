@@ -1,30 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Tabs, Pagination, InputField } from '@/components/ui';
 import styles from './page.module.css';
 
-// Mock 데이터: 더 다양한 상태(모집 중, 준비 중, 진행 중, 종료) 포함
-const mockLectures = Array.from({ length: 32 }, (_, i) => {
-  let status = '진행 중';
-  const mod = i % 4;
-  if (mod === 0) status = '모집 중';
-  if (mod === 1) status = '준비 중';
-  if (mod === 2) status = '진행 중';
-  if (mod === 3) status = '종료';
-
-  return {
-    id: i + 1,
-    status,
-    title: `강의 제목 ${i + 1} — 실전 프로젝트로 배우는 웹 개발`,
-    organizer: '주최자 기관명',
-    dateTime: '2026.04.15 ~ 2026.05.30',
-    location: i % 2 === 0 ? '서울특별시 강남구' : '온라인',
-    price: i % 4 === 0 ? 0 : 80000,
-  };
-});
+interface LectureItem {
+  orderId: number;
+  status: string;
+  title: string;
+  organizer: string;
+  dateTime: string;
+  location: string;
+  price: number;
+  eventId: number;
+}
 
 const ITEMS_PER_PAGE = 8; // 2열 × 4줄
 
@@ -39,23 +30,39 @@ export default function MyPage() {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 현재 탭에 맞게 데이터 필터링
-  const filteredLectures = mockLectures.filter((lecture) => {
-    if (activeTab === 'upcoming') {
-      return lecture.status === '모집 중' || lecture.status === '준비 중';
-    }
-    if (activeTab === 'enrolled') {
-      return lecture.status === '진행 중';
-    }
-    if (activeTab === 'completed') {
-      return lecture.status === '종료';
-    }
-    return true;
-  });
+  const [lectures, setLectures] = useState<LectureItem[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const totalPages = Math.ceil(filteredLectures.length / ITEMS_PER_PAGE) || 1;
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentLectures = filteredLectures.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  // 백엔드 API 호출
+  const fetchOrders = useCallback(async (tab: string, page: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/v1/users/me/orders?tab=${tab}&page=${page - 1}&size=${ITEMS_PER_PAGE}`
+      );
+      if (res.ok) {
+        const json = await res.json();
+        const data = json.data;
+        setLectures(data.content || []);
+        setTotalPages(data.totalPages || 1);
+      } else {
+        setLectures([]);
+        setTotalPages(1);
+      }
+    } catch (err) {
+      console.error('Failed to fetch orders:', err);
+      setLectures([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // 탭 또는 페이지 변경 시 API 재호출
+  useEffect(() => {
+    fetchOrders(activeTab, currentPage);
+  }, [activeTab, currentPage, fetchOrders]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -87,12 +94,13 @@ export default function MyPage() {
             <InputField
               variant="search"
               placeholder="검색어를 입력하세요."
+              className={styles.searchBar}
             />
 
             <CardGrid layout="2-cols">
-              {currentLectures.map((lecture) => (
+              {lectures.map((lecture) => (
                 <Card
-                  key={lecture.id}
+                  key={lecture.orderId}
                   status={lecture.status}
                   title={lecture.title}
                   organizer={lecture.organizer}
@@ -100,10 +108,16 @@ export default function MyPage() {
                   location={lecture.location}
                   price={lecture.price}
                   actionButtonText="스터디룸 입장"
-                  onActionClick={() => router.push(`/events`)}
+                  onActionClick={() => router.push(`/events/${lecture.eventId}`)}
                 />
               ))}
             </CardGrid>
+
+            {!loading && lectures.length === 0 && (
+              <p style={{ color: 'var(--color-text-gray-500)', textAlign: 'center', width: '100%', padding: 'var(--space-48) 0' }}>
+                해당 탭에 강의가 없습니다.
+              </p>
+            )}
 
             <Pagination
               currentPage={currentPage}

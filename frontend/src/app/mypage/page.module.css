@@ -20,3 +20,7 @@
   gap: var(--space-24);
   width: 100%;
 }
+
+.searchBar {
+  width: 410px;
+}
