@@ -43,7 +43,7 @@ export default function SecuritySettingsPage() {
     }
     
     try {
-      const res = await fetch('/api/v1/users/me/password', {
+      const res = await fetch('/api/users/me/password', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
