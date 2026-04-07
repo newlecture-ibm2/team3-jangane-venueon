@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import styles from './page.module.css';
 import { Card, CardGrid, InputField, Tabs, Pagination } from '@/components/ui';
 import { format } from 'date-fns';
@@ -125,16 +126,17 @@ export default function Home() {
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => (
-                <Card
-                  key={event.id}
-                  title={event.title}
-                  imageUrl={event.thumbnailUrl ? `${BACKEND_URL}/upload/${event.thumbnailUrl}` : ''}
-                  organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 시 실제 이름으로 변경
-                  dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
-                  location={event.isOnline ? '온라인' : event.location}
-                  price={event.price}
-                  status={event.status}
-                />
+                <Link href={`/events/${event.id}`} key={event.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <Card
+                    title={event.title}
+                    imageUrl={event.thumbnailUrl ? `${BACKEND_URL}/upload/${event.thumbnailUrl}` : ''}
+                    organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 시 실제 이름으로 변경
+                    dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
+                    location={event.isOnline ? '온라인' : event.location}
+                    price={event.price}
+                    status={event.status}
+                  />
+                </Link>
               ))}
             </CardGrid>
           )}

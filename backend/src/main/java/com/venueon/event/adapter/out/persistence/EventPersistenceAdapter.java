@@ -41,6 +41,18 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
                 .map(eventMapper::toDomain);
     }
 
+    @Override
+    public Event save(Event event) {
+        EventJpaEntity entity = eventMapper.toEntity(event);
+        EventJpaEntity saved = eventJpaRepository.save(entity);
+        return eventMapper.toDomain(saved);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        eventJpaRepository.deleteById(id);
+    }
+
     /**
      * 검색/필터 조건을 JPA Specification으로 변환
      */
