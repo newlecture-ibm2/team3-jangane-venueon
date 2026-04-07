@@ -17,6 +17,10 @@ interface AuthFormLayoutProps {
   secondaryFooterText?: string;
   secondaryFooterLinkText?: string;
   secondaryFooterLinkHref?: string;
+  /** 상단 영역 밖의 추가 UI (예: 회원가입용 위쪽 구글 소셜 로그인) */
+  topSlot?: React.ReactNode;
+  /** 하단 영역 추가 UI (예: 로그인용 아래쪽 구글 소셜 로그인) */
+  bottomSlot?: React.ReactNode;
 }
 
 export default function AuthFormLayout({
@@ -33,10 +37,15 @@ export default function AuthFormLayout({
   secondaryFooterText,
   secondaryFooterLinkText,
   secondaryFooterLinkHref,
+  topSlot,
+  bottomSlot,
 }: AuthFormLayoutProps) {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>{title}</h1>
+
+      {/* 상단 추가 영역 */}
+      {topSlot}
 
       <form onSubmit={onSubmit} className={styles.form}>
         {children}
@@ -47,6 +56,9 @@ export default function AuthFormLayout({
           {loading ? loadingText : submitText}
         </Button>
       </form>
+
+      {/* 하단 추가 영역 */}
+      {bottomSlot}
 
       <div className={styles.footer}>
         {footerText}{" "}
@@ -66,4 +78,3 @@ export default function AuthFormLayout({
     </div>
   );
 }
-

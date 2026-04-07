@@ -20,6 +20,7 @@ public class UserMapper {
                 .password(user.getPassword())
                 .nickname(user.getNickname())
                 .role(user.getRole())
+                .provider(user.getProvider())
                 .profileImg(user.getProfileImg())
                 .phone(user.getPhone())
                 .build();
@@ -35,6 +36,7 @@ public class UserMapper {
                 entity.getPassword(),
                 entity.getNickname(),
                 entity.getRole(),
+                entity.getProvider(),
                 entity.getProfileImg(),
                 entity.getPhone(),
                 entity.getCreatedAt(),
@@ -42,4 +44,3 @@ public class UserMapper {
         );
     }
 }
-

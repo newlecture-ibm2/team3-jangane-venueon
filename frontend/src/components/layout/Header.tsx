@@ -35,7 +35,8 @@ export default function Header({
 
   // /mypage 경로일 때는 항상 'signedIn' 해더(내 강의실 + 프로필)를 보여주도록 강제
   const isMyPage = pathname?.startsWith('/mypage');
-  const status = propStatus || (isMyPage ? 'signedIn' : 'public');
+  // user가 로그인되어 있으면 signedIn, 아니면 public (propStatus가 있으면 우선)
+  const status = propStatus || (user ? 'signedIn' : (isMyPage ? 'signedIn' : 'public'));
 
   // 우측에 렌더링될 버튼/프로필 그룹 로직
   const renderActions = () => {
@@ -71,6 +72,7 @@ export default function Header({
           <div className={styles.actionGroup}>
             <Link href="/dashboard"><Button variant="outlined" size="medium">내 강의실</Button></Link>
             <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
           </div>
         );
       }

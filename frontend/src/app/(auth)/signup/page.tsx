@@ -6,6 +6,7 @@ import { authAPI } from "@/lib/auth-api";
 import { useUIStore } from "@/store/useUIStore";
 import InputField from "@/components/ui/InputField";
 import AuthFormLayout from "../_components/AuthFormLayout";
+import GoogleLoginButton from "../_components/GoogleLoginButton";
 import AgreementSection, { AgreementState, isRequiredAgreed } from "./_components/AgreementSection/AgreementSection";
 
 export default function SignupPage() {
@@ -69,6 +70,7 @@ export default function SignupPage() {
       secondaryFooterText="호스트로 가입하시겠어요?"
       secondaryFooterLinkText="호스트 가입"
       secondaryFooterLinkHref="/host-signup"
+      topSlot={<GoogleLoginButton position="top" />}
     >
       <InputField
         id="email"
@@ -112,4 +114,3 @@ export default function SignupPage() {
     </AuthFormLayout>
   );
 }
-
