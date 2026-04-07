@@ -94,21 +94,16 @@ public class OrderController {
     }
 
     /**
-     * 환불 신청
+     * 참가 취소 (환불 요청)
      * POST /orders/{id}/refund
      */
     @PostMapping("/{id}/refund")
-    public ResponseEntity<ApiResponse<Void>> requestRefund(
+    public ResponseEntity<ApiResponse<CancelOrderResponse>> cancelOrder(
             @PathVariable Long id,
-            Authentication authentication,
-            @RequestBody Map<String, String> request) {
+            @RequestParam(defaultValue = "1") Long userId,  // TODO: @AuthenticationPrincipal로 교체
+            @Valid @RequestBody CancelOrderRequest request) {
 
-        String email = authentication.getName();
-        Long userId = orderService.getUserIdByEmail(email);
-        String reason = request.getOrDefault("reason", "단순 변심");
-
-        orderService.requestRefund(id, userId, reason);
-
-        return ResponseEntity.ok(ApiResponse.success(null));
+        CancelOrderResponse response = orderService.cancelOrder(id, userId, request.getReason());
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

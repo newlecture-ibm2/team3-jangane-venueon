@@ -54,16 +54,12 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
             entity = orderJpaRepository.findById(order.getId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
             
-            // 단순 필드들 업데이트 가능성 (Toss 주문정보 등)
+            // 도메인 모델의 상태 변화를 엔티티에 동기화
+            entity.updateStatus(order.getStatus());
             entity.updateTossOrderId(order.getTossOrderId());
-            
-            // 상태 동기화
-            if (entity.getStatus() != order.getStatus()) {
-                if (order.getStatus() == OrderStatus.PAID) {
-                    entity.confirmPayment(order.getTossPaymentKey());
-                } else {
-                    entity.updateStatus(order.getStatus());
-                }
+
+            if (order.getStatus() == OrderStatus.PAID && order.getTossPaymentKey() != null) {
+                entity.confirmPayment(order.getTossPaymentKey());
             }
         }
 
