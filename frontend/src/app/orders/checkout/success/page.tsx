@@ -63,10 +63,10 @@ function CheckoutSuccessContent() {
       } catch (err: any) {
         console.error('결제 승인 에러:', err);
         setStatus('error');
-        
+
         let friendlyMessage = '결제 승인 중 오류가 발생했습니다.';
         const rawError = err.message || '';
-        
+
         // 백엔드에서 뱉는 형태: "토스 결제 승인 실패: 400 Bad Request: "{...}"" 에서 메시지 추출
         try {
           const messageMatch = rawError.match(/"message":"([^"]+)"/);
@@ -77,10 +77,10 @@ function CheckoutSuccessContent() {
           } else {
             // 다른 텍스트만 있다면 그대로 노출 방지(안전을 위해 일반화)
           }
-        } catch(e) {
+        } catch (e) {
           // 파싱 실패시 기본 메시지
         }
-        
+
         setMessage(friendlyMessage);
       }
     };
@@ -160,29 +160,6 @@ function CheckoutSuccessContent() {
               <p>{message}</p>
             </>
           )}
-
-          {status === 'success' && (
-            <>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
-              <h2 style={{ marginBottom: '16px' }}>{message}</h2>
-              {paymentInfo && (
-                <div style={{ textAlign: 'left', margin: '24px 0', padding: '16px', background: 'var(--color-gray-50, #f9fafb)', borderRadius: '8px' }}>
-                  <p><strong>주문 번호:</strong> {paymentInfo.orderId}</p>
-                  <p><strong>결제 금액:</strong> {formatPrice(paymentInfo.amount)}</p>
-                  <p><strong>결제 수단:</strong> {paymentInfo.paymentMethod}</p>
-                  <p><strong>결제 상태:</strong> {paymentInfo.status}</p>
-                </div>
-              )}
-              <Button
-                variant="primary"
-                size="large"
-                onClick={() => window.location.href = '/mypage/orders'}
-              >
-                결제 내역으로 이동
-              </Button>
-            </>
-          )}
-
           {status === 'error' && (
             <>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>❌</div>
