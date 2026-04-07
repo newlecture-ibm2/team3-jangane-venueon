@@ -19,4 +19,8 @@ public class OrderDetailResponse {
     private String paymentMethod;
     private LocalDateTime orderedAt;
     private LocalDateTime paidAt;
+    // For MyPage Cards
+    private String organizer;
+    private String location;
+    private LocalDateTime eventStartDate;
 }

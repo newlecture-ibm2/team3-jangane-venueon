@@ -39,7 +39,12 @@ export default function Card({
     'PUBLISHED': { variant: 'green', label: '모집 중' },
     'ONGOING': { variant: 'purple', label: '진행 중' },
     'ENDED': { variant: 'gray', label: '종료' },
-    'CANCELLED': { variant: 'red', label: '취소' },
+    'CANCELLED': { variant: 'gray', label: '취소됨' },
+    // Order Backend Enums
+    'PAID': { variant: 'green', label: '결제 완료' },
+    'REGISTERED': { variant: 'green', label: '결제 완료' },
+    'REFUND_REQUESTED': { variant: 'purple', label: '환불 대기' },
+    'REFUNDED': { variant: 'gray', label: '환불 완료' },
     // Frontend Original
     '게시 전': { variant: 'gray', label: '게시 전' },
     '모집 중': { variant: 'green', label: '모집 중' },

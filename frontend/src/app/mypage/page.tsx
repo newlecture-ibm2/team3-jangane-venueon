@@ -39,12 +39,28 @@ export default function MyPage() {
     setLoading(true);
     try {
       const res = await fetch(
-        `/api/v1/users/me/orders?tab=${tab}&page=${page - 1}&size=${ITEMS_PER_PAGE}`
+        `/api/orders/me?page=${page - 1}&size=${ITEMS_PER_PAGE}`
+        // 백엔드 tab 필터링 미구현으로 우선 모두 가져옴
       );
       if (res.ok) {
         const json = await res.json();
         const data = json.data;
-        setLectures(data.content || []);
+        const validLectures = (data.content || []).filter(
+          (item: any) => item.status === 'PAID' || item.status === 'REGISTERED' || item.status === 'PENDING'
+        );
+        const mappedLectures: LectureItem[] = validLectures.map((item: any) => ({
+          orderId: item.orderId,
+          eventId: item.eventId,
+          title: item.eventTitle,
+          status: item.status,
+          organizer: item.organizer || "알 수 없는 호스트",
+          dateTime: item.eventStartDate ? new Date(item.eventStartDate).toLocaleString('ko-KR', {
+            year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+          }) : "-",
+          location: item.location || "-",
+          price: item.amount
+        }));
+        setLectures(mappedLectures);
         setTotalPages(data.totalPages || 1);
       } else {
         setLectures([]);
