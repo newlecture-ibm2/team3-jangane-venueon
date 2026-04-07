@@ -9,10 +9,7 @@
 }
 
 .pageTitle {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: var(--font-size-h1);
-  line-height: var(--main-line-height);
+  font: var(--text-h1-bold);
   color: var(--color-text-gray-900);
 }
 
