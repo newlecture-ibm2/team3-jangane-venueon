@@ -1,8 +1,6 @@
-.container {
-  padding: 40px;
-  max-width: 1200px;
+.full {
+  max-width: 1400px;
   margin: 0 auto;
-  background-color: #fff;
   min-height: 100vh;
 }
 
@@ -28,9 +26,28 @@
   margin-bottom: 40px;
 }
 
+.badge {
+  background-color: #F3F4F6;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #4B5563;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
 .title {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 36px;
+  font-weight: 800;
   margin-top: 12px;
   color: #111;
+  letter-spacing: -0.02em;
+}
+
+.descriptionText {
+    color: #6B7280;
+    font-size: 16px;
+    margin-top: 16px;
+    line-height: 1.6;
 }
