@@ -1,5 +1,6 @@
 package com.venueon.user.adapter.out.persistence.entity;
 
+import com.venueon.user.domain.model.AuthProvider;
 import com.venueon.user.domain.model.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,6 +34,11 @@ public class UserJpaEntity {
     @Column(nullable = false)
     private UserRole role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private AuthProvider provider = AuthProvider.LOCAL;
+
     @Column(name = "profile_img")
     private String profileImg;
 
@@ -50,4 +56,3 @@ public class UserJpaEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
-

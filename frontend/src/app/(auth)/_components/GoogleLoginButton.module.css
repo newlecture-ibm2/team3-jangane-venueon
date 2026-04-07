@@ -1,0 +1,58 @@
+.container {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ── 구분선: "또는" ── */
+.divider {
+  position: relative;
+  width: 100%;
+  text-align: center;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 24px);
+  height: 1px;
+  background-color: var(--color-border, #ddd);
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+.dividerText {
+  display: inline-block;
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--color-text-muted, #888);
+  background-color: var(--color-bg, #fff);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── 구글 버튼 래퍼 ── */
+.googleButton {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Google 렌더 버튼이 width 100%를 차지하도록 */
+.googleButton > div {
+  width: 100% !important;
+}
+
+.googleButton iframe {
+  width: 100% !important;
+}

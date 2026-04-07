@@ -32,7 +32,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 // 인증 불필요 경로
-                .requestMatchers("/auth/signup", "/auth/host/signup", "/auth/login").permitAll()
+                .requestMatchers("/auth/signup", "/auth/host/signup", "/auth/login", "/auth/google").permitAll()
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                 // Actuator
