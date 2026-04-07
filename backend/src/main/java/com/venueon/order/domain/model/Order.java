@@ -69,6 +69,13 @@ public class Order {
         this.status = OrderStatus.REFUNDED;
     }
 
+    public void requestRefund() {
+        if (!isCancellable()) {
+            throw new IllegalStateException("환불 불가능한 상태입니다.");
+        }
+        this.status = OrderStatus.REFUND_REQUESTED;
+    }
+
     public boolean isCancellable() {
         return this.status == OrderStatus.PAID || this.status == OrderStatus.REGISTERED;
     }

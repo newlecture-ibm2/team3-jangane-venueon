@@ -21,4 +21,6 @@ public interface OrderRepositoryPort {
     long countByEventIdAndStatusIn(Long eventId, List<OrderStatus> statuses);
     
     Page<Order> findByUserId(Long userId, Pageable pageable);
+
+    Page<Order> findValidOrdersByUserId(Long userId, Pageable pageable);
 }

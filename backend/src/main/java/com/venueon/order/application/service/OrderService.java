@@ -32,6 +32,7 @@ public class OrderService {
     private final EventJpaRepository eventRepository;
     private final UserJpaRepository userRepository;
     private final TossPaymentClient tossPaymentClient;
+    private final com.venueon.report.application.port.in.RequestRefundUseCase requestRefundUseCase;
 
     @Value("${toss.client-key}")
     private String tossClientKey;
@@ -204,18 +205,20 @@ public class OrderService {
      * API 스펙: GET /orders/me
      */
     public Page<OrderDetailResponse> getMyOrders(Long userId, Pageable pageable) {
-        return orderRepository.findByUserId(userId, pageable)
+        return orderRepository.findValidOrdersByUserId(userId, pageable)
                 .map(this::toOrderDetailResponse);
     }
 
     // --- Private Helper ---
 
     private OrderDetailResponse toOrderDetailResponse(Order order) {
-        // Event Title을 가져오기 위해 EventJpaRepository 호출 필요
-        String eventTitle = eventRepository.findById(order.getEventId())
-                .map(EventJpaEntity::getTitle)
-                .orElse("알 수 없는 이벤트");
-
+        // Event Title 및 상세 정보를 가져오기 위해 EventJpaRepository 호출 필요
+        EventJpaEntity event = eventRepository.findById(order.getEventId()).orElse(null);
+        
+        String eventTitle = event != null ? event.getTitle() : "알 수 없는 이벤트";
+        String organizer = event != null ? "호스트 " + event.getCreator().getId() : "알 수 없는 호스트";
+        String location = event != null ? (event.isOnline() ? "온라인" : event.getLocation()) : "-";
+        
         return OrderDetailResponse.builder()
                 .orderId(order.getId())
                 .eventId(order.getEventId())
@@ -226,6 +229,31 @@ public class OrderService {
                 .paymentMethod(order.getPaymentMethod())
                 .orderedAt(order.getOrderedAt())
                 .paidAt(order.getPaidAt())
+                .organizer(organizer)
+                .location(location)
+                .eventStartDate(event != null ? event.getStartDate() : null)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Long getUserIdByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED))
+                .getId();
+    }
+
+    @Transactional
+    public void requestRefund(Long orderId, Long userId, String reason) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+
+        if (!order.isOwnedBy(userId)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+
+        order.requestRefund();
+        orderRepository.save(order);
+        
+        requestRefundUseCase.requestRefund(orderId, userId, order.getAmount(), reason);
     }
 }

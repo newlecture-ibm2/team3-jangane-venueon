@@ -6,13 +6,6 @@ import styles from '../checkout.module.css';
 import successStyles from './success.module.css';
 import { Button } from '@/components/ui';
 
-export default function CheckoutSuccessPage() {
-  return (
-    <Suspense fallback={<div className={styles.checkoutContainer}><div className={styles.checkoutCard}><p style={{ textAlign: 'center', padding: '40px 0' }}>로딩 중...</p></div></div>}>
-      <CheckoutSuccessContent />
-    </Suspense>
-  );
-}
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
@@ -168,6 +161,28 @@ function CheckoutSuccessContent() {
             </>
           )}
 
+          {status === 'success' && (
+            <>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
+              <h2 style={{ marginBottom: '16px' }}>{message}</h2>
+              {paymentInfo && (
+                <div style={{ textAlign: 'left', margin: '24px 0', padding: '16px', background: 'var(--color-gray-50, #f9fafb)', borderRadius: '8px' }}>
+                  <p><strong>주문 번호:</strong> {paymentInfo.orderId}</p>
+                  <p><strong>결제 금액:</strong> {formatPrice(paymentInfo.amount)}</p>
+                  <p><strong>결제 수단:</strong> {paymentInfo.paymentMethod}</p>
+                  <p><strong>결제 상태:</strong> {paymentInfo.status}</p>
+                </div>
+              )}
+              <Button
+                variant="primary"
+                size="large"
+                onClick={() => window.location.href = '/mypage/orders'}
+              >
+                결제 내역으로 이동
+              </Button>
+            </>
+          )}
+
           {status === 'error' && (
             <>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>❌</div>
@@ -185,5 +200,13 @@ function CheckoutSuccessContent() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<div className={styles.checkoutContainer}><div className={styles.checkoutCard}><p style={{ textAlign: 'center', padding: '40px 0' }}>로딩 중...</p></div></div>}>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }

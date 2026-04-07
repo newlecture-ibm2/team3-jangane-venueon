@@ -14,6 +14,10 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
 
     Page<OrderJpaEntity> findByUserId(Long userId, Pageable pageable);
 
+    @Query("SELECT o FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
+           "(o.status != 'PENDING' OR (o.status = 'PENDING' AND o.paymentMethod = 'VIRTUAL_ACCOUNT'))")
+    Page<OrderJpaEntity> findValidOrdersByUserId(@Param("userId") Long userId, Pageable pageable);
+
     List<OrderJpaEntity> findByEventId(Long eventId);
 
     List<OrderJpaEntity> findByUserIdAndEventId(Long userId, Long eventId);

@@ -56,12 +56,14 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
             
             // 단순 필드들 업데이트 가능성 (Toss 주문정보 등)
             entity.updateTossOrderId(order.getTossOrderId());
-            if (order.getStatus() == OrderStatus.PAID) {
-                // JPA Entity 내부의 confirmPayment 메서드를 쓰려면 키만 전달하거나 직접 상태 세팅
-                entity.confirmPayment(order.getTossPaymentKey());
-            } else if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.REFUNDED) {
-                // 기타 상태 변경일 경우 추가 로직 고려. 현재는 리플렉션이나 setter 우회 등 필요 (여기선 간략히 생략)
-                // 현재 Entity에 cancel() 메서드 부족하므로 추가 고려해야 함 (하지만 이번 스코프는 저장 연동 위주)
+            
+            // 상태 동기화
+            if (entity.getStatus() != order.getStatus()) {
+                if (order.getStatus() == OrderStatus.PAID) {
+                    entity.confirmPayment(order.getTossPaymentKey());
+                } else {
+                    entity.updateStatus(order.getStatus());
+                }
             }
         }
 
@@ -95,6 +97,11 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
     @Override
     public Page<Order> findByUserId(Long userId, Pageable pageable) {
         return orderJpaRepository.findByUserId(userId, pageable).map(this::toDomain);
+    }
+
+    @Override
+    public Page<Order> findValidOrdersByUserId(Long userId, Pageable pageable) {
+        return orderJpaRepository.findValidOrdersByUserId(userId, pageable).map(this::toDomain);
     }
 
     // --- Mapper ---
