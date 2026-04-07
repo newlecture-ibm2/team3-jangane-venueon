@@ -3,9 +3,10 @@ package com.venueon.event.presentation;
 import com.venueon.common.dto.ApiResponse;
 import com.venueon.event.adapter.in.web.dto.EventDetailResponse;
 import com.venueon.event.adapter.in.web.dto.EventListResponse;
-import com.venueon.event.application.port.in.GetEventDetailUseCase;
-import com.venueon.event.application.port.in.GetEventListUseCase;
 import com.venueon.event.application.port.in.GetEventListUseCase.EventSearchCondition;
+import com.venueon.event.application.port.out.LoadHostInfoPort.HostInfo;
+import com.venueon.event.application.service.EventQueryService;
+import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,8 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EventController {
 
-    private final GetEventListUseCase getEventListUseCase;
-    private final GetEventDetailUseCase getEventDetailUseCase;
+    private final EventQueryService eventQueryService;
 
     /**
      * 이벤트 목록 조회 (검색/필터/페이징)
@@ -48,7 +48,7 @@ public class EventController {
 
         Pageable pageable = createPageable(page, size, sort);
 
-        Page<EventListResponse> result = getEventListUseCase
+        Page<EventListResponse> result = eventQueryService
                 .getEventList(condition, pageable)
                 .map(EventListResponse::from);
 
@@ -56,14 +56,14 @@ public class EventController {
     }
 
     /**
-     * 이벤트 상세 조회
+     * 이벤트 상세 조회 (Host 정보 포함)
      * GET /events/{id}
      */
     @GetMapping("/{id}")
     public ApiResponse<EventDetailResponse> getEventDetail(@PathVariable Long id) {
-        EventDetailResponse response = EventDetailResponse.from(
-                getEventDetailUseCase.getEventById(id)
-        );
+        Event event = eventQueryService.getEventById(id);
+        HostInfo hostInfo = eventQueryService.getHostInfoByCreatorId(event.getCreatorId());
+        EventDetailResponse response = EventDetailResponse.from(event, hostInfo);
         return ApiResponse.success(response);
     }
 

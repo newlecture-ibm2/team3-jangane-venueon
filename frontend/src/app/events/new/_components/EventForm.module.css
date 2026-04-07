@@ -1,0 +1,311 @@
+.formContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.backButton {
+  align-self: flex-start;
+  background-color: var(--color-gray-100);
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-700);
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font: var(--text-body-small-bold);
+  color: var(--color-text-gray-700);
+}
+
+.titleInput {
+  width: 100%;
+  font-size: 36px;
+  font-weight: 700;
+  padding: 16px 24px;
+  border: 1px solid var(--color-text-gray-300);
+  border-radius: var(--radius-md);
+  color: var(--color-text-gray-900);
+  outline: none;
+}
+
+.titleInput::placeholder {
+  color: var(--color-text-gray-400);
+}
+
+.titleInput:focus {
+  border-color: var(--color-primary);
+}
+
+.uploadArea {
+  width: 100%;
+  height: 300px;
+  border: 2px dashed var(--color-text-gray-300);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--color-text-gray-500);
+  cursor: pointer;
+  background-color: #fafafa;
+}
+
+.uploadArea > * {
+  pointer-events: none;
+}
+
+.uploadArea:hover {
+  border-color: var(--color-primary);
+  background-color: #f5f5f5;
+}
+
+.dragOver {
+  border-color: var(--color-primary) !important;
+  background-color: #eef2ff !important;
+  border-style: solid !important;
+}
+
+.previewWrapper {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border: 1px solid var(--color-text-gray-300);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.previewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.45);
+  color: white;
+  font: var(--text-body-bold);
+}
+
+.removeImageBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.removeImageBtn:hover {
+  background-color: var(--color-error);
+}
+
+.uploadIcon {
+  color: var(--color-text-gray-400);
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.charCount {
+  font: var(--text-body-small);
+  color: var(--color-text-gray-400);
+}
+
+.textarea {
+  width: 100%;
+  height: 120px;
+  padding: 16px;
+  border: 1px solid var(--color-text-gray-300);
+  border-radius: var(--radius-md);
+  font: var(--text-body);
+  resize: vertical;
+  outline: none;
+}
+
+.textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.priceInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currencyIcon {
+  position: absolute;
+  left: 16px;
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-500);
+}
+
+.priceInput {
+  width: 100%;
+  padding: 12px 16px 12px 40px;
+  border: 1px solid var(--color-text-gray-300);
+  border-radius: var(--radius-md);
+  font: var(--text-body);
+  outline: none;
+}
+
+.priceInput:focus {
+  border-color: var(--color-primary);
+}
+
+.dateInput, .selectInput, .standardInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--color-text-gray-300);
+  border-radius: var(--radius-md);
+  font: var(--text-body);
+  outline: none;
+  background-color: white;
+}
+
+.dateInput:focus, .selectInput:focus, .standardInput:focus {
+  border-color: var(--color-primary);
+}
+
+.standardInput:disabled {
+  background-color: var(--color-gray-100);
+  color: var(--color-text-gray-400);
+}
+
+.bottomSection {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.hostSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.hostTitle {
+  font: var(--text-h2);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.hostCard {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.hostLogo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #0b0bcc;
+  flex-shrink: 0;
+}
+
+.hostInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hostName {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.hostDesc {
+  font: var(--text-body-small);
+  color: var(--color-text-gray-600);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.actionButtonsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.actionButtonsRow {
+  display: flex;
+  gap: 16px;
+}
+
+.draftBtn, .publishBtn, .cancelBtn {
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font: var(--text-body-bold);
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+  min-width: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.draftBtn:hover, .publishBtn:hover, .cancelBtn:hover {
+  opacity: 0.9;
+}
+
+.draftBtn {
+  background-color: var(--color-text-gray-100);
+  color: var(--color-text-gray-900);
+}
+
+.draftBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: all; 
+}
+
+.publishBtn {
+  background-color: var(--color-primary);
+  color: var(--color-text-white);
+}
+
+.cancelBtn {
+  background-color: var(--color-error);
+  color: var(--color-text-white);
+}
