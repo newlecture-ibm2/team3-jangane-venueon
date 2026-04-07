@@ -1,26 +1,19 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button, UserProfile, Logo } from '@/components/ui';
 import { useAuth } from '@/store/useAuthStore';
 import styles from './Header.module.css';
 
-export default function Header({ className = '' }: { className?: string }) {
-  const pathname = usePathname();
-  const { user, isLoggedIn, isLoading, checkSession, logout } = useAuth();
-
-  // 최초 마운트 시 세션 확인
-  useEffect(() => {
-    checkSession();
-  }, [checkSession]);
-
-  // 현재 경로가 로그인/회원가입 페이지인지 확인
-  const isAuthPage = ['/login', '/signup', '/host/signup'].includes(pathname);
-
-  // Auth 상태에서 role 파생
-  const role = user?.role?.toLowerCase() as 'user' | 'host' | 'admin' | undefined;
+interface HeaderProps {
+  role?: 'user' | 'host' | 'admin';
+  status?: 'public' | 'signedIn' | 'myPage' | 'auth';
+  userName?: string;
+  userImageUrl?: string;
+  className?: string;
+}
 
 export default function Header({
   role = 'user',
@@ -30,7 +23,7 @@ export default function Header({
   className = ''
 }: HeaderProps) {
   const pathname = usePathname();
-  const { user, checkSession } = useAuth();
+  const { user, checkSession, logout } = useAuth();
 
   React.useEffect(() => {
     checkSession();
