@@ -22,9 +22,12 @@ export default function CommunityDetailHeader({ name, description }: Props) {
       </div>
 
       <div className={styles.header}>
+        <div className={styles.badge}>
+            커뮤니티
+        </div>
         <h1 className={styles.title}>{name}</h1>
         {description && (
-          <p style={{ color: '#6B7280', fontSize: '14px', marginTop: '8px' }}>{description}</p>
+          <p className={styles.descriptionText}>{description}</p>
         )}
       </div>
     </>

@@ -26,7 +26,7 @@ export default async function CommunityDetailPage({ params }: Props) {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`container-full ${styles.full}`}>
       {/* 상단: 커뮤니티 이름 + 뒤로가기 */}
       <CommunityDetailHeader name={communityName} description={communityDesc} />
 

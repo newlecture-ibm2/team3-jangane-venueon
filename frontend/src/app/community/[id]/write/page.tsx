@@ -13,7 +13,6 @@ export default function CommunityWritePage({ params }: Props) {
   const router = useRouter();
   const { showToast } = useUIStore();
   
-  // React 19 방식의 params 언래핑
   const resolvedParams = use(params);
   const communityId = resolvedParams.id;
 
@@ -31,7 +30,6 @@ export default function CommunityWritePage({ params }: Props) {
     setIsSubmitting(true);
 
     try {
-      // CreatePostRequest DTO 구조에 맞춤 (작성자는 로그인 세션의 JWT로 백엔드가 자동 식별)
       const payload = {
         title,
         content,
@@ -53,7 +51,6 @@ export default function CommunityWritePage({ params }: Props) {
 
       showToast('게시글 등록 완료', 'success', '성공적으로 글을 작성했습니다.');
       
-      // 등록 성공 시 목록 페이지로 복귀
       router.push(`/community/${communityId}`);
     } catch (error) {
       console.error(error);
@@ -64,42 +61,35 @@ export default function CommunityWritePage({ params }: Props) {
   };
 
   return (
-    <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto', backgroundColor: '#fff', minHeight: '100vh' }}>
+    /* 사이드바 없이 중앙 800px 레이아웃 적용 */
+    <div className="container-single">
       
-      {/* 상단 네비게이션/타이틀 */}
-      <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <button 
-          onClick={() => router.back()}
-          style={{ 
-            background: 'none', border: 'none', cursor: 'pointer', fontSize: '24px', color: '#6B7280' 
-          }}
-        >
-          ←
-        </button>
-        <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111' }}>
-          새 게시글 작성
-        </h1>
-      </div>
+      <section style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+        <Button variant="secondary" onClick={() => router.back()}>← 뒤로가기</Button>
+        <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>새 게시글 작성</h1>
+      </section>
 
-      {/* 작성 폼 영역 */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        
-        {/* 타입 선택 Drowdown */}
-        <div style={{ maxWidth: '200px' }}>
-          <Dropdown
-            label="말머리 (필수)"
-            value={type}
-            onChange={(val) => setType(val)}
-            options={[
-              { value: 'GENERAL', label: '일반' },
-              { value: 'QUESTION', label: '질문' },
-              { value: 'REVIEW', label: '후기' },
-              { value: 'NOTICE', label: '공지사항' },
-            ]}
-          />
-        </div>
+      <section style={{ 
+        background: '#F9FAFB', 
+        padding: '32px', 
+        borderRadius: '16px', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '24px',
+        border: '1px solid #E5E7EB'
+      }}>
+        <Dropdown
+          label="말머리 (필수)"
+          value={type}
+          onChange={(val) => setType(val)}
+          options={[
+            { value: 'GENERAL', label: '일반' },
+            { value: 'QUESTION', label: '질문' },
+            { value: 'REVIEW', label: '후기' },
+            { value: 'NOTICE', label: '공지사항' },
+          ]}
+        />
 
-        {/* 제목 입력 InputField */}
         <InputField
           label="제목 (필수)"
           placeholder="게시글의 제목을 입력하세요"
@@ -107,27 +97,36 @@ export default function CommunityWritePage({ params }: Props) {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        {/* 본문 입력 TextareaField */}
         <TextareaField
           label="본문 내용 (필수)"
           placeholder="이곳에 내용을 자세히 적어주세요."
           defaultValue={content}
           onChange={(e) => setContent(e.target.value)}
           showCount={true}
+          rows={12}
         />
 
-      </div>
-
-      {/* 하단 버튼 영역 */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '40px' }}>
-        <Button variant="secondary" size="large" onClick={() => router.back()} disabled={isSubmitting}>
-          취소
-        </Button>
-        <Button variant="primary" size="large" onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? '등록 중...' : '등록하기'}
-        </Button>
-      </div>
-
+        <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+          <Button 
+              variant="secondary" 
+              size="large" 
+              onClick={() => router.back()} 
+              disabled={isSubmitting}
+              style={{ flex: 1 }}
+          >
+            취소
+          </Button>
+          <Button 
+              variant="primary" 
+              size="large" 
+              onClick={handleSubmit} 
+              disabled={isSubmitting}
+              style={{ flex: 2 }}
+          >
+            {isSubmitting ? '등록 중...' : '등록하기'}
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
