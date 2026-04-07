@@ -143,11 +143,17 @@ public class OrderService {
      */
     @Transactional
     public void handleTossWebhook(Map<String, Object> payload) {
-        String paymentKey = (String) payload.get("paymentKey");
-        String tossOrderId = (String) payload.get("orderId");
-        String status = (String) payload.get("status");
+        log.info("토스 Webhook 원본 수신: {}", payload);
 
-        log.info("토스 Webhook 수신: tossOrderId={}, status={}", tossOrderId, status);
+        // 토스 웹훅은 보통 "data" 필드 안에 실제 상태값들이 들어 있습니다.
+        @SuppressWarnings("unchecked")
+        Map<String, Object> data = (Map<String, Object>) payload.getOrDefault("data", payload);
+
+        String paymentKey = (String) data.get("paymentKey");
+        String tossOrderId = (String) data.get("orderId");
+        String status = (String) data.get("status");
+
+        log.info("토스 Webhook 파싱: tossOrderId={}, status={}", tossOrderId, status);
 
         // 1. 주문 모델 조회
         Order order = orderRepository.findByTossOrderId(tossOrderId).orElse(null);

@@ -1,0 +1,126 @@
+/* 피그마 디자인 기반 성공 페이지 레이아웃 */
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px;
+  gap: 32px;
+  max-width: 600px; /* 데스크탑 중앙 정렬을 위한 적절한 너비 */
+  margin: 0 auto;
+}
+
+.headerSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-gray-900, #111827);
+  line-height: 1.2;
+  margin: 0;
+  text-align: center;
+}
+
+.subtitle {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-gray-500, #6b7280);
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+}
+
+.cardSection {
+  background: var(--color-gray-50, #f9fafb);
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cardRow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.cardRow:last-child {
+  margin-bottom: 0;
+}
+
+.cardLabel {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-gray-500, #6b7280);
+  margin: 0;
+}
+
+.cardValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-gray-900, #111827);
+  margin: 0;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* 토스트 모달 유지 */
+.toastContainer {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  border-left: 4px solid var(--color-primary);
+}
+
+.toastIcon {
+  font-size: 24px;
+}
+
+.toastContent {
+  text-align: left;
+}
+
+.toastTitle {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  color: var(--color-text-gray-900);
+}
+
+.toastMessage {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-secondary);
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
