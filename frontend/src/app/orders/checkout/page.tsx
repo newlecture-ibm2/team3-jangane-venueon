@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState, useCallback } from 'react';
+import React, { Suspense, useEffect, useState, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from './checkout.module.css';
 import { Button } from '@/components/ui';
@@ -31,9 +31,13 @@ function CheckoutContent() {
   const [orderData, setOrderData] = useState<CreateOrderData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const orderCreated = useRef(false); // 중복 주문 생성 방지 플래그
 
-  // 1단계: 백엔드에 주문 생성 요청
+  // 1단계: 백엔드에 주문 생성 요청 (한 번만 실행)
   useEffect(() => {
+    if (orderCreated.current) return; // 이미 주문 생성 요청한 경우 스킵
+    orderCreated.current = true;
+
     const createOrder = async () => {
       try {
         setLoading(true);
