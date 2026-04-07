@@ -10,4 +10,6 @@ import java.util.List;
 public interface GetHostRecentOrdersUseCase {
 
     List<HostRecentOrderResponse> getRecentOrders(Long hostId, int size);
+
+    int getCurrentMonthRevenue(Long hostId);
 }

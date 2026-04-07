@@ -14,6 +14,10 @@ interface RecentOrder {
   status: string;
 }
 
+interface HostOrderSummary {
+  currentMonthRevenue: number;
+}
+
 function getOrderStatusLabel(status: string) {
   switch (status) {
     case 'PAID':
@@ -70,11 +74,13 @@ export default function HostDashboardPage() {
         const publishedRes = await hostApi.get<{ status: string; data: { totalElements: number } }>('/host/seminars?size=1');
         const draftRes = await hostApi.get<{ status: string; data: { totalElements: number } }>('/host/seminars/drafts?size=1');
         const recentOrdersRes = await hostApi.get<{ status: string; data: RecentOrder[] }>('/host/orders/recent?size=5');
+        const orderSummaryRes = await hostApi.get<{ status: string; data: HostOrderSummary }>('/host/orders/summary');
         
         setStats(prev => ({
           ...prev,
           publishedCount: publishedRes.data?.totalElements || 0,
           draftCount: draftRes.data?.totalElements || 0,
+          totalRevenue: orderSummaryRes.data?.currentMonthRevenue || 0,
         }));
         setRecentOrders(recentOrdersRes.data || []);
       } catch (error) {

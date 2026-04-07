@@ -357,7 +357,7 @@ public class DataInitializer implements ApplicationRunner {
                 .quantity(1)
                 .amount(150000)
                 .paymentMethod("CARD")
-                .orderedAt(LocalDateTime.of(2026, 3, 21, 14, 10))
+                .displayOrderedAt(LocalDateTime.of(2026, 3, 21, 14, 10))
                 .build());
 
         // user1(김참여) — 마음챙김 요가 클래스 수강 (유료, PAID)
@@ -368,7 +368,7 @@ public class DataInitializer implements ApplicationRunner {
                 .quantity(2)
                 .amount(60000)
                 .paymentMethod("KAKAO_PAY")
-                .orderedAt(LocalDateTime.of(2026, 3, 20, 10, 0))
+                .displayOrderedAt(LocalDateTime.of(2026, 3, 20, 10, 0))
                 .build());
 
         // user2(이탐색) — UX Design Workshop 수강 (유료, PAID)
@@ -379,7 +379,7 @@ public class DataInitializer implements ApplicationRunner {
                 .quantity(1)
                 .amount(80000)
                 .paymentMethod("NAVER_PAY")
-                .orderedAt(LocalDateTime.of(2026, 3, 19, 16, 20))
+                .displayOrderedAt(LocalDateTime.of(2026, 3, 19, 16, 20))
                 .build());
 
         // user2(이탐색) — Startup Demo Day 참가 (무료, REGISTERED)
@@ -389,7 +389,7 @@ public class DataInitializer implements ApplicationRunner {
                 .status(OrderStatus.REGISTERED)
                 .quantity(1)
                 .amount(0)
-                .orderedAt(LocalDateTime.of(2026, 3, 18, 9, 30))
+                .displayOrderedAt(LocalDateTime.of(2026, 3, 18, 9, 30))
                 .build());
 
         // user3(박이벤트) — Business Growth Summit 수강 (유료, CANCELLED → 환불 대상)
@@ -400,7 +400,7 @@ public class DataInitializer implements ApplicationRunner {
                 .quantity(1)
                 .amount(50000)
                 .paymentMethod("CARD")
-                .orderedAt(LocalDateTime.of(2026, 3, 17, 11, 45))
+                .displayOrderedAt(LocalDateTime.of(2026, 3, 17, 11, 45))
                 .build());
 
         // user3(박이벤트) — 한식 마스터클래스 수강 (유료, PAID)
@@ -411,7 +411,7 @@ public class DataInitializer implements ApplicationRunner {
                 .quantity(1)
                 .amount(65000)
                 .paymentMethod("BANK_TRANSFER")
-                .orderedAt(LocalDateTime.of(2026, 3, 16, 15, 5))
+                .displayOrderedAt(LocalDateTime.of(2026, 3, 16, 15, 5))
                 .build());
 
         java.util.Set<Long> seededEventIds = new java.util.HashSet<>();
@@ -438,7 +438,7 @@ public class DataInitializer implements ApplicationRunner {
                         .quantity(1)
                         .amount(price)
                         .paymentMethod("CARD")
-                        .orderedAt(LocalDateTime.of(2026, 3, Math.max(extraOrderDay, 1), 13, 0))
+                        .displayOrderedAt(LocalDateTime.of(2026, 3, Math.max(extraOrderDay, 1), 13, 0))
                         .build());
             } else {
                 seed.add(OrderJpaEntity.builder()
@@ -447,7 +447,7 @@ public class DataInitializer implements ApplicationRunner {
                         .status(OrderStatus.REGISTERED)
                         .quantity(1)
                         .amount(0)
-                        .orderedAt(LocalDateTime.of(2026, 3, Math.max(extraOrderDay, 1), 13, 0))
+                        .displayOrderedAt(LocalDateTime.of(2026, 3, Math.max(extraOrderDay, 1), 13, 0))
                         .build());
             }
             extraOrderDay--;
