@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MoreVertical } from 'lucide-react';
 import styles from './EventActionMenu.module.css';
 import { PopoverMenu } from '@/components/ui';
 import { ConfirmModal } from '@/components/modal';
@@ -43,7 +42,7 @@ export default function EventActionMenu({ eventId, creatorId }: Props) {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('이벤트 삭제에 실패했습니다.');
-      
+
       showToast('이벤트가 성공적으로 삭제되었습니다.', 'success');
       router.push('/');
       router.refresh();
@@ -57,7 +56,20 @@ export default function EventActionMenu({ eventId, creatorId }: Props) {
   return (
     <div className={styles.wrapper}>
       <button className={styles.triggerButton} onClick={() => setMenuOpen(!menuOpen)}>
-        <MoreVertical size={20} />
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="1" />
+          <circle cx="12" cy="5" r="1" />
+          <circle cx="12" cy="19" r="1" />
+        </svg>
       </button>
 
       {menuOpen && (

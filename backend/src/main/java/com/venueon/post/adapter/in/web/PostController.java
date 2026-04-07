@@ -2,6 +2,7 @@ package com.venueon.post.adapter.in.web;
 
 import com.venueon.post.application.port.in.CreatePostUseCase;
 import com.venueon.post.application.port.in.GetPostQuery;
+import com.venueon.post.application.port.in.PostLikeUseCase;
 import com.venueon.post.application.port.in.dto.CreatePostRequest;
 import com.venueon.post.application.port.in.dto.CreatePostResponse;
 import com.venueon.post.application.port.in.dto.PostListResponse;
@@ -25,6 +26,7 @@ public class PostController {
 
     private final CreatePostUseCase createPostUseCase;
     private final GetPostQuery getPostQuery;
+    private final PostLikeUseCase postLikeUseCase;
 
     /**
      * 1단계: 게시글 등록
@@ -36,7 +38,8 @@ public class PostController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = "admin@venueon.com"; // 기본값 (비회원 익명작성용)
 
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
             email = ((UserDetails) authentication.getPrincipal()).getUsername();
         }
 
@@ -48,17 +51,33 @@ public class PostController {
      * 2단계 + 3단계: 특정 커뮤니티의 게시글 목록 조회 (페이징 + 타입 필터)
      *
      * 사용 예시:
-     *   GET /posts?communityId=1                           → 전체 목록
-     *   GET /posts?communityId=1&type=NOTICE               → 공지사항만
-     *   GET /posts?communityId=1&page=0&size=10&sort=createdAt,desc
+     * GET /posts?communityId=1 → 전체 목록
+     * GET /posts?communityId=1&type=NOTICE → 공지사항만
+     * GET /posts?communityId=1&page=0&size=10&sort=createdAt,desc
      */
     @GetMapping
     public ResponseEntity<Page<PostListResponse>> getPostList(
             @RequestParam Long communityId,
             @RequestParam(required = false) PostType type,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
-    ) {
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<PostListResponse> posts = getPostQuery.getPostsByCommunityId(communityId, type, pageable);
         return ResponseEntity.ok(posts);
+    }
+
+    /**
+     * 게시글 좋아요 토글
+     * POST /posts/{id}/like
+     */
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Void> toggleLike(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        postLikeUseCase.toggleLike(id, email);
+        return ResponseEntity.ok().build();
     }
 }

@@ -2,7 +2,6 @@
 
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FileUp, X } from 'lucide-react';
 import { Button, InputField, TextareaField, SelectBox } from '@/components/ui';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import styles from './EventForm.module.css';
@@ -102,16 +101,16 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     let droppedFile: File | null = null;
-    
+
     if (e.dataTransfer.items) {
       const item = Array.from(e.dataTransfer.items).find(i => i.kind === 'file');
       if (item) droppedFile = item.getAsFile();
     } else if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       droppedFile = e.dataTransfer.files[0];
     }
-    
+
     if (droppedFile) {
       handleFileUpload(droppedFile);
     } else {
@@ -123,7 +122,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     setLoading(true);
     try {
       const isOnline = formData.isOnlineStr === 'true';
-      
+
       // 날짜 파싱 (임시로 시작일 10시, 종료일 18시 셋팅)
       let startDateStr = new Date().toISOString();
       let endDateStr = new Date().toISOString();
@@ -163,7 +162,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       }
 
       if (!res.ok) throw new Error(`이벤트 ${mode === 'create' ? '생성' : '수정'} 실패`);
-      
+
       const resData = await res.json();
       const targetId = mode === 'create' ? resData.data.id : eventId;
 
@@ -194,11 +193,11 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
       <div className={styles.formGroup}>
         <label className={styles.label}>강의 제목</label>
-        <input 
-          type="text" 
+        <input
+          type="text"
           name="title"
-          className={styles.titleInput} 
-          placeholder="제목을 입력하세요." 
+          className={styles.titleInput}
+          placeholder="제목을 입력하세요."
           value={formData.title}
           onChange={handleChange}
         />
@@ -211,7 +210,10 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             <img src={previewUrl} alt="미리보기" className={styles.previewImage} />
             {uploading && <div className={styles.uploadingOverlay}>업로드 중...</div>}
             <button className={styles.removeImageBtn} onClick={handleRemoveImage} type="button">
-              <X size={16} />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
             </button>
           </div>
         ) : (
@@ -223,7 +225,11 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(false); }}
             onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(false); handleDrop(e); }}
           >
-            <FileUp size={32} className={styles.uploadIcon} />
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.uploadIcon}>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
             <p>{isDragOver ? '여기에 놓으세요' : '클릭하거나 파일을 여기로 끌어다 놓으세요'}</p>
           </div>
         )}
@@ -245,9 +251,9 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           <label className={styles.label}>강의 정보</label>
           <span className={styles.charCount}>{formData.description.length}/300</span>
         </div>
-        <textarea 
+        <textarea
           name="description"
-          className={styles.textarea} 
+          className={styles.textarea}
           placeholder="강의 정보를 입력하세요."
           maxLength={300}
           value={formData.description}
@@ -260,22 +266,22 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           <label className={styles.label}>총 가격</label>
           <div className={styles.priceInputWrapper}>
             <span className={styles.currencyIcon}>₩</span>
-            <input 
-              type="number" 
+            <input
+              type="number"
               name="price"
-              className={styles.priceInput} 
+              className={styles.priceInput}
               value={formData.price}
               onChange={handleChange}
             />
           </div>
         </div>
-        
+
         <div className={styles.formGroup}>
           <label className={styles.label}>날짜</label>
-          <input 
-            type="date" 
+          <input
+            type="date"
             name="date"
-            className={styles.dateInput} 
+            className={styles.dateInput}
             value={formData.date}
             onChange={handleChange}
           />
@@ -283,7 +289,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
         <div className={styles.formGroup}>
           <label className={styles.label}>온라인/오프라인</label>
-          <select 
+          <select
             name="isOnlineStr"
             className={styles.selectInput}
             value={formData.isOnlineStr}
@@ -298,11 +304,11 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
       <div className={styles.formGroup}>
         <label className={styles.label}>장소</label>
-        <input 
-          type="text" 
+        <input
+          type="text"
           name="location"
-          className={styles.standardInput} 
-          placeholder="오프라인 강의일 경우 주소를 입력해주세요." 
+          className={styles.standardInput}
+          placeholder="오프라인 강의일 경우 주소를 입력해주세요."
           value={formData.location}
           onChange={handleChange}
           disabled={formData.isOnlineStr === 'true'}
@@ -325,23 +331,23 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
         <div className={styles.actionButtonsContainer}>
           <div className={styles.actionButtonsRow}>
-            <button 
-              className={styles.draftBtn} 
+            <button
+              className={styles.draftBtn}
               disabled={true}
               title="마이페이지 기능이 추가되면 지원될 예정입니다."
             >
               임시 저장
             </button>
-            <button 
-              className={styles.publishBtn} 
+            <button
+              className={styles.publishBtn}
               onClick={() => handleSubmit(false)}
               disabled={loading}
             >
               {loading ? (mode === 'create' ? '게시 중...' : '수정 중...') : (mode === 'create' ? '게시하기' : '수정하기')}
             </button>
           </div>
-          <button 
-            className={styles.cancelBtn} 
+          <button
+            className={styles.cancelBtn}
             onClick={() => setIsExitModalOpen(true)}
             disabled={loading}
           >
@@ -350,7 +356,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         </div>
       </div>
 
-      <ConfirmModal 
+      <ConfirmModal
         isOpen={isExitModalOpen}
         onClose={() => setIsExitModalOpen(false)}
         onConfirm={() => {
