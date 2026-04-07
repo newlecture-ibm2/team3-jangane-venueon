@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ConfirmPaymentResponse {
     private Long orderId;
+    private String orderName;
     private String status;
     private int amount;
     private String paymentMethod;
