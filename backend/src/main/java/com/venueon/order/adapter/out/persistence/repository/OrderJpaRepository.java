@@ -20,12 +20,9 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
 
     long countByEventIdAndStatusIn(Long eventId, List<OrderStatus> statuses);
 
-    /**
-     * 마이페이지 내 강의 목록: Order + Event + Creator를 fetch join으로 한 번에 조회
-     */
-    @Query("SELECT o FROM OrderJpaEntity o " +
-           "JOIN FETCH o.event e " +
-           "JOIN FETCH e.creator " +
-           "WHERE o.user.id = :userId")
-    List<OrderJpaEntity> findByUserIdWithEvent(@Param("userId") Long userId);
+    java.util.Optional<OrderJpaEntity> findByTossOrderId(String tossOrderId);
+
+    List<OrderJpaEntity> findByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);
+
+    Page<OrderJpaEntity> findByEventIdIn(List<Long> eventIds, Pageable pageable);
 }

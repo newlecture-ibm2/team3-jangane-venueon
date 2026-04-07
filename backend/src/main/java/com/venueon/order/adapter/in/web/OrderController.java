@@ -1,58 +1,84 @@
 package com.venueon.order.adapter.in.web;
 
 import com.venueon.common.dto.ApiResponse;
-import com.venueon.order.adapter.in.web.dto.MyOrderResponse;
-import com.venueon.order.application.port.in.GetMyOrdersUseCase;
+import com.venueon.order.application.service.OrderService;
+import com.venueon.order.adapter.in.web.dto.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @RestController
-@RequestMapping("/v1/users/me")
+@RequestMapping("/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final GetMyOrdersUseCase getMyOrdersUseCase;
+    private final OrderService orderService;
 
     /**
-     * GET /v1/users/me/orders?tab=upcoming&page=0&size=8
-     *
-     * 마이페이지 내 강의(수강) 목록 조회
-     *
-     * @param tab  탭 필터: "upcoming" (수강 예정) | "enrolled" (수강 중) | "completed" (수강 완료)
-     * @param page 페이지 번호 (0-based)
-     * @param size 페이지 크기 (기본 8)
+     * 단건 주문 생성 (PENDING 상태)
+     * POST /orders
      */
-    @GetMapping("/orders")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getMyOrders(
-            Authentication authentication,
-            @RequestParam(defaultValue = "upcoming") String tab,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size) {
+    @PostMapping
+    public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrder(
+            @RequestParam(defaultValue = "1") Long userId,  // TODO: @AuthenticationPrincipal로 교체
+            @Valid @RequestBody CreateOrderRequest request) {
 
-        String email = authentication.getName();
-        log.debug("내 강의 목록 API 호출: email={}, tab={}, page={}, size={}", email, tab, page, size);
+        CreateOrderResponse response = orderService.createOrder(userId, request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<MyOrderResponse> result = getMyOrdersUseCase.getMyOrders(email, tab, pageable);
+    /**
+     * 토스 결제 승인 요청
+     * POST /orders/{id}/confirm
+     */
+    @PostMapping("/{id}/confirm")
+    public ResponseEntity<ApiResponse<ConfirmPaymentResponse>> confirmPayment(
+            @PathVariable Long id,
+            @Valid @RequestBody ConfirmPaymentRequest request) {
 
-        // 프론트에서 사용하기 쉬운 구조로 매핑
-        Map<String, Object> data = new HashMap<>();
-        data.put("content", result.getContent());
-        data.put("totalPages", result.getTotalPages());
-        data.put("totalElements", result.getTotalElements());
-        data.put("currentPage", result.getNumber());
-        data.put("size", result.getSize());
+        ConfirmPaymentResponse response = orderService.confirmPayment(id, request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 
-        return ResponseEntity.ok(ApiResponse.success(data));
+    /**
+     * 토스 Webhook 결제 검증
+     * POST /orders/toss/webhook
+     */
+    @PostMapping("/toss/webhook")
+    public ResponseEntity<Void> handleTossWebhook(@RequestBody Map<String, Object> payload) {
+        orderService.handleTossWebhook(payload);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 주문 상세 조회
+     * GET /orders/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<OrderDetailResponse>> getOrderDetail(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "1") Long userId) {  // TODO: @AuthenticationPrincipal로 교체
+
+        OrderDetailResponse response = orderService.getOrderDetail(id, userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    /**
+     * 내 주문/결제 내역
+     * GET /orders/me
+     */
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Page<OrderDetailResponse>>> getMyOrders(
+            @RequestParam(defaultValue = "1") Long userId,  // TODO: @AuthenticationPrincipal로 교체
+            @PageableDefault(size = 10) Pageable pageable) {
+
+        Page<OrderDetailResponse> response = orderService.getMyOrders(userId, pageable);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
