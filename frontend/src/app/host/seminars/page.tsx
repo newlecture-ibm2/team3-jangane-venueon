@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/layout/Sidebar';
-import { api } from '@/lib/api';
+import { hostApi } from '@/lib/host-api';
 import styles from './page.module.css';
 
 interface EventData {
@@ -49,7 +49,7 @@ export default function HostEventsPage() {
         endpoint += `&status=${status}`;
       }
       
-      const res = await api.get<{ status: string; data: PageData }>(endpoint);
+      const res = await hostApi.get<{ status: string; data: PageData }>(endpoint);
       setEventsData(res.data);
     } catch (error) {
       console.error('Failed to fetch events:', error);
@@ -66,7 +66,8 @@ export default function HostEventsPage() {
   };
 
   const tabs = [
-    { value: 'ALL', label: '게시전' },
+    { value: 'ALL', label: '전체' },
+    { value: 'DRAFT', label: '임시 저장' },
     { value: 'PUBLISHED', label: '수강생 모집 중' },
     { value: 'ONGOING', label: '강의 준비 중' },
     { value: 'ENDED', label: '종료된 강의' },

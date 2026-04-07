@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/layout/Sidebar';
-import { api } from '@/lib/api';
+import { hostApi } from '@/lib/host-api';
 import styles from './page.module.css';
 
 export default function HostDashboardPage() {
@@ -19,8 +19,8 @@ export default function HostDashboardPage() {
   useEffect(() => {
     async function fetchDashboardStats() {
       try {
-        const publishedRes = await api.get<{ status: string; data: { totalElements: number } }>('/host/seminars?size=1');
-        const draftRes = await api.get<{ status: string; data: { totalElements: number } }>('/host/seminars/drafts?size=1');
+        const publishedRes = await hostApi.get<{ status: string; data: { totalElements: number } }>('/host/seminars?size=1');
+        const draftRes = await hostApi.get<{ status: string; data: { totalElements: number } }>('/host/seminars/drafts?size=1');
         
         setStats(prev => ({
           ...prev,

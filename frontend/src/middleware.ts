@@ -7,7 +7,7 @@ import { getIronSession } from "iron-session";
 import { sessionOptions, SessionData } from "@/lib/session";
 
 // 인증이 필요한 경로 패턴
-const protectedPaths = ["/mypage", "/events/new" /*, "/host" */];
+const protectedPaths = ["/mypage", "/events/new", "/host"];
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();

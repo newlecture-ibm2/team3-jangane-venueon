@@ -16,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 호스트 이벤트 관리 컨트롤러 (세미나 목록 및 대시보드 조회용)
+ * 호스트 세미나 관리 컨트롤러 (충돌 방지를 위해 HostSeminarController로 명칭 변경)
  */
 @Slf4j
 @RestController
@@ -27,10 +27,6 @@ public class HostSeminarController {
     private final GetHostEventsUseCase getHostEventsUseCase;
     private final UserJpaRepository userRepository;
 
-    /**
-     * GET /host/events?status=&page=&size=
-     * 호스트 본인의 이벤트 목록 조회 (상태별 필터 + 페이지네이션)
-     */
     @GetMapping
     public ResponseEntity<ApiResponse<Page<HostEventResponse>>> getMyEvents(
             Authentication authentication,
@@ -47,10 +43,6 @@ public class HostSeminarController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    /**
-     * GET /host/events/drafts?page=&size=
-     * 호스트 본인의 임시저장(DRAFT) 이벤트 목록
-     */
     @GetMapping("/drafts")
     public ResponseEntity<ApiResponse<Page<HostEventResponse>>> getMyDraftEvents(
             Authentication authentication,
@@ -66,19 +58,26 @@ public class HostSeminarController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    /**
-     * Authentication 객체에서 진짜 userId 추출
-     */
     private Long extractUserId(Authentication authentication) {
-        // [개발용 임시 허용] 로그인 정보가 없으면 ID 5번(NextCode 호스트)으로 고정하여 조회 허용
         if (authentication == null || authentication.getName() == null) {
-            log.warn("인증 정보가 없습니다. 테스트용 호스트 ID(5)를 사용합니다.");
-            return 5L;
+            log.warn("인증 실패: Authentication 객체가 비어있습니다.");
+            throw new RuntimeException("인증 정보가 없습니다. 로그인이 필요합니다.");
         }
 
-        String email = authentication.getName();
-        return userRepository.findByEmail(email)
-                .map(UserJpaEntity::getId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + email));
+        String principalName = authentication.getName();
+        log.info("📢 데이터 조회 시도 유저 정보: [{}]", principalName);
+
+        // 1. 이메일로 먼저 찾아보고, 2. 없으면 닉네임으로 한 번 더 찾아봄
+        return userRepository.findByEmail(principalName)
+                .or(() -> userRepository.findByNickname(principalName))
+                .map(user -> {
+                    log.info("✅ 사용자 확인 성공: ID [{}]", user.getId());
+                    return user.getId();
+                })
+                .orElseThrow(() -> {
+                    log.error("❌ 사용자 조회 실패: [{}] DB에 없습니다.", principalName);
+                    return new RuntimeException("사용자를 찾을 수 없습니다: " + principalName);
+                });
     }
 }
+
