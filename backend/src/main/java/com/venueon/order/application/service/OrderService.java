@@ -128,8 +128,14 @@ public class OrderService {
 
         log.info("결제 승인 완료: orderId={}, paymentKey={}", orderId, request.getPaymentKey());
 
+        // 이벤트명(강의명) 조회
+        String orderName = eventRepository.findById(order.getEventId())
+                .map(com.venueon.event.adapter.out.persistence.entity.EventJpaEntity::getTitle)
+                .orElse("VenueOn 강의");
+
         return ConfirmPaymentResponse.builder()
                 .orderId(order.getId())
+                .orderName(orderName)
                 .status(order.getStatus().name())
                 .amount(order.getAmount())
                 .paymentMethod(order.getPaymentMethod())
