@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { Suspense, useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from './checkout.module.css';
 import { Button } from '@/components/ui';
@@ -18,6 +18,14 @@ interface CreateOrderData {
 }
 
 export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className={styles.checkoutContainer}><div className={styles.checkoutCard}><p style={{ textAlign: 'center', padding: '40px 0' }}>로딩 중...</p></div></div>}>
+      <CheckoutContent />
+    </Suspense>
+  );
+}
+
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const [widgets, setWidgets] = useState<any>(null);
   const [orderData, setOrderData] = useState<CreateOrderData | null>(null);
