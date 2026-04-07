@@ -193,7 +193,7 @@ public class OrderService {
      * API 스펙: GET /orders/me
      */
     public Page<OrderDetailResponse> getMyOrders(Long userId, Pageable pageable) {
-        return orderRepository.findByUserId(userId, pageable)
+        return orderRepository.findValidOrdersByUserId(userId, pageable)
                 .map(this::toOrderDetailResponse);
     }
 

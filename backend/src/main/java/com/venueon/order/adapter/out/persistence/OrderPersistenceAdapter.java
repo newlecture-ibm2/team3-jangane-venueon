@@ -99,6 +99,11 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
         return orderJpaRepository.findByUserId(userId, pageable).map(this::toDomain);
     }
 
+    @Override
+    public Page<Order> findValidOrdersByUserId(Long userId, Pageable pageable) {
+        return orderJpaRepository.findValidOrdersByUserId(userId, pageable).map(this::toDomain);
+    }
+
     // --- Mapper ---
     private Order toDomain(OrderJpaEntity entity) {
         return new Order(

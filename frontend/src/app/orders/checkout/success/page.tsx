@@ -97,9 +97,9 @@ export default function CheckoutSuccessPage() {
               <Button
                 variant="primary"
                 size="large"
-                onClick={() => window.location.href = '/orders'}
+                onClick={() => window.location.href = '/mypage/orders'}
               >
-                주문 내역으로 이동
+                결제 내역으로 이동
               </Button>
             </>
           )}

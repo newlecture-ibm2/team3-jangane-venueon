@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,8 +28,11 @@ public class OrderController {
      */
     @PostMapping
     public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrder(
-            @RequestParam(defaultValue = "1") Long userId,  // TODO: @AuthenticationPrincipal로 교체
+            Authentication authentication,
             @Valid @RequestBody CreateOrderRequest request) {
+
+        String email = authentication.getName();
+        Long userId = orderService.getUserIdByEmail(email);
 
         CreateOrderResponse response = orderService.createOrder(userId, request);
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -80,7 +84,7 @@ public class OrderController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<Page<OrderDetailResponse>>> getMyOrders(
             Authentication authentication,
-            @PageableDefault(size = 10) Pageable pageable) {
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         String email = authentication.getName();
         Long userId = orderService.getUserIdByEmail(email);
