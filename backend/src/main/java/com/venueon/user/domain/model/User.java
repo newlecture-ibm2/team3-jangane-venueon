@@ -53,6 +53,11 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updatePassword(String encodedNewPassword) {
+        this.password = encodedNewPassword;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     // --- Getters ---
 
     public Long getId() { return id; }

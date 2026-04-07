@@ -41,6 +41,8 @@ public class SecurityConfig {
                 .requestMatchers("/images/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
                 // /auth/me — 인증 필요
                 .requestMatchers("/auth/me").authenticated()
+                // /v1/users/** — 모든 마이페이지/사용자 관련 API 인증 필요
+                .requestMatchers("/v1/users/**").authenticated()
                 // 그 외 기존 경로는 일단 허용 (점진적으로 보호 추가 예정)
                 .anyRequest().permitAll()
             )
