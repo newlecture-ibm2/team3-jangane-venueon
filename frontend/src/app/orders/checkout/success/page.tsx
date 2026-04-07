@@ -1,11 +1,19 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from '../checkout.module.css';
 import { Button } from '@/components/ui';
 
 export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<div className={styles.checkoutContainer}><div className={styles.checkoutCard}><p style={{ textAlign: 'center', padding: '40px 0' }}>로딩 중...</p></div></div>}>
+      <CheckoutSuccessContent />
+    </Suspense>
+  );
+}
+
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('결제를 승인하는 중입니다...');
