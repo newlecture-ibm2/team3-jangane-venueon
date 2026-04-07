@@ -7,5 +7,6 @@ public record UserInfoResponse(
         Long id,
         String email,
         String nickname,
-        String role
+        String role,
+        String profileImg
 ) {}
