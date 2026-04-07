@@ -354,6 +354,8 @@ public class DataInitializer implements ApplicationRunner {
                         .quantity(1)
                         .amount(150000)
                         .paymentMethod("CARD")
+                        .tossOrderId("venueon_order_1_1680000001")
+                        .tossPaymentKey("test_pk_demo_001")
                         .build(),
                 // user1(김참여) — 마음챙김 요가 클래스 수강 (유료, PAID)
                 OrderJpaEntity.builder()
@@ -363,6 +365,8 @@ public class DataInitializer implements ApplicationRunner {
                         .quantity(2)
                         .amount(60000)
                         .paymentMethod("KAKAO_PAY")
+                        .tossOrderId("venueon_order_2_1680000002")
+                        .tossPaymentKey("test_pk_demo_002")
                         .build(),
                 // user2(이탐색) — UX Design Workshop 수강 (유료, PAID)
                 OrderJpaEntity.builder()
@@ -372,6 +376,8 @@ public class DataInitializer implements ApplicationRunner {
                         .quantity(1)
                         .amount(80000)
                         .paymentMethod("NAVER_PAY")
+                        .tossOrderId("venueon_order_3_1680000003")
+                        .tossPaymentKey("test_pk_demo_003")
                         .build(),
                 // user2(이탐색) — Startup Demo Day 참가 (무료, REGISTERED)
                 OrderJpaEntity.builder()
@@ -389,6 +395,8 @@ public class DataInitializer implements ApplicationRunner {
                         .quantity(1)
                         .amount(50000)
                         .paymentMethod("CARD")
+                        .tossOrderId("venueon_order_5_1680000005")
+                        .tossPaymentKey("test_pk_demo_005")
                         .build(),
                 // user3(박이벤트) — 한식 마스터클래스 수강 (유료, PAID)
                 OrderJpaEntity.builder()
@@ -398,6 +406,8 @@ public class DataInitializer implements ApplicationRunner {
                         .quantity(1)
                         .amount(65000)
                         .paymentMethod("BANK_TRANSFER")
+                        .tossOrderId("venueon_order_6_1680000006")
+                        .tossPaymentKey("test_pk_demo_006")
                         .build()
         ));
     }

@@ -72,7 +72,7 @@ export default function CheckoutSuccessPage() {
     new Intl.NumberFormat('ko-KR').format(price) + '원';
 
   return (
-    <div className="container-single">
+    <div className={styles.checkoutContainer}>
       <div className={styles.checkoutCard}>
         <div style={{ textAlign: 'center', padding: '40px 0' }}>
           {status === 'loading' && (

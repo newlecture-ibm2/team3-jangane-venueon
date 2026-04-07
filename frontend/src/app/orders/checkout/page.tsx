@@ -109,7 +109,7 @@ export default function CheckoutPage() {
         orderName: orderData.orderName,
         customerName: orderData.customerName,
         customerEmail: orderData.customerEmail,
-        successUrl: `${window.location.origin}/orders/checkout/success?orderId=${orderData.orderId}`,
+        successUrl: `${window.location.origin}/orders/checkout/success`,
         failUrl: `${window.location.origin}/orders/checkout/fail`,
       });
     } catch (err) {
@@ -124,7 +124,7 @@ export default function CheckoutPage() {
   // --- 로딩/에러 상태 ---
   if (loading) {
     return (
-      <div className="container-single">
+      <div className={styles.checkoutContainer}>
         <div className={styles.checkoutCard}>
           <p style={{ textAlign: 'center', padding: '40px 0' }}>주문 정보를 불러오는 중...</p>
         </div>
@@ -134,7 +134,7 @@ export default function CheckoutPage() {
 
   if (error || !orderData) {
     return (
-      <div className="container-single">
+      <div className={styles.checkoutContainer}>
         <div className={styles.checkoutCard}>
           <p style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-error)' }}>
             {error || '주문 정보를 불러올 수 없습니다.'}
@@ -145,7 +145,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="container-single">
+    <div className={styles.checkoutContainer}>
       <div className={styles.checkoutCard}>
         {/* Header */}
         <div className={styles.cardHeader}>
@@ -209,6 +209,20 @@ export default function CheckoutPage() {
           variant="primary"
         >
           {formatPrice(orderData.amount)} 결제하기
+        </Button>
+
+        {/* Dummy Submit */}
+        <Button
+          className={styles.submitBtn}
+          onClick={() => {
+            if (!orderData) return;
+            window.location.href = `/orders/checkout/success?paymentKey=dummy_key&orderId=${orderData.tossOrderId}&amount=${orderData.amount}`;
+          }}
+          type="button"
+          size="large"
+          style={{ marginTop: '12px', background: 'var(--color-text-gray-300)', color: 'var(--color-text-gray-900)' }}
+        >
+          {formatPrice(orderData.amount)} 더미결제하기 (테스트용)
         </Button>
       </div>
     </div>
