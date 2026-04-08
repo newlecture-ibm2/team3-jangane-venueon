@@ -6,11 +6,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import styles from './Sidebar.module.css';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 
-import { 
-  DashboardIcon, 
-  SeminarIcon, 
-  SettingIcon, 
-  CommunityIcon, 
+import {
+  DashboardIcon,
+  SeminarIcon,
+  SettingIcon,
+  CommunityIcon,
   ProfileIcon,
   LogoutIcon,
   SeminarSettingIcon,
@@ -24,7 +24,7 @@ import {
 export interface SidebarProps {
   role?: 'admin' | 'host' | 'user';
   className?: string;
-  fakePathname?: string; 
+  fakePathname?: string;
 }
 
 interface SidebarItemProps {
@@ -53,7 +53,7 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
 
   if (onClick) {
     return (
-      <button 
+      <button
         type="button"
         onClick={onClick}
         className={`${styles.item} ${itemStyle}`}
@@ -65,8 +65,8 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
   }
 
   return (
-    <Link 
-      href={href} 
+    <Link
+      href={href}
       className={`${styles.item} ${itemStyle}`}
     >
       {content}
@@ -89,13 +89,13 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
   };
 
   const getMenus = () => {
-    switch(role) {
+    switch (role) {
       case 'admin':
         return [
           { label: '대시보드', href: '/admin/dashboard', icon: DashboardIcon },
           { label: '사용자 관리', href: '/admin/users', icon: ProfileIcon },
           { label: '시스템 설정', href: '/admin/settings', icon: SettingIcon },
-          { label: '이벤트 관리', href: '/admin/events', icon: SeminarSettingIcon },
+          { label: '세션 관리', href: '/admin/seminars', icon: SeminarSettingIcon },
           { label: '커뮤니티 관리', href: '/admin/community', icon: CommunityIcon },
           { label: '신고 관리', href: '/admin/reports', icon: ReportIcon },
           { label: '환불 모니터링', href: '/admin/refunds', icon: DelayedRefundIcon },
@@ -136,7 +136,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
   }, null as any);
 
   return (
-    <aside 
+    <aside
       className={`${styles.sidebar} ${className}`.trim()}
       style={{ height: 'calc(100vh - 40px)' }}
     >

@@ -31,6 +31,10 @@ export async function apiFetch<T>(
   });
 
   if (!res.ok) {
+    if (res.status === 401 && typeof window !== "undefined") {
+      // 401 에러(세션 만료 등) 시 로그인 페이지로 자동 리다이렉트
+      window.location.href = "/auth/login";
+    }
     const error = await res.json().catch(() => ({ message: "요청 실패" }));
     throw new Error(error.message || `HTTP ${res.status}`);
   }

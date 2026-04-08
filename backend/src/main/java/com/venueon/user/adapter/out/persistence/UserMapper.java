@@ -23,6 +23,7 @@ public class UserMapper {
                 .provider(user.getProvider())
                 .profileImg(user.getProfileImg())
                 .phone(user.getPhone())
+                .isActive(user.isActive())
                 .build();
     }
 
@@ -39,6 +40,7 @@ public class UserMapper {
                 entity.getProvider(),
                 entity.getProfileImg(),
                 entity.getPhone(),
+                entity.isActive(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );

@@ -73,15 +73,15 @@ select {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: var(--color-text-gray-300);
   border-radius: var(--radius-full);
 }
 
@@ -107,14 +107,17 @@ select {
   align-items: flex-start;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 100px 24px; /* Figma: 100px 160px 이지만, 해상도 대응을 위해 좌우는 24px, max-width로 컨트롤 */
+  padding: 100px 24px;
+  /* Figma: 100px 160px 이지만, 해상도 대응을 위해 좌우는 24px, max-width로 컨트롤 */
   gap: 32px;
   width: 100%;
 }
 
 .sidebar-content {
-  flex: 1; /* 오른쪽 본문 영역만 확장 */
-  max-width: 848px; /* Figma 본문 영역 너비 제한 */
+  flex: 1;
+  /* 오른쪽 본문 영역만 확장 */
+  max-width: 848px;
+  /* Figma 본문 영역 너비 제한 */
   display: flex;
   flex-direction: column;
 }
