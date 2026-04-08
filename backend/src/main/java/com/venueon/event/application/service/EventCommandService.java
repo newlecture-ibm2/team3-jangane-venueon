@@ -5,9 +5,11 @@ import com.venueon.event.application.port.in.CreateEventUseCase;
 import com.venueon.event.application.port.in.DeleteEventUseCase;
 import com.venueon.event.application.port.in.UpdateEventStatusUseCase;
 import com.venueon.event.application.port.in.UpdateEventUseCase;
+import com.venueon.event.application.port.in.CreateSessionUseCase;
 import com.venueon.event.application.port.out.EventRepositoryPort;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventStatus;
+import com.venueon.event.domain.model.PurchaseType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 public class EventCommandService implements CreateEventUseCase, UpdateEventStatusUseCase, DeleteEventUseCase, UpdateEventUseCase {
 
     private final EventRepositoryPort eventRepositoryPort;
+    private final CreateSessionUseCase createSessionUseCase;
 
     @Override
     public Event createEvent(CreateEventCommand command) {
@@ -40,11 +43,37 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                 command.thumbnailUrl(),
                 command.startDate(),
                 command.endDate(),
+                command.hasSession(),
+                command.purchaseType(),
                 LocalDateTime.now(),        // createdAt
                 LocalDateTime.now()         // updatedAt
         );
 
-        return eventRepositoryPort.save(event);
+        Event savedEvent = eventRepositoryPort.save(event);
+
+        if (!savedEvent.getHasSession()) {
+            createSessionUseCase.createDefaultSession(savedEvent);
+        } else if (command.sessions() != null && !command.sessions().isEmpty()) {
+            command.sessions().forEach(sessionReq -> {
+                CreateSessionUseCase.CreateSessionCommand sessionCommand = new CreateSessionUseCase.CreateSessionCommand(
+                        savedEvent.getId(),
+                        command.creatorId(),
+                        sessionReq.title(),
+                        sessionReq.description(),
+                        sessionReq.sortOrder(),
+                        sessionReq.startTime(),
+                        sessionReq.endTime(),
+                        sessionReq.location(),
+                        sessionReq.isOnline(),
+                        sessionReq.onlineLink(),
+                        sessionReq.price(),
+                        sessionReq.maxAttendees()
+                );
+                createSessionUseCase.createSession(sessionCommand);
+            });
+        }
+
+        return savedEvent;
     }
 
     @Override
@@ -88,7 +117,9 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                 command.maxAttendees(),
                 command.thumbnailUrl(),
                 command.startDate(),
-                command.endDate()
+                command.endDate(),
+                command.hasSession(),
+                command.purchaseType()
         );
 
         return eventRepositoryPort.save(event);

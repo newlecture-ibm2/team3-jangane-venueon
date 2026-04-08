@@ -30,8 +30,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error("Failed to fetch events from backend:", error);
+    console.error("Failed to fetch events from backend:", error);
     return NextResponse.json(
-      { status: "ERROR", message: "Failed to fetch events", data: null },
+      { status: "ERROR", message: "Failed to fetch events: " + (error instanceof Error ? error.message : String(error)), data: null },
       { status: 500 }
     );
   }
@@ -65,8 +66,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
     console.error("Failed to create event:", error);
+    console.error("Failed to create event:", error);
     return NextResponse.json(
-      { status: "ERROR", message: "Failed to create event", data: null },
+      { status: "ERROR", message: "Failed to create event: " + (error instanceof Error ? error.message : String(error)), data: null },
       { status: 500 }
     );
   }

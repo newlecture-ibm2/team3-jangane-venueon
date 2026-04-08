@@ -1,0 +1,82 @@
+
+> Task :compileJava
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:3: error: cannot find symbol
+import com.venueon.common.annotation.LoginUser;
+                                    ^
+  symbol:   class LoginUser
+  location: package com.venueon.common.annotation
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:4: error: package com.venueon.common.response does not exist
+import com.venueon.common.response.ApiResponse;
+                                  ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:24: error: cannot find symbol
+    public ApiResponse<SessionResponse> createSession(
+           ^
+  symbol:   class ApiResponse
+  location: class HostSessionController
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:49: error: cannot find symbol
+    public ApiResponse<SessionResponse> updateSession(
+           ^
+  symbol:   class ApiResponse
+  location: class HostSessionController
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:76: error: cannot find symbol
+    public ApiResponse<Void> deleteSession(
+           ^
+  symbol:   class ApiResponse
+  location: class HostSessionController
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:86: error: cannot find symbol
+    public ApiResponse<Void> reorderSessions(
+           ^
+  symbol:   class ApiResponse
+  location: class HostSessionController
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/SessionController.java:3: error: package com.venueon.common.response does not exist
+import com.venueon.common.response.ApiResponse;
+                                  ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/SessionController.java:22: error: cannot find symbol
+    public ApiResponse<List<SessionResponse>> getSessionsByEventId(@PathVariable Long eventId) {
+           ^
+  symbol:   class ApiResponse
+  location: class SessionController
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:26: error: cannot find symbol
+            @LoginUser Long hostId,
+             ^
+  symbol:   class LoginUser
+  location: class HostSessionController
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:52: error: cannot find symbol
+            @LoginUser Long hostId,
+             ^
+  symbol:   class LoginUser
+  location: class HostSessionController
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:79: error: cannot find symbol
+            @LoginUser Long hostId) {
+             ^
+  symbol:   class LoginUser
+  location: class HostSessionController
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:88: error: cannot find symbol
+            @LoginUser Long hostId,
+             ^
+  symbol:   class LoginUser
+  location: class HostSessionController
+12 errors
+
+> Task :compileJava FAILED
+
+[Incubating] Problems report is available at: file:///home/young/workspace/team3-jangane-venueon/backend/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler output below.
+  /home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/presentation/HostSessionController.java:3: error: cannot find symbol
+  import com.venueon.common.annotation.LoginUser;
+                                      ^
+    symbol:   class LoginUser
+    location: package com.venueon.common.annotation
+  12 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 13s
+1 actionable task: 1 executed

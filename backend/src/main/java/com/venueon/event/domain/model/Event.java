@@ -22,6 +22,8 @@ public class Event {
     private String thumbnailUrl;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private boolean hasSession;
+    private PurchaseType purchaseType;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -31,6 +33,7 @@ public class Event {
                  EventType type, EventStatus status, String location, boolean isOnline,
                  int price, int maxAttendees, String thumbnailUrl,
                  LocalDateTime startDate, LocalDateTime endDate,
+                 boolean hasSession, PurchaseType purchaseType,
                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.creatorId = creatorId;
@@ -46,6 +49,8 @@ public class Event {
         this.thumbnailUrl = thumbnailUrl;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.hasSession = hasSession;
+        this.purchaseType = purchaseType != null ? purchaseType : PurchaseType.SINGLE;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -77,7 +82,8 @@ public class Event {
 
     public void updateDetails(Long categoryId, String title, String description, EventType type,
                               String location, boolean isOnline, int price, int maxAttendees,
-                              String thumbnailUrl, LocalDateTime startDate, LocalDateTime endDate) {
+                              String thumbnailUrl, LocalDateTime startDate, LocalDateTime endDate,
+                              boolean hasSession, PurchaseType purchaseType) {
         this.categoryId = categoryId;
         this.title = title;
         this.description = description;
@@ -91,6 +97,8 @@ public class Event {
         }
         this.startDate = startDate;
         this.endDate = endDate;
+        this.hasSession = hasSession;
+        this.purchaseType = purchaseType != null ? purchaseType : PurchaseType.SINGLE;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -114,6 +122,8 @@ public class Event {
     public String getThumbnailUrl() { return thumbnailUrl; }
     public LocalDateTime getStartDate() { return startDate; }
     public LocalDateTime getEndDate() { return endDate; }
+    public boolean getHasSession() { return hasSession; }
+    public PurchaseType getPurchaseType() { return purchaseType; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
