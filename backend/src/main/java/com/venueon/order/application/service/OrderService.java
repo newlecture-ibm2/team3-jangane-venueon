@@ -10,6 +10,7 @@ import com.venueon.order.application.port.out.RefundSavePort;
 import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.order.adapter.in.web.dto.*;
+import com.venueon.report.application.port.in.RequestRefundUseCase;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class OrderService {
     private final UserJpaRepository userRepository;
     private final TossPaymentClient tossPaymentClient;
     private final RefundSavePort refundSavePort;
+    private final RequestRefundUseCase requestRefundUseCase;
 
     @Value("${toss.client-key}")
     private String tossClientKey;
@@ -288,6 +290,7 @@ public class OrderService {
                 .organizer(organizer)
                 .location(location)
                 .eventStartDate(event != null ? event.getStartDate() : null)
+                .eventStatus(event != null ? event.getStatus().name() : "DRAFT")
                 .build();
     }
 

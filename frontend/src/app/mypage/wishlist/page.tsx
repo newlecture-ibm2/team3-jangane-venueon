@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Pagination, InputField } from '@/components/ui';
-import styles from '../page.module.css';
+import styles from '../seminars/page.module.css';
 
 // 관심 목록용 임시 데이터
 const mockWishlistLectures = Array.from({ length: 12 }, (_, i) => ({
@@ -38,12 +38,12 @@ export default function WishlistPage() {
 
       <div className="sidebar-content">
         <div className={styles.content}>
-          <h1 className={styles.pageTitle}>관심 목록</h1>
+          <h1 className={styles.pageTitle}>찜 목록</h1>
 
           <div className={styles.listSection}>
             <InputField
               variant="search"
-              placeholder="관심 강의 검색"
+              className={styles.searchBar}
             />
 
             <CardGrid layout="2-cols">
