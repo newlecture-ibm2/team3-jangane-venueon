@@ -5,5 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 public record UpdateUserProfileRequest(
     @NotBlank(message = "이름(닉네임)은 필수입니다.")
     String nickname,
-    String profileImg
+    String profileImg,
+    java.util.List<String> categories,
+    Boolean showBadge
 ) {}

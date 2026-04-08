@@ -24,6 +24,7 @@ public class UserMapper {
                 .profileImg(user.getProfileImg())
                 .phone(user.getPhone())
                 .isActive(user.isActive())
+                .isBadgeVisible(user.isBadgeVisible())
                 .build();
     }
 
@@ -42,7 +43,9 @@ public class UserMapper {
                 entity.getPhone(),
                 entity.isActive(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                entity.getCategories() != null ? entity.getCategories().stream().map(c -> c.getName()).collect(java.util.stream.Collectors.toList()) : new java.util.ArrayList<>(),
+                entity.isBadgeVisible()
         );
     }
 }
