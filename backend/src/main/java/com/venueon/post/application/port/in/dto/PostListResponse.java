@@ -17,5 +17,6 @@ public record PostListResponse(
                 int viewCount,
                 int commentCount,
                 int likeCount,
+                boolean isBookmarked,
                 LocalDateTime createdAt) {
 }
