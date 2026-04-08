@@ -7,4 +7,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface GetPostQuery {
     Page<PostListResponse> getPostsByCommunityId(Long communityId, PostType type, Pageable pageable);
+    
+    // 북마크 상태 확인을 위해 이메일이 포함된 조회 추가
+    Page<PostListResponse> getPostsByCommunityId(Long communityId, PostType type, Pageable pageable, String email);
+
+    // 내 북마크 목록만 모아보기
+    Page<PostListResponse> getBookmarkedPosts(String email, Pageable pageable);
 }

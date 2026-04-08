@@ -2,8 +2,10 @@ package com.venueon.post.adapter.out.persistence;
 
 import com.venueon.community.adapter.out.persistence.entity.CommunityJpaEntity;
 import com.venueon.community.adapter.out.persistence.repository.CommunityJpaRepository;
+import com.venueon.post.adapter.out.persistence.entity.PostBookmarkJpaEntity;
 import com.venueon.post.adapter.out.persistence.entity.PostJpaEntity;
 import com.venueon.post.adapter.out.persistence.entity.PostLikeJpaEntity;
+import com.venueon.post.adapter.out.persistence.repository.PostBookmarkJpaRepository;
 import com.venueon.post.adapter.out.persistence.repository.PostJpaRepository;
 import com.venueon.post.adapter.out.persistence.repository.PostLikeJpaRepository;
 import com.venueon.post.application.port.out.PostRepositoryPort;
@@ -24,6 +26,7 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
 
     private final PostJpaRepository postJpaRepository;
     private final PostLikeJpaRepository postLikeJpaRepository;
+    private final PostBookmarkJpaRepository postBookmarkJpaRepository;
     private final CommunityJpaRepository communityJpaRepository;
     private final UserJpaRepository userRepository;
 
@@ -108,6 +111,36 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
     @Override
     public void deleteLike(Long postId, Long userId) {
         postLikeJpaRepository.deleteByPostIdAndUserId(postId, userId);
+    }
+
+    @Override
+    public boolean existsBookmark(Long postId, Long userId) {
+        return postBookmarkJpaRepository.existsByPostIdAndUserId(postId, userId);
+    }
+
+    @Override
+    public void saveBookmark(Long postId, Long userId) {
+        PostJpaEntity post = postJpaRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
+        UserJpaEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        PostBookmarkJpaEntity bookmark = PostBookmarkJpaEntity.builder()
+                .post(post)
+                .user(user)
+                .build();
+        postBookmarkJpaRepository.save(bookmark);
+    }
+
+    @Override
+    public void deleteBookmark(Long postId, Long userId) {
+        postBookmarkJpaRepository.deleteByPostIdAndUserId(postId, userId);
+    }
+
+    @Override
+    public Page<Post> findBookmarkedPostsByUserId(Long userId, Pageable pageable) {
+        return postBookmarkJpaRepository.findAllByUserId(userId, pageable)
+                .map(bookmark -> mapToDomain(bookmark.getPost()));
     }
 
     private Post mapToDomain(PostJpaEntity entity) {

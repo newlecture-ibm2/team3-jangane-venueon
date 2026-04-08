@@ -2,6 +2,7 @@ package com.venueon.post.adapter.in.web;
 
 import com.venueon.post.application.port.in.CreatePostUseCase;
 import com.venueon.post.application.port.in.GetPostQuery;
+import com.venueon.post.application.port.in.PostBookmarkUseCase;
 import com.venueon.post.application.port.in.PostLikeUseCase;
 import com.venueon.post.application.port.in.dto.CreatePostRequest;
 import com.venueon.post.application.port.in.dto.CreatePostResponse;
@@ -27,6 +28,7 @@ public class PostController {
     private final CreatePostUseCase createPostUseCase;
     private final GetPostQuery getPostQuery;
     private final PostLikeUseCase postLikeUseCase;
+    private final PostBookmarkUseCase postBookmarkUseCase;
 
     /**
      * 1단계: 게시글 등록
@@ -60,7 +62,14 @@ public class PostController {
             @RequestParam Long communityId,
             @RequestParam(required = false) PostType type,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<PostListResponse> posts = getPostQuery.getPostsByCommunityId(communityId, type, pageable);
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = null;
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+
+        Page<PostListResponse> posts = getPostQuery.getPostsByCommunityId(communityId, type, pageable, email);
         return ResponseEntity.ok(posts);
     }
 
@@ -79,5 +88,39 @@ public class PostController {
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         postLikeUseCase.toggleLike(id, email);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 게시물 북마크 토글
+     * POST /posts/{id}/bookmark
+     */
+    @PostMapping("/{id}/bookmark")
+    public ResponseEntity<Void> toggleBookmark(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = null;
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+
+        postBookmarkUseCase.toggleBookmark(id, email);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 내 북마크 목록 조회
+     * GET /posts/bookmarks/me
+     */
+    @GetMapping("/bookmarks/me")
+    public ResponseEntity<Page<PostListResponse>> getMyBookmarks(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        Page<PostListResponse> bookmarks = getPostQuery.getBookmarkedPosts(email, pageable);
+        return ResponseEntity.ok(bookmarks);
     }
 }
