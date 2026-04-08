@@ -4,6 +4,7 @@ import com.venueon.post.application.port.in.CreatePostUseCase;
 import com.venueon.post.application.port.in.GetPostQuery;
 import com.venueon.post.application.port.in.PostBookmarkUseCase;
 import com.venueon.post.application.port.in.PostLikeUseCase;
+import com.venueon.post.application.port.in.PostPinUseCase;
 import com.venueon.post.application.port.in.dto.CreatePostRequest;
 import com.venueon.post.application.port.in.dto.CreatePostResponse;
 import com.venueon.post.application.port.in.dto.PostListResponse;
@@ -29,6 +30,7 @@ public class PostController {
     private final GetPostQuery getPostQuery;
     private final PostLikeUseCase postLikeUseCase;
     private final PostBookmarkUseCase postBookmarkUseCase;
+    private final PostPinUseCase postPinUseCase;
 
     /**
      * 1단계: 게시글 등록
@@ -122,5 +124,15 @@ public class PostController {
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         Page<PostListResponse> bookmarks = getPostQuery.getBookmarkedPosts(email, pageable);
         return ResponseEntity.ok(bookmarks);
+    }
+
+    /**
+     * 게시글 상단 고정 토글
+     * PATCH /posts/{id}/pin
+     */
+    @PatchMapping("/{id}/pin")
+    public ResponseEntity<Void> togglePin(@PathVariable Long id) {
+        postPinUseCase.togglePin(id);
+        return ResponseEntity.ok().build();
     }
 }

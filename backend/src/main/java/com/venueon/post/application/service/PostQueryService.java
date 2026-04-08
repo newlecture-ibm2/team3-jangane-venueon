@@ -55,6 +55,7 @@ public class PostQueryService implements GetPostQuery {
                 post.getCommentCount(),
                 post.getLikeCount(),
                 isBookmarked,
+                post.isPinned(),
                 post.getCreatedAt());
         });
     }
@@ -76,6 +77,7 @@ public class PostQueryService implements GetPostQuery {
                         post.getCommentCount(),
                         post.getLikeCount(),
                         true, // 북마크 목록이므로 무조건 true
+                        post.isPinned(),
                         post.getCreatedAt()));
     }
 }

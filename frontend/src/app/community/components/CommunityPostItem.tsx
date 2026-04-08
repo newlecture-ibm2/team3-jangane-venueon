@@ -17,6 +17,8 @@ export interface CommunityPostItemProps {
   selected?: boolean;
   /** 클릭 핸들러 */
   onClick?: () => void;
+  /** 상단 고정 여부 */
+  isPinned?: boolean;
 }
 
 export default function CommunityPostItem({
@@ -26,6 +28,7 @@ export default function CommunityPostItem({
   avatarUrl,
   selected = false,
   onClick,
+  isPinned = false,
 }: CommunityPostItemProps) {
   const rootClass = selected
     ? `${styles.item} ${styles.selected}`
@@ -33,7 +36,10 @@ export default function CommunityPostItem({
 
   return (
     <div className={rootClass} onClick={onClick} role="button" tabIndex={0}>
-      <p className={styles.title}>{title}</p>
+      <div className={styles.titleWrapper}>
+        {isPinned && <span className={styles.pinBadge}>고정</span>}
+        <p className={styles.title}>{title}</p>
+      </div>
 
       <div className={styles.meta}>
         <UserProfile name={username} imageUrl={avatarUrl} size="medium" />

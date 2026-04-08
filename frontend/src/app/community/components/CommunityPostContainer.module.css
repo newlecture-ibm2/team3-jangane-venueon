@@ -154,6 +154,31 @@
   color: #EF4444;
 }
 
+.adminButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #4B5563;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.adminButton:hover {
+  background-color: #F3F4F6;
+  color: #111827;
+}
+
+.adminButton.active {
+  background-color: #E0E7FF;
+  border-color: #6366F1;
+  color: #4F46E5;
+}
+
 .bodySection {
   margin-bottom: 32px;
 }

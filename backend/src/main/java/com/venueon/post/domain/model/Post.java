@@ -62,7 +62,4 @@ public class Post {
         this.isPinned = !this.isPinned;
     }
 
-    public void setNotice(boolean isNotice) {
-        this.isNotice = isNotice;
-    }
 }

@@ -17,6 +17,7 @@ interface PostListResponse {
   commentCount: number;
   likeCount: number;
   isBookmarked: boolean;
+  isPinned: boolean;
   createdAt: string;
 }
 
@@ -44,6 +45,7 @@ interface Props {
 
 export default function CommunityPostContainer({ communityId }: Props) {
   const { showToast } = useUIStore();
+
   const [posts, setPosts] = useState<PostListResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -167,6 +169,23 @@ export default function CommunityPostContainer({ communityId }: Props) {
       showToast('북마크 처리 실패', 'error');
     }
   };
+  const handlePinToggle = async () => {
+    if (!selectedPostId) return;
+
+    try {
+      const response = await fetch(`/api/posts/${selectedPostId}/pin`, {
+        method: 'PATCH',
+      });
+
+      if (!response.ok) throw new Error('고정 처리 실패');
+
+      showToast('고정 상태가 변경되었습니다.', 'success');
+      fetchPosts(true);
+    } catch (error) {
+      console.error(error);
+      showToast('고정 처리 실패', 'error');
+    }
+  };
 
   const handleCommentLikeToggle = async (commentId: number) => {
     try {
@@ -235,6 +254,7 @@ export default function CommunityPostContainer({ communityId }: Props) {
                 date={new Date(post.createdAt).toLocaleDateString() + ' / ' + new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 selected={post.id === selectedPostId}
                 onClick={() => setSelectedPostId(post.id)}
+                isPinned={post.isPinned}
               />
             ))
           )}
@@ -282,7 +302,7 @@ export default function CommunityPostContainer({ communityId }: Props) {
                   </svg>
                   <span>{selectedPost.likeCount}</span>
                 </button>
-                <button
+                 <button
                   className={styles.bookmarkButton}
                   onClick={handleBookmarkToggle}
                   title="북마크"
@@ -299,6 +319,15 @@ export default function CommunityPostContainer({ communityId }: Props) {
                     strokeLinejoin="round"
                   >
                     <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                  </svg>
+                </button>
+                <button
+                  className={`${styles.adminButton} ${selectedPost.isPinned ? styles.active : ''}`}
+                  onClick={handlePinToggle}
+                  title="상단 고정"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="17" x2="12" y2="22" /><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.79-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.76a2 2 0 0 1-1.11 1.79l-1.79.9A2 2 0 0 0 5 15.24Z" />
                   </svg>
                 </button>
                 <button className={styles.optionButton} type="button">
