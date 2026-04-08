@@ -71,8 +71,8 @@ export default function HostDashboardPage() {
   useEffect(() => {
     async function fetchDashboardStats() {
       try {
-        const publishedRes = await api.get<{ status: string; data: { totalElements: number } }>('/host/seminars?size=1');
-        const draftRes = await api.get<{ status: string; data: { totalElements: number } }>('/host/seminars/drafts?size=1');
+        const publishedRes = await api.get<{ status: string; data: { totalElements: number } }>('/host/events?size=1');
+        const draftRes = await api.get<{ status: string; data: { totalElements: number } }>('/host/events/drafts?size=1');
         const recentOrdersRes = await api.get<{ status: string; data: RecentOrder[] }>('/host/orders/recent?size=5');
         const orderSummaryRes = await api.get<{ status: string; data: HostOrderSummary }>('/host/orders/summary');
         
@@ -188,13 +188,13 @@ export default function HostDashboardPage() {
                 <h3 className={styles.sectionTitle}>빠른 작업</h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <Link href="/host/seminars/new" className="button" style={{ 
+                <Link href="/host/events/new" className="button" style={{ 
                   background: '#1e293b', color: 'white', padding: '16px', borderRadius: '8px', 
                   textAlign: 'center', textDecoration: 'none', fontWeight: '600' 
                 }}>
                   + 새로운 강의 개설하기
                 </Link>
-                <Link href="/host/seminars" className="button" style={{ 
+                <Link href="/host/events" className="button" style={{ 
                   background: '#f1f5f9', color: '#1e293b', padding: '16px', borderRadius: '8px', 
                   textAlign: 'center', textDecoration: 'none', fontWeight: '600' 
                 }}>

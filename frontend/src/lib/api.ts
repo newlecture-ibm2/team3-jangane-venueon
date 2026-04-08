@@ -27,7 +27,6 @@ export async function apiFetch<T>(
       "Content-Type": "application/json",
       ...fetchOptions.headers,
     },
-    credentials: "include", // ⭐ 쿠키/세션 정보를 서버로 함께 전송
     ...fetchOptions,
   });
 

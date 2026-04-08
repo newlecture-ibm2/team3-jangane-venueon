@@ -42,9 +42,9 @@ export default function HostEventsPage() {
   const fetchEvents = async (status: string, page: number = 0) => {
     setLoading(true);
     try {
-      let endpoint = `/host/seminars?page=${page}&size=10`;
+      let endpoint = `/host/events?page=${page}&size=10`;
       if (status === 'DRAFT') {
-        endpoint = `/host/seminars/drafts?page=${page}&size=10`;
+        endpoint = `/host/events/drafts?page=${page}&size=10`;
       } else if (status !== 'ALL') {
         endpoint += `&status=${status}`;
       }
@@ -94,7 +94,7 @@ export default function HostEventsPage() {
                 </button>
               ))}
             </div>
-            <Link href="/host/seminars/new" className={styles.createBtn}>
+            <Link href="/host/events/new" className={styles.createBtn}>
               + 새 강의 만들기
             </Link>
           </div>
@@ -133,7 +133,7 @@ export default function HostEventsPage() {
                     ₩{event.price.toLocaleString()}
                   </div>
 
-                  <Link href={`/host/seminars/${event.id}`} className={styles.manageBtn}>
+                  <Link href={`/host/events/${event.id}`} className={styles.manageBtn}>
                     스터디홈 입장
                   </Link>
                 </div>

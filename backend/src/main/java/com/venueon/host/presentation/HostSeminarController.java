@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/host/seminars")
+@RequestMapping("/host/events")
 @RequiredArgsConstructor
 public class HostSeminarController {
 
