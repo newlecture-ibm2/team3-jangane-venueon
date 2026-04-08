@@ -40,7 +40,7 @@ public class OrderService {
     private String tossClientKey;
 
     /**
-     * 단건 주문 생성 (PENDING상태)
+     * 단건 주문 생성 (PENDING 상태)
      * API 스펙: POST /orders
      */
     @Transactional
