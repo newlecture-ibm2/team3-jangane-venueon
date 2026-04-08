@@ -345,72 +345,36 @@ public class DataInitializer implements ApplicationRunner {
     }
 
     private List<OrderJpaEntity> createOrders(List<UserJpaEntity> users, List<EventJpaEntity> events) {
-        return orderRepository.saveAll(List.of(
-                // user1(김참여) — AI & Cloud Bootcamp 수강 (유료, PAID)
-                OrderJpaEntity.builder()
-                        .user(users.get(0))
-                        .event(events.get(0))
-                        .status(OrderStatus.PAID)
-                        .quantity(1)
-                        .amount(150000)
-                        .paymentMethod("CARD")
-                        .tossOrderId("venueon_order_1_1680000001")
-                        .tossPaymentKey("test_pk_demo_001")
-                        .build(),
-                // user1(김참여) — 마음챙김 요가 클래스 수강 (유료, PAID)
-                OrderJpaEntity.builder()
-                        .user(users.get(0))
-                        .event(events.get(3))
-                        .status(OrderStatus.PAID)
-                        .quantity(2)
-                        .amount(60000)
-                        .paymentMethod("KAKAO_PAY")
-                        .tossOrderId("venueon_order_2_1680000002")
-                        .tossPaymentKey("test_pk_demo_002")
-                        .build(),
-                // user2(이탐색) — UX Design Workshop 수강 (유료, PAID)
-                OrderJpaEntity.builder()
-                        .user(users.get(1))
-                        .event(events.get(1))
-                        .status(OrderStatus.PAID)
-                        .quantity(1)
-                        .amount(80000)
-                        .paymentMethod("NAVER_PAY")
-                        .tossOrderId("venueon_order_3_1680000003")
-                        .tossPaymentKey("test_pk_demo_003")
-                        .build(),
-                // user2(이탐색) — Startup Demo Day 참가 (무료, REGISTERED)
-                OrderJpaEntity.builder()
-                        .user(users.get(1))
-                        .event(events.get(2))
-                        .status(OrderStatus.REGISTERED)
-                        .quantity(1)
-                        .amount(0)
-                        .build(),
-                // user3(박이벤트) — Business Growth Summit 수강 (유료, CANCELLED → 환불 대상)
-                OrderJpaEntity.builder()
-                        .user(users.get(2))
-                        .event(events.get(5))
-                        .status(OrderStatus.CANCELLED)
-                        .quantity(1)
-                        .amount(50000)
-                        .paymentMethod("CARD")
-                        .tossOrderId("venueon_order_5_1680000005")
-                        .tossPaymentKey("test_pk_demo_005")
-                        .build(),
-                // user3(박이벤트) — 한식 마스터클래스 수강 (유료, PAID)
-                OrderJpaEntity.builder()
-                        .user(users.get(2))
-                        .event(events.get(6))
-                        .status(OrderStatus.PAID)
-                        .quantity(1)
-                        .amount(65000)
-                        .paymentMethod("BANK_TRANSFER")
-                        .tossOrderId("venueon_order_6_1680000006")
-                        .tossPaymentKey("test_pk_demo_006")
-                        .build()
-        ));
+        List<OrderJpaEntity> orders = new java.util.ArrayList<>();
+        String[] paymentMethods = {"CARD", "KAKAO_PAY", "NAVER_PAY", "BANK_TRANSFER"};
+
+        for (int i = 0; i < events.size(); i++) {
+            EventJpaEntity event = events.get(i);
+            UserJpaEntity buyer = users.get(i % users.size());
+            int price = event.getPrice();
+
+            // 기본 상태 설정: 유료는 PAID, 무료는 REGISTERED
+            OrderStatus status = (price > 0) ? OrderStatus.PAID : OrderStatus.REGISTERED;
+
+            // 환불(Refund) 데이터 연동을 위해 특정 이벤트는 CANCELLED로 설정 (Event Index 5: Business Growth Summit)
+            if (i == 5) {
+                status = OrderStatus.CANCELLED;
+            }
+
+            orders.add(OrderJpaEntity.builder()
+                    .user(buyer)
+                    .event(event)
+                    .status(status)
+                    .quantity(1)
+                    .amount(price)
+                    .paymentMethod(price > 0 ? paymentMethods[i % paymentMethods.length] : null)
+                    .displayOrderedAt(LocalDateTime.of(2026, 3, 25, 10, 0).minusDays(i))
+                    .build());
+        }
+
+        return orderRepository.saveAll(orders);
     }
+
 
     private List<ReportJpaEntity> createReports(List<UserJpaEntity> users, List<EventJpaEntity> events) {
         return reportRepository.saveAll(List.of(
@@ -459,19 +423,19 @@ public class DataInitializer implements ApplicationRunner {
 
     private List<RefundJpaEntity> createRefunds(List<UserJpaEntity> users, List<OrderJpaEntity> orders) {
         return refundRepository.saveAll(List.of(
-                // 환불 1: user3(박이벤트)의 Business Growth Summit 취소 → 환불 요청 (대기중)
+                // 환불 1: Business Growth Summit(Index 5) 취소 → 환불 요청 (대기중)
                 RefundJpaEntity.builder()
-                        .order(orders.get(4))  // CANCELLED 상태인 주문
-                        .user(users.get(2))
-                        .amount(50000)
+                        .order(orders.get(5))  // CANCELLED 상태인 주문
+                        .user(orders.get(5).getUser())
+                        .amount(orders.get(5).getAmount())
                         .status(RefundStatus.PENDING)
                         .reason("일정이 변경되어 참석이 어렵습니다.")
                         .build(),
-                // 환불 2: user1(김참여)의 마음챙김 요가 클래스 환불 (승인 완료)
+                // 환불 2: 마음챙김 요가 클래스(Index 3) 환불 (승인 완료)
                 RefundJpaEntity.builder()
-                        .order(orders.get(1))  // 요가 클래스 주문
-                        .user(users.get(0))
-                        .amount(60000)
+                        .order(orders.get(3))  // 요가 클래스 주문
+                        .user(orders.get(3).getUser())
+                        .amount(orders.get(3).getAmount())
                         .status(RefundStatus.APPROVED)
                         .reason("개인 사정으로 참석이 어렵습니다.")
                         .processedAt(LocalDateTime.now().minusDays(3))

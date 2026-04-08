@@ -54,6 +54,9 @@ public class OrderJpaEntity {
     @Column(name = "ordered_at", nullable = false, updatable = false)
     private LocalDateTime orderedAt;
 
+    @Column(name = "display_ordered_at")
+    private LocalDateTime displayOrderedAt;
+
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
 

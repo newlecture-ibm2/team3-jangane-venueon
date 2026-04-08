@@ -46,5 +46,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/mypage/:path*", "/events/new", "/host/:path*", "/admin/:path*"],
+  matcher: ["/mypage/:path*", "/events/new", "/host", "/host/:path*", "/admin/:path*"],
 };
