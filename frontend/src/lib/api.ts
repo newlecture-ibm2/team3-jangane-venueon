@@ -1,9 +1,9 @@
 /**
  * API 유틸리티 — 백엔드 API 호출 공통 함수
- * 프록시를 통해 /v1/* 경로로 요청 (next.config.ts rewrites)
+ * /api/* 경로로 요청 → Route Handler([...path])가 JWT 주입 후 백엔드로 프록시
  */
 
-const API_BASE = "/v1";
+const API_BASE = "/api";
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string>;

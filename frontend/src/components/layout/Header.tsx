@@ -1,63 +1,125 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button, UserProfile, Logo } from '@/components/ui';
 import { useAuth } from '@/store/useAuthStore';
 import styles from './Header.module.css';
 
-export default function Header({ className = '' }: { className?: string }) {
-  const pathname = usePathname();
-  const { user, isLoggedIn, isLoading, checkSession, logout } = useAuth();
+interface HeaderProps {
+  role?: 'user' | 'host' | 'admin';
+  status?: 'public' | 'signedIn' | 'myPage' | 'auth';
+  userName?: string;
+  userImageUrl?: string;
+  className?: string;
+}
 
-  // 최초 마운트 시 세션 확인
-  useEffect(() => {
+export default function Header({
+  role = 'user',
+  status: propStatus,
+  userName = '홍길동',
+  userImageUrl,
+  className = ''
+}: HeaderProps) {
+  const pathname = usePathname();
+  const { user, checkSession, logout } = useAuth();
+
+  React.useEffect(() => {
     checkSession();
   }, [checkSession]);
 
-  // 현재 경로가 로그인/회원가입 페이지인지 확인
-  const isAuthPage = ['/login', '/signup', '/host/signup'].includes(pathname);
+  // 실제 세션의 정보가 있으면 우선적으로 보여주고, 없으면 기존 prop/기본값 사용
+  const displayUserName = user?.nickname || userName;
+  const displayUserImage = user?.profileImg || userImageUrl;
 
-  // Auth 상태에서 role 파생
-  const role = user?.role?.toLowerCase() as 'user' | 'host' | 'admin' | undefined;
+  // /mypage 경로일 때는 항상 'myPage' 해더(강의 목록 + 프로필)를 보여주도록 강제
+  const isMyPage = pathname?.startsWith('/mypage');
+  const status = propStatus || (isMyPage ? 'myPage' : (user ? 'signedIn' : 'public'));
 
   // 우측에 렌더링될 버튼/프로필 그룹 로직
   const renderActions = () => {
 
-    // 로딩 중이면 빈 공간 (깜빡임 방지)
-    if (isLoading) {
+    // Auth (로그인/회원가입 등 집중이 필요한 화면)
+    if (status === 'auth') {
+      if (role === 'user') {
+        return (
+          <div className={styles.actionGroup}>
+            <Link href="/host/intro">
+              <Button variant="outlined" size="medium">호스트 센터</Button>
+            </Link>
+          </div>
+        );
+      }
+      // host일 땐 텅 비움
       return <div className={styles.actionGroup} />;
     }
 
-    // Auth 페이지 (로그인/회원가입)에서는 최소한의 버튼만
-    if (isAuthPage) {
-      return (
-        <div className={styles.actionGroup}>
-          <Link href="/host/intro">
-            <Button variant="outlined" size="medium">호스트 센터</Button>
-          </Link>
-        </div>
-      );
+    // Role: User (일반 사용자)
+    if (role === 'user') {
+      if (status === 'public') {
+        return (
+          <div className={styles.actionGroup}>
+            <Link href="/login"><Button variant="primary" size="medium">로그인</Button></Link>
+            <Link href="/signup"><Button variant="secondary" size="medium">회원가입</Button></Link>
+            <Link href="/host/intro"><Button variant="outlined" size="medium">호스트 센터</Button></Link>
+          </div>
+        );
+      }
+      if (status === 'signedIn') {
+        return (
+          <div className={styles.actionGroup}>
+            <Link href="/mypage"><Button variant="outlined" size="medium">내 강의실</Button></Link>
+            <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
+            <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
+          </div>
+        );
+      }
+      if (status === 'myPage') {
+        return (
+          <div className={styles.actionGroup}>
+            <Link href="/"><Button variant="outlined" size="medium">강의 목록</Button></Link>
+            <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
+          </div>
+        );
+      }
     }
 
-    // 비로그인 상태
-    if (!isLoggedIn) {
-      return (
-        <div className={styles.actionGroup}>
-          <Link href="/login"><Button variant="primary" size="medium">로그인</Button></Link>
-          <Link href="/signup"><Button variant="secondary" size="medium">회원가입</Button></Link>
-          <Link href="/host/intro"><Button variant="outlined" size="medium">호스트 센터</Button></Link>
-        </div>
-      );
+    // Role: Host (호스트)
+    if (role === 'host') {
+      if (status === 'public') {
+        return (
+          <div className={styles.actionGroup}>
+            <Link href="/login"><Button variant="primary" size="medium">로그인</Button></Link>
+            <Link href="/signup"><Button variant="secondary" size="medium">회원가입</Button></Link>
+          </div>
+        );
+      }
+      if (status === 'signedIn') {
+        return (
+          <div className={styles.actionGroup}>
+            <Link href="/host/dashboard">
+              <Button variant="outlined" size="medium">내 강의실</Button>
+            </Link>
+            <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
+          </div>
+        );
+      }
     }
 
     // 로그인 상태: Role별 분기
     if (role === 'admin') {
       return (
         <div className={styles.actionGroup}>
-          <UserProfile name={user?.nickname || '관리자'} size="large" />
-          <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
+          <Link href="/mypage/profile">
+              <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+            </Link>
         </div>
       );
     }
@@ -68,7 +130,9 @@ export default function Header({ className = '' }: { className?: string }) {
           <Link href="/host/dashboard">
             <Button variant="outlined" size="medium">내 강의실</Button>
           </Link>
-          <UserProfile name={user?.nickname || '호스트'} size="large" />
+          <Link href="/mypage/profile">
+            <UserProfile name={user?.nickname || '호스트'} size="large" />
+          </Link>
           <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
         </div>
       );
@@ -77,8 +141,10 @@ export default function Header({ className = '' }: { className?: string }) {
     // 기본: USER
     return (
       <div className={styles.actionGroup}>
-        <Link href="/dashboard"><Button variant="outlined" size="medium">내 강의실</Button></Link>
-        <UserProfile name={user?.nickname || '사용자'} size="large" />
+        <Link href="/mypage"><Button variant="outlined" size="medium">내 강의실</Button></Link>
+        <Link href="/mypage/profile">
+          <UserProfile name={user?.nickname || '사용자'} size="large" />
+        </Link>
         <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
       </div>
     );

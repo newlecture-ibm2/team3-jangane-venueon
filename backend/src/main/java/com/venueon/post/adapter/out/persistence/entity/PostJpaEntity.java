@@ -49,9 +49,21 @@ public class PostJpaEntity {
     @Builder.Default
     private int commentCount = 0;
 
+    @Column(name = "like_count")
+    @Builder.Default
+    private int likeCount = 0;
+
     @Column(name = "is_hidden", nullable = false)
     @Builder.Default
     private boolean isHidden = false;
+
+    @Column(name = "is_pinned", nullable = false)
+    @Builder.Default
+    private boolean isPinned = false;
+
+    @Column(name = "is_notice", nullable = false)
+    @Builder.Default
+    private boolean isNotice = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

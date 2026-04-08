@@ -35,6 +35,7 @@ export async function POST(req: Request) {
     session.jwt = loginData.token;
     session.email = userData.email;
     session.nickname = userData.nickname;
+    session.profileImg = userData.profileImg;
     session.role = userData.role;
     session.userId = userData.id;
     session.isLoggedIn = true;

@@ -149,13 +149,17 @@ export default async function EventDetailPage({ params }: Props) {
         <Link href="/" style={{ textDecoration: 'none' }}>
           <Button variant="outlined" size="large">강의 목록</Button>
         </Link>
-        <Button
-          variant="primary"
-          size="large"
-          disabled={event.status !== 'PUBLISHED'}
-        >
-          {event.status === 'PUBLISHED' ? '수강 신청' : '신청 불가'}
-        </Button>
+        {event.status === 'PUBLISHED' ? (
+          <Link href={`/orders/checkout?eventId=${id}&quantity=1`} style={{ textDecoration: 'none' }}>
+            <Button variant="primary" size="large">
+              수강 신청
+            </Button>
+          </Link>
+        ) : (
+          <Button variant="primary" size="large" disabled>
+            신청 불가
+          </Button>
+        )}
       </div>
 
     </div>
