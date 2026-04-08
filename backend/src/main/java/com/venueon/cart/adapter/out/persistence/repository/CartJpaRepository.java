@@ -16,20 +16,20 @@ public interface CartJpaRepository extends JpaRepository<CartJpaEntity, Long> {
     /**
      * 사용자의 모든 장바구니 항목 조회
      */
-    List<CartJpaEntity> findByUserId(Long userId);
+    List<CartJpaEntity> findByUserEmail(String userEmail);
 
     /**
      * 사용자와 이벤트로 장바구니 항목 조회
      */
-    Optional<CartJpaEntity> findByUserIdAndEventId(Long userId, Long eventId);
+    Optional<CartJpaEntity> findByUserEmailAndEventId(String userEmail, Long eventId);
 
     /**
      * 사용자와 이벤트로 장바구니 항목 존재 여부 확인
      */
-    boolean existsByUserIdAndEventId(Long userId, Long eventId);
+    boolean existsByUserEmailAndEventId(String userEmail, Long eventId);
 
     /**
      * 사용자의 모든 장바구니 항목 삭제
      */
-    void deleteByUserId(Long userId);
+    void deleteByUserEmail(String userEmail);
 }

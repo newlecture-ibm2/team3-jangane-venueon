@@ -15,5 +15,5 @@ public interface AddToCartUseCase {
      * @throws IllegalArgumentException 이벤트를 찾을 수 없음
      * @throws IllegalStateException 이미 장바구니에 담김, 정원 초과 등
      */
-    CartResponse addToCart(Long userId, Long eventId);
+    CartResponse addToCart(String userEmail, Long eventId);
 }

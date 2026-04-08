@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class Cart {
 
     private Long id;
-    private Long userId;
+    private String userEmail;
     private Long eventId;
     private String eventTitle;
     private int price;
@@ -20,11 +20,11 @@ public class Cart {
 
     protected Cart() {}
 
-    public Cart(Long id, Long userId, Long eventId, String eventTitle,
+    public Cart(Long id, String userEmail, Long eventId, String eventTitle,
                 int price, int discountedPrice, int quantity,
                 LocalDateTime startDate, LocalDateTime createdAt) {
         this.id = id;
-        this.userId = userId;
+        this.userEmail = userEmail;
         this.eventId = eventId;
         this.eventTitle = eventTitle;
         this.price = price;
@@ -37,9 +37,9 @@ public class Cart {
     /**
      * 새로운 장바구니 항목 생성
      */
-    public static Cart create(Long userId, Long eventId, String eventTitle,
-                              int price, int discountedPrice, LocalDateTime startDate) {
-        return new Cart(null, userId, eventId, eventTitle, price, discountedPrice,
+    public static Cart create(String userEmail, Long eventId, String eventTitle,
+                               int price, int discountedPrice, LocalDateTime startDate) {
+        return new Cart(null, userEmail, eventId, eventTitle, price, discountedPrice,
                 1, startDate, LocalDateTime.now());
     }
 
@@ -72,14 +72,14 @@ public class Cart {
     /**
      * 사용자 소유 확인
      */
-    public boolean isOwnedBy(Long userId) {
-        return this.userId != null && this.userId.equals(userId);
+    public boolean isOwnedBy(String userEmail) {
+        return this.userEmail != null && this.userEmail.equals(userEmail);
     }
 
     // --- Getters ---
 
     public Long getId() { return id; }
-    public Long getUserId() { return userId; }
+    public String getUserEmail() { return userEmail; }
     public Long getEventId() { return eventId; }
     public String getEventTitle() { return eventTitle; }
     public int getPrice() { return price; }

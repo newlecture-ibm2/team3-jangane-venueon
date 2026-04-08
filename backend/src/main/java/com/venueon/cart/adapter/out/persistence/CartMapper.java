@@ -22,7 +22,7 @@ public class CartMapper {
 
         return new Cart(
                 entity.getId(),
-                entity.getUser() != null ? entity.getUser().getId() : null,
+                entity.getUser() != null ? entity.getUser().getEmail() : null,
                 event != null ? event.getId() : null,
                 event != null ? event.getTitle() : null,
                 event != null ? event.getPrice() : 0,

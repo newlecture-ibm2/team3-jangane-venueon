@@ -13,10 +13,10 @@ public interface GetCartUseCase {
     /**
      * 사용자의 장바구니 목록 조회
      */
-    List<CartResponse> getCartItems(Long userId);
+    List<CartResponse> getCartItems(String userEmail);
 
     /**
      * 장바구니 요약 정보 조회 (총 금액, 할인 등)
      */
-    CartSummaryResponse getCartSummary(Long userId);
+    CartSummaryResponse getCartSummary(String userEmail);
 }

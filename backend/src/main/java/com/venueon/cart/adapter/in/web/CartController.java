@@ -1,6 +1,5 @@
 package com.venueon.cart.adapter.in.web;
 
-import com.venueon.user.adapter.in.security.CustomUserDetails;
 
 import com.venueon.cart.application.port.in.*;
 import com.venueon.cart.application.port.in.dto.CartResponse;
@@ -38,8 +37,8 @@ public class CartController {
     public ResponseEntity<ApiResponse<List<CartResponse>>> getCartItems(
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Long userId = extractUserId(userDetails);
-        List<CartResponse> items = getCartUseCase.getCartItems(userId);
+        String userEmail = userDetails.getUsername();
+        List<CartResponse> items = getCartUseCase.getCartItems(userEmail);
 
         return ResponseEntity.ok(ApiResponse.success(items));
     }
@@ -52,8 +51,8 @@ public class CartController {
     public ResponseEntity<ApiResponse<CartSummaryResponse>> getCartSummary(
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Long userId = extractUserId(userDetails);
-        CartSummaryResponse summary = getCartUseCase.getCartSummary(userId);
+        String userEmail = userDetails.getUsername();
+        CartSummaryResponse summary = getCartUseCase.getCartSummary(userEmail);
 
         return ResponseEntity.ok(ApiResponse.success(summary));
     }
@@ -67,8 +66,8 @@ public class CartController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody AddToCartRequest request) {
 
-        Long userId = extractUserId(userDetails);
-        CartResponse cartItem = addToCartUseCase.addToCart(userId, request.eventId());
+        String userEmail = userDetails.getUsername();
+        CartResponse cartItem = addToCartUseCase.addToCart(userEmail, request.eventId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(cartItem));
@@ -84,8 +83,8 @@ public class CartController {
             @PathVariable Long cartId,
             @RequestBody UpdateQuantityRequest request) {
 
-        Long userId = extractUserId(userDetails);
-        CartResponse updated = updateCartUseCase.updateQuantity(cartId, userId, request.quantity());
+        String userEmail = userDetails.getUsername();
+        CartResponse updated = updateCartUseCase.updateQuantity(cartId, userEmail, request.quantity());
 
         return ResponseEntity.ok(ApiResponse.success(updated));
     }
@@ -99,8 +98,8 @@ public class CartController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long cartId) {
 
-        Long userId = extractUserId(userDetails);
-        deleteCartUseCase.deleteCartItem(cartId, userId);
+        String userEmail = userDetails.getUsername();
+        deleteCartUseCase.deleteCartItem(cartId, userEmail);
 
         return ResponseEntity.ok(ApiResponse.success());
     }
@@ -113,25 +112,10 @@ public class CartController {
     public ResponseEntity<ApiResponse<Void>> clearCart(
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Long userId = extractUserId(userDetails);
-        deleteCartUseCase.clearCart(userId);
+        String userEmail = userDetails.getUsername();
+        deleteCartUseCase.clearCart(userEmail);
 
         return ResponseEntity.ok(ApiResponse.success());
-    }
-
-    // --- Helper Methods ---
-
-    private Long extractUserId(UserDetails userDetails) {
-        if (userDetails instanceof CustomUserDetails customUserDetails) {
-            return customUserDetails.getUserId();
-        }
-        
-        if (userDetails == null) {
-            throw new IllegalStateException("인증된 사용자 정보가 없습니다.");
-        }
-        
-        // Fallback or explicit error
-        throw new IllegalStateException("인가된 사용자 정보를 확인할 수 없습니다 (CustomUserDetails가 아님).");
     }
 
     // --- Request Records ---

@@ -16,5 +16,5 @@ public interface UpdateCartUseCase {
      * @throws IllegalArgumentException 유효하지 않은 수량
      * @throws IllegalStateException 권한 없음
      */
-    CartResponse updateQuantity(Long cartId, Long userId, int quantity);
+    CartResponse updateQuantity(Long cartId, String userEmail, int quantity);
 }

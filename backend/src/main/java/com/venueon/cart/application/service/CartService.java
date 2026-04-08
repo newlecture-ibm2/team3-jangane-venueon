@@ -29,16 +29,16 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
 
     @Override
     @Transactional(readOnly = true)
-    public List<CartResponse> getCartItems(Long userId) {
-        return cartRepositoryPort.findByUserId(userId).stream()
+    public List<CartResponse> getCartItems(String userEmail) {
+        return cartRepositoryPort.findByUserEmail(userEmail).stream()
                 .map(CartResponse::from)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public CartSummaryResponse getCartSummary(Long userId) {
-        List<Cart> carts = cartRepositoryPort.findByUserId(userId);
+    public CartSummaryResponse getCartSummary(String userEmail) {
+        List<Cart> carts = cartRepositoryPort.findByUserEmail(userEmail);
         List<CartResponse> items = carts.stream()
                 .map(CartResponse::from)
                 .collect(Collectors.toList());
@@ -57,13 +57,13 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
     // --- 명령 (Command) ---
 
     @Override
-    public CartResponse addToCart(Long userId, Long eventId) {
+    public CartResponse addToCart(String userEmail, Long eventId) {
         // 이벤트 정보 조회
         LoadEventInfoPort.EventInfo event = loadEventInfoPort.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다. ID: " + eventId));
 
         // 이미 장바구니에 담겨 있는지 확인
-        if (cartRepositoryPort.existsByUserIdAndEventId(userId, eventId)) {
+        if (cartRepositoryPort.existsByUserEmailAndEventId(userEmail, eventId)) {
             throw new IllegalStateException("이미 장바구니에 담긴 이벤트입니다.");
         }
 
@@ -73,7 +73,7 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
         }
 
         // 장바구니 항목 생성
-        Cart cart = Cart.create(userId, eventId, event.title(),
+        Cart cart = Cart.create(userEmail, eventId, event.title(),
                 event.price(), event.getFinalPrice(), event.startDate());
 
         Cart saved = cartRepositoryPort.save(cart);
@@ -81,12 +81,12 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
     }
 
     @Override
-    public CartResponse updateQuantity(Long cartId, Long userId, int quantity) {
+    public CartResponse updateQuantity(Long cartId, String userEmail, int quantity) {
         Cart cart = cartRepositoryPort.findById(cartId)
                 .orElseThrow(() -> new IllegalArgumentException("장바구니 항목을 찾을 수 없습니다. ID: " + cartId));
 
         // 소유권 검증
-        if (!cart.isOwnedBy(userId)) {
+        if (!cart.isOwnedBy(userEmail)) {
             throw new IllegalStateException("해당 장바구니 항목을 수정할 권한이 없습니다.");
         }
 
@@ -98,12 +98,12 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
     }
 
     @Override
-    public void deleteCartItem(Long cartId, Long userId) {
+    public void deleteCartItem(Long cartId, String userEmail) {
         Cart cart = cartRepositoryPort.findById(cartId)
                 .orElseThrow(() -> new IllegalArgumentException("장바구니 항목을 찾을 수 없습니다. ID: " + cartId));
 
         // 소유권 검증
-        if (!cart.isOwnedBy(userId)) {
+        if (!cart.isOwnedBy(userEmail)) {
             throw new IllegalStateException("해당 장바구니 항목을 삭제할 권한이 없습니다.");
         }
 
@@ -111,7 +111,7 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
     }
 
     @Override
-    public void clearCart(Long userId) {
-        cartRepositoryPort.deleteByUserId(userId);
+    public void clearCart(String userEmail) {
+        cartRepositoryPort.deleteByUserEmail(userEmail);
     }
 }

@@ -29,8 +29,8 @@ public class CartPersistenceAdapter implements CartRepositoryPort {
     private final CartMapper cartMapper;
 
     @Override
-    public List<Cart> findByUserId(Long userId) {
-        return cartJpaRepository.findByUserId(userId).stream()
+    public List<Cart> findByUserEmail(String userEmail) {
+        return cartJpaRepository.findByUserEmail(userEmail).stream()
                 .map(cartMapper::toDomain)
                 .collect(Collectors.toList());
     }
@@ -42,21 +42,21 @@ public class CartPersistenceAdapter implements CartRepositoryPort {
     }
 
     @Override
-    public Optional<Cart> findByUserIdAndEventId(Long userId, Long eventId) {
-        return cartJpaRepository.findByUserIdAndEventId(userId, eventId)
+    public Optional<Cart> findByUserEmailAndEventId(String userEmail, Long eventId) {
+        return cartJpaRepository.findByUserEmailAndEventId(userEmail, eventId)
                 .map(cartMapper::toDomain);
     }
 
     @Override
-    public boolean existsByUserIdAndEventId(Long userId, Long eventId) {
-        return cartJpaRepository.existsByUserIdAndEventId(userId, eventId);
+    public boolean existsByUserEmailAndEventId(String userEmail, Long eventId) {
+        return cartJpaRepository.existsByUserEmailAndEventId(userEmail, eventId);
     }
 
     @Override
     public Cart save(Cart cart) {
         // User와 Event 조회
-        UserJpaEntity user = userJpaRepository.findById(cart.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + cart.getUserId()));
+        UserJpaEntity user = userJpaRepository.findByEmail(cart.getUserEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + cart.getUserEmail()));
 
         EventJpaEntity event = eventJpaRepository.findById(cart.getEventId())
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with id: " + cart.getEventId()));
@@ -81,7 +81,7 @@ public class CartPersistenceAdapter implements CartRepositoryPort {
     }
 
     @Override
-    public void deleteByUserId(Long userId) {
-        cartJpaRepository.deleteByUserId(userId);
+    public void deleteByUserEmail(String userEmail) {
+        cartJpaRepository.deleteByUserEmail(userEmail);
     }
 }

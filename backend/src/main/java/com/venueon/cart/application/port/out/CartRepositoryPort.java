@@ -14,7 +14,7 @@ public interface CartRepositoryPort {
     /**
      * 사용자의 모든 장바구니 항목 조회
      */
-    List<Cart> findByUserId(Long userId);
+    List<Cart> findByUserEmail(String userEmail);
 
     /**
      * ID로 장바구니 항목 조회
@@ -24,12 +24,12 @@ public interface CartRepositoryPort {
     /**
      * 사용자와 이벤트로 장바구니 항목 조회 (중복 체크용)
      */
-    Optional<Cart> findByUserIdAndEventId(Long userId, Long eventId);
+    Optional<Cart> findByUserEmailAndEventId(String userEmail, Long eventId);
 
     /**
      * 장바구니 항목 존재 여부 확인
      */
-    boolean existsByUserIdAndEventId(Long userId, Long eventId);
+    boolean existsByUserEmailAndEventId(String userEmail, Long eventId);
 
     /**
      * 장바구니 항목 저장
@@ -44,5 +44,5 @@ public interface CartRepositoryPort {
     /**
      * 사용자의 모든 장바구니 항목 삭제
      */
-    void deleteByUserId(Long userId);
+    void deleteByUserEmail(String userEmail);
 }

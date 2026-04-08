@@ -12,10 +12,10 @@ public interface DeleteCartUseCase {
      * @throws IllegalArgumentException 장바구니 항목을 찾을 수 없음
      * @throws IllegalStateException 권한 없음
      */
-    void deleteCartItem(Long cartId, Long userId);
+    void deleteCartItem(Long cartId, String userEmail);
 
     /**
      * 사용자의 모든 장바구니 항목 삭제 (주문 완료 후 등)
      */
-    void clearCart(Long userId);
+    void clearCart(String userEmail);
 }
