@@ -40,7 +40,7 @@ public class OrderService {
     private String tossClientKey;
 
     /**
-     * 단건 주문 생성 (PENDING 상태)
+     * 단건 주문 생성 (PENDING상태)
      * API 스펙: POST /orders
      */
     @Transactional
@@ -56,8 +56,7 @@ public class OrderService {
         // 3. 중복 주문 검증 (PAID, REGISTERED 상태인 완료된 주문만)
         List<Order> existingOrders = orderRepository.findByUserIdAndEventIdAndStatusIn(
                 userId, request.getEventId(),
-                List.of(OrderStatus.PAID, OrderStatus.REGISTERED)
-        );
+                List.of(OrderStatus.PAID, OrderStatus.REGISTERED));
         if (!existingOrders.isEmpty()) {
             throw new BusinessException(ErrorCode.ORDER_ALREADY_EXISTS);
         }
@@ -65,8 +64,7 @@ public class OrderService {
         // 4. 정원 초과 검증
         long currentAttendees = orderRepository.countByEventIdAndStatusIn(
                 request.getEventId(),
-                List.of(OrderStatus.PAID, OrderStatus.REGISTERED)
-        );
+                List.of(OrderStatus.PAID, OrderStatus.REGISTERED));
         if (event.getMaxAttendees() > 0 && currentAttendees + request.getQuantity() > event.getMaxAttendees()) {
             throw new BusinessException(ErrorCode.EVENT_FULL);
         }
@@ -75,17 +73,19 @@ public class OrderService {
         int totalAmount = event.getPrice() * request.getQuantity();
 
         // 6. 순수 도메인 모델 생성 및 초기 저장 (ID 발급용)
-        Order pendingOrder = Order.createPending(userId, request.getEventId(), request.getQuantity(), totalAmount, request.getPaymentMethod());
+        Order pendingOrder = Order.createPending(userId, request.getEventId(), request.getQuantity(), totalAmount,
+                request.getPaymentMethod());
         Order savedOrder = orderRepository.save(pendingOrder);
 
         // 7. tossOrderId 발급 및 도메인 객체 업데이트
         String tossOrderId = "venueon_order_" + savedOrder.getId() + "_" + System.currentTimeMillis();
         savedOrder.updateTossOrderId(tossOrderId);
-        
+
         // 8. 변경된(tossOrderId가 추가된) 도메인 모델 다시 저장
         savedOrder = orderRepository.save(savedOrder);
 
-        log.info("주문 생성 완료: orderId={}, tossOrderId={}, status={}", savedOrder.getId(), tossOrderId, savedOrder.getStatus());
+        log.info("주문 생성 완료: orderId={}, tossOrderId={}, status={}", savedOrder.getId(), tossOrderId,
+                savedOrder.getStatus());
 
         return CreateOrderResponse.builder()
                 .orderId(savedOrder.getId())
@@ -119,13 +119,12 @@ public class OrderService {
             tossPaymentClient.confirmPayment(
                     request.getPaymentKey(),
                     request.getOrderId(),
-                    request.getAmount()
-            );
+                    request.getAmount());
         }
 
         // 4. 도메인 모델 상태 업데이트 (PENDING → PAID)
         order.confirmPayment(request.getPaymentKey());
-        
+
         // 5. 도메인 모델 저장
         order = orderRepository.save(order);
 
