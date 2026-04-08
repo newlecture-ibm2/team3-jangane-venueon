@@ -20,6 +20,9 @@ public class User {
     private boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    private java.util.List<String> categories = new java.util.ArrayList<>();
+    private boolean badgeVisible;
 
     // 기본 생성자
     protected User() {}
@@ -27,7 +30,8 @@ public class User {
     // 전체 필드 생성자
     public User(Long id, String email, String password, String nickname, UserRole role,
                 AuthProvider provider, String profileImg, String phone, boolean active,
-                LocalDateTime createdAt, LocalDateTime updatedAt) {
+                LocalDateTime createdAt, LocalDateTime updatedAt, 
+                java.util.List<String> categories, boolean badgeVisible) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -39,6 +43,15 @@ public class User {
         this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.categories = categories != null ? categories : new java.util.ArrayList<>();
+        this.badgeVisible = badgeVisible;
+    }
+
+    // 구버전 호환용 생성자
+    public User(Long id, String email, String password, String nickname, UserRole role,
+                AuthProvider provider, String profileImg, String phone, boolean active,
+                LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(id, email, password, nickname, role, provider, profileImg, phone, active, createdAt, updatedAt, new java.util.ArrayList<>(), true);
     }
 
     // --- 비즈니스 행위 메서드 ---
@@ -55,9 +68,15 @@ public class User {
         return this.provider == AuthProvider.GOOGLE;
     }
 
-    public void updateProfile(String nickname, String profileImg) {
+    public void updateProfile(String nickname, String profileImg, java.util.List<String> categories, Boolean showBadge) {
         this.nickname = nickname;
         this.profileImg = profileImg;
+        if (categories != null) {
+            this.categories = categories;
+        }
+        if (showBadge != null) {
+            this.badgeVisible = showBadge;
+        }
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -119,4 +138,6 @@ public class User {
     public boolean isActive() { return active; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public java.util.List<String> getCategories() { return categories; }
+    public boolean isBadgeVisible() { return badgeVisible; }
 }

@@ -47,7 +47,9 @@ public class AuthController {
                 user.getEmail(),
                 user.getNickname(),
                 user.getRole().name(),
-                user.getProfileImg()
+                user.getProfileImg(),
+                user.getCategories(),
+                user.isBadgeVisible()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
@@ -74,7 +76,9 @@ public class AuthController {
                 user.getEmail(),
                 user.getNickname(),
                 user.getRole().name(),
-                user.getProfileImg()
+                user.getProfileImg(),
+                user.getCategories(),
+                user.isBadgeVisible()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
@@ -142,7 +146,9 @@ public class AuthController {
                 user.getEmail(),
                 user.getNickname(),
                 user.getRole().name(),
-                user.getProfileImg()
+                user.getProfileImg(),
+                user.getCategories(),
+                user.isBadgeVisible()
         );
 
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -163,7 +169,9 @@ public class AuthController {
                 user.getEmail(),
                 user.getNickname(),
                 user.getRole().name(),
-                user.getProfileImg()
+                user.getProfileImg(),
+                user.getCategories(),
+                user.isBadgeVisible()
         );
 
         return ResponseEntity.ok(response);

@@ -46,7 +46,7 @@ public class SecurityConfig {
                 
                 // 인증 필요 경로
                 .requestMatchers("/auth/me").authenticated()
-                .requestMatchers("/v1/users", "/v1/users/**").authenticated()
+                .requestMatchers("/users", "/users/**").authenticated()
                 .requestMatchers("/orders", "/orders/**").authenticated()
                 
                 // /admin/** — ADMIN 권한 필요
