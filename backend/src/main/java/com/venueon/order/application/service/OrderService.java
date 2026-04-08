@@ -5,6 +5,7 @@ import com.venueon.common.exception.ErrorCode;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
 import com.venueon.order.adapter.out.payment.TossPaymentClient;
+import com.venueon.order.application.port.in.RequestRefundUseCase;
 import com.venueon.order.application.port.out.OrderRepositoryPort;
 import com.venueon.order.application.port.out.RefundSavePort;
 import com.venueon.order.domain.model.Order;
@@ -35,12 +36,13 @@ public class OrderService {
     private final UserJpaRepository userRepository;
     private final TossPaymentClient tossPaymentClient;
     private final RefundSavePort refundSavePort;
+    private final RequestRefundUseCase requestRefundUseCase;
 
     @Value("${toss.client-key}")
     private String tossClientKey;
 
     /**
-     * 단건 주문 생성 (PENDING상태)
+     * 단건 주문 생성 (PENDING 상태)
      * API 스펙: POST /orders
      */
     @Transactional
