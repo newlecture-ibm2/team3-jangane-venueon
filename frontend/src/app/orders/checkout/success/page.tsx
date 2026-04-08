@@ -124,7 +124,7 @@ function CheckoutSuccessContent() {
             variant="outlined"
             size="large"
             style={{ flex: 1, backgroundColor: '#FFFFFF', borderColor: 'var(--color-gray-200, #E5E7EB)' }}
-            onClick={() => window.location.href = '/orders'}
+            onClick={() => window.location.href = '/mypage/orders'}
           >
             내 강의 목록
           </Button>

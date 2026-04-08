@@ -1,0 +1,1013 @@
+2026-04-07T16:09:41.896+09:00  INFO 38277 --- [venueon-backend] [main] com.venueon.VenueOnApplication           : Starting VenueOnApplication using Java 21.0.10 with PID 38277 (/home/user/projects/1stproject/team3-jangane-venueon/backend/build/classes/java/main started by user in /home/user/projects/1stproject/team3-jangane-venueon/backend)
+2026-04-07T16:09:41.901+09:00 DEBUG 38277 --- [venueon-backend] [main] com.venueon.VenueOnApplication           : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-04-07T16:09:41.903+09:00  INFO 38277 --- [venueon-backend] [main] com.venueon.VenueOnApplication           : The following 1 profile is active: "dev"
+2026-04-07T16:09:44.496+09:00  INFO 38277 --- [venueon-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-07T16:09:44.697+09:00  INFO 38277 --- [venueon-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 183 ms. Found 11 JPA repository interfaces.
+2026-04-07T16:09:46.293+09:00  INFO 38277 --- [venueon-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-04-07T16:09:46.336+09:00  INFO 38277 --- [venueon-backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-07T16:09:46.337+09:00  INFO 38277 --- [venueon-backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-04-07T16:09:46.448+09:00  INFO 38277 --- [venueon-backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 4464 ms
+2026-04-07T16:09:46.992+09:00  INFO 38277 --- [venueon-backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-07T16:09:47.128+09:00  INFO 38277 --- [venueon-backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-04-07T16:09:48.882+09:00  INFO 38277 --- [venueon-backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-07T16:09:49.029+09:00  INFO 38277 --- [venueon-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-07T16:09:49.532+09:00  INFO 38277 --- [venueon-backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1669f4e5
+2026-04-07T16:09:49.538+09:00  INFO 38277 --- [venueon-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-07T16:09:49.645+09:00  WARN 38277 --- [venueon-backend] [main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-07T16:09:49.713+09:00  INFO 38277 --- [venueon-backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/venueon_dev]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 15.17
+	Default catalog/schema: venueon_dev/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-07T16:09:53.179+09:00  INFO 38277 --- [venueon-backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-07T16:09:53.241+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    set client_min_messages = WARNING
+2026-04-07T16:09:53.247+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       drop constraint if exists FKn2na60ukhs76ibtpt9burkm27
+2026-04-07T16:09:53.250+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       drop constraint if exists FKlri30okf66phtcgbe5pok7cc0
+2026-04-07T16:09:53.253+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       drop constraint if exists FKh4c7lvsc298whoyd4w9ta25cr
+2026-04-07T16:09:53.255+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       drop constraint if exists FKehds1lhi1y9a8rweslp1esncn
+2026-04-07T16:09:53.259+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       drop constraint if exists FKhi7jr3il90nrhisu3htfl4ks
+2026-04-07T16:09:53.263+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       drop constraint if exists FKqn9g17tqcwnoy41o2am9fnlep
+2026-04-07T16:09:53.266+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       drop constraint if exists FKme7k1stbnwi6cpmm8a6sgcikn
+2026-04-07T16:09:53.270+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       drop constraint if exists FKo6mla8j1p5bokt4dxrlmgwc28
+2026-04-07T16:09:53.273+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       drop constraint if exists FK7ljm71n1057envlomdxcni5hs
+2026-04-07T16:09:53.276+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists host_profiles 
+       drop constraint if exists FKmoas5i4ry1m9mwgbgb1jdrhli
+2026-04-07T16:09:53.279+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       drop constraint if exists FK43g2yroy6l7lfomw37wajkqrn
+2026-04-07T16:09:53.288+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       drop constraint if exists FK32ql8ubntj5uh44ph9659tiih
+2026-04-07T16:09:53.290+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       drop constraint if exists FK6xvn0811tkyo3nfjk2xvqx6ns
+2026-04-07T16:09:53.294+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       drop constraint if exists FK7rk45ficmsfhe8n1dojvqt6ui
+2026-04-07T16:09:53.297+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       drop constraint if exists FKsk9rqm7f6y8b1g0qob018hdm7
+2026-04-07T16:09:53.300+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       drop constraint if exists FKrtxief4co3k1lfklj7n05m8mo
+2026-04-07T16:09:53.305+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists reports 
+       drop constraint if exists FKd3qiw2om5d2oh5xb7fbdcq225
+2026-04-07T16:09:53.307+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists categories cascade
+2026-04-07T16:09:53.311+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists comments cascade
+2026-04-07T16:09:53.313+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists communities cascade
+2026-04-07T16:09:53.315+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists community_members cascade
+2026-04-07T16:09:53.318+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists events cascade
+2026-04-07T16:09:53.321+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists host_profiles cascade
+2026-04-07T16:09:53.323+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists orders cascade
+2026-04-07T16:09:53.326+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists posts cascade
+2026-04-07T16:09:53.329+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists refunds cascade
+2026-04-07T16:09:53.337+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists reports cascade
+2026-04-07T16:09:53.343+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    drop table if exists users cascade
+2026-04-07T16:09:53.368+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table categories (
+        sort_order integer,
+        id bigint generated by default as identity,
+        description varchar(255),
+        name varchar(255) not null unique,
+        primary key (id)
+    )
+2026-04-07T16:09:53.421+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table comments (
+        is_hidden boolean not null,
+        author_id bigint not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        parent_id bigint,
+        post_id bigint not null,
+        content TEXT not null,
+        primary key (id)
+    )
+2026-04-07T16:09:53.453+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table communities (
+        is_public boolean,
+        member_count integer,
+        created_at timestamp(6) not null,
+        creator_id bigint not null,
+        event_id bigint,
+        id bigint generated by default as identity,
+        description TEXT,
+        name varchar(255) not null,
+        thumbnail_url varchar(255),
+        primary key (id)
+    )
+2026-04-07T16:09:53.485+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table community_members (
+        community_id bigint not null,
+        id bigint generated by default as identity,
+        joined_at timestamp(6) not null,
+        user_id bigint not null,
+        role varchar(255) not null check ((role in ('ADMIN','MEMBER'))),
+        primary key (id),
+        unique (community_id, user_id)
+    )
+2026-04-07T16:09:53.513+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table events (
+        is_hidden boolean not null,
+        is_online boolean,
+        max_attendees integer,
+        price integer not null,
+        category_id bigint,
+        created_at timestamp(6) not null,
+        creator_id bigint not null,
+        end_date timestamp(6),
+        id bigint generated by default as identity,
+        start_date timestamp(6),
+        updated_at timestamp(6),
+        description TEXT,
+        location varchar(255),
+        status varchar(255) not null check ((status in ('DRAFT','PUBLISHED','ONGOING','ENDED','CANCELLED'))),
+        thumbnail_url varchar(255),
+        title varchar(255) not null,
+        type varchar(255) not null check ((type in ('SEMINAR','CLASS','MEETUP','CONFERENCE'))),
+        primary key (id)
+    )
+2026-04-07T16:09:53.560+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table host_profiles (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        user_id bigint not null unique,
+        org_description varchar(1000),
+        manager_name varchar(255),
+        org_name varchar(255) not null,
+        org_number varchar(255) not null,
+        primary key (id)
+    )
+2026-04-07T16:09:53.594+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table orders (
+        amount integer not null,
+        quantity integer not null,
+        event_id bigint not null,
+        id bigint generated by default as identity,
+        ordered_at timestamp(6) not null,
+        paid_at timestamp(6),
+        user_id bigint not null,
+        payment_method varchar(255),
+        status varchar(255) not null check ((status in ('PENDING','PAID','CANCELLED','REFUNDED','REGISTERED','REFUND_REQUESTED'))),
+        toss_order_id varchar(255),
+        toss_payment_key varchar(255),
+        primary key (id)
+    )
+2026-04-07T16:09:53.621+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table posts (
+        comment_count integer,
+        is_hidden boolean not null,
+        view_count integer,
+        author_id bigint not null,
+        community_id bigint not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        content TEXT not null,
+        title varchar(255) not null,
+        type varchar(255) not null check ((type in ('GENERAL','REVIEW','QUESTION','NOTICE'))),
+        primary key (id)
+    )
+2026-04-07T16:09:53.651+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table refunds (
+        amount integer not null,
+        id bigint generated by default as identity,
+        order_id bigint not null,
+        processed_at timestamp(6),
+        requested_at timestamp(6) not null,
+        user_id bigint not null,
+        reason varchar(255),
+        status varchar(255) not null check ((status in ('PENDING','APPROVED','REJECTED'))),
+        primary key (id)
+    )
+2026-04-07T16:09:53.674+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table reports (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        reporter_id bigint not null,
+        resolved_at timestamp(6),
+        target_id bigint not null,
+        detail TEXT,
+        admin_action varchar(255) check ((admin_action in ('DELETE','HIDE','WARN','DISMISS'))),
+        reason varchar(255) not null,
+        status varchar(255) not null check ((status in ('PENDING','RESOLVED','REJECTED'))),
+        target_type varchar(255) not null check ((target_type in ('EVENT','POST','COMMENT','USER'))),
+        primary key (id)
+    )
+2026-04-07T16:09:53.699+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    create table users (
+        is_active boolean not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        email varchar(255) not null unique,
+        nickname varchar(255) not null,
+        password varchar(255) not null,
+        phone varchar(255),
+        profile_img varchar(255),
+        provider varchar(255) not null check ((provider in ('LOCAL','GOOGLE'))),
+        role varchar(255) not null check ((role in ('ADMIN','HOST','USER'))),
+        primary key (id)
+    )
+2026-04-07T16:09:53.734+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       add constraint FKn2na60ukhs76ibtpt9burkm27 
+       foreign key (author_id) 
+       references users
+2026-04-07T16:09:53.749+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       add constraint FKlri30okf66phtcgbe5pok7cc0 
+       foreign key (parent_id) 
+       references comments
+2026-04-07T16:09:53.758+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       add constraint FKh4c7lvsc298whoyd4w9ta25cr 
+       foreign key (post_id) 
+       references posts
+2026-04-07T16:09:53.768+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       add constraint FKehds1lhi1y9a8rweslp1esncn 
+       foreign key (creator_id) 
+       references users
+2026-04-07T16:09:53.777+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       add constraint FKhi7jr3il90nrhisu3htfl4ks 
+       foreign key (event_id) 
+       references events
+2026-04-07T16:09:53.789+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       add constraint FKqn9g17tqcwnoy41o2am9fnlep 
+       foreign key (community_id) 
+       references communities
+2026-04-07T16:09:53.799+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       add constraint FKme7k1stbnwi6cpmm8a6sgcikn 
+       foreign key (user_id) 
+       references users
+2026-04-07T16:09:53.809+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       add constraint FKo6mla8j1p5bokt4dxrlmgwc28 
+       foreign key (category_id) 
+       references categories
+2026-04-07T16:09:53.820+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       add constraint FK7ljm71n1057envlomdxcni5hs 
+       foreign key (creator_id) 
+       references users
+2026-04-07T16:09:53.839+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists host_profiles 
+       add constraint FKmoas5i4ry1m9mwgbgb1jdrhli 
+       foreign key (user_id) 
+       references users
+2026-04-07T16:09:53.852+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       add constraint FK43g2yroy6l7lfomw37wajkqrn 
+       foreign key (event_id) 
+       references events
+2026-04-07T16:09:53.864+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       add constraint FK32ql8ubntj5uh44ph9659tiih 
+       foreign key (user_id) 
+       references users
+2026-04-07T16:09:53.874+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       add constraint FK6xvn0811tkyo3nfjk2xvqx6ns 
+       foreign key (author_id) 
+       references users
+2026-04-07T16:09:53.886+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       add constraint FK7rk45ficmsfhe8n1dojvqt6ui 
+       foreign key (community_id) 
+       references communities
+2026-04-07T16:09:53.899+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       add constraint FKsk9rqm7f6y8b1g0qob018hdm7 
+       foreign key (order_id) 
+       references orders
+2026-04-07T16:09:53.911+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       add constraint FKrtxief4co3k1lfklj7n05m8mo 
+       foreign key (user_id) 
+       references users
+2026-04-07T16:09:53.921+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    alter table if exists reports 
+       add constraint FKd3qiw2om5d2oh5xb7fbdcq225 
+       foreign key (reporter_id) 
+       references users
+2026-04-07T16:09:53.943+09:00  INFO 38277 --- [venueon-backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-07T16:09:54.259+09:00  INFO 38277 --- [venueon-backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-07T16:09:54.877+09:00 DEBUG 38277 --- [venueon-backend] [main] c.v.u.a.i.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2026-04-07T16:09:57.885+09:00  INFO 38277 --- [venueon-backend] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-04-07T16:09:59.105+09:00  INFO 38277 --- [venueon-backend] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-04-07T16:09:59.275+09:00  INFO 38277 --- [venueon-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-04-07T16:09:59.293+09:00  INFO 38277 --- [venueon-backend] [main] com.venueon.VenueOnApplication           : Started VenueOnApplication in 18.201 seconds (process running for 18.964)
+2026-04-07T16:09:59.493+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        users uje1_0
+2026-04-07T16:09:59.525+09:00  INFO 38277 --- [venueon-backend] [main] c.venueon.common.config.DataInitializer  : === 개발용 초기 데이터 생성 시작 ===
+2026-04-07T16:09:59.708+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.093+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.096+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.100+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.219+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.223+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.227+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.231+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.235+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.239+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.243+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.247+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.251+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.255+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, nickname, password, phone, profile_img, provider, role, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.260+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.265+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.271+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.275+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.279+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.283+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.287+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.291+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.295+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.299+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.306+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.310+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.313+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.316+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.319+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.321+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.324+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.329+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.334+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.337+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-07T16:10:00.343+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.349+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.353+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.357+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.361+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.365+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.370+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.373+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.378+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.383+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, end_date, is_hidden, is_online, location, max_attendees, price, start_date, status, thumbnail_url, title, type, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.388+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, event_id, ordered_at, paid_at, payment_method, quantity, status, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.392+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, event_id, ordered_at, paid_at, payment_method, quantity, status, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.396+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, event_id, ordered_at, paid_at, payment_method, quantity, status, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.400+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, event_id, ordered_at, paid_at, payment_method, quantity, status, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.403+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, event_id, ordered_at, paid_at, payment_method, quantity, status, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.406+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, event_id, ordered_at, paid_at, payment_method, quantity, status, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.411+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.415+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.418+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.421+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.426+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        refunds
+        (amount, order_id, processed_at, reason, requested_at, status, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.435+09:00 DEBUG 38277 --- [venueon-backend] [main] org.hibernate.SQL                        : 
+    insert 
+    into
+        refunds
+        (amount, order_id, processed_at, reason, requested_at, status, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-07T16:10:00.440+09:00  INFO 38277 --- [venueon-backend] [main] c.venueon.common.config.DataInitializer  : === 개발용 초기 데이터 생성 완료 ===
+2026-04-07T16:10:00.440+09:00  INFO 38277 --- [venueon-backend] [main] c.venueon.common.config.DataInitializer  : Admin: 1명, User: 3명, Host: 10명
+2026-04-07T16:10:00.440+09:00  INFO 38277 --- [venueon-backend] [main] c.venueon.common.config.DataInitializer  : Category: 10개, Event: 10개
+2026-04-07T16:10:00.441+09:00  INFO 38277 --- [venueon-backend] [main] c.venueon.common.config.DataInitializer  : Order: 6개, Report: 4개, Refund: 2개
+2026-04-07T16:10:12.051+09:00  INFO 38277 --- [venueon-backend] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-07T16:10:12.052+09:00  INFO 38277 --- [venueon-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-07T16:10:12.057+09:00  INFO 38277 --- [venueon-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2026-04-07T16:10:12.205+09:00  WARN 38277 --- [venueon-backend] [http-nio-8080-exec-2] c.v.c.exception.GlobalExceptionHandler   : Resource Not Found: No static resource company-logo/moneyflow.png for request '/upload/company-logo/moneyflow.png'.
+2026-04-07T16:10:12.205+09:00  WARN 38277 --- [venueon-backend] [http-nio-8080-exec-1] c.v.c.exception.GlobalExceptionHandler   : Resource Not Found: No static resource lecture-thumbnail/MF_thumbnail.jpg for request '/upload/lecture-thumbnail/MF_thumbnail.jpg'.
+2026-04-07T16:10:13.954+09:00 DEBUG 38277 --- [venueon-backend] [http-nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        eje1_0.id,
+        eje1_0.category_id,
+        eje1_0.created_at,
+        eje1_0.creator_id,
+        eje1_0.description,
+        eje1_0.end_date,
+        eje1_0.is_hidden,
+        eje1_0.is_online,
+        eje1_0.location,
+        eje1_0.max_attendees,
+        eje1_0.price,
+        eje1_0.start_date,
+        eje1_0.status,
+        eje1_0.thumbnail_url,
+        eje1_0.title,
+        eje1_0.type,
+        eje1_0.updated_at 
+    from
+        events eje1_0 
+    where
+        eje1_0.id=?
+2026-04-07T16:10:14.031+09:00 DEBUG 38277 --- [venueon-backend] [http-nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        uje1_0.id,
+        uje1_0.created_at,
+        uje1_0.email,
+        uje1_0.is_active,
+        uje1_0.nickname,
+        uje1_0.password,
+        uje1_0.phone,
+        uje1_0.profile_img,
+        uje1_0.provider,
+        uje1_0.role,
+        uje1_0.updated_at 
+    from
+        users uje1_0 
+    where
+        uje1_0.id=?
+2026-04-07T16:10:14.408+09:00 DEBUG 38277 --- [venueon-backend] [http-nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        hpje1_0.id,
+        hpje1_0.created_at,
+        hpje1_0.manager_name,
+        hpje1_0.org_description,
+        hpje1_0.org_name,
+        hpje1_0.org_number,
+        hpje1_0.updated_at,
+        hpje1_0.user_id 
+    from
+        host_profiles hpje1_0 
+    where
+        hpje1_0.user_id=?
+2026-04-07T16:10:15.289+09:00  WARN 38277 --- [venueon-backend] [http-nio-8080-exec-5] c.v.c.exception.GlobalExceptionHandler   : Resource Not Found: No static resource lecture-thumbnail/MF_thumbnail.jpg for request '/upload/lecture-thumbnail/MF_thumbnail.jpg'.
+2026-04-07T16:10:15.292+09:00  WARN 38277 --- [venueon-backend] [http-nio-8080-exec-4] c.v.c.exception.GlobalExceptionHandler   : Resource Not Found: No static resource company-logo/moneyflow.png for request '/upload/company-logo/moneyflow.png'.
+2026-04-07T16:10:19.239+09:00  WARN 38277 --- [venueon-backend] [http-nio-8080-exec-6] c.v.u.a.in.security.JwtTokenProvider     : JWT 토큰 만료: JWT expired 1899236 milliseconds ago at 2026-04-07T06:38:40.000Z. Current time: 2026-04-07T07:10:19.236Z. Allowed clock skew: 0 milliseconds.
+2026-04-07T16:10:19.947+09:00 ERROR 38277 --- [venueon-backend] [http-nio-8080-exec-6] c.v.c.exception.GlobalExceptionHandler   : Exception: Cannot invoke "org.springframework.security.core.Authentication.getName()" because "authentication" is null
+
+java.lang.NullPointerException: Cannot invoke "org.springframework.security.core.Authentication.getName()" because "authentication" is null
+	at com.venueon.order.adapter.in.web.OrderController.createOrder(OrderController.java:34) ~[main/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:190) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117) ~[spring-webmvc-7.0.2.jar:7.0.2]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934) ~[spring-webmvc-7.0.2.jar:7.0.2]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853) ~[spring-webmvc-7.0.2.jar:7.0.2]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86) ~[spring-webmvc-7.0.2.jar:7.0.2]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963) ~[spring-webmvc-7.0.2.jar:7.0.2]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.2.jar:7.0.2]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1003) ~[spring-webmvc-7.0.2.jar:7.0.2]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.2.jar:7.0.2]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.15.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.2.jar:7.0.2]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.15.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:128) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53) ~[tomcat-embed-websocket-11.0.15.jar:11.0.15]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:235) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:493) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:354) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapSecured$0(ObservationFilterChainDecorator.java:86) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:132) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:132) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:86) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:181) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at com.venueon.user.adapter.in.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:52) ~[main/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:110) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:96) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:231) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:244) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:337) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:228) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:141) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:237) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:195) ~[spring-security-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:317) ~[spring-security-config-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:355) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:272) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.2.jar:7.0.2]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:341) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1778) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:946) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:480) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:57) ~[tomcat-embed-core-11.0.15.jar:11.0.15]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2026-04-07T16:11:19.638+09:00  INFO 38277 --- [venueon-backend] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-04-07T16:11:19.660+09:00  INFO 38277 --- [venueon-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-04-07T16:11:19.695+09:00  INFO 38277 --- [venueon-backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-07T16:11:19.700+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    set client_min_messages = WARNING
+2026-04-07T16:11:19.710+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       drop constraint if exists FKn2na60ukhs76ibtpt9burkm27
+2026-04-07T16:11:19.722+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       drop constraint if exists FKlri30okf66phtcgbe5pok7cc0
+2026-04-07T16:11:19.732+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       drop constraint if exists FKh4c7lvsc298whoyd4w9ta25cr
+2026-04-07T16:11:19.742+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       drop constraint if exists FKehds1lhi1y9a8rweslp1esncn
+2026-04-07T16:11:19.752+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       drop constraint if exists FKhi7jr3il90nrhisu3htfl4ks
+2026-04-07T16:11:19.766+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       drop constraint if exists FKqn9g17tqcwnoy41o2am9fnlep
+2026-04-07T16:11:19.775+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       drop constraint if exists FKme7k1stbnwi6cpmm8a6sgcikn
+2026-04-07T16:11:19.786+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists events 
+       drop constraint if exists FKo6mla8j1p5bokt4dxrlmgwc28
+2026-04-07T16:11:19.794+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists events 
+       drop constraint if exists FK7ljm71n1057envlomdxcni5hs
+2026-04-07T16:11:19.802+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists host_profiles 
+       drop constraint if exists FKmoas5i4ry1m9mwgbgb1jdrhli
+2026-04-07T16:11:19.809+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       drop constraint if exists FK43g2yroy6l7lfomw37wajkqrn
+2026-04-07T16:11:19.818+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       drop constraint if exists FK32ql8ubntj5uh44ph9659tiih
+2026-04-07T16:11:19.829+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       drop constraint if exists FK6xvn0811tkyo3nfjk2xvqx6ns
+2026-04-07T16:11:19.836+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       drop constraint if exists FK7rk45ficmsfhe8n1dojvqt6ui
+2026-04-07T16:11:19.844+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       drop constraint if exists FKsk9rqm7f6y8b1g0qob018hdm7
+2026-04-07T16:11:19.852+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       drop constraint if exists FKrtxief4co3k1lfklj7n05m8mo
+2026-04-07T16:11:19.860+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    alter table if exists reports 
+       drop constraint if exists FKd3qiw2om5d2oh5xb7fbdcq225
+2026-04-07T16:11:19.868+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists categories cascade
+2026-04-07T16:11:19.881+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists comments cascade
+2026-04-07T16:11:19.891+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists communities cascade
+2026-04-07T16:11:19.901+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists community_members cascade
+2026-04-07T16:11:19.914+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists events cascade
+2026-04-07T16:11:19.927+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists host_profiles cascade
+2026-04-07T16:11:19.938+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists orders cascade
+2026-04-07T16:11:19.949+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists posts cascade
+2026-04-07T16:11:19.959+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists refunds cascade
+2026-04-07T16:11:19.972+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists reports cascade
+2026-04-07T16:11:19.990+09:00 DEBUG 38277 --- [venueon-backend] [SpringApplicationShutdownHook] org.hibernate.SQL                        : 
+    drop table if exists users cascade
+2026-04-07T16:11:20.031+09:00  INFO 38277 --- [venueon-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-07T16:11:20.057+09:00  INFO 38277 --- [venueon-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

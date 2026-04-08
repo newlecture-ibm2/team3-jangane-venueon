@@ -104,16 +104,17 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
       case 'host':
         return [
           { label: '대시보드', href: '/host/dashboard', icon: DashboardIcon },
-          { label: '내 강의 목록', href: '/host/seminars', icon: SeminarIcon },
+          { label: '내 이벤트 목록', href: '/host/events', icon: SeminarIcon },
           { label: '프로필 설정', href: '/host/profile', icon: ProfileIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
       case 'user':
       default:
         return [
-          { label: '내 강의 목록', href: '/mypage', icon: SeminarIcon },
+          { label: '대시보드', href: '/mypage', icon: DashboardIcon },
+          { label: '내 이벤트 목록', href: '/mypage/events', icon: SeminarIcon },
           { label: '결제 내역', href: '/mypage/orders', icon: OrderIcon },
-          { label: '관심 목록', href: '/mypage/wishlist', icon: WishlistIcon },
+          { label: '찜 목록', href: '/mypage/wishlist', icon: WishlistIcon },
           { label: '프로필 설정', href: '/mypage/profile', icon: ProfileIcon },
           { label: '계정 보안', href: '/mypage/security', icon: SecurityIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },

@@ -8,6 +8,7 @@ export { default as Pagination } from './Pagination';
 export { default as UserProfile } from './UserProfile';
 export { default as Logo } from './Logo';
 export { default as Tag } from './Tag';
+export { default as StatusTag } from './StatusTag';
 export { default as Card } from './Card';
 export { default as CardGrid } from './CardGrid';
 export { default as Tabs } from './Tabs';
@@ -17,4 +18,4 @@ export { default as Dropdown } from './Dropdown';
 export { default as UploadField } from './UploadField';
 export { default as CommentInput } from './CommentInput';
 export { default as PopoverMenu } from './PopoverMenu';
-
+export * from './Table';
