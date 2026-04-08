@@ -149,6 +149,23 @@ export default async function EventDetailPage({ params }: Props) {
                   <span>💰 <strong>가격:</strong> {session.price === 0 ? '무료' : `₩${session.price.toLocaleString()}`}</span>
                   <span>👤 <strong>인원:</strong> {session.currentAttendees} / {session.maxAttendees} 명</span>
                 </div>
+                {/* 세션 개별 수강 신청 버튼 */}
+                {event.status === 'PUBLISHED' && session.currentAttendees < session.maxAttendees && (
+                  <div style={{ marginTop: '16px', textAlign: 'right' }}>
+                    <Link href={`/orders/checkout?eventId=${id}&quantity=1&sessionId=${session.id}`} style={{ textDecoration: 'none' }}>
+                      <Button variant="primary" size="medium">
+                        이 세션 수강 신청
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+                {event.status === 'PUBLISHED' && session.maxAttendees > 0 && session.currentAttendees >= session.maxAttendees && (
+                  <div style={{ marginTop: '16px', textAlign: 'right' }}>
+                    <Button variant="outlined" size="medium" disabled>
+                      정원 초과
+                    </Button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -179,11 +196,17 @@ export default async function EventDetailPage({ params }: Props) {
           <Button variant="outlined" size="large">강의 목록</Button>
         </Link>
         {event.status === 'PUBLISHED' ? (
-          <Link href={`/orders/checkout?eventId=${id}&quantity=1`} style={{ textDecoration: 'none' }}>
-            <Button variant="primary" size="large">
-              수강 신청
+          event.hasSession ? (
+            <Button variant="primary" size="large" disabled>
+              ↑ 위 세션 목록에서 선택해주세요
             </Button>
-          </Link>
+          ) : (
+            <Link href={`/orders/checkout?eventId=${id}&quantity=1`} style={{ textDecoration: 'none' }}>
+              <Button variant="primary" size="large">
+                수강 신청
+              </Button>
+            </Link>
+          )
         ) : (
           <Button variant="primary" size="large" disabled>
             신청 불가

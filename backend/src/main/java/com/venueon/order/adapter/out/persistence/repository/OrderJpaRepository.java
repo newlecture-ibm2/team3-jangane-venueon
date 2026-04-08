@@ -23,10 +23,14 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
     List<OrderJpaEntity> findByUserIdAndEventId(Long userId, Long eventId);
 
     long countByEventIdAndStatusIn(Long eventId, List<OrderStatus> statuses);
+    
+    long countBySessionIdAndStatusIn(Long sessionId, List<OrderStatus> statuses);
 
     java.util.Optional<OrderJpaEntity> findByTossOrderId(String tossOrderId);
 
     List<OrderJpaEntity> findByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);
+    
+    List<OrderJpaEntity> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses);
 
     Page<OrderJpaEntity> findByEventIdIn(List<Long> eventIds, Pageable pageable);
 }
