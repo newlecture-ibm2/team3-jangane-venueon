@@ -35,6 +35,10 @@ public class CommentJpaEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "like_count")
+    @Builder.Default
+    private int likeCount = 0;
+
     @Column(name = "is_hidden", nullable = false)
     @Builder.Default
     private boolean isHidden = false;

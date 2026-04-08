@@ -1,42 +1,35 @@
 package com.venueon.post.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
-/**
- * Post(게시글) 도메인 모델 (순수 POJO)
- */
+@Getter
+@Builder
+@AllArgsConstructor
 public class Post {
 
     private Long id;
     private Long communityId;
     private Long authorId;
+    private String authorNickname;
+    private String authorProfileImg;
     private String title;
     private String content;
     private PostType type;
     private int viewCount;
     private int commentCount;
+    private int likeCount;
+    private boolean isPinned;
+    private boolean isNotice;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     protected Post() {}
 
-    public Post(Long id, Long communityId, Long authorId, String title, String content,
-                PostType type, int viewCount, int commentCount,
-                LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.communityId = communityId;
-        this.authorId = authorId;
-        this.title = title;
-        this.content = content;
-        this.type = type;
-        this.viewCount = viewCount;
-        this.commentCount = commentCount;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
     // --- 비즈니스 행위 ---
-
     public boolean isOwnedBy(Long userId) {
         return this.authorId != null && this.authorId.equals(userId);
     }
@@ -55,16 +48,21 @@ public class Post {
         }
     }
 
-    // --- Getters ---
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
 
-    public Long getId() { return id; }
-    public Long getCommunityId() { return communityId; }
-    public Long getAuthorId() { return authorId; }
-    public String getTitle() { return title; }
-    public String getContent() { return content; }
-    public PostType getType() { return type; }
-    public int getViewCount() { return viewCount; }
-    public int getCommentCount() { return commentCount; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void togglePin() {
+        this.isPinned = !this.isPinned;
+    }
+
+    public void setNotice(boolean isNotice) {
+        this.isNotice = isNotice;
+    }
 }

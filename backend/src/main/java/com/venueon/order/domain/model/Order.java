@@ -11,22 +11,49 @@ public class Order {
     private Long userId;
     private Long eventId;
     private OrderStatus status;
+    private int quantity;
     private int amount;
+    private String paymentMethod;
+    private String tossPaymentKey;
+    private String tossOrderId;
     private LocalDateTime orderedAt;
+    private LocalDateTime paidAt;
 
     protected Order() {}
 
     public Order(Long id, Long userId, Long eventId, OrderStatus status,
-                 int amount, LocalDateTime orderedAt) {
+                 int quantity, int amount, String paymentMethod,
+                 String tossPaymentKey, String tossOrderId,
+                 LocalDateTime orderedAt, LocalDateTime paidAt) {
         this.id = id;
         this.userId = userId;
         this.eventId = eventId;
         this.status = status;
+        this.quantity = quantity;
         this.amount = amount;
+        this.paymentMethod = paymentMethod;
+        this.tossPaymentKey = tossPaymentKey;
+        this.tossOrderId = tossOrderId;
         this.orderedAt = orderedAt;
+        this.paidAt = paidAt;
+    }
+
+    public static Order createPending(Long userId, Long eventId, int quantity, int amount, String paymentMethod) {
+        OrderStatus initialStatus = (amount == 0) ? OrderStatus.REGISTERED : OrderStatus.PENDING;
+        return new Order(null, userId, eventId, initialStatus, quantity, amount, paymentMethod, null, null, LocalDateTime.now(), null);
     }
 
     // --- 비즈니스 행위 ---
+
+    public void updateTossOrderId(String tossOrderId) {
+        this.tossOrderId = tossOrderId;
+    }
+
+    public void confirmPayment(String tossPaymentKey) {
+        this.status = OrderStatus.PAID;
+        this.tossPaymentKey = tossPaymentKey;
+        this.paidAt = LocalDateTime.now();
+    }
 
     public void cancel() {
         if (this.status == OrderStatus.CANCELLED) {
@@ -40,6 +67,13 @@ public class Order {
             throw new IllegalStateException("결제 완료 상태에서만 환불 가능합니다.");
         }
         this.status = OrderStatus.REFUNDED;
+    }
+
+    public void requestRefund() {
+        if (!isCancellable()) {
+            throw new IllegalStateException("환불 불가능한 상태입니다.");
+        }
+        this.status = OrderStatus.REFUND_REQUESTED;
     }
 
     public boolean isCancellable() {
@@ -56,6 +90,11 @@ public class Order {
     public Long getUserId() { return userId; }
     public Long getEventId() { return eventId; }
     public OrderStatus getStatus() { return status; }
+    public int getQuantity() { return quantity; }
     public int getAmount() { return amount; }
+    public String getPaymentMethod() { return paymentMethod; }
+    public String getTossPaymentKey() { return tossPaymentKey; }
+    public String getTossOrderId() { return tossOrderId; }
     public LocalDateTime getOrderedAt() { return orderedAt; }
+    public LocalDateTime getPaidAt() { return paidAt; }
 }

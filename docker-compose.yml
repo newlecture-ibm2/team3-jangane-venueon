@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # ─── Database ────────────────────────────
@@ -35,6 +35,11 @@ services:
       - SPRING_JPA_SHOW_SQL=false
       # JWT
       - JWT_SECRET=${JWT_SECRET}
+      # Toss Payments
+      - TOSS_CLIENT_KEY=${TOSS_CLIENT_KEY}
+      - TOSS_SECRET_KEY=${TOSS_SECRET_KEY}
+      # Google OAuth2
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       # CORS
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
       # 이미지 업로드 (컨테이너 내부 경로)
@@ -56,6 +61,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
     container_name: venueon-frontend
     ports:
       - "${FRONTEND_PORT}:3000"
@@ -63,6 +71,7 @@ services:
       - SESSION_SECRET=${SESSION_SECRET}
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - API_BASE_URL=${API_BASE_URL}
+      - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
     depends_on:
       - backend
     restart: unless-stopped

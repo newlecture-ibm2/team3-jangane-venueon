@@ -7,6 +7,7 @@ import { useAuth } from "@/store/useAuthStore";
 import { useUIStore } from "@/store/useUIStore";
 import InputField from "@/components/ui/InputField";
 import AuthFormLayout from "../_components/AuthFormLayout";
+import GoogleLoginButton from "../_components/GoogleLoginButton";
 import React from "react";
 
 function LoginContent() {
@@ -52,6 +53,7 @@ function LoginContent() {
       footerText="비밀번호를 잊으셨나요?"
       footerLinkText="비밀번호 찾기"
       footerLinkHref="#"
+      bottomSlot={<GoogleLoginButton position="bottom" />}
     >
       <InputField
         id="email"
@@ -82,4 +84,3 @@ export default function LoginPage() {
     </React.Suspense>
   );
 }
-

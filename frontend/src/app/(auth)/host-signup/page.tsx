@@ -7,6 +7,7 @@ import { useUIStore } from "@/store/useUIStore";
 import InputField from "@/components/ui/InputField";
 import UploadField from "@/components/ui/UploadField";
 import AuthFormLayout from "../_components/AuthFormLayout";
+import GoogleLoginButton from "../_components/GoogleLoginButton";
 import HostAgreementSection, {
   HostAgreementState,
   isHostRequiredAgreed,
@@ -93,6 +94,7 @@ export default function HostSignupPage() {
       footerText="일반 회원으로 가입하시겠어요?"
       footerLinkText="일반 회원가입"
       footerLinkHref="/signup"
+      topSlot={<GoogleLoginButton position="top" redirectTo="/host-signup/complete" />}
     >
       {/* ── 계정 정보 ── */}
       <InputField

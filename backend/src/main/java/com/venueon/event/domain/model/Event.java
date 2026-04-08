@@ -75,6 +75,25 @@ public class Event {
         return this.status == EventStatus.DRAFT;
     }
 
+    public void updateDetails(Long categoryId, String title, String description, EventType type,
+                              String location, boolean isOnline, int price, int maxAttendees,
+                              String thumbnailUrl, LocalDateTime startDate, LocalDateTime endDate) {
+        this.categoryId = categoryId;
+        this.title = title;
+        this.description = description;
+        this.type = type;
+        this.location = location;
+        this.isOnline = isOnline;
+        this.price = price;
+        this.maxAttendees = maxAttendees;
+        if (thumbnailUrl != null) {
+            this.thumbnailUrl = thumbnailUrl;
+        }
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public boolean isOwnedBy(Long userId) {
         return this.creatorId != null && this.creatorId.equals(userId);
     }

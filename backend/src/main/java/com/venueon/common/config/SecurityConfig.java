@@ -34,17 +34,24 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 // 인증 불필요 경로
-                .requestMatchers("/auth/signup", "/auth/host/signup", "/auth/login").permitAll()
+                .requestMatchers("/auth/signup", "/auth/host/signup", "/auth/login", "/auth/google").permitAll()
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                 // Actuator
                 .requestMatchers("/actuator/**").permitAll()
                 // 정적 리소스
                 .requestMatchers("/images/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
-                // /auth/me — 인증 필요
+                // /orders/toss/webhook — 토스 결제 웹훅 (인증 불필요)
+                .requestMatchers("/orders/toss/webhook").permitAll()
+                
+                // 인증 필요 경로
                 .requestMatchers("/auth/me").authenticated()
+                .requestMatchers("/v1/users", "/v1/users/**").authenticated()
+                .requestMatchers("/orders", "/orders/**").authenticated()
+                
                 // /admin/** — ADMIN 권한 필요
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                
                 // 그 외 기존 경로는 일단 허용 (점진적으로 보호 추가 예정)
                 .anyRequest().permitAll()
             )

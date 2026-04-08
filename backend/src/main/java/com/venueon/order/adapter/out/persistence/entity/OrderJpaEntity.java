@@ -44,7 +44,32 @@ public class OrderJpaEntity {
     @Column(name = "payment_method")
     private String paymentMethod;
 
+    @Column(name = "toss_payment_key")
+    private String tossPaymentKey;
+
+    @Column(name = "toss_order_id")
+    private String tossOrderId;
+
     @CreationTimestamp
     @Column(name = "ordered_at", nullable = false, updatable = false)
     private LocalDateTime orderedAt;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
+
+    // --- 상태 변경 메서드 ---
+
+    public void confirmPayment(String tossPaymentKey) {
+        this.status = OrderStatus.PAID;
+        this.tossPaymentKey = tossPaymentKey;
+        this.paidAt = LocalDateTime.now();
+    }
+
+    public void updateTossOrderId(String tossOrderId) {
+        this.tossOrderId = tossOrderId;
+    }
+
+    public void updateStatus(OrderStatus newStatus) {
+        this.status = newStatus;
+    }
 }

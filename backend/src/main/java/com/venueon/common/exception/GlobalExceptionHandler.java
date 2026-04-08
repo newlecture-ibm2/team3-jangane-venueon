@@ -32,9 +32,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
-    protected ResponseEntity<String> handleNoResourceFound(org.springframework.web.servlet.resource.NoResourceFoundException e) {
+    protected ResponseEntity<String> handleNoResourceFound(
+            org.springframework.web.servlet.resource.NoResourceFoundException e) {
         log.warn("Resource Not Found: {}", e.getMessage());
         return ResponseEntity.status(404).body("Not Found");
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.warn("IllegalArgumentException: {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.INVALID_INPUT_VALUE.getStatus())
+                .body(ApiResponse.error(e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
@@ -45,4 +54,3 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
     }
 }
-
