@@ -136,8 +136,16 @@
   line-height: 150%;
 }
 
-/* 버튼 그룹 */
+/* 버튼 그룹 포맷팅 개선 (상하 배치 지원) */
 .buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 100%;
+  margin-top: 16px;
+}
+
+.buttonRow {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -145,5 +153,4 @@
   gap: var(--space-12);
   width: 100%;
   height: 36px;
-  margin-top: 16px;
 }

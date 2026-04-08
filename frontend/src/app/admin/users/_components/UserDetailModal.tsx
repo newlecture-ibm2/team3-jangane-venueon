@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './UserDetailModal.module.css';
 import { ModalOverlay, ModalCard } from '@/components/modal';
-import { InputField, Button } from '@/components/ui';
+import { InputField, Button, Dropdown } from '@/components/ui';
 import { CancelIcon } from '@/components/icons';
 import { adminUserAPI, type AdminUserDetail } from '@/lib/admin-api';
 
@@ -18,8 +18,13 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
   const [user, setUser] = useState<AdminUserDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // 권한 수정을 위한 상태
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<string>('USER');
+
   useEffect(() => {
     if (isOpen && userId) {
+      setIsEditing(false); // 모달 열 때마다 읽기 모드로 초기화
       fetchUser(userId);
     }
   }, [isOpen, userId]);
@@ -29,12 +34,26 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
     try {
       const res = await adminUserAPI.getUser(id);
       setUser(res.data);
+      setSelectedRole(res.data.role || 'USER');
     } catch (err) {
       console.error('회원 조회 실패:', err);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleUpdateRole = async () => {
+    // TODO: 실제 권한 업데이트 API 호츨 위치
+    alert(`권한을 ${selectedRole}로 변경(예정)입니다.`);
+    setIsEditing(false);
+    // 권한 변경 후 리프레시 로직 등 추가 필요 (onUpdated 등)
+  };
+
+  const roleOptions = [
+    { value: 'USER', label: '수강생' },
+    { value: 'HOST', label: '주최자' },
+    { value: 'ADMIN', label: '관리자' }
+  ];
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
@@ -56,18 +75,35 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
           <div className={styles.contentScroll}>
             {/* 프로필 이미지 */}
             <div className={styles.profilePicture}>
-               {/* 이미지가 없을 경우 이름의 첫 글자를 보여줌 (UserProfile 참고) */}
                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '32px' }}>
                  {user.nickname ? user.nickname.charAt(0) : 'U'}
                </span>
             </div>
 
             <div className={styles.fieldsContainer}>
+              {/* ID 등급 관련 필드 추가 (권한 변경 로직을 위해) */}
+              <div className={styles.fieldBlock} style={{ zIndex: 10 }}> 
+                <span className={styles.fieldLabel}>권한 (Role)</span>
+                {isEditing ? (
+                  <Dropdown 
+                    options={roleOptions} 
+                    value={selectedRole} 
+                    onChange={setSelectedRole} 
+                  />
+                ) : (
+                  <InputField 
+                    value={selectedRole === 'HOST' ? '주최자' : selectedRole === 'ADMIN' ? '관리자' : '수강생'} 
+                    disabled 
+                  />
+                )}
+              </div>
+
               <div className={styles.fieldBlock}>
                 <span className={styles.fieldLabel}>아이디</span>
                 <InputField value={user.email} disabled />
               </div>
 
+              {/* 기본 데이터 렌더링은 user.role 기준이거나 selectedRole 기준일 수 있습니다. (여기선 기존 Role 유지) */}
               {user.role === 'HOST' ? (
                 <>
                   <div className={styles.fieldBlock}>
@@ -107,36 +143,62 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
                     <span className={styles.fieldLabel}>이름</span>
                     <InputField value={user.nickname || ''} disabled />
                   </div>
-                  {/* 이미지에서는 이름까지만 있었습니다 */}
                 </>
               )}
             </div>
 
             {/* 버튼 그룹 */}
             <div className={styles.buttonGroup}>
-              <Button 
-                variant="secondary" 
-                style={{ flex: 1, padding: 0 }} 
-                onClick={onClose}
-              >
-                취소
-              </Button>
-              {user.role === 'HOST' ? (
-                <Button 
-                  variant="danger" 
-                  style={{ flex: 1, padding: 0 }}
-                  onClick={() => alert('회원 삭제 기능은 아직 구현되지 않았습니다.')}
-                >
-                  회원 삭제
-                </Button>
+              {isEditing ? (
+                <div className={styles.buttonRow}>
+                  <Button 
+                    variant="secondary" 
+                    style={{ flex: 1, padding: 0 }} 
+                    onClick={() => {
+                      setIsEditing(false);
+                      setSelectedRole(user.role || 'USER'); // 취소 시 롤백
+                    }}
+                  >
+                    수정 취소
+                  </Button>
+                  <Button 
+                    variant="primary" 
+                    style={{ flex: 1, padding: 0 }}
+                    onClick={handleUpdateRole}
+                  >
+                    저장
+                  </Button>
+                </div>
               ) : (
-                <Button 
-                  variant="primary" 
-                  style={{ flex: 1, padding: 0 }}
-                  onClick={() => alert('변경 사항 저장 기능은 아직 구현되지 않았습니다.')}
-                >
-                  변경 사항 저장
-                </Button>
+                <>
+                  <div className={styles.buttonRow}>
+                    {user.role === 'HOST' && (
+                      <Button 
+                        variant="danger" 
+                        style={{ flex: 1, padding: 0 }}
+                        onClick={() => alert('회원 삭제 기능은 아직 구현되지 않았습니다.')}
+                      >
+                        회원 삭제
+                      </Button>
+                    )}
+                    <Button 
+                      variant="primary" 
+                      style={{ flex: 1, padding: 0 }}
+                      onClick={() => setIsEditing(true)}
+                    >
+                      프로필 수정
+                    </Button>
+                  </div>
+                  <div className={styles.buttonRow}>
+                    <Button 
+                      variant="secondary" 
+                      style={{ flex: 1, padding: 0 }} 
+                      onClick={onClose}
+                    >
+                      닫기
+                    </Button>
+                  </div>
+                </>
               )}
             </div>
           </div>
