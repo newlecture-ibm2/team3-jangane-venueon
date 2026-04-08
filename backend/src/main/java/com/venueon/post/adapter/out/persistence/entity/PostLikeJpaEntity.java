@@ -1,6 +1,5 @@
-package com.venueon.comment.adapter.out.persistence.entity;
+package com.venueon.post.adapter.out.persistence.entity;
 
-import com.venueon.post.adapter.out.persistence.entity.PostJpaEntity;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,12 +8,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "post_likes", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"post_id", "user_id"})
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class CommentJpaEntity {
+public class PostLikeJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,23 +26,8 @@ public class CommentJpaEntity {
     private PostJpaEntity post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    private UserJpaEntity author;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private CommentJpaEntity parent;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
-
-    @Column(name = "like_count")
-    @Builder.Default
-    private int likeCount = 0;
-
-    @Column(name = "is_hidden", nullable = false)
-    @Builder.Default
-    private boolean isHidden = false;
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserJpaEntity user;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

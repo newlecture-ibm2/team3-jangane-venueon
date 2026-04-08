@@ -34,9 +34,9 @@ public class PostQueryService implements GetPostQuery {
                 post.getType(),
                 post.getAuthorNickname(),
                 post.getContent(),
-                0, // viewCount (가설 추가)
-                0, // commentCount (가설 추가)
-                post.getCreatedAt()
-        ));
+                post.getViewCount(),
+                post.getCommentCount(),
+                post.getLikeCount(),
+                post.getCreatedAt()));
     }
 }

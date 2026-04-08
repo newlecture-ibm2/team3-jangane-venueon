@@ -3,7 +3,9 @@ package com.venueon.post.adapter.out.persistence;
 import com.venueon.community.adapter.out.persistence.entity.CommunityJpaEntity;
 import com.venueon.community.adapter.out.persistence.repository.CommunityJpaRepository;
 import com.venueon.post.adapter.out.persistence.entity.PostJpaEntity;
+import com.venueon.post.adapter.out.persistence.entity.PostLikeJpaEntity;
 import com.venueon.post.adapter.out.persistence.repository.PostJpaRepository;
+import com.venueon.post.adapter.out.persistence.repository.PostLikeJpaRepository;
 import com.venueon.post.application.port.out.PostRepositoryPort;
 import com.venueon.post.domain.model.Post;
 import com.venueon.post.domain.model.PostType;
@@ -14,20 +16,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class PostPersistenceAdapter implements PostRepositoryPort {
 
     private final PostJpaRepository postJpaRepository;
+    private final PostLikeJpaRepository postLikeJpaRepository;
     private final CommunityJpaRepository communityJpaRepository;
-    private final UserJpaRepository userJpaRepository;
+    private final UserJpaRepository userRepository;
 
     @Override
     public Post save(Post post) {
         CommunityJpaEntity community = communityJpaRepository.findById(post.getCommunityId())
-                .orElseThrow(() -> new IllegalArgumentException("Community not found with id: " + post.getCommunityId()));
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Community not found with id: " + post.getCommunityId()));
 
-        UserJpaEntity author = userJpaRepository.findById(post.getAuthorId())
+        UserJpaEntity author = userRepository.findById(post.getAuthorId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + post.getAuthorId()));
 
         PostJpaEntity postEntity = PostJpaEntity.builder()
@@ -37,13 +43,35 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
                 .content(post.getContent())
                 .type(post.getType())
                 .build();
-                
+
         if (post.getId() != null) {
-            // update handling logic 
+            PostJpaEntity existing = postJpaRepository.findById(post.getId()).orElse(null);
+            if (existing != null) {
+                postEntity = PostJpaEntity.builder()
+                        .id(post.getId())
+                        .community(existing.getCommunity())
+                        .author(existing.getAuthor())
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .type(post.getType())
+                        .viewCount(post.getViewCount())
+                        .commentCount(post.getCommentCount())
+                        .likeCount(post.getLikeCount())
+                        .isHidden(existing.isHidden())
+                        .isPinned(post.isPinned())
+                        .isNotice(post.isNotice())
+                        .createdAt(existing.getCreatedAt())
+                        .build();
+            }
         }
 
         PostJpaEntity savedPost = postJpaRepository.save(postEntity);
         return mapToDomain(savedPost);
+    }
+
+    @Override
+    public Optional<Post> findById(Long id) {
+        return postJpaRepository.findById(id).map(this::mapToDomain);
     }
 
     @Override
@@ -58,6 +86,30 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
                 .map(this::mapToDomain);
     }
 
+    @Override
+    public boolean existsLike(Long postId, Long userId) {
+        return postLikeJpaRepository.existsByPostIdAndUserId(postId, userId);
+    }
+
+    @Override
+    public void saveLike(Long postId, Long userId) {
+        PostJpaEntity post = postJpaRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
+        UserJpaEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        PostLikeJpaEntity like = PostLikeJpaEntity.builder()
+                .post(post)
+                .user(user)
+                .build();
+        postLikeJpaRepository.save(like);
+    }
+
+    @Override
+    public void deleteLike(Long postId, Long userId) {
+        postLikeJpaRepository.deleteByPostIdAndUserId(postId, userId);
+    }
+
     private Post mapToDomain(PostJpaEntity entity) {
         return Post.builder()
                 .id(entity.getId())
@@ -68,6 +120,11 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .type(entity.getType())
+                .viewCount(entity.getViewCount())
+                .commentCount(entity.getCommentCount())
+                .likeCount(entity.getLikeCount())
+                .isPinned(entity.isPinned())
+                .isNotice(entity.isNotice())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();

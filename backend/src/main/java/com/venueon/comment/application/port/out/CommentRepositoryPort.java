@@ -12,4 +12,8 @@ public interface CommentRepositoryPort {
     Optional<Comment> findById(Long id);
     List<Comment> findByPostId(Long postId);
     long countByPostId(Long postId);
+
+    boolean existsLike(Long commentId, Long userId);
+    void saveLike(Long commentId, Long userId);
+    void deleteLike(Long commentId, Long userId);
 }

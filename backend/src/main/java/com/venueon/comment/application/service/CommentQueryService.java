@@ -28,6 +28,7 @@ public class CommentQueryService implements GetCommentQuery {
                         comment.getAuthorNickname(),
                         comment.getContent(),
                         comment.getParentId(),
+                        comment.getLikeCount(),
                         comment.getCreatedAt()
                 ))
                 .collect(Collectors.toList());

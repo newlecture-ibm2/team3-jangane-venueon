@@ -21,6 +21,9 @@ public class Post {
     private PostType type;
     private int viewCount;
     private int commentCount;
+    private int likeCount;
+    private boolean isPinned;
+    private boolean isNotice;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -43,5 +46,23 @@ public class Post {
         if (this.commentCount > 0) {
             this.commentCount--;
         }
+    }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void togglePin() {
+        this.isPinned = !this.isPinned;
+    }
+
+    public void setNotice(boolean isNotice) {
+        this.isNotice = isNotice;
     }
 }

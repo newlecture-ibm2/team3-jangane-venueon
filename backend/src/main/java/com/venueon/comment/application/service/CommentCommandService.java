@@ -1,6 +1,7 @@
 package com.venueon.comment.application.service;
 
 import com.venueon.common.annotation.UseCase;
+import com.venueon.comment.application.port.in.CommentLikeUseCase;
 import com.venueon.comment.application.port.in.CreateCommentUseCase;
 import com.venueon.comment.application.port.in.dto.CommentResponse;
 import com.venueon.comment.application.port.in.dto.CreateCommentRequest;
@@ -13,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
-public class CommentCommandService implements CreateCommentUseCase {
+@Transactional
+public class CommentCommandService implements CreateCommentUseCase, CommentLikeUseCase {
 
     private final CommentRepositoryPort commentRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
@@ -40,7 +42,27 @@ public class CommentCommandService implements CreateCommentUseCase {
                 saved.getAuthorNickname(),
                 saved.getContent(),
                 saved.getParentId(),
+                saved.getLikeCount(),
                 saved.getCreatedAt()
         );
+    }
+
+    @Override
+    public void toggleLike(Long commentId, String email) {
+        User user = userRepositoryPort.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+        
+        Comment comment = commentRepositoryPort.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
+
+        if (commentRepositoryPort.existsLike(commentId, user.getId())) {
+            commentRepositoryPort.deleteLike(commentId, user.getId());
+            comment.decrementLikeCount();
+        } else {
+            commentRepositoryPort.saveLike(commentId, user.getId());
+            comment.incrementLikeCount();
+        }
+
+        commentRepositoryPort.save(comment);
     }
 }

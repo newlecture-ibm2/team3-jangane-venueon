@@ -1,5 +1,6 @@
 package com.venueon.comment.adapter.in.web;
 
+import com.venueon.comment.application.port.in.CommentLikeUseCase;
 import com.venueon.comment.application.port.in.CreateCommentUseCase;
 import com.venueon.comment.application.port.in.GetCommentQuery;
 import com.venueon.comment.application.port.in.dto.CommentResponse;
@@ -21,6 +22,7 @@ public class CommentController {
 
     private final CreateCommentUseCase createCommentUseCase;
     private final GetCommentQuery getCommentQuery;
+    private final CommentLikeUseCase commentLikeUseCase;
 
     /**
      * 댓글 등록 API
@@ -47,5 +49,21 @@ public class CommentController {
     public ResponseEntity<List<CommentResponse>> getComments(@RequestParam Long postId) {
         List<CommentResponse> responses = getCommentQuery.getCommentsByPostId(postId);
         return ResponseEntity.ok(responses);
+    }
+
+    /**
+     * 댓글 좋아요 토글
+     * POST /comments/{id}/like
+     */
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Void> toggleLike(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        commentLikeUseCase.toggleLike(id, email);
+        return ResponseEntity.ok().build();
     }
 }
