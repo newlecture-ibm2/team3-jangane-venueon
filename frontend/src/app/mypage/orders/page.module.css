@@ -27,8 +27,12 @@
 }
 
 .dateText {
-  font: var(--text-caption-medium);
-  color: var(--color-text-gray-500);
+  font: var(--text-caption-regular);
+  line-height: 1.2;
+  color: var(--color-text-gray-700);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .middleRow {
@@ -43,10 +47,6 @@
   margin: 0;
 }
 
-.priceText {
-  font: var(--text-body-regular);
-  color: var(--color-text-gray-700);
-}
 
 .actionRow {
   display: flex;

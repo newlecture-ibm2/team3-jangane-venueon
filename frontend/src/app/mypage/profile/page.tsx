@@ -3,15 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
-import { Button, InputField, UserProfile } from '@/components/ui';
+import { Button, InputField, UserProfile, Toggle } from '@/components/ui';
 import UploadModal from '@/components/modal/UploadModal';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useUIStore } from '@/store/useUIStore';
 import { useAuth } from '@/store/useAuthStore';
 import styles from './page.module.css';
 
+
+
 export default function ProfileSettingsPage() {
   const { showToast } = useUIStore();
+  const router = useRouter();
 
   const [baseImage, setBaseImage] = useState<string | undefined>(undefined);
   const [baseEmail, setBaseEmail] = useState('');
@@ -24,9 +27,33 @@ export default function ProfileSettingsPage() {
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // 초기 프로필 데이터 로드
+  // 관심 카테고리 및 뱃지 상태
+  const [baseCategories, setBaseCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [baseBadge, setBaseBadge] = useState<boolean>(true);
+  const [showBadge, setShowBadge] = useState<boolean>(true);
+
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+
+  // 초기 프로필 및 메타데이터 로드
   useEffect(() => {
+    const fetchMetadata = async () => {
+      try {
+        const catRes = await fetch('/api/categories');
+        if (catRes.ok) {
+           const catData = await catRes.json();
+           if (catData.data) {
+             setAvailableCategories(catData.data);
+           }
+        }
+      } catch (e) {
+        console.error("Failed to load categories", e);
+      }
+    };
+    fetchMetadata();
+    
     const fetchProfile = async () => {
       try {
         const res = await fetch('/api/auth/me'); // BFF proxy (iron-session) handles JWT
@@ -41,10 +68,20 @@ export default function ProfileSettingsPage() {
           setBaseEmail(fetchedEmail);
           setBaseName(fetchedName);
           setBaseImage(fetchedImg);
+          
+          // 확장 설정
+          // 현재 /api/auth/me (또는 user profile API)에서 카테고리와 뱃지 정보가 넘어오지 않으면 빈값으로 치환
+          const fetchedCategories = data.categories || [];
+          const fetchedBadge = data.showBadge ?? true;
+          
+          setBaseCategories(fetchedCategories);
+          setBaseBadge(fetchedBadge);
 
           setUserEmail(fetchedEmail);
           setUserName(fetchedName);
           setProfileImage(fetchedImg);
+          setCategories(fetchedCategories);
+          setShowBadge(fetchedBadge);
         }
       } catch (err) {
         console.error("Failed to load profile", err);
@@ -56,7 +93,9 @@ export default function ProfileSettingsPage() {
   // 수정된 사항이 하나라도 있는지 확인 (버튼 활성화 여부 판별)
   const isDirty =
     profileImage !== baseImage ||
-    userName !== baseName;
+    userName !== baseName ||
+    showBadge !== baseBadge ||
+    JSON.stringify(categories.sort()) !== JSON.stringify(baseCategories.sort());
 
   // '사진 변경' 클릭 시 모달 열기
   const handleImageChangeClick = () => {
@@ -98,6 +137,8 @@ export default function ProfileSettingsPage() {
     setProfileImage(baseImage);
     setSelectedFile(null);
     setUserName(baseName);
+    setCategories(baseCategories);
+    setShowBadge(baseBadge);
     setIsCancelModalOpen(false);
   };
 
@@ -112,7 +153,9 @@ export default function ProfileSettingsPage() {
         },
         body: JSON.stringify({
           nickname: userName,
-          profileImg: profileImage, // 원본 로직 유지 (단순 문자열로 이미지 전송)
+          profileImg: profileImage, 
+          categories: categories,
+          showBadge: showBadge,
         }),
       });
 
@@ -120,6 +163,8 @@ export default function ProfileSettingsPage() {
         setBaseImage(profileImage);
         setBaseEmail(userEmail);
         setBaseName(userName);
+        setBaseCategories(categories);
+        setBaseBadge(showBadge);
         showToast('내 정보 수정이 완료되었습니다.', 'success');
         
         // 헤더 갱신 (저장 성공 시) - 강제로 로컬 스토어의 유저 정보 동기화
@@ -138,6 +183,21 @@ export default function ProfileSettingsPage() {
       console.error(error);
       showToast('네트워크 오류가 발생했습니다.', 'error');
     }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const res = await fetch('/api/users/me', { method: 'DELETE' });
+      if (res.ok) {
+        showToast('계정이 안전하게 탈퇴 처리되었습니다.', 'success');
+        router.push('/');
+      } else {
+        showToast('탈퇴 처리 중 오류가 발생했습니다.', 'error');
+      }
+    } catch (e) {
+      showToast('네트워크 오류가 발생했습니다.', 'error');
+    }
+    setIsDeleteModalOpen(false);
   };
 
   return (
@@ -187,7 +247,6 @@ export default function ProfileSettingsPage() {
               />
             </div>
 
-            {/* 하단 액션 버튼 (Frame 54) */}
             <div className={styles.actionButtons}>
               <Button
                 variant="secondary"
@@ -205,6 +264,57 @@ export default function ProfileSettingsPage() {
               >
                 저장
               </Button>
+            </div>
+          </div>
+
+          <hr style={{ width: '100%', maxWidth: '458px', border: 'none', borderTop: '1px solid var(--color-border)', margin: '48px 0' }} />
+
+          <h1 className={styles.pageTitle}>관심 카테고리 설정</h1>
+          <div className={styles.profileSection}>
+            <div className={styles.formGroup}>
+              <div className={styles.sectionHeader}>
+                <p>관심있는 카테고리를 선택해주세요. 맞춤 세션을 추천해 드립니다.</p>
+              </div>
+              <div className={styles.categoryPills}>
+                {availableCategories.map(cat => (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={`${styles.pillTab} ${categories.includes(cat) ? styles.pillTabActive : ''}`}
+                    onClick={() => {
+                        if (categories.includes(cat)) {
+                           setCategories(categories.filter(c => c !== cat));
+                        } else {
+                           setCategories([...categories, cat]);
+                        }
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.formGroup} style={{ marginTop: '16px' }}>
+               <div className={styles.sectionHeader}>
+                 <h3>뱃지 노출 여부</h3>
+                 <p>커뮤니티 등에서 내 프로필 옆에 활동 뱃지를 공개할지 설정합니다.</p>
+               </div>
+               <Toggle
+                 checked={showBadge}
+                 onChange={(e) => setShowBadge(e.target.checked)}
+                 label="내 프로필에 뱃지 노출 켜기"
+               />
+            </div>
+
+            <div className={styles.dangerZone}>
+               <div className={styles.sectionHeader}>
+                 <h3 style={{ color: 'var(--color-text-danger)' }}>계정 탈퇴</h3>
+                 <p>탈퇴 시 모든 결제 내역과 참여 커뮤니티 기록이 영구적으로 삭제됩니다!</p>
+               </div>
+               <Button variant="secondary" onClick={() => setIsDeleteModalOpen(true)} style={{ color: 'var(--color-text-danger)'}}>
+                 계정 안전하게 탈퇴하기
+               </Button>
             </div>
           </div>
         </div>
@@ -231,6 +341,17 @@ export default function ProfileSettingsPage() {
         subtitle="지금까지 수정한 내용이 모두 사라집니다."
         cancelText="계속 수정하기"
         confirmText="초기화"
+      />
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteAccount}
+        status="danger"
+        title="정말 탈퇴하시겠습니까?"
+        subtitle="계정 삭제 후 모든 결제 내역과 데이터는 복구할 수 없습니다."
+        cancelText="취소"
+        confirmText="탈퇴하기"
       />
     </div>
   );

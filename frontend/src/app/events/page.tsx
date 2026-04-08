@@ -98,7 +98,7 @@ export default function EventsPage() {
           </div>
         </section>
 
-        {/* 이벤트 카드 리스트 */}
+        {/* 세션 카드 리스트 */}
         <section className={styles.content}>
           {loading ? (
             <div>Loading...</div>

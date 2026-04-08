@@ -7,7 +7,7 @@ import { getIronSession } from "iron-session";
 import { sessionOptions, SessionData } from "@/lib/session";
 
 // 인증이 필요한 경로 패턴
-const protectedPaths = ["/mypage", "/events/new", "/host"];
+const protectedPaths = ["/mypage", "/events/new", "/host", "/admin"];
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
@@ -31,6 +31,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // 관리자 권한이 필요한 경로의 권한 체크
+  if (req.nextUrl.pathname.startsWith("/admin") && session.role !== "ADMIN") {
+    // 권한이 없으면 메인 페이지로 리다이렉트
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
   // 원본 JWT가 있으면 백엔드 전달을 위해 헤더에 설정
   if (session.jwt) {
     res.headers.set("Authorization", `Bearer ${session.jwt}`);
@@ -40,5 +46,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/mypage/:path*", "/events/new", "/host/:path*"],
+  matcher: ["/mypage/:path*", "/events/new", "/host", "/host/:path*", "/admin/:path*"],
 };

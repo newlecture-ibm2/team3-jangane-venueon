@@ -89,3 +89,61 @@
   flex: 1;
   /* 너비를 똑같이 반반씩 나눠가짐 */
 }
+
+/* 추가 설정용 섹션 */
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-16);
+}
+
+.sectionHeader h3 {
+  font: var(--text-h3-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.sectionHeader p {
+  font: var(--text-body-small);
+  color: var(--color-text-gray-500);
+  margin: 0;
+}
+
+.categoryPills {
+  display: flex;
+  flex-flow: row wrap;
+  gap: var(--space-12);
+}
+
+/* Tabs.module.css의 pillTab 복사 */
+.pillTab {
+  padding: var(--space-8) var(--space-16);
+  height: 36px;
+  background: var(--color-surface); /* #F3F4F6 (Gray/100) */
+  border-radius: var(--radius-full);
+  /* Body/Medium */
+  font: var(--text-body-medium);
+  /* 150% */
+  color: var(--color-text-gray-500); /* #6B7280 */
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pillTabActive {
+  background: var(--color-secondary); /* #4B5563 (Brand/secondary) */
+  color: var(--color-text-white); /* #FFFFFF */
+}
+
+.dangerZone {
+  width: 100%;
+  max-width: 410px;
+  margin-top: var(--space-32);
+  padding-top: var(--space-32);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-16);
+}

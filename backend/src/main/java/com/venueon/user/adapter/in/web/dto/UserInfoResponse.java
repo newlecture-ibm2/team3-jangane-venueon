@@ -8,5 +8,7 @@ public record UserInfoResponse(
         String email,
         String nickname,
         String role,
-        String profileImg
+        String profileImg,
+        java.util.List<String> categories,
+        Boolean showBadge
 ) {}

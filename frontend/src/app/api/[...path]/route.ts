@@ -58,6 +58,8 @@ async function proxyRequest(req: NextRequest) {
       redirect: "manual",
     });
 
+    console.log(`[PROXY] ${req.method} ${targetUrl} -> status: ${proxyRes.status}, hasJwt: ${!!session.jwt}`);
+
     // 백엔드 요청에서 401(Unauthorized) 응답 시, 만료된 JWT 세션 파기
     if (proxyRes.status === 401 && session.jwt) {
       session.destroy();

@@ -21,4 +21,10 @@ public interface PostRepositoryPort {
     void saveLike(Long postId, Long userId);
 
     void deleteLike(Long postId, Long userId);
+
+    boolean existsBookmark(Long postId, Long userId);
+    void saveBookmark(Long postId, Long userId);
+    void deleteBookmark(Long postId, Long userId);
+    
+    Page<Post> findBookmarkedPostsByUserId(Long userId, Pageable pageable);
 }

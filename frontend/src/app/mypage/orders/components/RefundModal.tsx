@@ -84,7 +84,7 @@ export default function RefundModal({
         {/* 유의사항 동의 체크박스 (표준 Styling) */}
         <div className={styles.checkboxContainer}>
           <Checkbox 
-            label="[필수] 환불 시 이벤트 참여가 취소되며, 처리 후에는 복구할 수 없습니다."
+            label="[필수] 환불 시 세션 참여가 취소되며, 처리 후에는 복구할 수 없습니다."
             checked={isConfirmed}
             onChange={(e) => setIsConfirmed(e.target.checked)}
           />

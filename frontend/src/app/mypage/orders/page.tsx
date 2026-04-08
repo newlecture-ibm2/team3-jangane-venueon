@@ -3,8 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
-import { Button, Tag, Pagination } from '@/components/ui';
-import RefundModal from './components/RefundModal';
+import { Button, Tag, Pagination, Table, TableHeader, TableRow, TableCell, StatusTag } from '@/components/ui';
 import mypageStyles from '../page.module.css'; // 공통 컨텐츠 래퍼
 import styles from './page.module.css';
 import { useUIStore } from '@/store/useUIStore';
@@ -31,10 +30,6 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<OrderDetailResponse[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [refundOrder, setRefundOrder] = useState<{ isOpen: boolean; orderId: number | null }>({
-    isOpen: false,
-    orderId: null
-  });
 
   // 백엔드 연동 (GET /orders/me) - 우선 기본으로 호출
   const fetchOrders = useCallback(async (page: number) => {
@@ -74,55 +69,18 @@ export default function OrdersPage() {
     return `₩${amount.toLocaleString()}`;
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '-';
-    // ex) 2026-04-07T12:00:00 -> 2026.04.07 12:00
+  const formatDateTime = (dateString: string) => {
+    if (!dateString) return { date: '-', time: '' };
     const d = new Date(dateString);
     const pad = (n: number) => n.toString().padStart(2, '0');
-    return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    return {
+      date: `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`,
+      time: `${pad(d.getHours())}:${pad(d.getMinutes())}`
+    };
   };
 
-  // 상태별 색상 매핑
-  const getStatusTag = (status: string) => {
-    switch (status) {
-      case 'PAID':
-      case 'REGISTERED':
-        return <Tag variant="green">결제 완료</Tag>;
-      case 'REFUND_REQUESTED':
-        return <Tag variant="purple">환불 대기</Tag>;
-      case 'REFUNDED':
-        return <Tag variant="gray">환불 완료</Tag>;
-      case 'CANCELLED':
-        return <Tag variant="gray">취소됨</Tag>;
-      case 'PENDING':
-      default:
-        return <Tag variant="gray">결제 대기</Tag>;
-    }
-  };
 
-  const submitRefund = async (reason: string) => {
-    if (!refundOrder.orderId) return;
 
-    try {
-      const res = await fetch(`/api/orders/${refundOrder.orderId}/refund`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason })
-      });
-
-      if (res.ok) {
-        showToast('환불 제출 완료', 'success', '환불 신청이 완료되었습니다.');
-        setRefundOrder({ isOpen: false, orderId: null });
-        fetchOrders(currentPage);
-      } else {
-        const errorData = await res.json();
-        showToast('환불 신청 실패', 'error', errorData.message || '환불 신청 중 오류가 발생했습니다.');
-      }
-    } catch (e) {
-      console.error(e);
-      alert('서버와의 통신에 실패했습니다.');
-    }
-  };
 
   return (
     <div className="container-sidebar">
@@ -135,41 +93,45 @@ export default function OrdersPage() {
             {!loading && orders.length === 0 ? (
               <div className={styles.emptyState}>결제하신 내역이 없습니다.</div>
             ) : (
-              orders.map((order) => (
-                <div key={order.orderId} className={styles.orderItem}>
-                  {/* 왼쪽 위: 태그 + 결제 일시 */}
-                  <div className={styles.topRow}>
-                    {getStatusTag(order.status)}
-                    <span className={styles.dateText}>결제 일시: {formatDate(order.paidAt || order.orderedAt)}</span>
-                  </div>
-
-                  {/* 중간: 행사/강의명 + 금액 */}
-                  <div className={styles.middleRow}>
-                    <h3 className={styles.orderTitle}>{order.eventTitle}</h3>
-                    <div className={styles.priceText}>
-                      총 결제 금액: {formatCurrency(order.amount)} (수량 {order.quantity}개)
-                    </div>
-                  </div>
-
-                  {/* 오른쪽 아래: 액션 버튼 그룹 */}
-                  <div className={styles.actionRow}>
-                    {(order.status === 'PAID' || order.status === 'REGISTERED') && (
-                      <Button
-                        variant="danger"
-                        onClick={() => setRefundOrder({ isOpen: true, orderId: order.orderId })}
-                      >
-                        환불 신청
-                      </Button>
-                    )}
-                    <Button
-                      variant="primary"
-                      onClick={() => router.push(`/mypage/orders/${order.orderId}`)}
-                    >
-                      상세 보기
-                    </Button>
-                  </div>
-                </div>
-              ))
+              <Table columns="1fr 100px 140px 100px 100px">
+                <TableHeader>
+                  <TableCell header>세션명</TableCell>
+                  <TableCell header>결제 일시</TableCell>
+                  <TableCell header>결제 금액</TableCell>
+                  <TableCell header>상태</TableCell>
+                  <TableCell header></TableCell>
+                </TableHeader>
+                {orders.map((order) => {
+                  const dt = formatDateTime(order.paidAt || order.orderedAt);
+                  return (
+                    <TableRow key={order.orderId}>
+                      <TableCell>
+                        {order.eventTitle}
+                      </TableCell>
+                      <TableCell>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <span className={styles.dateText}>{dt.date}</span>
+                          <span className={styles.dateText}>{dt.time}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {formatCurrency(order.amount)}
+                      </TableCell>
+                      <TableCell>
+                        <StatusTag domain="payment" status={order.status} />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="primary"
+                          onClick={() => router.push(`/mypage/orders/${order.orderId}`)}
+                        >
+                          상세 보기
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </Table>
             )}
           </div>
 
@@ -182,11 +144,7 @@ export default function OrdersPage() {
           </div>
         </div>
       </div>
-      <RefundModal 
-        isOpen={refundOrder.isOpen}
-        onClose={() => setRefundOrder({ isOpen: false, orderId: null })}
-        onConfirm={submitRefund}
-      />
+
     </div>
   );
 }

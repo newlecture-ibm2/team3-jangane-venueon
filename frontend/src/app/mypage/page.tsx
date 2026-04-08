@@ -1,145 +1,130 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
-import { Card, CardGrid, Tabs, Pagination, InputField } from '@/components/ui';
+import { Tabs, InputField, Table, TableHeader, TableRow, TableCell, StatusTag, Button, Tag } from '@/components/ui';
 import styles from './page.module.css';
 
-interface LectureItem {
-  orderId: number;
-  status: string;
-  title: string;
-  organizer: string;
-  dateTime: string;
-  location: string;
-  price: number;
-  eventId: number;
-}
-
-const ITEMS_PER_PAGE = 8; // 2열 × 4줄
-
 const TAB_OPTIONS = [
-  { value: 'upcoming', label: '수강 예정' },
-  { value: 'enrolled', label: '수강 중' },
-  { value: 'completed', label: '수강 완료' },
+  { value: 'resume', label: '진행 중' },
+  { value: 'schedule', label: '다가오는 일정' },
 ];
 
-export default function MyPage() {
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState('upcoming');
-  const [currentPage, setCurrentPage] = useState(1);
+interface SummaryData {
+  ongoingCourseCount: number;
+  pendingReviewCount: number;
+  earnedBadgeCount: number;
+}
 
-  const [lectures, setLectures] = useState<LectureItem[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
+export default function MyPageDashboard() {
+  const [activeTab, setActiveTab] = useState('resume');
+  const [summaryData, setSummaryData] = useState<SummaryData>({
+    ongoingCourseCount: 0,
+    pendingReviewCount: 0,
+    earnedBadgeCount: 0,
+  });
 
-  // 백엔드 API 호출
-  const fetchOrders = useCallback(async (tab: string, page: number) => {
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `/api/orders/me?page=${page - 1}&size=${ITEMS_PER_PAGE}`
-        // 백엔드 tab 필터링 미구현으로 우선 모두 가져옴
-      );
-      if (res.ok) {
-        const json = await res.json();
-        const data = json.data;
-        const validLectures = (data.content || []).filter(
-          (item: any) => item.status === 'PAID' || item.status === 'REGISTERED' || item.status === 'PENDING'
-        );
-        const mappedLectures: LectureItem[] = validLectures.map((item: any) => ({
-          orderId: item.orderId,
-          eventId: item.eventId,
-          title: item.eventTitle,
-          status: item.status,
-          organizer: item.organizer || "알 수 없는 호스트",
-          dateTime: item.eventStartDate ? new Date(item.eventStartDate).toLocaleString('ko-KR', {
-            year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-          }) : "-",
-          location: item.location || "-",
-          price: item.amount
-        }));
-        setLectures(mappedLectures);
-        setTotalPages(data.totalPages || 1);
-      } else {
-        setLectures([]);
-        setTotalPages(1);
-      }
-    } catch (err) {
-      console.error('Failed to fetch orders:', err);
-      setLectures([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // 탭 또는 페이지 변경 시 API 재호출
   useEffect(() => {
-    fetchOrders(activeTab, currentPage);
-  }, [activeTab, currentPage, fetchOrders]);
+    const fetchSummary = async () => {
+      try {
+        const res = await fetch('/api/mypage/summary');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data) {
+            setSummaryData(json.data);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch dashboard summary:', err);
+      }
+    };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    setCurrentPage(1);
-  };
+    fetchSummary();
+  }, []);
 
   return (
     <div className="container-sidebar">
       <Sidebar role="user" />
       <div className="sidebar-content">
         <div className={styles.content}>
-          {/* 페이지 타이틀 */}
-          <h1 className={styles.pageTitle}>내 강의 목록</h1>
+          <h1 className={styles.pageTitle}>대시보드</h1>
+          
+          {/* 요약 박스 (3개 가로 배치) */}
+          <div className={styles.summaryContainer}>
+            <div className={styles.summaryBox}>
+              <span className={styles.summaryTitle}>참여 중인 세션</span>
+              <span className={styles.summaryContent}>{summaryData.ongoingCourseCount}개</span>
+            </div>
+            <div className={styles.summaryBox}>
+              <span className={styles.summaryTitle}>리뷰를 기다리는 세션</span>
+              <span className={styles.summaryContent}>{summaryData.pendingReviewCount}개</span>
+            </div>
+            <div className={styles.summaryBox}>
+              <span className={styles.summaryTitle}>획득한 배지</span>
+              <span className={styles.summaryContent}>{summaryData.earnedBadgeCount}개</span>
+            </div>
+          </div>
+          
+          {/* Category Tab (lined style) */}
+          <Tabs
+            variant="line"
+            options={TAB_OPTIONS}
+            activeValue={activeTab}
+            onChange={setActiveTab}
+          />
 
-          {/* 탭 + 카드 + 페이지네이션 */}
-          <div className={styles.listSection}>
-            <Tabs
-              variant="line"
-              options={TAB_OPTIONS}
-              activeValue={activeTab}
-              onChange={handleTabChange}
-            />
-
+          <div className={styles.tableSection}>
+            {/* 검색창 */}
             <InputField
               variant="search"
-              placeholder="검색어를 입력하세요."
               className={styles.searchBar}
             />
 
-            <CardGrid layout="2-cols">
-              {lectures.map((lecture) => (
-                <Card
-                  key={lecture.orderId}
-                  status={lecture.status}
-                  title={lecture.title}
-                  organizer={lecture.organizer}
-                  dateTime={lecture.dateTime}
-                  location={lecture.location}
-                  price={lecture.price}
-                  actionButtonText="스터디룸 입장"
-                  onActionClick={() => router.push(`/events/${lecture.eventId}`)}
-                />
-              ))}
-            </CardGrid>
 
-            {!loading && lectures.length === 0 && (
-              <p style={{ color: 'var(--color-text-gray-500)', textAlign: 'center', width: '100%', padding: 'var(--space-48) 0' }}>
-                해당 탭에 강의가 없습니다.
-              </p>
+
+            {/* "진행 중" 탭 전용 테이블 */}
+            {activeTab === 'resume' && (
+              <Table columns="1fr 120px 180px 120px">
+                <TableHeader>
+                  <TableCell header>행사명</TableCell>
+                  <TableCell header>호스트</TableCell>
+                  <TableCell header>진행 시간</TableCell>
+                  <TableCell header></TableCell>
+                </TableHeader>
+                <TableRow>
+                  <TableCell>실전! Spring Boot 백엔드 마스터</TableCell>
+                  <TableCell>장안에화제</TableCell>
+                  <TableCell>오늘 14:00 - 18:00</TableCell>
+                  <TableCell>
+                    <Button variant="primary">입장하기</Button>
+                  </TableCell>
+                </TableRow>
+              </Table>
             )}
 
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            {/* "다가오는 일정" 탭 전용 테이블 */}
+            {activeTab === 'schedule' && (
+              <Table columns="1fr 120px 180px 88px">
+                <TableHeader>
+                  <TableCell header>세션 일정 명</TableCell>
+                  <TableCell header>호스트</TableCell>
+                  <TableCell header>일시</TableCell>
+                  <TableCell header>상태</TableCell>
+                </TableHeader>
+                <TableRow>
+                  <TableCell>스프링 부트 실전 웹 개발 라이브 Q&A</TableCell>
+                  <TableCell>장안에화제</TableCell>
+                  <TableCell>오늘 오후 8:00</TableCell>
+                  <TableCell>D-Day</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>이력서/포트폴리오 단기 피드백</TableCell>
+                  <TableCell>김프론트</TableCell>
+                  <TableCell>2026.04.12 오후 2:00</TableCell>
+                  <TableCell>D-4</TableCell>
+                </TableRow>
+              </Table>
+            )}
           </div>
         </div>
       </div>

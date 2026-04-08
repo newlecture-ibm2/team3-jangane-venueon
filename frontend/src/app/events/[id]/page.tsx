@@ -49,8 +49,8 @@ export default async function EventDetailPage({ params }: Props) {
   if (!event || event.error) {
     return (
       <div className={styles.container} style={{ textAlign: 'center', padding: '100px 0' }}>
-        <h2>이벤트를 찾을 수 없거나 불러오지 못했습니다.</h2>
-        <p>삭제되었거나 존재하지 않는 이벤트입니다.</p>
+        <h2>세션를 찾을 수 없거나 불러오지 못했습니다.</h2>
+        <p>삭제되었거나 존재하지 않는 세션입니다.</p>
         <div style={{ marginTop: 20, color: 'red', textAlign: 'left', background: '#ffebee', padding: 16 }}>
           <pre>{JSON.stringify(event, null, 2)}</pre>
         </div>
@@ -75,7 +75,7 @@ export default async function EventDetailPage({ params }: Props) {
       {/* 뒤로 가기 바 */}
       <div className={styles.topBar}>
         <Link href="/" className={styles.backButton}>
-          ← 강의 목록 보기
+          ← 세션 목록 보기
         </Link>
       </div>
 
@@ -99,9 +99,9 @@ export default async function EventDetailPage({ params }: Props) {
         )}
       </div>
 
-      {/* 강의 정보 섹션 */}
+      {/* 세션 정보 섹션 */}
       <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>강의 정보</h3>
+        <h3 className={styles.sectionTitle}>세션 정보</h3>
         <div className={styles.description}>
           {event.description}
         </div>
@@ -122,7 +122,7 @@ export default async function EventDetailPage({ params }: Props) {
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>장소</span>
             <span className={styles.infoValue}>
-              {event.isOnline ? '온라인 이벤트' : event.location}
+              {event.isOnline ? '온라인 세션' : event.location}
             </span>
           </div>
         </div>
@@ -193,7 +193,7 @@ export default async function EventDetailPage({ params }: Props) {
       {/* 하단 액션 버튼 */}
       <div className={styles.bottomActionArea}>
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <Button variant="outlined" size="large">강의 목록</Button>
+          <Button variant="outlined" size="large">세션 목록</Button>
         </Link>
         {event.status === 'PUBLISHED' ? (
           event.hasSession ? (

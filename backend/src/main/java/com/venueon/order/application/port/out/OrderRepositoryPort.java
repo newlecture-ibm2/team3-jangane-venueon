@@ -26,5 +26,5 @@ public interface OrderRepositoryPort {
     
     Page<Order> findByUserId(Long userId, Pageable pageable);
 
-    Page<Order> findValidOrdersByUserId(Long userId, Pageable pageable);
+    Page<Order> findValidOrdersByUserId(Long userId, String tab, Pageable pageable);
 }

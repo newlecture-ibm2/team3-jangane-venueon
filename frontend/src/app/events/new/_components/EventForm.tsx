@@ -143,7 +143,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       // API 요청 분기 (create / edit)
       const payload = {
         categoryId: 1, // 테스트용 하드코딩
-        title: formData.title || '새 이벤트',
+        title: formData.title || '새 세션',
         description: formData.description,
         type: 'SEMINAR',
         location: formData.location,
@@ -210,7 +210,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         if (!publishRes.ok) throw new Error('상태 변경 실패');
       }
 
-      showToast(mode === 'create' ? (isDraft ? '임시 저장되었습니다.' : '이벤트가 성공적으로 게시되었습니다.') : '이벤트가 성공적으로 수정되었습니다.', 'success');
+      showToast(mode === 'create' ? (isDraft ? '임시 저장되었습니다.' : '세션가 성공적으로 게시되었습니다.') : '세션가 성공적으로 수정되었습니다.', 'success');
       router.push(`/events/${targetId}`);
     } catch (err: any) {
       showToast(err.message, 'error');
@@ -222,11 +222,11 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   return (
     <div className={styles.formContainer}>
       <button className={styles.backButton} onClick={() => router.back()}>
-        ← 강의 목록 보기
+        ← 세션 목록 보기
       </button>
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>강의 제목</label>
+        <label className={styles.label}>세션 제목</label>
         <input
           type="text"
           name="title"
@@ -238,7 +238,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>강의 이미지</label>
+        <label className={styles.label}>세션 이미지</label>
         {previewUrl ? (
           <div className={styles.previewWrapper}>
             <img src={previewUrl} alt="미리보기" className={styles.previewImage} />
@@ -282,13 +282,13 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
       <div className={styles.formGroup}>
         <div className={styles.labelRow}>
-          <label className={styles.label}>강의 정보</label>
+          <label className={styles.label}>세션 정보</label>
           <span className={styles.charCount}>{formData.description.length}/300</span>
         </div>
         <textarea
           name="description"
           className={styles.textarea}
-          placeholder="강의 정보를 입력하세요."
+          placeholder="세션 정보를 입력하세요."
           maxLength={300}
           value={formData.description}
           onChange={handleChange}
@@ -548,7 +548,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           setIsExitModalOpen(false);
           router.back();
         }}
-        title="강의 작성을 중단하시겠습니까?"
+        title="세션 작성을 중단하시겠습니까?"
         subtitle="지금 나가면 입력한 정보가 저장되지 않고 모두 삭제됩니다. 작성을 취소하시겠습니까?"
         status="danger"
         cancelText="계속 작성하기"
