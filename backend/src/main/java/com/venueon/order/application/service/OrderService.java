@@ -11,6 +11,7 @@ import com.venueon.order.application.port.out.RefundSavePort;
 import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.order.adapter.in.web.dto.*;
+import com.venueon.order.application.port.in.RequestRefundUseCase;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -271,11 +272,11 @@ public class OrderService {
     private OrderDetailResponse toOrderDetailResponse(Order order) {
         // Event Title 및 상세 정보를 가져오기 위해 EventJpaRepository 호출 필요
         EventJpaEntity event = eventRepository.findById(order.getEventId()).orElse(null);
-        
+
         String eventTitle = event != null ? event.getTitle() : "알 수 없는 이벤트";
         String organizer = event != null ? "호스트 " + event.getCreator().getId() : "알 수 없는 호스트";
         String location = event != null ? (event.isOnline() ? "온라인" : event.getLocation()) : "-";
-        
+
         return OrderDetailResponse.builder()
                 .orderId(order.getId())
                 .eventId(order.getEventId())
@@ -289,6 +290,7 @@ public class OrderService {
                 .organizer(organizer)
                 .location(location)
                 .eventStartDate(event != null ? event.getStartDate() : null)
+                .eventStatus(event != null ? event.getStatus().name() : "DRAFT")
                 .build();
     }
 
@@ -310,7 +312,7 @@ public class OrderService {
 
         order.requestRefund();
         orderRepository.save(order);
-        
+
         requestRefundUseCase.requestRefund(orderId, userId, order.getAmount(), reason);
     }
 }

@@ -3,6 +3,7 @@ package com.venueon.event.adapter.in.web.dto;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
+import com.venueon.event.domain.model.PurchaseType;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +24,9 @@ public record EventListResponse(
         LocalDateTime endDate,
         Long categoryId,
         Long creatorId,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean hasSession,
+        PurchaseType purchaseType
 ) {
     public static EventListResponse from(Event event) {
         return new EventListResponse(
@@ -40,7 +43,9 @@ public record EventListResponse(
                 event.getEndDate(),
                 event.getCategoryId(),
                 event.getCreatorId(),
-                event.getCreatedAt()
+                event.getCreatedAt(),
+                event.getHasSession(),
+                event.getPurchaseType()
         );
     }
 }
