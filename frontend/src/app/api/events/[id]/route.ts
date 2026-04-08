@@ -93,7 +93,7 @@ export async function DELETE(
       }
     }
 
-    return NextResponse.json({ success: true, message: "세션가 삭제되었습니다." });
+    return NextResponse.json({ success: true, message: "세션이 삭제되었습니다." });
   } catch (error) {
     console.error("Failed to delete event:", error);
     return NextResponse.json(
