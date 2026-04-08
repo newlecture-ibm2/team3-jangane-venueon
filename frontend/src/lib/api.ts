@@ -3,7 +3,7 @@
  * 프록시를 통해 /v1/* 경로로 요청 (next.config.ts rewrites)
  */
 
-const API_BASE = "/v1";
+const API_BASE = "/api";
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string>;

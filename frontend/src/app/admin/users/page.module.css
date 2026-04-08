@@ -1,0 +1,14 @@
+.pageHeader {
+  margin-bottom: var(--space-24);
+}
+
+.pageTitle {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+  margin-bottom: var(--space-4);
+}
+
+.pageDesc {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-500);
+}

@@ -1,0 +1,15 @@
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  margin-bottom: var(--space-24);
+}
+
+.searchWrapper {
+  flex: 1;
+  max-width: 400px;
+}
+
+.dropdownWrapper {
+  width: 160px;
+}

@@ -1,0 +1,83 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--space-16);
+  border-bottom: 1px solid var(--color-text-gray-100);
+  margin-bottom: var(--space-16);
+}
+
+.title {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-48);
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-500);
+}
+
+/* 상태 토글 영역 */
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-12) var(--space-16);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-16);
+}
+
+.statusLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* 정보 필드 */
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-24);
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid var(--color-text-gray-100);
+}
+
+.fieldRow:last-child {
+  border-bottom: none;
+}
+
+.fieldLabel {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-500);
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.fieldValue {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-900);
+  flex: 1;
+}
+
+.editInput {
+  flex: 1;
+}
+
+/* 버튼 그룹 */
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-8);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--color-text-gray-100);
+}
