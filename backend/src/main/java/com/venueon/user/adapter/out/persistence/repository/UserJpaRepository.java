@@ -16,29 +16,18 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
 
     boolean existsByEmail(String email);
 
-    // --- 관리자용 검색 메서드 ---
-
     /**
-     * 키워드로 검색 (이메일 또는 닉네임에 포함)
+     * 상태, 키워드, 역할 복합 동적 검색
      */
     @Query("SELECT u FROM UserJpaEntity u WHERE " +
-           "LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(u.nickname) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    Page<UserJpaEntity> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
-
-    /**
-     * 역할별 필터링
-     */
-    Page<UserJpaEntity> findByRole(UserRole role, Pageable pageable);
-
-    /**
-     * 키워드 + 역할 복합 검색
-     */
-    @Query("SELECT u FROM UserJpaEntity u WHERE " +
-           "u.role = :role AND " +
-           "(LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(u.nickname) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    Page<UserJpaEntity> findByKeywordAndRole(@Param("keyword") String keyword,
-                                              @Param("role") UserRole role,
-                                              Pageable pageable);
+           "(:hasKeyword = false OR LOWER(u.email) LIKE CONCAT('%', :keyword, '%') OR LOWER(u.nickname) LIKE CONCAT('%', :keyword, '%')) " +
+           "AND (:hasRole = false OR u.role = :role) " +
+           "AND (:hasActive = false OR u.isActive = :active)")
+    Page<UserJpaEntity> findUsersDynamically(@Param("keyword") String keyword,
+                                             @Param("hasKeyword") boolean hasKeyword,
+                                             @Param("role") UserRole role,
+                                             @Param("hasRole") boolean hasRole,
+                                             @Param("active") Boolean active,
+                                             @Param("hasActive") boolean hasActive,
+                                             Pageable pageable);
 }

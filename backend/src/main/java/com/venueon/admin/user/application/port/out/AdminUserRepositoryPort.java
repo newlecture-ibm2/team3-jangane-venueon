@@ -15,24 +15,9 @@ import java.util.Optional;
 public interface AdminUserRepositoryPort {
 
     /**
-     * 전체 회원 목록 조회 (페이징)
+     * 회원 목록 동적 조회 (키워드, 역할, 상태 필터)
      */
-    Page<User> findAll(Pageable pageable);
-
-    /**
-     * 키워드 검색 (이메일 또는 닉네임)
-     */
-    Page<User> findByKeyword(String keyword, Pageable pageable);
-
-    /**
-     * 역할별 필터링
-     */
-    Page<User> findByRole(UserRole role, Pageable pageable);
-
-    /**
-     * 키워드 + 역할 복합 검색
-     */
-    Page<User> findByKeywordAndRole(String keyword, UserRole role, Pageable pageable);
+    Page<User> findUsers(String keyword, UserRole role, Boolean active, Pageable pageable);
 
     /**
      * ID로 회원 조회

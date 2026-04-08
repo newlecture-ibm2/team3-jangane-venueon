@@ -35,20 +35,8 @@ public class AdminUserService implements
     // ── 목록 조회 ──
 
     @Override
-    public Page<User> getUsers(String keyword, UserRole role, Pageable pageable) {
-        boolean hasKeyword = keyword != null && !keyword.isBlank();
-        boolean hasRole = role != null;
-
-        if (hasKeyword && hasRole) {
-            return adminUserRepositoryPort.findByKeywordAndRole(keyword, role, pageable);
-        }
-        if (hasKeyword) {
-            return adminUserRepositoryPort.findByKeyword(keyword, pageable);
-        }
-        if (hasRole) {
-            return adminUserRepositoryPort.findByRole(role, pageable);
-        }
-        return adminUserRepositoryPort.findAll(pageable);
+    public Page<User> getUsers(String keyword, UserRole role, Boolean active, Pageable pageable) {
+        return adminUserRepositoryPort.findUsers(keyword, role, active, pageable);
     }
 
     // ── 상세 조회 ──

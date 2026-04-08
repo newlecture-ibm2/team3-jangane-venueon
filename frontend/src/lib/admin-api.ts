@@ -53,13 +53,14 @@ export const adminUserAPI = {
   getUsers: (params: {
     keyword?: string;
     role?: string;
+    active?: string; // "true" or "false"
     page?: string;
     size?: string;
   }) => {
     // 빈 값 제거
     const cleanParams: Record<string, string> = {};
     Object.entries(params).forEach(([key, value]) => {
-      if (value) cleanParams[key] = value;
+      if (value !== undefined && value !== '') cleanParams[key] = String(value);
     });
     return api.get<ApiResponse<PageResponse<AdminUserListItem>>>('/admin/users', { params: cleanParams });
   },

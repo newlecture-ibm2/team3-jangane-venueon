@@ -1,15 +1,94 @@
-.filterBar {
+.container {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  flex: 1 0 0;
+  align-self: stretch;
+}
+
+.tabArea {
+  display: flex;
+  height: 48px;
   align-items: center;
-  gap: var(--space-12);
-  margin-bottom: var(--space-24);
+  gap: 24px;
+  align-self: stretch;
+}
+
+.tab {
+  display: flex;
+  padding: 4px 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+  cursor: pointer;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--Gray-500, #6B7280);
+  background: none;
+  border: none;
+}
+
+.activeTab {
+  color: var(--Gray-900, #111827);
+  font-weight: 700;
+  border-bottom: 2px solid var(--Gray-900, #111827);
+}
+
+.searchFilterArea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
 }
 
 .searchWrapper {
-  flex: 1;
-  max-width: 400px;
+  display: flex;
+  width: 410px;
+  height: 48px;
+  padding: 12px 26px 12px 16px;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--Gray-300, #D1D5DB);
+  background: var(--Gray-50, #F9FAFB);
 }
 
-.dropdownWrapper {
-  width: 160px;
+.searchWrapper input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  outline: none;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+}
+
+.buttonArea {
+  display: flex;
+  height: 48px;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+.filterButton {
+  display: flex;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100px;
+  background: var(--Gray-100, #F3F4F6);
+  border: none;
+  color: var(--Gray-600, #4B5563);
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filterButton.active {
+  background: var(--Gray-700, #374151);
+  color: #fff;
 }

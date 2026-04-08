@@ -15,8 +15,9 @@ public interface GetAdminUserListUseCase {
      *
      * @param keyword  검색어 (이메일 또는 닉네임, null이면 전체)
      * @param role     역할 필터 (null이면 전체)
+     * @param active   활성 여부 필터 (null이면 전체)
      * @param pageable 페이징 정보
      * @return 페이징된 회원 목록
      */
-    Page<User> getUsers(String keyword, UserRole role, Pageable pageable);
+    Page<User> getUsers(String keyword, UserRole role, Boolean active, Pageable pageable);
 }

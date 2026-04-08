@@ -1,62 +1,123 @@
 .tableWrapper {
-  overflow-x: auto;
-  border: 1px solid var(--color-text-gray-300);
-  border-radius: var(--radius-md);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .table {
+  display: block;
   width: 100%;
-  border-collapse: collapse;
-  font: var(--text-body-regular);
 }
 
-.table thead {
-  background-color: var(--color-surface);
+.table thead,
+.table tbody {
+  display: block;
+}
+
+.table thead tr {
+  display: flex;
+  width: 844px;
+  padding: 16px 24px;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 1px solid var(--Gray-300, #D1D5DB);
+  background: var(--Gray-white, #FFF);
 }
 
 .table th {
-  font: var(--text-body-bold);
-  color: var(--color-text-gray-700);
-  padding: var(--space-12) var(--space-16);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  flex: 1 0 0;
+  overflow: hidden;
+  color: var(--Gray-700, #374151);
+  text-overflow: ellipsis;
+
+  /* Body/Regular */
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  
+  padding: 0;
+  border: none;
   text-align: left;
-  white-space: nowrap;
-  border-bottom: 1px solid var(--color-text-gray-300);
+}
+
+.table tbody tr {
+  display: flex;
+  width: 844px;
+  padding: 16px 24px;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 1px solid #F3F4F6;
+  background: #fff;
 }
 
 .table td {
-  padding: var(--space-12) var(--space-16);
-  border-bottom: 1px solid var(--color-text-gray-100);
-  vertical-align: middle;
-}
-
-.table tbody tr:hover {
-  background-color: var(--color-text-gray-50);
-}
-
-.idCell {
-  color: var(--color-text-gray-500);
-  font: var(--text-caption-medium);
-  width: 60px;
-}
-
-.emailCell {
-  font: var(--text-body-medium);
-  max-width: 240px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  flex: 1 0 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  padding: 0;
+  border: none;
+  height: auto;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  color: var(--Gray-700, #374151);
 }
 
-.dateCell {
-  color: var(--color-text-gray-500);
-  font: var(--text-caption-regular);
-  white-space: nowrap;
-}
+.hostCol { flex: 2 0 0; }
+.managerCol { flex: 1.5 0 0; }
+.bizNumCol { flex: 1.5 0 0; }
+.dateCol { flex: 1.5 0 0; }
+.statusCol { flex: 1 0 0; }
+.actionCol { flex: 0 0 32px; display: flex; justify-content: flex-end; }
 
-.actionCell {
+.userProfile {
   display: flex;
-  gap: var(--space-8);
   align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  background: #1B10B9;
+  border-radius: 123px;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-weight: 700;
+  font-size: 14px;
+  color: #374151;
+}
+
+.statusBadge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 8px;
+  background: #fff;
+  border: 1px solid #991B1B;
+  border-radius: 4px;
+  color: #991B1B;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.moreButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6B7280;
+  padding: 4px;
 }
 
 .loading,
@@ -64,7 +125,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--space-48);
-  font: var(--text-body-regular);
-  color: var(--color-text-gray-500);
+  padding: 48px;
+  font-family: Inter, sans-serif;
+  color: #6B7280;
 }

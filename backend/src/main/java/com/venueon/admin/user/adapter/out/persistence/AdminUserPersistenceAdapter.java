@@ -26,26 +26,17 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
     private final UserMapper userMapper;
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
-        return userJpaRepository.findAll(pageable)
-                .map(userMapper::toDomain);
-    }
+    public Page<User> findUsers(String keyword, UserRole role, Boolean active, Pageable pageable) {
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        String safeKeyword = hasKeyword ? keyword.toLowerCase() : "";
 
-    @Override
-    public Page<User> findByKeyword(String keyword, Pageable pageable) {
-        return userJpaRepository.findByKeyword(keyword, pageable)
-                .map(userMapper::toDomain);
-    }
+        boolean hasRole = role != null;
+        UserRole safeRole = hasRole ? role : UserRole.USER;
 
-    @Override
-    public Page<User> findByRole(UserRole role, Pageable pageable) {
-        return userJpaRepository.findByRole(role, pageable)
-                .map(userMapper::toDomain);
-    }
+        boolean hasActive = active != null;
+        Boolean safeActive = hasActive ? active : false;
 
-    @Override
-    public Page<User> findByKeywordAndRole(String keyword, UserRole role, Pageable pageable) {
-        return userJpaRepository.findByKeywordAndRole(keyword, role, pageable)
+        return userJpaRepository.findUsersDynamically(safeKeyword, hasKeyword, safeRole, hasRole, safeActive, hasActive, pageable)
                 .map(userMapper::toDomain);
     }
 

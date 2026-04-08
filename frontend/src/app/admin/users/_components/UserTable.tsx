@@ -2,7 +2,7 @@
 
 import React from 'react';
 import styles from './UserTable.module.css';
-import { Tag, Button } from '@/components/ui';
+import { MoreIcon } from '@/components/icons';
 import type { AdminUserListItem } from '@/lib/admin-api';
 
 interface UserTableProps {
@@ -12,29 +12,19 @@ interface UserTableProps {
   onDeleteClick: (user: AdminUserListItem) => void;
 }
 
-/** 역할에 따른 Tag variant 매핑 */
-function getRoleTag(role: string) {
-  switch (role) {
-    case 'ADMIN':
-      return { variant: 'purple' as const, label: '관리자' };
-    case 'HOST':
-      return { variant: 'green' as const, label: '주최자' };
-    default:
-      return { variant: 'gray' as const, label: '일반 회원' };
-  }
-}
-
-/** 활성 상태 Tag */
-function getStatusTag(active: boolean) {
-  return active
-    ? { variant: 'green' as const, label: '활성' }
-    : { variant: 'red' as const, label: '비활성' };
-}
-
 /** 날짜 포맷 */
 function formatDate(dateStr: string) {
+  if (!dateStr) return '-';
   const d = new Date(dateStr);
-  return d.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  
+  const year = d.getFullYear();
+  const month = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
 export default function UserTable({ users, isLoading, onViewDetail, onDeleteClick }: UserTableProps) {
@@ -46,57 +36,58 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
     return <div className={styles.empty}>검색 결과가 없습니다.</div>;
   }
 
+  // 주최자 관리/수강생 관리에 따라 헤더가 다를 수 있지만, 
+  // 요청하신 디자인 사양(이미지) 기준으로 주최자 헤더를 구현합니다.
+  const isHostView = users.length > 0 && users[0].role === 'HOST';
+
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>이메일</th>
-            <th>닉네임</th>
-            <th>역할</th>
-            <th>상태</th>
-            <th>가입일</th>
-            <th>관리</th>
+            <th className={styles.hostCol}>{isHostView ? '호스트' : '사용자'}</th>
+            <th className={styles.managerCol}>{isHostView ? '담당자명' : '닉네임'}</th>
+            <th className={styles.bizNumCol}>{isHostView ? '사업자 번호' : '이메일'}</th>
+            <th className={styles.dateCol}>가입일</th>
+            <th className={styles.statusCol}>상태</th>
+            <th className={styles.actionCol}></th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => {
-            const roleTag = getRoleTag(user.role);
-            const statusTag = getStatusTag(user.active);
-            return (
-              <tr key={user.id}>
-                <td className={styles.idCell}>{user.id}</td>
-                <td className={styles.emailCell}>{user.email}</td>
-                <td>{user.nickname}</td>
-                <td>
-                  <Tag variant={roleTag.variant}>{roleTag.label}</Tag>
-                </td>
-                <td>
-                  <Tag variant={statusTag.variant}>{statusTag.label}</Tag>
-                </td>
-                <td className={styles.dateCell}>{formatDate(user.createdAt)}</td>
-                <td className={styles.actionCell}>
-                  <Button
-                    variant="outlined"
-                    size="medium"
-                    onClick={() => onViewDetail(user.id)}
-                  >
-                    상세
-                  </Button>
-                  {user.role !== 'ADMIN' && (
-                    <Button
-                      variant="danger"
-                      size="medium"
-                      onClick={() => onDeleteClick(user)}
-                    >
-                      삭제
-                    </Button>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
+          {users.map((user) => (
+            <tr key={user.id}>
+              <td className={styles.hostCol}>
+                <div className={styles.userProfile}>
+                  <div className={styles.avatar}></div>
+                  <span className={styles.userName}>{user.nickname}</span>
+                </div>
+              </td>
+              <td className={styles.managerCol}>
+                {/* 담당자명이 별도로 없으므로 닉네임을 활용하거나 더미 데이터를 표시합니다. */}
+                {user.nickname}
+              </td>
+              <td className={styles.bizNumCol}>
+                {/* 사업자 번호가 별도로 없으므로 수강생인 경우 이메일을, 호스트인 경우 더미를 표시합니다. */}
+                {user.role === 'HOST' ? '000-00-00000' : user.email}
+              </td>
+              <td className={styles.dateCol}>
+                {formatDate(user.createdAt)}
+              </td>
+              <td className={styles.statusCol}>
+                <span className={styles.statusBadge}>
+                  {user.active ? '활성' : '승인 대기'}
+                </span>
+              </td>
+              <td className={styles.actionCol}>
+                <button 
+                  className={styles.moreButton}
+                  onClick={() => onViewDetail(user.id)}
+                >
+                  <MoreIcon />
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

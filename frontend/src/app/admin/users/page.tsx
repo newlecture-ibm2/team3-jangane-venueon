@@ -14,6 +14,7 @@ export default function AdminUsersPage() {
   // ── 검색/필터 상태 ──
   const [keyword, setKeyword] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
+  const [activeFilter, setActiveFilter] = useState(''); // '', 'true', 'false'
   const [currentPage, setCurrentPage] = useState(1);
 
   // ── 데이터 상태 ──
@@ -34,6 +35,7 @@ export default function AdminUsersPage() {
       const res = await adminUserAPI.getUsers({
         keyword: keyword || undefined,
         role: roleFilter || undefined,
+        active: activeFilter || undefined,
         page: String(currentPage - 1), // Spring은 0-indexed
         size: '20',
       });
@@ -47,7 +49,7 @@ export default function AdminUsersPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [keyword, roleFilter, currentPage]);
+  }, [keyword, roleFilter, activeFilter, currentPage]);
 
   useEffect(() => {
     fetchUsers();
@@ -61,6 +63,11 @@ export default function AdminUsersPage() {
 
   const handleRoleChange = (value: string) => {
     setRoleFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handleActiveChange = (value: string) => {
+    setActiveFilter(value);
     setCurrentPage(1);
   };
 
@@ -87,20 +94,21 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="container-sidebar">
+    <div className={styles.wrapper}>
       <Sidebar role="admin" />
 
-      <section className="sidebar">
+      <div className={styles.content}>
         <div className={styles.pageHeader}>
           <h1 className={styles.pageTitle}>사용자 관리</h1>
-          <p className={styles.pageDesc}>등록된 회원을 조회하고 관리합니다.</p>
         </div>
 
         <UserFilter
           keyword={keyword}
           role={roleFilter}
+          activeStatus={activeFilter}
           onKeywordChange={setKeyword}
           onRoleChange={handleRoleChange}
+          onActiveChange={handleActiveChange}
           onSearch={handleSearch}
         />
 
@@ -116,29 +124,28 @@ export default function AdminUsersPage() {
           totalPages={totalPages}
           onPageChange={setCurrentPage}
         />
+      </div>
 
-        {/* 상세/수정 모달 */}
-        <UserDetailModal
-          isOpen={isDetailOpen}
-          userId={detailUserId}
-          onClose={() => setIsDetailOpen(false)}
-          onUpdated={fetchUsers}
-        />
+      {/* 상세/수정 모달 */}
+      <UserDetailModal
+        isOpen={isDetailOpen}
+        userId={detailUserId}
+        onClose={() => setIsDetailOpen(false)}
+        onUpdated={fetchUsers}
+      />
 
-        {/* 삭제 확인 모달 */}
-        <ConfirmModal
-          isOpen={isDeleteOpen}
-          onClose={() => setIsDeleteOpen(false)}
-          onConfirm={handleDeleteConfirm}
-          title={`${deleteTarget?.nickname || ''} 회원을 삭제하시겠습니까?`}
-          subtitle="삭제된 회원 정보는 복구할 수 없습니다."
-          status="danger"
-          requireCheckbox
-          checkboxLabel="위 내용을 확인했습니다."
-          confirmText="삭제"
-          cancelText="취소"
-        />
-      </section>
+      {/* 삭제 확인 모달 */}
+      <ConfirmModal
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title={`${deleteTarget?.nickname || ''} 회원을 삭제하시겠습니까?`}
+        subtitle="삭제된 회원 정보는 복구할 수 없습니다."
+        status="danger"
+        requireCheckbox
+        checkboxLabel="위 내용을 확인했습니다."
+        confirmText="삭제"
+      />
     </div>
   );
 }

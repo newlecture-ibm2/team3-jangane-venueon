@@ -43,18 +43,20 @@ public class AdminUserController {
      *
      * @param keyword  검색어 (이메일 또는 닉네임)
      * @param role     역할 필터 (ADMIN, HOST, USER)
+     * @param active   활성 여부 필터 (true/false)
      * @param pageable 페이징 (기본: page=0, size=20, 최신순)
      */
     @GetMapping
     public ResponseEntity<ApiResponse<Page<AdminUserListResponse>>> getUsers(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String role,
+            @RequestParam(required = false) Boolean active,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        log.debug("회원 목록 조회: keyword={}, role={}, page={}", keyword, role, pageable.getPageNumber());
+        log.debug("회원 목록 조회: keyword={}, role={}, active={}, page={}", keyword, role, active, pageable.getPageNumber());
 
         UserRole userRole = parseRole(role);
-        Page<User> users = getAdminUserListUseCase.getUsers(keyword, userRole, pageable);
+        Page<User> users = getAdminUserListUseCase.getUsers(keyword, userRole, active, pageable);
         Page<AdminUserListResponse> response = users.map(AdminUserListResponse::from);
 
         return ResponseEntity.ok(ApiResponse.success(response));
