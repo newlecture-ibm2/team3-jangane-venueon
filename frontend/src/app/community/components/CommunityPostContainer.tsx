@@ -16,6 +16,7 @@ interface PostListResponse {
   viewCount: number;
   commentCount: number;
   likeCount: number;
+  isBookmarked: boolean;
   createdAt: string;
 }
 
@@ -148,6 +149,25 @@ export default function CommunityPostContainer({ communityId }: Props) {
     }
   };
 
+  const handleBookmarkToggle = async () => {
+    if (!selectedPostId) return;
+
+    try {
+      const response = await fetch(`/api/posts/${selectedPostId}/bookmark`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) throw new Error('북마크 처리 실패');
+
+      showToast('북마크 상태가 변경되었습니다.', 'success');
+      // 게시글 목록 새로고침 (아이콘 상태 반영)
+      fetchPosts(true);
+    } catch (error) {
+      console.error(error);
+      showToast('북마크 처리 실패', 'error');
+    }
+  };
+
   const handleCommentLikeToggle = async (commentId: number) => {
     try {
       const response = await fetch(`/api/comments/${commentId}/like`, {
@@ -262,7 +282,26 @@ export default function CommunityPostContainer({ communityId }: Props) {
                   </svg>
                   <span>{selectedPost.likeCount}</span>
                 </button>
-                <button className={styles.optionButton}>
+                <button
+                  className={styles.bookmarkButton}
+                  onClick={handleBookmarkToggle}
+                  title="북마크"
+                  type="button"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill={selectedPost.isBookmarked ? "#F59E0B" : "none"}
+                    stroke={selectedPost.isBookmarked ? "#F59E0B" : "currentColor"}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                  </svg>
+                </button>
+                <button className={styles.optionButton} type="button">
                   •••
                 </button>
               </div>
