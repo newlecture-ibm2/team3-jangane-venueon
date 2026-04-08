@@ -19,7 +19,7 @@ export default function Footer() {
         <div className={styles.colLinks}>
           <h4 className={styles.colTitle}>서비스</h4>
           <ul className={styles.linkList}>
-            <li><Link href="/seminars" className={styles.linkItem}>강의 탐색</Link></li>
+            <li><Link href="/events" className={styles.linkItem}>세션 탐색</Link></li>
             <li><Link href="/host/dashboard" className={styles.linkItem}>주최자 센터</Link></li>
           </ul>
         </div>

@@ -30,6 +30,39 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-8);
+  width: 100%;
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.wishlistButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-gray-300); /* 비활성: 기본 회색(단색) */
+  transition: color 0.2s ease;
+}
+
+.wishlistButton:hover {
+  color: #F9A8D4; /* hover: 가장 옅은 핑크 */
+}
+
+.wishlistButton.active {
+  color: #F472B6; /* active: 찐한 연분홍색 */
+}
+
+.wishlistIcon {
+  width: 24px;
+  height: 24px;
 }
 
 .title {

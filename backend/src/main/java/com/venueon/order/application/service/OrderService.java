@@ -11,6 +11,7 @@ import com.venueon.order.application.port.out.RefundSavePort;
 import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.order.adapter.in.web.dto.*;
+import com.venueon.order.application.port.in.RequestRefundUseCase;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -207,8 +208,8 @@ public class OrderService {
      * 내 주문/결제 내역
      * API 스펙: GET /orders/me
      */
-    public Page<OrderDetailResponse> getMyOrders(Long userId, Pageable pageable) {
-        return orderRepository.findValidOrdersByUserId(userId, pageable)
+    public Page<OrderDetailResponse> getMyOrders(Long userId, String tab, Pageable pageable) {
+        return orderRepository.findValidOrdersByUserId(userId, tab, pageable)
                 .map(this::toOrderDetailResponse);
     }
 
@@ -289,6 +290,7 @@ public class OrderService {
                 .organizer(organizer)
                 .location(location)
                 .eventStartDate(event != null ? event.getStartDate() : null)
+                .eventStatus(event != null ? event.getStatus().name() : "DRAFT")
                 .build();
     }
 

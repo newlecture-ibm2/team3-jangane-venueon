@@ -23,4 +23,5 @@ public class OrderDetailResponse {
     private String organizer;
     private String location;
     private LocalDateTime eventStartDate;
+    private String eventStatus;
 }

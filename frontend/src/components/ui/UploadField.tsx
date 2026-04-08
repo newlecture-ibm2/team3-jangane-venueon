@@ -16,7 +16,7 @@ export default function UploadField({ label, onFileSelect, className = '', ...pr
   const [fileName, setFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 드래그 앤 드롭 이벤트 핸들러
+  // 드래그 앤 드롭 세션 핸들러
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(true);
@@ -36,7 +36,7 @@ export default function UploadField({ label, onFileSelect, className = '', ...pr
     }
   };
 
-  // 탐색기 창 선택 이벤트 핸들러
+  // 탐색기 창 선택 세션 핸들러
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];

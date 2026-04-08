@@ -67,7 +67,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
 
         // 도메인 모델 생성 및 저장
         User user = new User(null, email, encodedPassword, nickname, userRole,
-                AuthProvider.LOCAL, null, null, null, null);
+                AuthProvider.LOCAL, null, null, true, null, null);
         User savedUser = userRepositoryPort.save(user);
 
         log.info("회원가입 완료: email={}, role={}", email, userRole);
@@ -89,7 +89,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
 
         // User 저장 (role=HOST)
         User user = new User(null, email, encodedPassword, managerName, UserRole.HOST,
-                AuthProvider.LOCAL, null, null, null, null);
+                AuthProvider.LOCAL, null, null, true, null, null);
         User savedUser = userRepositoryPort.save(user);
 
         // HostProfile 저장
@@ -153,7 +153,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
             String nickname = (name != null && !name.isBlank()) ? name : email.split("@")[0];
 
             user = new User(null, email, randomPassword, nickname, UserRole.USER,
-                    AuthProvider.GOOGLE, picture, null, null, null);
+                    AuthProvider.GOOGLE, picture, null, true, null, null);
             user = userRepositoryPort.save(user);
 
             log.info("구글 로그인 - 자동 가입 완료: email={}, nickname={}", email, nickname);
@@ -183,7 +183,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         User upgradedUser = new User(
                 user.getId(), user.getEmail(), user.getPassword(), managerName,
                 UserRole.HOST, user.getProvider(),
-                user.getProfileImg(), user.getPhone(), user.getCreatedAt(), user.getUpdatedAt()
+                user.getProfileImg(), user.getPhone(), user.isActive(), user.getCreatedAt(), user.getUpdatedAt()
         );
         User savedUser = userRepositoryPort.save(upgradedUser);
 

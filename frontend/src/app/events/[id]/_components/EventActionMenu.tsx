@@ -41,9 +41,9 @@ export default function EventActionMenu({ eventId, creatorId }: Props) {
       const res = await fetch(`/api/events/${eventId}`, {
         method: 'DELETE',
       });
-      if (!res.ok) throw new Error('이벤트 삭제에 실패했습니다.');
+      if (!res.ok) throw new Error('세션 삭제에 실패했습니다.');
 
-      showToast('이벤트가 성공적으로 삭제되었습니다.', 'success');
+      showToast('세션가 성공적으로 삭제되었습니다.', 'success');
       router.push('/');
       router.refresh();
     } catch (err: any) {
@@ -89,7 +89,7 @@ export default function EventActionMenu({ eventId, creatorId }: Props) {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleDelete}
-        title="이벤트 삭제"
+        title="세션 삭제"
         subtitle="정말 삭제하시겠습니까? (이 작업은 되돌릴 수 없습니다)"
         confirmText="삭제"
         status="danger"
