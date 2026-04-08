@@ -104,8 +104,8 @@ export default function ProfileSettingsPage() {
   // 저장(확인) 클릭 - 실제 백엔드 연동 부분
   const handleSave = async () => {
     try {
-      // 프론트 Proxy 경로 (자동으로 /v1/users/me/profile 로 치환되며, 헤더에 토큰 자동 포함됨)
-      const res = await fetch('/api/v1/users/me/profile', {
+      // BFF 프록시 경로 (Route Handler가 /api 제거 후 백엔드로 전달, JWT 자동 포함)
+      const res = await fetch('/api/users/me/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
