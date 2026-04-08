@@ -14,7 +14,7 @@
   max-width: 100%;
 }
 
-/* 3열 레이아웃 (ex: 메인 강의 목록 페이지) */
+/* 3열 레이아웃 (ex: 메인 세션 목록 페이지) */
 .threeCols {
   grid-template-columns: repeat(3, 1fr);
   max-width: 100%;

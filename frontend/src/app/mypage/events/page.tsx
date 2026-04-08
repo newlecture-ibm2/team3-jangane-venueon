@@ -20,9 +20,9 @@ interface LectureItem {
 const ITEMS_PER_PAGE = 8; // 2열 × 4줄
 
 const TAB_OPTIONS = [
-  { value: 'upcoming', label: '수강 예정' },
-  { value: 'enrolled', label: '수강 중' },
-  { value: 'completed', label: '수강 완료' },
+  { value: 'upcoming', label: '진행 전' },
+  { value: 'enrolled', label: '진행 중' },
+  { value: 'completed', label: '종료' },
 ];
 
 export default function MyPage() {
@@ -31,6 +31,7 @@ export default function MyPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [lectures, setLectures] = useState<LectureItem[]>([]);
+  const [wishlistSet, setWishlistSet] = useState<Set<number>>(new Set());
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -39,8 +40,7 @@ export default function MyPage() {
     setLoading(true);
     try {
       const res = await fetch(
-        `/api/orders/me?page=${page - 1}&size=${ITEMS_PER_PAGE}`
-        // 백엔드 tab 필터링 미구현으로 우선 모두 가져옴
+        `/api/orders/me?tab=${tab}&page=${page - 1}&size=${ITEMS_PER_PAGE}`
       );
       if (res.ok) {
         const json = await res.json();
@@ -52,7 +52,7 @@ export default function MyPage() {
             orderId: item.orderId,
             eventId: item.eventId,
             title: item.eventTitle,
-            status: item.eventStatus || item.status, // 주문 상태 대신 이벤트(강의) 상태를 카드에 매핑
+            status: item.eventStatus || item.status, // 주문 상태 대신 세션(세션) 상태를 카드에 매핑
             organizer: item.organizer || "알 수 없는 호스트",
           dateTime: item.eventStartDate ? new Date(item.eventStartDate).toLocaleString('ko-KR', {
             year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
@@ -62,6 +62,20 @@ export default function MyPage() {
         }));
         setLectures(mappedLectures);
         setTotalPages(data.totalPages || 1);
+
+        // Fetch wishlist IDs
+        try {
+          const wlRes = await fetch('/api/wishlists/me?size=100');
+          if (wlRes.ok) {
+            const wlData = await wlRes.json();
+            if (wlData.data && wlData.data.content) {
+              const ids = new Set<number>(wlData.data.content.map((item: any) => item.id));
+              setWishlistSet(ids);
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
       } else {
         setLectures([]);
         setTotalPages(1);
@@ -96,7 +110,7 @@ export default function MyPage() {
       <div className="sidebar-content">
         <div className={styles.content}>
           {/* 페이지 타이틀 */}
-          <h1 className={styles.pageTitle}>내 강의 목록</h1>
+          <h1 className={styles.pageTitle}>내 세션 목록</h1>
 
           {/* 탭 + 카드 + 페이지네이션 */}
           <div className={styles.listSection}>
@@ -118,19 +132,32 @@ export default function MyPage() {
                   key={lecture.orderId}
                   status={lecture.status}
                   title={lecture.title}
+                  eventId={lecture.eventId}
+                  isWishlistedProp={wishlistSet.has(lecture.eventId)}
                   organizer={lecture.organizer}
                   dateTime={lecture.dateTime}
                   location={lecture.location}
                   price={lecture.price}
-                  actionButtonText="스터디룸 입장"
-                  onActionClick={() => router.push(`/events/${lecture.eventId}`)}
+                  actionButtonText={
+                    activeTab === 'completed' ? '리뷰 작성하기' :
+                    activeTab === 'enrolled' ? '입장하기' :
+                    '상세 보기'
+                  }
+                  onActionClick={() => {
+                    if (activeTab === 'completed') {
+                      // 리뷰 쓰기 모달 혹은 페이지 라우팅 코드로 수정 필요 (임시 라우팅)
+                      router.push(`/community`); 
+                    } else {
+                      router.push(`/events/${lecture.eventId}`);
+                    }
+                  }}
                 />
               ))}
             </CardGrid>
 
             {!loading && lectures.length === 0 && (
               <p style={{ color: 'var(--color-text-gray-500)', textAlign: 'center', width: '100%', padding: 'var(--space-48) 0' }}>
-                해당 탭에 강의가 없습니다.
+                해당 탭에 세션이 없습니다.
               </p>
             )}
 

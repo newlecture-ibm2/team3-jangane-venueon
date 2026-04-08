@@ -84,12 +84,13 @@ public class OrderController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<Page<OrderDetailResponse>>> getMyOrders(
             Authentication authentication,
+            @RequestParam(required = false) String tab,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         String email = authentication.getName();
         Long userId = orderService.getUserIdByEmail(email);
 
-        Page<OrderDetailResponse> response = orderService.getMyOrders(userId, pageable);
+        Page<OrderDetailResponse> response = orderService.getMyOrders(userId, tab, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

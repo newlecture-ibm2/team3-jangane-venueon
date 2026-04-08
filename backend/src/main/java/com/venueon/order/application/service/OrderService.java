@@ -208,8 +208,8 @@ public class OrderService {
      * 내 주문/결제 내역
      * API 스펙: GET /orders/me
      */
-    public Page<OrderDetailResponse> getMyOrders(Long userId, Pageable pageable) {
-        return orderRepository.findValidOrdersByUserId(userId, pageable)
+    public Page<OrderDetailResponse> getMyOrders(Long userId, String tab, Pageable pageable) {
+        return orderRepository.findValidOrdersByUserId(userId, tab, pageable)
                 .map(this::toOrderDetailResponse);
     }
 

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
@@ -96,8 +97,28 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
     }
 
     @Override
-    public Page<Order> findValidOrdersByUserId(Long userId, Pageable pageable) {
-        return orderJpaRepository.findValidOrdersByUserId(userId, pageable).map(this::toDomain);
+    public Page<Order> findValidOrdersByUserId(Long userId, String tab, Pageable pageable) {
+        List<com.venueon.event.domain.model.EventStatus> statuses = new ArrayList<>();
+        boolean hasStatuses = false;
+
+        if (tab != null && !tab.isEmpty()) {
+            hasStatuses = true;
+            if ("upcoming".equals(tab)) {
+                statuses.addAll(List.of(com.venueon.event.domain.model.EventStatus.DRAFT, com.venueon.event.domain.model.EventStatus.PUBLISHED, com.venueon.event.domain.model.EventStatus.PREPARING));
+            } else if ("enrolled".equals(tab)) {
+                statuses.add(com.venueon.event.domain.model.EventStatus.ONGOING);
+            } else if ("completed".equals(tab)) {
+                statuses.add(com.venueon.event.domain.model.EventStatus.ENDED);
+            } else {
+                hasStatuses = false;
+            }
+        }
+        
+        if (statuses.isEmpty()) {
+            statuses.add(com.venueon.event.domain.model.EventStatus.DRAFT); 
+        }
+
+        return orderJpaRepository.findValidOrdersByUserIdAndEventStatuses(userId, hasStatuses, statuses, pageable).map(this::toDomain);
     }
 
     // --- Mapper ---

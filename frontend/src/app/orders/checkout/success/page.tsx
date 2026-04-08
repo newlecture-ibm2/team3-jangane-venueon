@@ -98,7 +98,7 @@ function CheckoutSuccessContent() {
           <h1 className={successStyles.title}>수강 신청 완료!</h1>
           <p className={successStyles.subtitle}>
             교육 프로그램 등록이 완료되었습니다.<br />
-            상세 내역은 내 강의 목록에서 확인하실 수 있습니다.
+            상세 내역은 내 세션 목록에서 확인하실 수 있습니다.
           </p>
         </div>
 
@@ -109,8 +109,8 @@ function CheckoutSuccessContent() {
               <p className={successStyles.cardValue}>#{paymentInfo.orderId}</p>
             </div>
             <div className={successStyles.cardRow}>
-              <p className={successStyles.cardLabel}>강의명</p>
-              <p className={successStyles.cardValue}>{paymentInfo.orderName || 'VenueOn 강의'}</p>
+              <p className={successStyles.cardLabel}>세션명</p>
+              <p className={successStyles.cardValue}>{paymentInfo.orderName || 'VenueOn 세션'}</p>
             </div>
             <div className={successStyles.cardRow}>
               <p className={successStyles.cardLabel}>결제 금액</p>
@@ -126,7 +126,7 @@ function CheckoutSuccessContent() {
             style={{ flex: 1, backgroundColor: '#FFFFFF', borderColor: 'var(--color-gray-200, #E5E7EB)' }}
             onClick={() => window.location.href = '/mypage/orders'}
           >
-            내 강의 목록
+            내 세션 목록
           </Button>
           <Button
             variant="primary"

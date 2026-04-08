@@ -95,7 +95,7 @@ export default function OrdersPage() {
             ) : (
               <Table columns="1fr 100px 140px 100px 100px">
                 <TableHeader>
-                  <TableCell header>강의명</TableCell>
+                  <TableCell header>세션명</TableCell>
                   <TableCell header>결제 일시</TableCell>
                   <TableCell header>결제 금액</TableCell>
                   <TableCell header>상태</TableCell>

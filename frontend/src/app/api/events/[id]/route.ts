@@ -61,7 +61,7 @@ export async function PUT(
   } catch (error) {
     console.error("Failed to update event:", error);
     return NextResponse.json(
-      { success: false, message: "이벤트 수정 중 오류가 발생했습니다." },
+      { success: false, message: "세션 수정 중 오류가 발생했습니다." },
       { status: 500 }
     );
   }
@@ -93,11 +93,11 @@ export async function DELETE(
       }
     }
 
-    return NextResponse.json({ success: true, message: "이벤트가 삭제되었습니다." });
+    return NextResponse.json({ success: true, message: "세션이 삭제되었습니다." });
   } catch (error) {
     console.error("Failed to delete event:", error);
     return NextResponse.json(
-      { success: false, message: "이벤트 삭제 중 오류가 발생했습니다." },
+      { success: false, message: "세션 삭제 중 오류가 발생했습니다." },
       { status: 500 }
     );
   }

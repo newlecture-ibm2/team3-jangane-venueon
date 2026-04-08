@@ -25,7 +25,7 @@ const REPORT_MAP: Record<string, { variant: 'red' | 'purple' | 'green' | 'gray',
   '숨김 처리됨': { variant: 'purple', label: '숨김 처리됨' },
 };
 
-// 2. 강의 상태 뱃지 (강의 카드 사용)
+// 2. 세션 상태 뱃지 (세션 카드 사용)
 const COURSE_MAP: Record<string, { variant: 'red' | 'purple' | 'green' | 'gray', label: string }> = {
   'DRAFT': { variant: 'gray', label: '게시 전' },
   '게시 전': { variant: 'gray', label: '게시 전' },
