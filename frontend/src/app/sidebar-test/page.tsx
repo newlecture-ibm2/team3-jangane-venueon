@@ -40,14 +40,14 @@ export default function SidebarTestPage() {
       {/* Role: User */}
       <div>
         <h2 style={{ fontSize: 'var(--font-size-h2---bold)', fontWeight: 700, marginBottom: '20px' }}>
-          단일 유저 (Role = 'user') - '내 강의 목록' 선택 상태
+          단일 유저 (Role = 'user') - '내 세션 목록' 선택 상태
         </h2>
         <div style={wrapperStyle}>
           {/* 테스트 환경에서는 주소가 없으므로, fakePathname으로 임의의 활성 탭을 강제 지정합니다 */}
           <Sidebar role="user" fakePathname="/events" />
           <div style={{ flex: 1, padding: '40px', background: '#fff', borderRadius: '12px', minHeight: '400px' }}>
             <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>우측 메인 컨텐츠 영역</h3>
-            <p style={{ marginTop: '10px', color: '#666' }}>내 강의 목록 상세 테이블이 렌더링되는 공간입니다.</p>
+            <p style={{ marginTop: '10px', color: '#666' }}>내 세션 목록 상세 테이블이 렌더링되는 공간입니다.</p>
           </div>
         </div>
       </div>

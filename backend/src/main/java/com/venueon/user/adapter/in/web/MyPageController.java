@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/mypage")
+@RequestMapping("/mypage")
 public class MyPageController {
 
     private final GetMyPageSummaryUseCase getMyPageSummaryUseCase;

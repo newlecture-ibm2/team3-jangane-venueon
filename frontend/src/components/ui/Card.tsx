@@ -3,7 +3,7 @@
 import React from 'react';
 import styles from './Card.module.css';
 import { Tag, Button, StatusTag } from '@/components/ui';
-import { CompanyIcon, CalendarIcon, LocationIcon } from '@/components/icons';
+import { CompanyIcon, CalendarIcon, LocationIcon, WishlistIcon } from '@/components/icons';
 
 export interface CardProps {
   status?: '게시 전' | '모집 중' | '준비 중' | '진행 중' | '종료' | string;
@@ -17,6 +17,8 @@ export interface CardProps {
   price: string | number;
   actionButtonText?: string;
   onActionClick?: () => void;
+  eventId?: number;
+  isWishlistedProp?: boolean;
 }
 
 export default function Card({
@@ -29,9 +31,18 @@ export default function Card({
   location,
   price,
   actionButtonText,
-  onActionClick
+  onActionClick,
+  eventId,
+  isWishlistedProp = false
 }: CardProps) {
 
+
+  const [isWishlisted, setIsWishlisted] = React.useState(isWishlistedProp);
+
+  // 초기에 전달된 관심 여부가 있으면 바로 반영되도록 효과 추가
+  React.useEffect(() => {
+    setIsWishlisted(isWishlistedProp);
+  }, [isWishlistedProp]);
 
   // 숫자일 경우 ₩ 포맷 변환, 문자열일 경우 그대로 렌더링 (단, 0일 경우 '무료'로 표시)
   const formattedPrice = price === 0 
@@ -43,11 +54,37 @@ export default function Card({
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        {tagText ? (
-          <Tag variant="gray">{tagText}</Tag>
-        ) : status ? (
-          <StatusTag domain="course" status={status} />
-        ) : null}
+        <div className={styles.topRow}>
+          {tagText ? (
+            <Tag variant="gray">{tagText}</Tag>
+          ) : status ? (
+            <StatusTag domain="course" status={status} />
+          ) : <div />}
+          <button type="button" 
+                  className={`${styles.wishlistButton} ${isWishlisted ? styles.active : ''}`} 
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Optimistic update
+                    const nextState = !isWishlisted;
+                    setIsWishlisted(nextState);
+                    
+                    if (eventId) {
+                      try {
+                        const res = await fetch(`/api/wishlists/events/${eventId}`, { method: 'POST' });
+                        if (!res.ok) {
+                          // Revert on error
+                          setIsWishlisted(!nextState);
+                        }
+                      } catch (err) {
+                        setIsWishlisted(!nextState);
+                      }
+                    }
+                  }}>
+            <WishlistIcon className={styles.wishlistIcon} fill="currentColor" stroke="transparent" />
+          </button>
+        </div>
         <h3 className={styles.title} title={title}>{title}</h3>
       </div>
 

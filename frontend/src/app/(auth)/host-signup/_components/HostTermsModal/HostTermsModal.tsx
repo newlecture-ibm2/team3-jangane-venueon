@@ -73,7 +73,7 @@ const TERMS_DATA: Record<HostTermType, { title: string; sections: { heading: str
       {
         heading: "제1조 (호스트의 정의)",
         body: [
-          "호스트란 VenueOn 플랫폼을 통해 공연, 전시, 이벤트 등의 행사를 등록하고 티켓을 판매하는 사업자(개인 또는 법인)를 의미합니다."
+          "호스트란 VenueOn 플랫폼을 통해 공연, 전시, 세션 등의 행사를 등록하고 티켓을 판매하는 사업자(개인 또는 법인)를 의미합니다."
         ]
       },
       {

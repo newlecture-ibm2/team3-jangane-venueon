@@ -35,7 +35,7 @@ export default async function EventEditPage({ params }: Props) {
   if (!event) {
     return (
       <div style={{ textAlign: 'center', padding: '100px 0' }}>
-        <h2>이벤트를 찾을 수 없습니다.</h2>
+        <h2>세션를 찾을 수 없습니다.</h2>
       </div>
     );
   }

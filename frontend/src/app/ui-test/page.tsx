@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput } from '@/components/ui';
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
+import CommunityCard from '@/app/community/components/CommunityCard';
 import { ConfirmModal, InputModal, UploadModal, PaymentModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 
@@ -377,8 +378,8 @@ export default function UITestPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '410px' }}>
 
           <TextareaField
-            label="강의 소개"
-            placeholder="강의에 대한 상세한 소개를 입력해주세요."
+            label="세션 소개"
+            placeholder="세션에 대한 상세한 소개를 입력해주세요."
             showCount={true}
           />
 
@@ -446,6 +447,20 @@ export default function UITestPage() {
       <div style={sectionStyle}>
         <h2 style={titleStyle}>17. Community Components</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+
+          {/* CommunityCard */}
+          <div>
+            <p style={{ marginBottom: '12px', color: '#6B7280' }}>CommunityCard (커뮤니티 리스트 카드)</p>
+            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+              <CommunityCard
+                postType="프로젝트 모집"
+                timeAgo="방금 전"
+                title="함께 사이드 프로젝트 완성할 프론트엔드 개발자 찾습니다 👀"
+                tagSectionTitle="모집 파트"
+                categories={['UI/UX 디자이너', 'PM (기획)', '프론트엔드', '백엔드']}
+              />
+            </div>
+          </div>
 
           {/* CommunityPostItem */}
           <div>
@@ -576,7 +591,7 @@ export default function UITestPage() {
           userName: '홍길동',
           statusText: '대기 중',
           date2: '2026-04-16',
-          reasonDetail: '해당 강의의 사업자 번호가 존재하지 않는 번호입니다. 확인 부탁드립니다.'
+          reasonDetail: '해당 세션의 사업자 번호가 존재하지 않는 번호입니다. 확인 부탁드립니다.'
         }}
         onConfirm={() => setIsInputAdminOpen(false)}
       />

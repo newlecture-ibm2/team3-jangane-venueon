@@ -6,9 +6,9 @@ import styles from './refund.module.css';
 // 취소 사유 선택지
 const CANCEL_REASONS = [
   '일정이 변경되어 참석이 어렵습니다.',
-  '다른 강의를 수강하고 싶습니다.',
+  '다른 세션를 수강하고 싶습니다.',
   '단순 변심입니다.',
-  '강의 내용이 기대와 달랐습니다.',
+  '세션 내용이 기대와 달랐습니다.',
   '직접 입력',
 ];
 
@@ -130,7 +130,7 @@ export default function RefundPage() {
       <div className={styles.headerSection}>
         <h1 className={styles.title}>내 수강 내역</h1>
         <p className={styles.subtitle}>
-          수강 신청한 강의 목록입니다. 결제 완료 상태의 강의만 취소가 가능합니다.
+          수강 신청한 세션 목록입니다. 결제 완료 상태의 세션만 취소가 가능합니다.
         </p>
       </div>
 
@@ -138,7 +138,7 @@ export default function RefundPage() {
       {orders.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>📋</div>
-          <p>아직 수강 신청한 강의가 없습니다.</p>
+          <p>아직 수강 신청한 세션가 없습니다.</p>
         </div>
       ) : (
         <div className={styles.orderList}>

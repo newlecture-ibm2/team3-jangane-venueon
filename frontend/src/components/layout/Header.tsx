@@ -33,7 +33,7 @@ export default function Header({
   const displayUserName = user?.nickname || userName;
   const displayUserImage = user?.profileImg || userImageUrl;
 
-  // /mypage 경로일 때는 항상 'myPage' 해더(강의 목록 + 프로필)를 보여주도록 강제
+  // /mypage 경로일 때는 항상 'myPage' 해더(세션 목록 + 프로필)를 보여주도록 강제
   const isMyPage = pathname?.startsWith('/mypage');
   const status = propStatus || (isMyPage ? 'myPage' : (user ? 'signedIn' : 'public'));
 
@@ -69,7 +69,7 @@ export default function Header({
       if (status === 'signedIn') {
         return (
           <div className={styles.actionGroup}>
-            <Link href="/mypage"><Button variant="outlined" size="medium">내 강의실</Button></Link>
+            <Link href="/mypage"><Button variant="outlined" size="medium">마이페이지</Button></Link>
             <Link href="/mypage/profile">
               <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
             </Link>
@@ -80,7 +80,7 @@ export default function Header({
       if (status === 'myPage') {
         return (
           <div className={styles.actionGroup}>
-            <Link href="/"><Button variant="outlined" size="medium">강의 목록</Button></Link>
+            <Link href="/"><Button variant="outlined" size="medium">세션 목록</Button></Link>
             <Link href="/mypage/profile">
               <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
             </Link>
@@ -103,7 +103,7 @@ export default function Header({
         return (
           <div className={styles.actionGroup}>
             <Link href="/host/dashboard">
-              <Button variant="outlined" size="medium">내 강의실</Button>
+              <Button variant="outlined" size="medium">마이페이지</Button>
             </Link>
             <Link href="/mypage/profile">
               <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
@@ -128,7 +128,7 @@ export default function Header({
       return (
         <div className={styles.actionGroup}>
           <Link href="/host/dashboard">
-            <Button variant="outlined" size="medium">내 강의실</Button>
+            <Button variant="outlined" size="medium">마이페이지</Button>
           </Link>
           <Link href="/mypage/profile">
             <UserProfile name={user?.nickname || '호스트'} size="large" />
@@ -141,7 +141,7 @@ export default function Header({
     // 기본: USER
     return (
       <div className={styles.actionGroup}>
-        <Link href="/mypage"><Button variant="outlined" size="medium">내 강의실</Button></Link>
+        <Link href="/mypage"><Button variant="outlined" size="medium">마이페이지</Button></Link>
         <Link href="/mypage/profile">
           <UserProfile name={user?.nickname || '사용자'} size="large" />
         </Link>
