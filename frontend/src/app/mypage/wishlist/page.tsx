@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Pagination, InputField } from '@/components/ui';
-import styles from '../seminars/page.module.css';
+import styles from '../events/page.module.css';
 
 // 관심 목록용 임시 데이터
 const mockWishlistLectures = Array.from({ length: 12 }, (_, i) => ({
