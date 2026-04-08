@@ -8,6 +8,7 @@ import com.venueon.event.application.port.in.UpdateEventUseCase;
 import com.venueon.event.application.port.out.EventRepositoryPort;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventStatus;
+import com.venueon.event.domain.model.PurchaseType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,8 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                 command.thumbnailUrl(),
                 command.startDate(),
                 command.endDate(),
+                false,                      // hasSession (기본값 — Step2에서 확장)
+                PurchaseType.SINGLE,        // purchaseType (기본값 — Step2에서 확장)
                 LocalDateTime.now(),        // createdAt
                 LocalDateTime.now()         // updatedAt
         );
@@ -88,7 +91,9 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                 command.maxAttendees(),
                 command.thumbnailUrl(),
                 command.startDate(),
-                command.endDate()
+                command.endDate(),
+                event.getHasSession(),      // 기존값 유지 — Step2에서 확장
+                event.getPurchaseType()     // 기존값 유지 — Step2에서 확장
         );
 
         return eventRepositoryPort.save(event);
