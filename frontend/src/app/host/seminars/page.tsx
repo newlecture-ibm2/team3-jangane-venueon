@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/layout/Sidebar';
-import { hostApi } from '@/lib/host-api';
+import { api } from '@/lib/api';
 import styles from './page.module.css';
 
 interface EventData {
@@ -49,7 +49,7 @@ export default function HostEventsPage() {
         endpoint += `&status=${status}`;
       }
       
-      const res = await hostApi.get<{ status: string; data: PageData }>(endpoint);
+      const res = await api.get<{ status: string; data: PageData }>(endpoint);
       setEventsData(res.data);
     } catch (error) {
       console.error('Failed to fetch events:', error);

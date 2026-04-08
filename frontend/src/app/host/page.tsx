@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/layout/Sidebar';
-import { hostApi } from '@/lib/host-api';
+import { api } from '@/lib/api';
 import styles from './page.module.css';
 
 interface RecentOrder {
@@ -71,10 +71,10 @@ export default function HostDashboardPage() {
   useEffect(() => {
     async function fetchDashboardStats() {
       try {
-        const publishedRes = await hostApi.get<{ status: string; data: { totalElements: number } }>('/host/seminars?size=1');
-        const draftRes = await hostApi.get<{ status: string; data: { totalElements: number } }>('/host/seminars/drafts?size=1');
-        const recentOrdersRes = await hostApi.get<{ status: string; data: RecentOrder[] }>('/host/orders/recent?size=5');
-        const orderSummaryRes = await hostApi.get<{ status: string; data: HostOrderSummary }>('/host/orders/summary');
+        const publishedRes = await api.get<{ status: string; data: { totalElements: number } }>('/host/seminars?size=1');
+        const draftRes = await api.get<{ status: string; data: { totalElements: number } }>('/host/seminars/drafts?size=1');
+        const recentOrdersRes = await api.get<{ status: string; data: RecentOrder[] }>('/host/orders/recent?size=5');
+        const orderSummaryRes = await api.get<{ status: string; data: HostOrderSummary }>('/host/orders/summary');
         
         setStats(prev => ({
           ...prev,
