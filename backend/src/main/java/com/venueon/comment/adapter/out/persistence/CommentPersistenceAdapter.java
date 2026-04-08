@@ -1,7 +1,9 @@
 package com.venueon.comment.adapter.out.persistence;
 
 import com.venueon.comment.adapter.out.persistence.entity.CommentJpaEntity;
+import com.venueon.comment.adapter.out.persistence.entity.CommentLikeJpaEntity;
 import com.venueon.comment.adapter.out.persistence.repository.CommentJpaRepository;
+import com.venueon.comment.adapter.out.persistence.repository.CommentLikeJpaRepository;
 import com.venueon.comment.application.port.out.CommentRepositoryPort;
 import com.venueon.comment.domain.model.Comment;
 import com.venueon.post.adapter.out.persistence.entity.PostJpaEntity;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class CommentPersistenceAdapter implements CommentRepositoryPort {
 
     private final CommentJpaRepository commentJpaRepository;
+    private final CommentLikeJpaRepository commentLikeJpaRepository;
     private final PostJpaRepository postJpaRepository;
     private final UserJpaRepository userJpaRepository;
 
@@ -43,6 +46,7 @@ public class CommentPersistenceAdapter implements CommentRepositoryPort {
                 .author(author)
                 .parent(parent)
                 .content(comment.getContent())
+                .likeCount(comment.getLikeCount())
                 .build();
 
         CommentJpaEntity saved = commentJpaRepository.save(entity);
@@ -67,6 +71,30 @@ public class CommentPersistenceAdapter implements CommentRepositoryPort {
         return commentJpaRepository.countByPostId(postId);
     }
 
+    @Override
+    public boolean existsLike(Long commentId, Long userId) {
+        return commentLikeJpaRepository.existsByCommentIdAndUserId(commentId, userId);
+    }
+
+    @Override
+    public void saveLike(Long commentId, Long userId) {
+        CommentJpaEntity comment = commentJpaRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));
+        UserJpaEntity user = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        CommentLikeJpaEntity like = CommentLikeJpaEntity.builder()
+                .comment(comment)
+                .user(user)
+                .build();
+        commentLikeJpaRepository.save(like);
+    }
+
+    @Override
+    public void deleteLike(Long commentId, Long userId) {
+        commentLikeJpaRepository.deleteByCommentIdAndUserId(commentId, userId);
+    }
+
     private Comment mapToDomain(CommentJpaEntity entity) {
         return Comment.builder()
                 .id(entity.getId())
@@ -75,6 +103,7 @@ public class CommentPersistenceAdapter implements CommentRepositoryPort {
                 .authorNickname(entity.getAuthor().getNickname())
                 .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
                 .content(entity.getContent())
+                .likeCount(entity.getLikeCount())
                 .createdAt(entity.getCreatedAt())
                 .build();
     }

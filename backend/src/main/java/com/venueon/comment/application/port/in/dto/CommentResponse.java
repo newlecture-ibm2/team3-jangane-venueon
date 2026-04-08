@@ -12,6 +12,7 @@ public record CommentResponse(
     String authorNickname,
     String content,
     Long parentId,
+    int likeCount,
     LocalDateTime createdAt
 ) {
 }

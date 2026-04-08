@@ -26,6 +26,7 @@ interface CommentResponse {
   authorNickname: string;
   content: string;
   parentId: number | null;
+  likeCount: number;
   createdAt: string;
 }
 
@@ -79,8 +80,8 @@ export default function CommunityPostContainer({ communityId }: Props) {
     }
   };
 
-  const fetchComments = async (postId: number) => {
-    setIsCommentsLoading(true);
+  const fetchComments = async (postId: number, silent = false) => {
+    if (!silent) setIsCommentsLoading(true);
     try {
       const response = await fetch(`/api/comments?postId=${postId}`);
       if (!response.ok) throw new Error('댓글을 불러오는데 실패했습니다.');
@@ -89,7 +90,7 @@ export default function CommunityPostContainer({ communityId }: Props) {
     } catch (error) {
       console.error(error);
     } finally {
-      setIsCommentsLoading(false);
+      if (!silent) setIsCommentsLoading(false);
     }
   };
 
@@ -144,6 +145,29 @@ export default function CommunityPostContainer({ communityId }: Props) {
       showToast('좋아요 처리 실패', 'error');
     } finally {
       setIsLikeSubmitting(false);
+    }
+  };
+
+  const handleCommentLikeToggle = async (commentId: number) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}/like`, {
+        method: 'POST',
+      });
+
+      if (response.status === 401) {
+        showToast('로그인이 필요합니다.', 'error');
+        return;
+      }
+
+      if (!response.ok) throw new Error('댓글 좋아요 실패');
+
+      // 댓글 목록만 새로고침 (로딩 표시 없이 데이터만 갱신)
+      if (selectedPostId) {
+        fetchComments(selectedPostId, true);
+      }
+    } catch (error) {
+      console.error(error);
+      showToast('좋아요 처리 실패', 'error');
     }
   };
 
@@ -281,6 +305,8 @@ export default function CommunityPostContainer({ communityId }: Props) {
                     username={comment.authorNickname}
                     date={new Date(comment.createdAt).toLocaleDateString() + ' / ' + new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     content={comment.content}
+                    likeCount={comment.likeCount}
+                    onLike={() => handleCommentLikeToggle(comment.id)}
                     menuItems={[{ value: 'report', label: '신고하기' }]}
                   />
                 ))
