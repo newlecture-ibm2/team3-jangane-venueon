@@ -5,9 +5,9 @@ import Footer from "@/components/layout/Footer";
 import Toast from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
-  title: "VenueOn — 이벤트 중계 플랫폼",
+  title: "VenueOn — 세션 중계 플랫폼",
   description:
-    "유료·무료 이벤트를 탐색하고, 티켓을 구매하고, 커뮤니티에 참여하세요.",
+    "유료·무료 세션를 탐색하고, 티켓을 구매하고, 커뮤니티에 참여하세요.",
 };
 
 export default function RootLayout({

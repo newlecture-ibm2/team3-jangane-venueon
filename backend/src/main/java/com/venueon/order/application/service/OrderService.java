@@ -11,6 +11,9 @@ import com.venueon.order.application.port.out.RefundSavePort;
 import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.order.adapter.in.web.dto.*;
+import com.venueon.order.application.port.in.RequestRefundUseCase;
+import com.venueon.event.application.port.out.SessionPort;
+import com.venueon.event.domain.model.EventSession;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +40,7 @@ public class OrderService {
     private final TossPaymentClient tossPaymentClient;
     private final RefundSavePort refundSavePort;
     private final RequestRefundUseCase requestRefundUseCase;
+    private final SessionPort sessionPort;
 
     @Value("${toss.client-key}")
     private String tossClientKey;
@@ -55,33 +59,55 @@ public class OrderService {
         UserJpaEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
-        // 3. 중복 주문 검증 (PAID, REGISTERED 상태인 완료된 주문만)
-        List<Order> existingOrders = orderRepository.findByUserIdAndEventIdAndStatusIn(
-                userId, request.getEventId(),
+        // 3. 세션 조회 및 검증
+        EventSession session = null;
+        if (request.getSessionId() != null) {
+            session = sessionPort.findById(request.getSessionId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND)); // Session Not Found
+            if (!session.getEventId().equals(event.getId())) {
+                throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+            }
+        } else {
+            if (event.isHasSession()) {
+                throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE); // 세션이 필수인 이벤트
+            }
+            session = sessionPort.findDefaultByEventId(event.getId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
+        }
+
+        // 3-2. 중복 주문 검증 (세션 기준)
+        List<Order> existingOrders = orderRepository.findByUserIdAndSessionIdAndStatusIn(
+                userId, session.getId(),
                 List.of(OrderStatus.PAID, OrderStatus.REGISTERED));
         if (!existingOrders.isEmpty()) {
             throw new BusinessException(ErrorCode.ORDER_ALREADY_EXISTS);
         }
 
-        // 4. 정원 초과 검증
-        long currentAttendees = orderRepository.countByEventIdAndStatusIn(
-                request.getEventId(),
+        // 4. 정원 초과 검증 (세션 기준)
+        long currentAttendees = orderRepository.countBySessionIdAndStatusIn(
+                session.getId(),
                 List.of(OrderStatus.PAID, OrderStatus.REGISTERED));
-        if (event.getMaxAttendees() > 0 && currentAttendees + request.getQuantity() > event.getMaxAttendees()) {
+        if (session.getMaxAttendees() > 0 && currentAttendees + request.getQuantity() > session.getMaxAttendees()) {
             throw new BusinessException(ErrorCode.EVENT_FULL);
         }
 
-        // 5. 주문 금액 계산
-        int totalAmount = event.getPrice() * request.getQuantity();
+        // 5. 주문 금액 계산 (세션 금액 기준)
+        int totalAmount = session.getPrice() * request.getQuantity();
 
-        // 6. 순수 도메인 모델 생성 및 초기 저장 (ID 발급용)
-        Order pendingOrder = Order.createPending(userId, request.getEventId(), request.getQuantity(), totalAmount,
+        // 6. 순수 도메인 모델 생성 및 초기 저장
+        Order pendingOrder = Order.createPending(userId, request.getEventId(), session.getId(), request.getQuantity(), totalAmount,
                 request.getPaymentMethod());
         Order savedOrder = orderRepository.save(pendingOrder);
 
-        // 7. tossOrderId 발급 및 도메인 객체 업데이트
+        // 7. tossOrderId 발급 및 무료 승인 처리
         String tossOrderId = "venueon_order_" + savedOrder.getId() + "_" + System.currentTimeMillis();
         savedOrder.updateTossOrderId(tossOrderId);
+        
+        // 무료 주문인 경우 즉시 승인 및 참석자 증가
+        if (savedOrder.getStatus() == OrderStatus.REGISTERED) {
+            session.incrementAttendees(savedOrder.getQuantity());
+            sessionPort.save(session, event.getId());
+        }
 
         // 8. 변경된(tossOrderId가 추가된) 도메인 모델 다시 저장
         savedOrder = orderRepository.save(savedOrder);
@@ -127,7 +153,17 @@ public class OrderService {
         // 4. 도메인 모델 상태 업데이트 (PENDING → PAID)
         order.confirmPayment(request.getPaymentKey());
 
-        // 5. 도메인 모델 저장
+        // 5. 세션 참석자 업데이트
+        int qty = order.getQuantity();
+        Long evtId = order.getEventId();
+        if (order.getSessionId() != null) {
+            sessionPort.findById(order.getSessionId()).ifPresent(session -> {
+                session.incrementAttendees(qty);
+                sessionPort.save(session, evtId);
+            });
+        }
+
+        // 6. 도메인 모델 저장
         order = orderRepository.save(order);
 
         log.info("결제 승인 완료: orderId={}, paymentKey={}", orderId, request.getPaymentKey());
@@ -183,6 +219,17 @@ public class OrderService {
         if ("DONE".equals(status) && order.getStatus() == OrderStatus.PENDING) {
             order.confirmPayment(paymentKey);
             orderRepository.save(order); // 변경 상태 저장
+            
+            // 참석자 업데이트
+            int qty = order.getQuantity();
+            Long evtId = order.getEventId();
+            if (order.getSessionId() != null) {
+                sessionPort.findById(order.getSessionId()).ifPresent(session -> {
+                    session.incrementAttendees(qty);
+                    sessionPort.save(session, evtId);
+                });
+            }
+            
             log.info("Webhook: 결제 확인 완료. orderId={}", order.getId());
         }
     }
@@ -207,8 +254,8 @@ public class OrderService {
      * 내 주문/결제 내역
      * API 스펙: GET /orders/me
      */
-    public Page<OrderDetailResponse> getMyOrders(Long userId, Pageable pageable) {
-        return orderRepository.findValidOrdersByUserId(userId, pageable)
+    public Page<OrderDetailResponse> getMyOrders(Long userId, String tab, Pageable pageable) {
+        return orderRepository.findValidOrdersByUserId(userId, tab, pageable)
                 .map(this::toOrderDetailResponse);
     }
 
@@ -245,6 +292,16 @@ public class OrderService {
         // 6. 도메인 상태 변경
         order.refund();
         orderRepository.save(order);
+        
+        // 세션 참석자 감소
+        int qty = order.getQuantity();
+        Long evtId = order.getEventId();
+        if (order.getSessionId() != null) {
+            sessionPort.findById(order.getSessionId()).ifPresent(session -> {
+                session.decrementAttendees(qty);
+                sessionPort.save(session, evtId);
+            });
+        }
 
         // 7. refunds 테이블에 환불 이력 저장
         refundSavePort.saveRefundRecord(orderId, userId, order.getAmount(), reason);
@@ -289,6 +346,7 @@ public class OrderService {
                 .organizer(organizer)
                 .location(location)
                 .eventStartDate(event != null ? event.getStartDate() : null)
+                .eventStatus(event != null ? event.getStatus().name() : "DRAFT")
                 .build();
     }
 

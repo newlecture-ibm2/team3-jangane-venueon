@@ -2,6 +2,7 @@ package com.venueon.event.application.port.in;
 
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventType;
+import com.venueon.event.domain.model.PurchaseType;
 import java.time.LocalDateTime;
 
 public interface UpdateEventUseCase {
@@ -21,7 +22,9 @@ public interface UpdateEventUseCase {
             int maxAttendees,
             String thumbnailUrl,
             LocalDateTime startDate,
-            LocalDateTime endDate
+            LocalDateTime endDate,
+            boolean hasSession,
+            PurchaseType purchaseType
     ) {
     }
 }

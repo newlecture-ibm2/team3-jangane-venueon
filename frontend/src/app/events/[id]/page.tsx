@@ -44,11 +44,13 @@ export default async function EventDetailPage({ params }: Props) {
   const { id } = await params;
   const event = await getEventDetail(id);
 
+  console.log("EVENT PAYLOAD FROM BACKEND:", JSON.stringify(event, null, 2));
+
   if (!event || event.error) {
     return (
       <div className={styles.container} style={{ textAlign: 'center', padding: '100px 0' }}>
-        <h2>이벤트를 찾을 수 없거나 불러오지 못했습니다.</h2>
-        <p>삭제되었거나 존재하지 않는 이벤트입니다.</p>
+        <h2>세션를 찾을 수 없거나 불러오지 못했습니다.</h2>
+        <p>삭제되었거나 존재하지 않는 세션입니다.</p>
         <div style={{ marginTop: 20, color: 'red', textAlign: 'left', background: '#ffebee', padding: 16 }}>
           <pre>{JSON.stringify(event, null, 2)}</pre>
         </div>
@@ -73,7 +75,7 @@ export default async function EventDetailPage({ params }: Props) {
       {/* 뒤로 가기 바 */}
       <div className={styles.topBar}>
         <Link href="/" className={styles.backButton}>
-          ← 강의 목록 보기
+          ← 세션 목록 보기
         </Link>
       </div>
 
@@ -97,9 +99,9 @@ export default async function EventDetailPage({ params }: Props) {
         )}
       </div>
 
-      {/* 강의 정보 섹션 */}
+      {/* 세션 정보 섹션 */}
       <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>강의 정보</h3>
+        <h3 className={styles.sectionTitle}>세션 정보</h3>
         <div className={styles.description}>
           {event.description}
         </div>
@@ -120,11 +122,55 @@ export default async function EventDetailPage({ params }: Props) {
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>장소</span>
             <span className={styles.infoValue}>
-              {event.isOnline ? '온라인 이벤트' : event.location}
+              {event.isOnline ? '온라인 세션' : event.location}
             </span>
           </div>
         </div>
       </section>
+
+      {/* 다중 세션 정보 섹션 (있는 경우에만 표시) */}
+      {event.hasSession && event.sessions && event.sessions.length > 0 && (
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>
+            세션 일정 ({event.purchaseType === 'PACKAGE' ? '패키지(전체 필수 수강)' : '선택형 수강'})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {event.sessions.map((session: any, index: number) => (
+              <div key={session.id || index} style={{ border: '1px solid #eaeaea', padding: '16px', borderRadius: '12px', background: '#fafafa' }}>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '16px' }}>{session.title || `세션 ${index + 1}`}</h4>
+                {session.description && (
+                  <p style={{ fontSize: '14px', color: '#666', marginBottom: '12px', lineHeight: '1.5' }}>
+                    {session.description}
+                  </p>
+                )}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '14px', color: '#333' }}>
+                  <span>🕒 <strong>시간:</strong> {format(new Date(session.startTime), 'MM-dd HH:mm')} ~ {format(new Date(session.endTime), 'HH:mm')}</span>
+                  <span>🏫 <strong>장소:</strong> {session.isOnline ? '온라인' : session.location}</span>
+                  <span>💰 <strong>가격:</strong> {session.price === 0 ? '무료' : `₩${session.price.toLocaleString()}`}</span>
+                  <span>👤 <strong>인원:</strong> {session.currentAttendees} / {session.maxAttendees} 명</span>
+                </div>
+                {/* 세션 개별 수강 신청 버튼 */}
+                {event.status === 'PUBLISHED' && session.currentAttendees < session.maxAttendees && (
+                  <div style={{ marginTop: '16px', textAlign: 'right' }}>
+                    <Link href={`/orders/checkout?eventId=${id}&quantity=1&sessionId=${session.id}`} style={{ textDecoration: 'none' }}>
+                      <Button variant="primary" size="medium">
+                        이 세션 수강 신청
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+                {event.status === 'PUBLISHED' && session.maxAttendees > 0 && session.currentAttendees >= session.maxAttendees && (
+                  <div style={{ marginTop: '16px', textAlign: 'right' }}>
+                    <Button variant="outlined" size="medium" disabled>
+                      정원 초과
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 주최자 정보 섹션 */}
       <section className={styles.section}>
@@ -147,14 +193,20 @@ export default async function EventDetailPage({ params }: Props) {
       {/* 하단 액션 버튼 */}
       <div className={styles.bottomActionArea}>
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <Button variant="outlined" size="large">강의 목록</Button>
+          <Button variant="outlined" size="large">세션 목록</Button>
         </Link>
         {event.status === 'PUBLISHED' ? (
-          <Link href={`/orders/checkout?eventId=${id}&quantity=1`} style={{ textDecoration: 'none' }}>
-            <Button variant="primary" size="large">
-              수강 신청
+          event.hasSession ? (
+            <Button variant="primary" size="large" disabled>
+              ↑ 위 세션 목록에서 선택해주세요
             </Button>
-          </Link>
+          ) : (
+            <Link href={`/orders/checkout?eventId=${id}&quantity=1`} style={{ textDecoration: 'none' }}>
+              <Button variant="primary" size="large">
+                수강 신청
+              </Button>
+            </Link>
+          )
         ) : (
           <Button variant="primary" size="large" disabled>
             신청 불가

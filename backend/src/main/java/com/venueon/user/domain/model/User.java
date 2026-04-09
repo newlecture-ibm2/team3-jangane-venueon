@@ -17,16 +17,21 @@ public class User {
     private AuthProvider provider;
     private String profileImg;
     private String phone;
+    private boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    private java.util.List<String> categories = new java.util.ArrayList<>();
+    private boolean badgeVisible;
 
     // 기본 생성자
     protected User() {}
 
     // 전체 필드 생성자
     public User(Long id, String email, String password, String nickname, UserRole role,
-                AuthProvider provider, String profileImg, String phone,
-                LocalDateTime createdAt, LocalDateTime updatedAt) {
+                AuthProvider provider, String profileImg, String phone, boolean active,
+                LocalDateTime createdAt, LocalDateTime updatedAt, 
+                java.util.List<String> categories, boolean badgeVisible) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -35,15 +40,18 @@ public class User {
         this.provider = provider != null ? provider : AuthProvider.LOCAL;
         this.profileImg = profileImg;
         this.phone = phone;
+        this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.categories = categories != null ? categories : new java.util.ArrayList<>();
+        this.badgeVisible = badgeVisible;
     }
 
-    // 이전 생성자와의 호환성 유지
+    // 구버전 호환용 생성자
     public User(Long id, String email, String password, String nickname, UserRole role,
-                String profileImg, String phone,
+                AuthProvider provider, String profileImg, String phone, boolean active,
                 LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this(id, email, password, nickname, role, AuthProvider.LOCAL, profileImg, phone, createdAt, updatedAt);
+        this(id, email, password, nickname, role, provider, profileImg, phone, active, createdAt, updatedAt, new java.util.ArrayList<>(), true);
     }
 
     // --- 비즈니스 행위 메서드 ---
@@ -60,14 +68,60 @@ public class User {
         return this.provider == AuthProvider.GOOGLE;
     }
 
-    public void updateProfile(String nickname, String profileImg) {
+    public void updateProfile(String nickname, String profileImg, java.util.List<String> categories, Boolean showBadge) {
         this.nickname = nickname;
         this.profileImg = profileImg;
+        if (categories != null) {
+            this.categories = categories;
+        }
+        if (showBadge != null) {
+            this.badgeVisible = showBadge;
+        }
         this.updatedAt = LocalDateTime.now();
     }
 
     public void updatePassword(String encodedNewPassword) {
         this.password = encodedNewPassword;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 역할 변경 (어드민 전용)
+     */
+    public void changeRole(UserRole newRole) {
+        this.role = newRole;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 닉네임 변경 (어드민 전용)
+     */
+    public void changeNickname(String newNickname) {
+        this.nickname = newNickname;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 전화번호 변경 (어드민 전용)
+     */
+    public void changePhone(String newPhone) {
+        this.phone = newPhone;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 계정 비활성화 (정지)
+     */
+    public void deactivate() {
+        this.active = false;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 계정 활성화 (정지 해제)
+     */
+    public void activate() {
+        this.active = true;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -81,6 +135,9 @@ public class User {
     public AuthProvider getProvider() { return provider; }
     public String getProfileImg() { return profileImg; }
     public String getPhone() { return phone; }
+    public boolean isActive() { return active; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public java.util.List<String> getCategories() { return categories; }
+    public boolean isBadgeVisible() { return badgeVisible; }
 }

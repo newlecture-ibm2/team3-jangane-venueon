@@ -34,6 +34,7 @@ export default function InputField({
         <input 
           className={styles.inputElement} 
           disabled={disabled}
+          placeholder={props.placeholder || '검색어를 입력하세요'}
           {...props} 
         />
       </div>

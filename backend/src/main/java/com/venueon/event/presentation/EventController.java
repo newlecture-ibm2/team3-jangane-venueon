@@ -4,9 +4,12 @@ import com.venueon.common.dto.ApiResponse;
 import com.venueon.event.adapter.in.web.dto.EventDetailResponse;
 import com.venueon.event.adapter.in.web.dto.EventListResponse;
 import com.venueon.event.application.port.in.GetEventListUseCase.EventSearchCondition;
+import com.venueon.event.application.port.in.GetSessionUseCase;
 import com.venueon.event.application.port.out.LoadHostInfoPort.HostInfo;
 import com.venueon.event.application.service.EventQueryService;
+import com.venueon.event.adapter.in.web.dto.SessionResponse;
 import com.venueon.event.domain.model.Event;
+import com.venueon.event.domain.model.EventSession;
 import com.venueon.event.domain.model.EventType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +17,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 이벤트 공개 API — 누구나 접근 가능
@@ -24,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 public class EventController {
 
     private final EventQueryService eventQueryService;
+    private final GetSessionUseCase getSessionUseCase;
 
     /**
      * 이벤트 목록 조회 (검색/필터/페이징)
@@ -63,7 +70,13 @@ public class EventController {
     public ApiResponse<EventDetailResponse> getEventDetail(@PathVariable Long id) {
         Event event = eventQueryService.getEventById(id);
         HostInfo hostInfo = eventQueryService.getHostInfoByCreatorId(event.getCreatorId());
-        EventDetailResponse response = EventDetailResponse.from(event, hostInfo);
+        
+        List<SessionResponse> sessions = getSessionUseCase.getSessionsByEventId(id)
+                .stream()
+                .map(SessionResponse::from)
+                .collect(Collectors.toList());
+                
+        EventDetailResponse response = EventDetailResponse.from(event, hostInfo, sessions);
         return ApiResponse.success(response);
     }
 

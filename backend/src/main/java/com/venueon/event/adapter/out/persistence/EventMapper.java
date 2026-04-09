@@ -5,6 +5,7 @@ import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
+import com.venueon.event.domain.model.PurchaseType;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,8 @@ public class EventMapper {
                 entity.getThumbnailUrl(),
                 entity.getStartDate(),
                 entity.getEndDate(),
+                entity.isHasSession(),
+                entity.getPurchaseType(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
@@ -69,6 +72,8 @@ public class EventMapper {
                 .thumbnailUrl(domain.getThumbnailUrl())
                 .startDate(domain.getStartDate())
                 .endDate(domain.getEndDate())
+                .hasSession(domain.getHasSession())
+                .purchaseType(domain.getPurchaseType())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
                 .build();

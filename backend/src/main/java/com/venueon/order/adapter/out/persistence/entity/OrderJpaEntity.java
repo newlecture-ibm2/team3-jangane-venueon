@@ -1,6 +1,7 @@
 package com.venueon.order.adapter.out.persistence.entity;
 
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
+import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
@@ -29,6 +30,10 @@ public class OrderJpaEntity {
     @JoinColumn(name = "event_id", nullable = false)
     private EventJpaEntity event;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "session_id")
+    private EventSessionJpaEntity session;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -54,6 +59,9 @@ public class OrderJpaEntity {
     @Column(name = "ordered_at", nullable = false, updatable = false)
     private LocalDateTime orderedAt;
 
+    @Column(name = "display_ordered_at")
+    private LocalDateTime displayOrderedAt;
+
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
 
@@ -71,5 +79,9 @@ public class OrderJpaEntity {
 
     public void updateStatus(OrderStatus newStatus) {
         this.status = newStatus;
+    }
+
+    public EventSessionJpaEntity getSession() {
+        return session;
     }
 }

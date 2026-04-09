@@ -12,6 +12,8 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    CANNOT_DELETE_ADMIN(HttpStatus.BAD_REQUEST, "관리자 계정은 삭제할 수 없습니다."),
 
     // Order / Payment
     EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "이벤트를 찾을 수 없습니다."),
@@ -23,7 +25,11 @@ public enum ErrorCode {
     ORDER_ACCESS_DENIED(HttpStatus.FORBIDDEN, "본인의 주문만 조회 가능합니다."),
     ALREADY_REFUNDED(HttpStatus.UNPROCESSABLE_ENTITY, "이미 환불 처리된 주문입니다."),
     REFUND_NOT_ALLOWED(HttpStatus.UNPROCESSABLE_ENTITY, "환불이 불가능한 주문 상태입니다."),
-    REFUND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "환불 처리 중 오류가 발생했습니다.");
+    REFUND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "환불 처리 중 오류가 발생했습니다."),
+    
+    // Session
+    SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "세션을 찾을 수 없습니다."),
+    SESSION_DELETE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "기본 세션이거나 등록된 주문이 있어 삭제할 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

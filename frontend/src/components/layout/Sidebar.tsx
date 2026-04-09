@@ -5,12 +5,13 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import styles from './Sidebar.module.css';
 import ConfirmModal from '@/components/modal/ConfirmModal';
+import { useAuth } from '@/store/useAuthStore';
 
-import { 
-  DashboardIcon, 
-  SeminarIcon, 
-  SettingIcon, 
-  CommunityIcon, 
+import {
+  DashboardIcon,
+  SeminarIcon,
+  SettingIcon,
+  CommunityIcon,
   ProfileIcon,
   LogoutIcon,
   SeminarSettingIcon,
@@ -24,7 +25,7 @@ import {
 export interface SidebarProps {
   role?: 'admin' | 'host' | 'user';
   className?: string;
-  fakePathname?: string; 
+  fakePathname?: string;
 }
 
 interface SidebarItemProps {
@@ -53,7 +54,7 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
 
   if (onClick) {
     return (
-      <button 
+      <button
         type="button"
         onClick={onClick}
         className={`${styles.item} ${itemStyle}`}
@@ -65,8 +66,8 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
   }
 
   return (
-    <Link 
-      href={href} 
+    <Link
+      href={href}
       className={`${styles.item} ${itemStyle}`}
     >
       {content}
@@ -80,22 +81,22 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
   const router = useRouter();
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const { logout } = useAuth();
 
-  // 로그아웃 확인 클릭 시 동작 (가상의 로그아웃 후 로그인 페이지 이동)
-  const handleLogoutConfirm = () => {
+  // 로그아웃 확인 클릭 시 동작
+  const handleLogoutConfirm = async () => {
     setIsLogoutModalOpen(false);
-    // TODO: 실제 로그아웃 로직(API 호출, 토큰 삭제 등)은 이곳에 추가
-    router.push('/login');
+    await logout();
   };
 
   const getMenus = () => {
-    switch(role) {
+    switch (role) {
       case 'admin':
         return [
           { label: '대시보드', href: '/admin/dashboard', icon: DashboardIcon },
           { label: '사용자 관리', href: '/admin/users', icon: ProfileIcon },
           { label: '시스템 설정', href: '/admin/settings', icon: SettingIcon },
-          { label: '강의 관리', href: '/admin/seminars', icon: SeminarSettingIcon },
+          { label: '세션 관리', href: '/admin/events', icon: SeminarSettingIcon },
           { label: '커뮤니티 관리', href: '/admin/community', icon: CommunityIcon },
           { label: '신고 관리', href: '/admin/reports', icon: ReportIcon },
           { label: '환불 모니터링', href: '/admin/refunds', icon: DelayedRefundIcon },
@@ -103,17 +104,19 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
         ];
       case 'host':
         return [
-          { label: '대시보드', href: '/host/dashboard', icon: DashboardIcon },
-          { label: '내 강의 목록', href: '/host/seminars', icon: SeminarIcon },
+          { label: '대시보드', href: '/host', icon: DashboardIcon },
+          { label: '내 강의 목록', href: '/host/events', icon: SeminarIcon },
           { label: '프로필 설정', href: '/host/profile', icon: ProfileIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
       case 'user':
       default:
         return [
-          { label: '내 강의 목록', href: '/mypage', icon: SeminarIcon },
+          { label: '대시보드', href: '/mypage', icon: DashboardIcon },
+          { label: '내 세션 목록', href: '/mypage/events', icon: SeminarIcon },
           { label: '결제 내역', href: '/mypage/orders', icon: OrderIcon },
-          { label: '관심 목록', href: '/mypage/wishlist', icon: WishlistIcon },
+          { label: '찜 목록', href: '/mypage/wishlist', icon: WishlistIcon },
+          { label: '내 커뮤니티', href: '/mypage/community', icon: CommunityIcon },
           { label: '프로필 설정', href: '/mypage/profile', icon: ProfileIcon },
           { label: '계정 보안', href: '/mypage/security', icon: SecurityIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
@@ -135,7 +138,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
   }, null as any);
 
   return (
-    <aside 
+    <aside
       className={`${styles.sidebar} ${className}`.trim()}
       style={{ height: 'calc(100vh - 40px)' }}
     >

@@ -4,28 +4,36 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Pagination, InputField } from '@/components/ui';
-import styles from '../page.module.css';
-
-// 관심 목록용 임시 데이터
-const mockWishlistLectures = Array.from({ length: 12 }, (_, i) => ({
-  id: i + 1,
-  status: i % 2 === 0 ? '모집 중' : '진행 중',
-  title: `찜한 강의 ${i + 1} — 정말 듣고 싶은 클래스`,
-  organizer: '최고의 강사진',
-  dateTime: '2026.05.01 ~ 2026.06.30',
-  location: '온라인',
-  price: 45000,
-}));
-
-const ITEMS_PER_PAGE = 8;
+import styles from '../events/page.module.css';
 
 export default function WishlistPage() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const [lectures, setLectures] = useState<any[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const ITEMS_PER_PAGE = 8;
+  const [loading, setLoading] = useState(false);
 
-  const totalPages = Math.ceil(mockWishlistLectures.length / ITEMS_PER_PAGE) || 1;
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentLectures = mockWishlistLectures.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  React.useEffect(() => {
+    async function fetchWishlist() {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/wishlists/me?page=${currentPage - 1}&size=${ITEMS_PER_PAGE}`);
+        if (res.ok) {
+          const json = await res.json();
+          setLectures(json.data.content || []);
+          setTotalPages(json.data.totalPages || 1);
+        } else {
+          setLectures([]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch wishlist', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchWishlist();
+  }, [currentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -38,31 +46,39 @@ export default function WishlistPage() {
 
       <div className="sidebar-content">
         <div className={styles.content}>
-          <h1 className={styles.pageTitle}>관심 목록</h1>
+          <h1 className={styles.pageTitle}>찜 목록</h1>
 
           <div className={styles.listSection}>
             <InputField
               variant="search"
-              placeholder="관심 강의 검색"
+              className={styles.searchBar}
             />
 
             <CardGrid layout="2-cols">
-              {currentLectures.map((lecture) => (
+              {lectures.map((lecture) => (
                 <Card
-                  key={lecture.id}
+                  key={lecture.wishlistId}
+                  eventId={lecture.id}
+                  isWishlistedProp={true}
                   status={lecture.status}
                   title={lecture.title}
                   organizer={lecture.organizer}
                   dateTime={lecture.dateTime}
                   location={lecture.location}
                   price={lecture.price}
-                  actionButtonText="자세히 보기"
-                  onActionClick={() => router.push(`/events`)}
+                  actionButtonText="장바구니 담기"
+                  onActionClick={() => router.push(`/events/${lecture.id}`)}
                 />
               ))}
             </CardGrid>
 
-            {mockWishlistLectures.length > 0 && (
+            {!loading && lectures.length === 0 && (
+              <p style={{ color: 'var(--color-text-gray-500)', textAlign: 'center', width: '100%', padding: 'var(--space-48) 0' }}>
+                아직 찜한 세션이 없습니다.
+              </p>
+            )}
+
+            {lectures.length > 0 && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

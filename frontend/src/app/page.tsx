@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import { Card, CardGrid, InputField, Tabs, Pagination } from '@/components/ui';
 import { format } from 'date-fns';
@@ -25,7 +25,9 @@ interface EventData {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [events, setEvents] = useState<EventData[]>([]);
+  const [wishlistSet, setWishlistSet] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -54,6 +56,20 @@ export default function Home() {
       if (resData.success) {
         setEvents(resData.data.content);
         setTotalPages(resData.data.totalPages);
+        
+        // Wishlist도 동시에 조회 (비로그인이거나 에러시 조용히 넘어감)
+        try {
+          const wlRes = await fetch('/api/wishlists/me?size=100');
+          if (wlRes.ok) {
+            const wlData = await wlRes.json();
+            if (wlData.data && wlData.data.content) {
+              const ids = new Set<number>(wlData.data.content.map((item: any) => item.id));
+              setWishlistSet(ids);
+            }
+          }
+        } catch (e) {
+          // ignore error (e.g. not logged in)
+        }
       } else {
         console.error('Failed to fetch events:', resData.message);
       }
@@ -117,18 +133,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 이벤트 카드 리스트 */}
+        {/* 세션 카드 리스트 */}
         <section className={styles.content}>
           {loading ? (
             <div>Loading...</div>
           ) : events.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '100px 0' }}>등록된 강의가 없습니다.</div>
+            <div style={{ textAlign: 'center', padding: '100px 0' }}>등록된 세션가 없습니다.</div>
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => (
-                <Link href={`/events/${event.id}`} key={event.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div 
+                  key={event.id} 
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => router.push(`/events/${event.id}`)}
+                >
                   <Card
                     title={event.title}
+                    eventId={event.id}
+                    isWishlistedProp={wishlistSet.has(event.id)}
                     imageUrl={event.thumbnailUrl ? `${BACKEND_URL}/upload/${event.thumbnailUrl}` : ''}
                     organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 시 실제 이름으로 변경
                     dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
@@ -136,7 +158,7 @@ export default function Home() {
                     price={event.price}
                     status={event.status}
                   />
-                </Link>
+                </div>
               ))}
             </CardGrid>
           )}
