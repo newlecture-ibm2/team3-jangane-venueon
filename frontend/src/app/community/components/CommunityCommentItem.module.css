@@ -1,15 +1,19 @@
 /* src/components/ui/CommunityCommentItem.module.css */
 
 .item {
+  position: relative;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 0;
+  padding: 24px;
   gap: var(--space-12);
-  width: 100%;
+  box-sizing: border-box;
 
-  background: var(--color-text-gray-50);          /* #F9FAFB */
-  border-radius: var(--radius-lg);                /* 12px */
+  background: var(--color-text-gray-50);
+  /* #F9FAFB */
+  border-radius: var(--radius-lg);
+  /* 12px */
 }
 
 /* --------- 상단 행 (프로필 + 날짜 + 더보기) --------- */
@@ -31,8 +35,10 @@
 
 /* --------- 날짜 --------- */
 .date {
-  font: var(--text-caption-regular);              /* 400 12px/150% */
-  color: var(--color-text-gray-500);              /* #6B7280 */
+  font: var(--text-caption-regular);
+  /* 400 12px/150% */
+  color: var(--color-text-gray-500);
+  /* #6B7280 */
   white-space: nowrap;
 }
 
@@ -45,20 +51,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;   /* 24px */
+  width: 1.5rem;
+  /* 24px */
   height: 1.5rem;
   flex-shrink: 0;
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--color-text-gray-500);              /* #6B7280 */
+  color: var(--color-text-gray-500);
+  /* #6B7280 */
   padding: 0;
 }
 
 /* --------- 댓글 본문 --------- */
 .content {
-  font: var(--text-body-medium);                  /* 500 14px/150% */
-  color: var(--color-text-gray-900);              /* #111827 */
+  font: var(--text-body-medium);
+  /* 500 14px/150% */
+  color: var(--color-text-gray-900);
+  /* #111827 */
   align-self: stretch;
   margin: 0;
 
@@ -118,4 +128,72 @@
 
 .replyButton:hover {
   text-decoration: underline;
+}
+
+.replyLine {
+  position: absolute;
+  left: -28px;
+  top: 0;
+  width: 20px;
+  height: 24px;
+  border-left: 1px solid #9CA3AF;
+  border-bottom: 1px solid #9CA3AF;
+}
+
+.commentAvatar [class*="userName"] {
+  display: none;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.date {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.2;
+}
+
+.replyLine {
+  position: absolute;
+  left: -28px;
+  top: 0;
+  width: 20px;
+  height: 24px;
+  border-left: 1px solid #9CA3AF;
+  border-bottom: 1px solid #9CA3AF;
+}
+
+.commentAvatar [class*="userName"] {
+  display: none;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.date {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.2;
 }

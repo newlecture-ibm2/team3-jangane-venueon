@@ -67,6 +67,7 @@ public class Post {
 
     public void toggleNotice() {
         this.isNotice = !this.isNotice;
+        this.type = this.isNotice ? PostType.NOTICE : PostType.GENERAL;
         if (this.isNotice) {
             this.isPinned = true;
         } else {
