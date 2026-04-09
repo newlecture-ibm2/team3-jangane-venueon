@@ -129,34 +129,34 @@ public class DataInitializer implements ApplicationRunner {
                         String orgName, String orgNumber, String managerName, String orgDescription) {}
 
         List<HostData> hostDataList = List.of(
-                new HostData("contact@nextcode.kr", "NextCode", "nextcode.png", "02-1234-5678",
+                new HostData("contact@nextcode.kr", "NextCode", "profile/2026/04/nextcode.png", "02-1234-5678",
                         "넥스트코드", "123-45-67890", "김개발",
                         "AI와 클라우드 기술 전문 교육 기업. 현직 개발자가 이끄는 실무 중심 코딩 부트캠프와 기술 세미나를 운영합니다."),
-                new HostData("hello@designbridge.co.kr", "DesignBridge", "designbridge.png", "02-2345-6789",
+                new HostData("hello@designbridge.co.kr", "DesignBridge", "profile/2026/04/designbridge.png", "02-2345-6789",
                         "디자인브릿지", "234-56-78901", "이디자인",
                         "UX/UI 디자인 전문 에이전시. 실무 프로젝트 기반의 디자인 워크숍과 포트폴리오 클래스를 제공합니다."),
-                new HostData("info@sparkventures.io", "SparkVentures", "sparkventures.png", "02-3456-7890",
+                new HostData("info@sparkventures.io", "SparkVentures", "profile/2026/04/sparkventures.png", "02-3456-7890",
                         "스파크벤처스", "345-67-89012", "박벤처",
                         "초기 스타트업을 위한 액셀러레이터. 투자 유치 전략, 비즈니스 모델 설계, 네트워킹 이벤트를 정기적으로 개최합니다."),
-                new HostData("wellness@greenlife.kr", "GreenLifeAcademy", "greenlife-academy.png", "02-4567-8901",
+                new HostData("wellness@greenlife.kr", "GreenLifeAcademy", "profile/2026/04/greenlife-academy.png", "02-4567-8901",
                         "그린라이프 아카데미", "456-78-90123", "최건강",
                         "건강한 라이프스타일을 위한 웰니스 교육 플랫폼. 요가, 명상, 영양학 클래스와 건강 세미나를 운영합니다."),
-                new HostData("art@artspaceseoul.com", "ArtSpaceSeoul", "artspace-seoul.png", "02-5678-9012",
+                new HostData("art@artspaceseoul.com", "ArtSpaceSeoul", "profile/2026/04/artspace-seoul.png", "02-5678-9012",
                         "아트스페이스 서울", "567-89-01234", "정예술",
                         "서울 성수동 소재 복합 문화 공간. 전시, 공연, 아트 워크숍 등 다양한 문화 이벤트를 기획하고 운영합니다."),
-                new HostData("consulting@bizon.co.kr", "BizOnConsulting", "bizon-consulting.png", "02-6789-0123",
+                new HostData("consulting@bizon.co.kr", "BizOnConsulting", "profile/2026/04/bizon-consulting.png", "02-6789-0123",
                         "비즈온 컨설팅", "678-90-12345", "강전략",
                         "기업 성장 전략 전문 컨설팅 펌. 리더십, 마케팅, 데이터 기반 의사결정 등 비즈니스 컨퍼런스와 세미나를 개최합니다."),
-                new HostData("chef@foodlabseoul.kr", "FoodLabSeoul", "foodlab-seoul.png", "02-7890-1234",
+                new HostData("chef@foodlabseoul.kr", "FoodLabSeoul", "profile/2026/04/foodlab-seoul.png", "02-7890-1234",
                         "푸드랩 서울", "789-01-23456", "한요리",
                         "셰프와 미식가를 위한 쿠킹 스튜디오. 한식, 양식, 베이킹 클래스와 푸드 네트워킹 밋업을 정기적으로 운영합니다."),
-                new HostData("invest@moneyflow.co.kr", "MoneyFlow", "moneyflow.png", "02-8901-2345",
+                new HostData("invest@moneyflow.co.kr", "MoneyFlow", "profile/2026/04/moneyflow.png", "02-8901-2345",
                         "머니플로우", "890-12-34567", "윤재테크",
                         "개인 투자자와 금융 전문가를 연결하는 핀테크 교육 플랫폼. 주식, 부동산, 가상자산 세미나와 재테크 컨퍼런스를 개최합니다."),
-                new HostData("hello@creatorshub.kr", "CreatorsHub", "creators-hub.png", "02-9012-3456",
+                new HostData("hello@creatorshub.kr", "CreatorsHub", "profile/2026/04/creators-hub.png", "02-9012-3456",
                         "크리에이터즈 허브", "901-23-45678", "신미디어",
                         "유튜버, 인플루언서, 콘텐츠 크리에이터를 위한 미디어 교육 기관. 영상 편집, SNS 마케팅, 브랜딩 클래스를 운영합니다."),
-                new HostData("forum@seoulscience.org", "SeoulScienceForum", "seoul-science-forum.png", "02-0123-4567",
+                new HostData("forum@seoulscience.org", "SeoulScienceForum", "profile/2026/04/seoul-science-forum.png", "02-0123-4567",
                         "서울사이언스포럼", "012-34-56789", "조과학",
                         "과학 기술 대중화를 위한 비영리 학술 단체. 최신 연구 동향 발표, 과학 강연, 학술 컨퍼런스를 주최합니다.")
         );
@@ -217,7 +217,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(false)
                         .price(150000)
                         .maxAttendees(40)
-                        .thumbnailUrl("lecture-thumbnail/NC_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/NC_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 4, 12, 10, 0))
                         .endDate(LocalDateTime.of(2026, 4, 13, 18, 0))
                         .build(),
@@ -232,7 +232,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(false)
                         .price(80000)
                         .maxAttendees(25)
-                        .thumbnailUrl("lecture-thumbnail/DB_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/DB_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 4, 26, 10, 0))
                         .endDate(LocalDateTime.of(2026, 4, 27, 17, 0))
                         .build(),
@@ -247,7 +247,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(false)
                         .price(0)
                         .maxAttendees(200)
-                        .thumbnailUrl("lecture-thumbnail/SV_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/SV_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 5, 10, 14, 0))
                         .endDate(LocalDateTime.of(2026, 5, 10, 20, 0))
                         .build(),
@@ -262,7 +262,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(false)
                         .price(30000)
                         .maxAttendees(20)
-                        .thumbnailUrl("lecture-thumbnail/GLA_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/GLA_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 5, 17, 9, 0))
                         .endDate(LocalDateTime.of(2026, 5, 17, 11, 30))
                         .build(),
@@ -277,7 +277,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(false)
                         .price(120000)
                         .maxAttendees(15)
-                        .thumbnailUrl("lecture-thumbnail/AS_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/AS_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 5, 24, 10, 0))
                         .endDate(LocalDateTime.of(2026, 5, 25, 17, 0))
                         .build(),
@@ -292,7 +292,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(true)
                         .price(50000)
                         .maxAttendees(150)
-                        .thumbnailUrl("lecture-thumbnail/BOC_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/BOC_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 5, 31, 9, 30))
                         .endDate(LocalDateTime.of(2026, 5, 31, 18, 0))
                         .build(),
@@ -307,7 +307,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(false)
                         .price(65000)
                         .maxAttendees(12)
-                        .thumbnailUrl("lecture-thumbnail/FLS_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/FLS_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 6, 7, 11, 0))
                         .endDate(LocalDateTime.of(2026, 6, 7, 15, 0))
                         .build(),
@@ -322,7 +322,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(true)
                         .price(40000)
                         .maxAttendees(100)
-                        .thumbnailUrl("lecture-thumbnail/MF_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/MF_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 6, 14, 13, 0))
                         .endDate(LocalDateTime.of(2026, 6, 14, 18, 0))
                         .build(),
@@ -337,7 +337,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(false)
                         .price(90000)
                         .maxAttendees(30)
-                        .thumbnailUrl("lecture-thumbnail/CH_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/CH_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 6, 21, 10, 0))
                         .endDate(LocalDateTime.of(2026, 6, 22, 17, 0))
                         .build(),
@@ -352,7 +352,7 @@ public class DataInitializer implements ApplicationRunner {
                         .isOnline(true)
                         .price(0)
                         .maxAttendees(300)
-                        .thumbnailUrl("lecture-thumbnail/SSF_thumbnail.jpg")
+                        .thumbnailUrl("event-thumbnail/2026/04/SSF_thumbnail.jpg")
                         .startDate(LocalDateTime.of(2026, 6, 28, 9, 0))
                         .endDate(LocalDateTime.of(2026, 6, 29, 18, 0))
                         .build()
