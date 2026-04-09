@@ -6,9 +6,12 @@ import { Tag, Button, StatusTag } from '@/components/ui';
 import { CompanyIcon, CalendarIcon, LocationIcon, WishlistIcon } from '@/components/icons';
 
 export interface CardProps {
+  variant?: 'default' | 'landing';
+  dDay?: string | number;
   status?: '게시 전' | '모집 중' | '준비 중' | '진행 중' | '종료' | string;
   tagVariant?: 'red' | 'purple' | 'green' | 'gray';
   tagText?: string;
+  category?: string;
   title: string;
   imageUrl?: string;
   organizer: string;
@@ -22,8 +25,11 @@ export interface CardProps {
 }
 
 export default function Card({
+  variant = 'default',
+  dDay,
   status,
   tagText,
+  category,
   title,
   imageUrl,
   organizer,
@@ -55,35 +61,57 @@ export default function Card({
     <div className={styles.card}>
       <div className={styles.header}>
         <div className={styles.topRow}>
-          {tagText ? (
+          {variant === 'landing' ? (
+            <div className={styles.categoryDotStyle}>
+              {category && (
+                <>
+                  <span className={styles.postTypeDot} />
+                  {category}
+                </>
+              )}
+            </div>
+          ) : tagText ? (
             <Tag variant="gray">{tagText}</Tag>
           ) : status ? (
             <StatusTag domain="course" status={status} />
-          ) : <div />}
-          <button type="button" 
-                  className={`${styles.wishlistButton} ${isWishlisted ? styles.active : ''}`} 
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Optimistic update
-                    const nextState = !isWishlisted;
-                    setIsWishlisted(nextState);
-                    
-                    if (eventId) {
-                      try {
-                        const res = await fetch(`/api/wishlists/events/${eventId}`, { method: 'POST' });
-                        if (!res.ok) {
-                          // Revert on error
+          ) : (
+            <div />
+          )}
+
+          <div className={styles.topRight}>
+            {variant === 'default' && category && (
+              <span className={styles.categoryText}>{category}</span>
+            )}
+            {variant === 'landing' && dDay && (
+              <span className={styles.dDayText}>
+                {typeof dDay === 'number' && dDay > 0 ? `D-${dDay}` : dDay === 0 ? 'D-Day' : dDay}
+              </span>
+            )}
+            <button type="button" 
+                    className={`${styles.wishlistButton} ${isWishlisted ? styles.active : ''}`} 
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      
+                      // Optimistic update
+                      const nextState = !isWishlisted;
+                      setIsWishlisted(nextState);
+                      
+                      if (eventId) {
+                        try {
+                          const res = await fetch(`/api/wishlists/events/${eventId}`, { method: 'POST' });
+                          if (!res.ok) {
+                            // Revert on error
+                            setIsWishlisted(!nextState);
+                          }
+                        } catch (err) {
                           setIsWishlisted(!nextState);
                         }
-                      } catch (err) {
-                        setIsWishlisted(!nextState);
                       }
-                    }
-                  }}>
-            <WishlistIcon className={styles.wishlistIcon} fill="currentColor" stroke="transparent" />
-          </button>
+                    }}>
+              <WishlistIcon className={styles.wishlistIcon} fill="currentColor" stroke="transparent" />
+            </button>
+          </div>
         </div>
         <h3 className={styles.title} title={title}>{title}</h3>
       </div>

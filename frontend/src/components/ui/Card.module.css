@@ -29,7 +29,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-8);
+  gap: var(--space-12);
   width: 100%;
 }
 
@@ -40,6 +40,38 @@
   width: 100%;
 }
 
+.topRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.categoryText {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-500);
+}
+
+.categoryDotStyle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-700);
+  text-transform: uppercase;
+}
+
+.postTypeDot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-text-gray-700);
+  border-radius: 50%;
+}
+
+.dDayText {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-500);
+}
+
 .wishlistButton {
   background: none;
   border: none;
@@ -48,16 +80,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-gray-300); /* 비활성: 기본 회색(단색) */
+  color: var(--color-text-gray-300);
+  /* 비활성: 기본 회색(단색) */
   transition: color 0.2s ease;
 }
 
 .wishlistButton:hover {
-  color: #F9A8D4; /* hover: 가장 옅은 핑크 */
+  color: #F9A8D4;
+  /* hover: 가장 옅은 핑크 */
 }
 
 .wishlistButton.active {
-  color: #F472B6; /* active: 찐한 연분홍색 */
+  color: #F472B6;
+  /* active: 찐한 연분홍색 */
 }
 
 .wishlistIcon {
