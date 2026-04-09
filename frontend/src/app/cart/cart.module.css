@@ -64,12 +64,14 @@
 
 .row {
   display: flex;
-  gap: var(--space-24);
+  gap: var(--space-16);
   align-items: center;
   padding: var(--space-16) var(--space-24);
-  height: 56px;
+  min-height: 56px;
   border-bottom: 1px solid var(--color-text-gray-300);
   background-color: var(--color-bg);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .sessionRow {
@@ -94,8 +96,8 @@
 .courseNameCell {
   font: var(--text-body-bold);
   color: var(--color-text-gray-700);
-  width: 500px;
-  flex-shrink: 0;
+  flex: 3;
+  min-width: 200px;
 }
 
 .body .courseNameCell {
@@ -106,8 +108,23 @@
 .scheduleCell {
   font: var(--text-body-bold);
   color: var(--color-text-gray-700);
+  flex: 2;
+  min-width: 150px;
+}
+
+.priceCell {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-700);
   flex: 1;
-  min-width: 0;
+  min-width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.body .priceCell {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-900);
 }
 
 .body .scheduleCell {
@@ -316,7 +333,15 @@
   }
   
   .courseNameCell {
-    width: 300px;
+    width: 250px;
+  }
+  
+  .scheduleCell {
+    width: 150px;
+  }
+  
+  .priceCell {
+    width: 100px;
   }
 }
 

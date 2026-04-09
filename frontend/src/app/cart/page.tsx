@@ -53,6 +53,7 @@ export default function CartPage() {
                     </div>
                     <div className={styles.courseNameCell}>이벤트 명</div>
                     <div className={styles.scheduleCell}>일정</div>
+                    <div className={styles.priceCell}>가격</div>
                     <div className={styles.quantityCell}>수량</div>
                     <div className={styles.deleteCell}></div>
                   </div>
@@ -71,6 +72,7 @@ export default function CartPage() {
                         </div>
                         <div className={styles.courseNameCell}>{item.title}</div>
                         <div className={styles.scheduleCell}>{item.schedule}</div>
+                        <div className={styles.priceCell}>{item.price.toLocaleString()}원</div>
                         <div className={styles.quantityCell}>
                           {/* 부모 수량 조절 (필요 시 유지, 세션들의 수량을 대표할 수도 있음) */}
                           <div className={styles.quantityControl}>
@@ -112,6 +114,7 @@ export default function CartPage() {
                             <span>└ {session.title}</span>
                           </div>
                           <div className={styles.scheduleCell}>{session.schedule}</div>
+                          <div className={styles.priceCell}>{session.price.toLocaleString()}원</div>
                           <div className={styles.quantityCell}>
                             <div className={styles.quantityControl}>
                               <button 

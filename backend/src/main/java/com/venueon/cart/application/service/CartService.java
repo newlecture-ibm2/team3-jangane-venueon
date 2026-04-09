@@ -7,9 +7,12 @@ import com.venueon.cart.application.port.out.CartRepositoryPort;
 import com.venueon.cart.application.port.out.LoadEventInfoPort;
 import com.venueon.cart.domain.model.Cart;
 import com.venueon.common.annotation.UseCase;
+import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
+import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,7 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
 
     private final CartRepositoryPort cartRepositoryPort;
     private final LoadEventInfoPort loadEventInfoPort;
+    private final EventSessionJpaRepository eventSessionJpaRepository;
 
     // --- 조회 (Query) ---
 
@@ -57,27 +61,48 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
     // --- 명령 (Command) ---
 
     @Override
-    public CartResponse addToCart(String userEmail, Long eventId) {
-        // 이벤트 정보 조회
+    public List<CartResponse> addToCart(String userEmail, Long eventId) {
+        // 이벤트 정보 (부모 검증용) 조회
         LoadEventInfoPort.EventInfo event = loadEventInfoPort.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다. ID: " + eventId));
 
-        // 이미 장바구니에 담겨 있는지 확인
-        if (cartRepositoryPort.existsByUserEmailAndEventId(userEmail, eventId)) {
-            throw new IllegalStateException("이미 장바구니에 담긴 이벤트입니다.");
-        }
-
-        // 정원 초과 확인
+        // 정원 초과 여부는 개별 세션에서 판단하는 것이 맞으나, 우선 이벤트 단위 정원 초과 확인 (기존 로직 유지)
         if (event.isFull()) {
             throw new IllegalStateException("해당 이벤트는 정원이 초과되었습니다.");
         }
 
-        // 장바구니 항목 생성
-        Cart cart = Cart.create(userEmail, eventId, event.title(),
-                event.price(), event.getFinalPrice(), event.startDate());
+        // 해당 이벤트에 속한 모든 세션 조회
+        List<EventSessionJpaEntity> sessions = eventSessionJpaRepository.findByEventIdOrderBySortOrder(eventId);
+        if (sessions.isEmpty()) {
+            throw new IllegalArgumentException("이벤트에 등록된 세션이 없습니다.");
+        }
 
-        Cart saved = cartRepositoryPort.save(cart);
-        return CartResponse.from(saved);
+        List<Cart> addedCarts = new ArrayList<>();
+
+        for (EventSessionJpaEntity session : sessions) {
+            // 특성 세션이 이미 장바구니에 있는지 확인
+            if (!cartRepositoryPort.existsByUserEmailAndSessionId(userEmail, session.getId())) {
+                Cart cart = Cart.create(
+                        userEmail,
+                        eventId,
+                        event.title(),
+                        session.getId(),
+                        session.getTitle(),
+                        session.getPrice(),
+                        session.getPrice(), // discountedPrice
+                        session.getStartTime()
+                );
+                addedCarts.add(cartRepositoryPort.save(cart));
+            }
+        }
+
+        if (addedCarts.isEmpty()) {
+            throw new IllegalStateException("이미 장바구니에 모든 세션이 담겨 있습니다.");
+        }
+
+        return addedCarts.stream()
+                .map(CartResponse::from)
+                .collect(Collectors.toList());
     }
 
     @Override

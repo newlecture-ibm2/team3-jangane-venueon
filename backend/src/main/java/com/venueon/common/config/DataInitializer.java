@@ -24,12 +24,15 @@ import com.venueon.user.adapter.out.persistence.entity.HostProfileJpaEntity;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
+import com.venueon.cart.adapter.out.persistence.entity.CartJpaEntity;
+import com.venueon.cart.adapter.out.persistence.repository.CartJpaRepository;
 import com.venueon.user.domain.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,17 +54,23 @@ public class DataInitializer implements ApplicationRunner {
     private final OrderJpaRepository orderRepository;
     private final ReportJpaRepository reportRepository;
     private final RefundJpaRepository refundRepository;
+    private final CartJpaRepository cartRepository;
+    private final JdbcTemplate jdbcTemplate;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
         if (userRepository.count() > 0) {
-            log.info("데이터가 이미 존재합니다. 초기화를 건너뜁니다.");
+            log.info("데이터가 이미 존재합니다. 장바구니 데이터를 ID 1번 사용자용으로 재구성합니다.");
+            cleanupCartTable();
+            jdbcTemplate.execute("TRUNCATE TABLE cart CASCADE"); // 기존 장바구니 비우기
+            createInitialCartItems();
             return;
         }
 
         log.info("=== 개발용 초기 데이터 생성 시작 ===");
+        cleanupCartTable();
 
         UserJpaEntity admin = createAdmin();
         List<UserJpaEntity> users = createUsers();
@@ -72,6 +81,7 @@ public class DataInitializer implements ApplicationRunner {
         List<OrderJpaEntity> orders = createOrders(users, events);
         List<ReportJpaEntity> reports = createReports(users, events);
         List<RefundJpaEntity> refunds = createRefunds(users, orders);
+        createInitialCartItems();
 
         log.info("=== 개발용 초기 데이터 생성 완료 ===");
         log.info("Admin: 1명, User: {}명, Host: {}명", users.size(), hosts.size());
@@ -538,5 +548,42 @@ public class DataInitializer implements ApplicationRunner {
                         .processedAt(LocalDateTime.now().minusDays(3))
                         .build()
         ));
+    }
+
+    private void cleanupCartTable() {
+        try {
+            // 구구조(event_id) 컬럼이 남아있어 insert 에러가 발생하는 경우를 방지하기 위해 컬럼 제거
+            jdbcTemplate.execute("ALTER TABLE cart DROP COLUMN IF EXISTS event_id");
+            log.info("장바구니 테이블 구조 정리를 완료했습니다 (event_id 컬럼 제거).");
+        } catch (Exception e) {
+            log.warn("장바구니 테이블 정리 중 오류 발생: {}", e.getMessage());
+        }
+    }
+
+    private void createInitialCartItems() {
+        log.info("관리자 계정(admin@venueon.com)용 장바구니 임시 데이터 10개 생성을 시작합니다.");
+        
+        UserJpaEntity admin = userRepository.findByEmail("admin@venueon.com")
+                .orElse(null);
+
+        List<EventSessionJpaEntity> sessions = eventSessionRepository.findAll().stream()
+                .limit(10)
+                .toList();
+
+        if (admin == null || sessions.isEmpty()) {
+            log.warn("장바구니를 생성할 관리자 계정이나 세션이 부족합니다.");
+            return;
+        }
+
+        for (int i = 0; i < 10 && i < sessions.size(); i++) {
+            EventSessionJpaEntity session = sessions.get(i);
+            
+            cartRepository.save(CartJpaEntity.builder()
+                    .user(admin)
+                    .eventSession(session)
+                    .quantity((i % 3) + 1)
+                    .build());
+        }
+        log.info("관리자용 장바구니 임시 데이터 생성 완료.");
     }
 }

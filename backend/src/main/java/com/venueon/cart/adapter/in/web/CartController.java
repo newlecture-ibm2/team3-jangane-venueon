@@ -62,15 +62,15 @@ public class CartController {
      * POST /cart
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<CartResponse>> addToCart(
+    public ResponseEntity<ApiResponse<List<CartResponse>>> addToCart(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody AddToCartRequest request) {
 
         String userEmail = userDetails.getUsername();
-        CartResponse cartItem = addToCartUseCase.addToCart(userEmail, request.eventId());
+        List<CartResponse> cartItems = addToCartUseCase.addToCart(userEmail, request.eventId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(cartItem));
+                .body(ApiResponse.success(cartItems));
     }
 
     /**
