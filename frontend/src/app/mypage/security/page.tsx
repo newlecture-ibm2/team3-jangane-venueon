@@ -6,8 +6,8 @@ import { Button, InputField } from '@/components/ui';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useUIStore } from '@/store/useUIStore';
 
-// 프로필 페이지의 CSS를 재사용합니다
-import styles from '../profile/page.module.css';
+// 원래 사용하던 이전 버전의 CSS 복구하여 임포트
+import styles from './page.module.css';
 
 export default function SecuritySettingsPage() {
   const { showToast } = useUIStore();
@@ -85,7 +85,7 @@ export default function SecuritySettingsPage() {
           <h1 className={styles.pageTitle}>계정 보안</h1>
 
           <div className={styles.profileSection}>
-            <div className={styles.formGroup} style={{ gap: '24px' }}>
+            <div className={styles.formGroup}>
               <InputField 
                 label="현재 비밀번호" 
                 type="password"

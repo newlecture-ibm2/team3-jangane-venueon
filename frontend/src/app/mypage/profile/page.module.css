@@ -4,8 +4,30 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-24);
+  gap: var(--space-80);
   width: 100%;
+}
+
+.sectionBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: var(--space-16);
+}
+
+.rowSectionBlock {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-24);
+}
+
+.rowSectionBlock .headerGroup {
+  width: auto;
+  flex: 1;
 }
 
 .pageTitle {
@@ -14,18 +36,16 @@
   margin: 0;
 }
 
-.profileSection {
+/* 이미지와 폼 필드 그룹퍼 (기존 profileSection 대체) */
+.profileForm {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  max-width: 458px;
-  /* Figma: 458px */
-  padding-top: var(--space-24);
   gap: var(--space-32);
 }
 
-/* 프로필 이미지 (Frame 93) */
+/* 프로필 이미지 */
 .imageRow {
   display: flex;
   flex-direction: row;
@@ -49,7 +69,7 @@
   display: none !important;
 }
 
-/* 이미지 조작 버튼 영역 (Frame 94) */
+/* 이미지 조작 버튼 영역 */
 .imageButtons {
   display: flex;
   flex-direction: row;
@@ -74,6 +94,8 @@
   /* 입력 필드 사이 간격 */
 }
 
+
+
 /* 하단 버튼 영역 (Frame 54) */
 .actionButtons {
   display: flex;
@@ -81,31 +103,24 @@
   justify-content: flex-end;
   gap: var(--space-12);
   width: 100%;
-  max-width: 410px;
   margin-top: var(--space-8);
 }
 
 .actionButtons>button {
-  flex: 1;
-  /* 너비를 똑같이 반반씩 나눠가짐 */
+  width: 200px;
+  /* 요청에 따라 200px로 넓게 고정 */
 }
 
-/* 추가 설정용 섹션 */
-.sectionHeader {
+/* 타이틀 및 서브타이틀 그룹 */
+.headerGroup {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  margin-bottom: var(--space-16);
+  gap: var(--space-8);
+  width: 100%;
 }
 
-.sectionHeader h3 {
-  font: var(--text-h3-bold);
-  color: var(--color-text-gray-900);
-  margin: 0;
-}
-
-.sectionHeader p {
-  font: var(--text-body-small);
+.subtitle {
+  font: var(--text-body-regular);
   color: var(--color-text-gray-500);
   margin: 0;
 }
@@ -114,36 +129,4 @@
   display: flex;
   flex-flow: row wrap;
   gap: var(--space-12);
-}
-
-/* Tabs.module.css의 pillTab 복사 */
-.pillTab {
-  padding: var(--space-8) var(--space-16);
-  height: 36px;
-  background: var(--color-surface); /* #F3F4F6 (Gray/100) */
-  border-radius: var(--radius-full);
-  /* Body/Medium */
-  font: var(--text-body-medium);
-  /* 150% */
-  color: var(--color-text-gray-500); /* #6B7280 */
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.pillTabActive {
-  background: var(--color-secondary); /* #4B5563 (Brand/secondary) */
-  color: var(--color-text-white); /* #FFFFFF */
-}
-
-.dangerZone {
-  width: 100%;
-  max-width: 410px;
-  margin-top: var(--space-32);
-  padding-top: var(--space-32);
-  border-top: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-16);
 }

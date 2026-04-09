@@ -8,6 +8,7 @@ import UploadModal from '@/components/modal/UploadModal';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useUIStore } from '@/store/useUIStore';
 import { useAuth } from '@/store/useAuthStore';
+import tabsStyles from '@/components/ui/Tabs.module.css';
 import styles from './page.module.css';
 
 
@@ -43,17 +44,17 @@ export default function ProfileSettingsPage() {
       try {
         const catRes = await fetch('/api/categories');
         if (catRes.ok) {
-           const catData = await catRes.json();
-           if (catData.data) {
-             setAvailableCategories(catData.data);
-           }
+          const catData = await catRes.json();
+          if (catData.data) {
+            setAvailableCategories(catData.data);
+          }
         }
       } catch (e) {
         console.error("Failed to load categories", e);
       }
     };
     fetchMetadata();
-    
+
     const fetchProfile = async () => {
       try {
         const res = await fetch('/api/auth/me'); // BFF proxy (iron-session) handles JWT
@@ -68,12 +69,12 @@ export default function ProfileSettingsPage() {
           setBaseEmail(fetchedEmail);
           setBaseName(fetchedName);
           setBaseImage(fetchedImg);
-          
+
           // 확장 설정
           // 현재 /api/auth/me (또는 user profile API)에서 카테고리와 뱃지 정보가 넘어오지 않으면 빈값으로 치환
           const fetchedCategories = data.categories || [];
           const fetchedBadge = data.showBadge ?? true;
-          
+
           setBaseCategories(fetchedCategories);
           setBaseBadge(fetchedBadge);
 
@@ -153,7 +154,7 @@ export default function ProfileSettingsPage() {
         },
         body: JSON.stringify({
           nickname: userName,
-          profileImg: profileImage, 
+          profileImg: profileImage,
           categories: categories,
           showBadge: showBadge,
         }),
@@ -166,7 +167,7 @@ export default function ProfileSettingsPage() {
         setBaseCategories(categories);
         setBaseBadge(showBadge);
         showToast('내 정보 수정이 완료되었습니다.', 'success');
-        
+
         // 헤더 갱신 (저장 성공 시) - 강제로 로컬 스토어의 유저 정보 동기화
         const { updateUser } = useAuth.getState();
         updateUser({ nickname: userName, profileImg: profileImage });
@@ -208,114 +209,111 @@ export default function ProfileSettingsPage() {
       <div className="sidebar-content">
         <div className={styles.content}>
           {/* 페이지 타이틀 */}
-          <h1 className={styles.pageTitle}>프로필 설정</h1>
+          <div className={styles.sectionBlock}>
+            <h1 className={styles.pageTitle}>프로필 설정</h1>
 
-          <div className={styles.profileSection}>
-            {/* 프로필 사진 + 변경/삭제 */}
-            <div className={styles.imageRow}>
-              {/* 공용 UserProfile 을 사용하되, CSS로 사진 크기 72px 변경 및 텍스트 숨김 처리 */}
-              <UserProfile
-                name="장회원"
-                imageUrl={profileImage}
-                className={styles.customProfile}
-              />
+            <div className={styles.profileForm}>
+              {/* 프로필 사진 + 변경/삭제 */}
+              <div className={styles.imageRow}>
+                {/* 공용 UserProfile 을 사용하되, CSS로 사진 크기 72px 변경 및 텍스트 숨김 처리 */}
+                <UserProfile
+                  name="장회원"
+                  imageUrl={profileImage}
+                  className={styles.customProfile}
+                />
 
-              <div className={styles.imageButtons}>
-                <Button variant="primary" onClick={handleImageChangeClick}>
-                  프로필 사진 변경
-                </Button>
-                <Button variant="secondary" onClick={handleDeleteImage}>
-                  이미지 삭제
-                </Button>
+                <div className={styles.imageButtons}>
+                  <Button variant="primary" onClick={handleImageChangeClick}>
+                    프로필 사진 변경
+                  </Button>
+                  <Button variant="secondary" onClick={handleDeleteImage}>
+                    이미지 삭제
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {/* 입력 폼 */}
-            <div className={styles.formGroup}>
-              {/* 이메일 (수정 불가) */}
-              <InputField
-                label="이메일"
-                value={userEmail}
-                disabled
-              />
-              {/* 이름 확인/수정 폼 */}
-              <InputField
-                label="이름"
-                placeholder="이름을 입력하세요"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-              />
-            </div>
-
-            <div className={styles.actionButtons}>
-              <Button
-                variant="secondary"
-                size="large"
-                disabled={!isDirty}
-                onClick={handleCancelClick}
-              >
-                취소
-              </Button>
-              <Button
-                variant="primary"
-                size="large"
-                disabled={!isDirty}
-                onClick={handleSave}
-              >
-                저장
-              </Button>
+              {/* 입력 폼 */}
+              <div className={styles.formGroup}>
+                {/* 이메일 (수정 불가) */}
+                <InputField
+                  label="이메일"
+                  value={userEmail}
+                  disabled
+                />
+                {/* 이름 확인/수정 폼 */}
+                <InputField
+                  label="이름"
+                  placeholder="이름을 입력하세요"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
-          <hr style={{ width: '100%', maxWidth: '458px', border: 'none', borderTop: '1px solid var(--color-border)', margin: '48px 0' }} />
-
-          <h1 className={styles.pageTitle}>관심 카테고리 설정</h1>
-          <div className={styles.profileSection}>
-            <div className={styles.formGroup}>
-              <div className={styles.sectionHeader}>
-                <p>관심있는 카테고리를 선택해주세요. 맞춤 세션을 추천해 드립니다.</p>
-              </div>
-              <div className={styles.categoryPills}>
-                {availableCategories.map(cat => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className={`${styles.pillTab} ${categories.includes(cat) ? styles.pillTabActive : ''}`}
-                    onClick={() => {
-                        if (categories.includes(cat)) {
-                           setCategories(categories.filter(c => c !== cat));
-                        } else {
-                           setCategories([...categories, cat]);
-                        }
-                    }}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+          <div className={styles.sectionBlock}>
+            <div className={styles.headerGroup}>
+              <h1 className={styles.pageTitle}>관심 카테고리 설정</h1>
+              <p className={styles.subtitle}>관심있는 카테고리를 선택해주세요. 맞춤 세션을 추천해 드립니다.</p>
             </div>
-
-            <div className={styles.formGroup} style={{ marginTop: '16px' }}>
-               <div className={styles.sectionHeader}>
-                 <h3>뱃지 노출 여부</h3>
-                 <p>커뮤니티 등에서 내 프로필 옆에 활동 뱃지를 공개할지 설정합니다.</p>
-               </div>
-               <Toggle
-                 checked={showBadge}
-                 onChange={(e) => setShowBadge(e.target.checked)}
-                 label="내 프로필에 뱃지 노출 켜기"
-               />
+            <div className={styles.categoryPills}>
+              {availableCategories.map(cat => (
+                <button
+                  key={cat}
+                  type="button"
+                  className={`${tabsStyles.tabButton} ${tabsStyles.pillTab} ${categories.includes(cat) ? tabsStyles.pillTabActive : ''}`}
+                  onClick={() => {
+                    if (categories.includes(cat)) {
+                      setCategories(categories.filter(c => c !== cat));
+                    } else {
+                      setCategories([...categories, cat]);
+                    }
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
+          </div>
 
-            <div className={styles.dangerZone}>
-               <div className={styles.sectionHeader}>
-                 <h3 style={{ color: 'var(--color-text-danger)' }}>계정 탈퇴</h3>
-                 <p>탈퇴 시 모든 결제 내역과 참여 커뮤니티 기록이 영구적으로 삭제됩니다!</p>
-               </div>
-               <Button variant="secondary" onClick={() => setIsDeleteModalOpen(true)} style={{ color: 'var(--color-text-danger)'}}>
-                 계정 안전하게 탈퇴하기
-               </Button>
+          <div className={styles.rowSectionBlock}>
+            <div className={styles.headerGroup}>
+              <h1 className={styles.pageTitle}>뱃지 노출 여부</h1>
+              <p className={styles.subtitle}>커뮤니티 등에서 내 프로필 옆에 활동 뱃지를 공개할지 설정합니다.</p>
             </div>
+            <Toggle
+              checked={showBadge}
+              onChange={(e) => setShowBadge(e.target.checked)}
+            />
+          </div>
+
+          <div className={styles.rowSectionBlock}>
+            <div className={styles.headerGroup}>
+              <h1 className={styles.pageTitle}>계정 탈퇴</h1>
+              <p className={styles.subtitle}>탈퇴 시 모든 결제 내역과 참여 커뮤니티 기록이 영구적으로 삭제됩니다.</p>
+            </div>
+            <Button variant="danger" onClick={() => setIsDeleteModalOpen(true)} style={{ whiteSpace: 'nowrap' }}>
+              계정 탈퇴하기
+            </Button>
+          </div>
+
+          <div className={styles.actionButtons}>
+            <Button
+              variant="secondary"
+              size="large"
+              disabled={!isDirty}
+              onClick={handleCancelClick}
+            >
+              취소
+            </Button>
+            <Button
+              variant="primary"
+              size="large"
+              disabled={!isDirty}
+              onClick={handleSave}
+            >
+              저장
+            </Button>
           </div>
         </div>
       </div>

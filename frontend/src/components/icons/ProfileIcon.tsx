@@ -3,8 +3,8 @@ import React from 'react';
 export default function ProfileIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M10.0003 8.33317C11.8413 8.33317 13.3337 6.84079 13.3337 4.99984C13.3337 3.15889 11.8413 1.6665 10.0003 1.6665C8.15938 1.6665 6.66699 3.15889 6.66699 4.99984C6.66699 6.84079 8.15938 8.33317 10.0003 8.33317Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M17.5 18.3335C17.5 14.1914 14.1421 10.8335 10 10.8335C5.85787 10.8335 2.5 14.1914 2.5 18.3335" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M9.99967 7.33333C11.6105 7.33333 12.9163 6.0275 12.9163 4.41667C12.9163 2.80584 11.6105 1.5 9.99967 1.5C8.38884 1.5 7.08301 2.80584 7.08301 4.41667C7.08301 6.0275 8.38884 7.33333 9.99967 7.33333Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M2.5 15.9998V16.4998H17.5V15.9998C17.5 14.133 17.5 13.1996 17.1367 12.4865C16.8171 11.8593 16.3072 11.3494 15.68 11.0298C14.9669 10.6665 14.0335 10.6665 12.1667 10.6665H7.83333C5.9665 10.6665 5.03308 10.6665 4.32004 11.0298C3.69283 11.3494 3.18289 11.8593 2.86331 12.4865C2.5 13.1996 2.5 14.133 2.5 15.9998Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
