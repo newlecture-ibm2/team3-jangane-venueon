@@ -19,5 +19,6 @@ public record PostListResponse(
                 int likeCount,
                 boolean isBookmarked,
                 boolean isPinned,
+                boolean isNotice,
                 LocalDateTime createdAt) {
 }

@@ -79,13 +79,13 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
 
     @Override
     public Page<Post> findByCommunityId(Long communityId, Pageable pageable) {
-        return postJpaRepository.findByCommunityIdOrderByIsPinnedDescCreatedAtDesc(communityId, pageable)
+        return postJpaRepository.findByCommunityIdOrderByIsNoticeDescIsPinnedDescCreatedAtDesc(communityId, pageable)
                 .map(this::mapToDomain);
     }
 
     @Override
     public Page<Post> findByCommunityIdAndType(Long communityId, PostType type, Pageable pageable) {
-        return postJpaRepository.findByCommunityIdAndTypeOrderByIsPinnedDescCreatedAtDesc(communityId, type, pageable)
+        return postJpaRepository.findByCommunityIdAndTypeOrderByIsNoticeDescIsPinnedDescCreatedAtDesc(communityId, type, pageable)
                 .map(this::mapToDomain);
     }
 

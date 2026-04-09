@@ -2,7 +2,7 @@ package com.venueon.post.application.service;
 
 import com.venueon.common.annotation.UseCase;
 import com.venueon.post.application.port.in.CreatePostUseCase;
-import com.venueon.post.application.port.in.PostPinUseCase;
+import com.venueon.post.application.port.in.PostAdminUseCase;
 import com.venueon.post.application.port.in.PostBookmarkUseCase;
 import com.venueon.post.application.port.in.PostLikeUseCase;
 import com.venueon.post.application.port.in.dto.CreatePostRequest;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, PostBookmarkUseCase, PostPinUseCase {
+public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, PostBookmarkUseCase, PostAdminUseCase {
 
         private final PostRepositoryPort postRepositoryPort;
         private final UserRepositoryPort userRepositoryPort;
@@ -87,6 +87,15 @@ public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, P
                                 .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
 
                 post.togglePin();
+                postRepositoryPort.save(post);
+        }
+
+        @Override
+        public void toggleNotice(Long postId) {
+                Post post = postRepositoryPort.findById(postId)
+                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
+
+                post.toggleNotice();
                 postRepositoryPort.save(post);
         }
 }

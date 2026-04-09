@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
 
-    Page<PostJpaEntity> findByCommunityIdOrderByIsPinnedDescCreatedAtDesc(Long communityId, Pageable pageable);
+    Page<PostJpaEntity> findByCommunityIdOrderByIsNoticeDescIsPinnedDescCreatedAtDesc(Long communityId, Pageable pageable);
 
-    Page<PostJpaEntity> findByCommunityIdAndTypeOrderByIsPinnedDescCreatedAtDesc(Long communityId, PostType type, Pageable pageable);
+    Page<PostJpaEntity> findByCommunityIdAndTypeOrderByIsNoticeDescIsPinnedDescCreatedAtDesc(Long communityId, PostType type, Pageable pageable);
 
     Page<PostJpaEntity> findByAuthorId(Long authorId, Pageable pageable);
 }

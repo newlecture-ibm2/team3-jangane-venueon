@@ -2,9 +2,9 @@ package com.venueon.post.adapter.in.web;
 
 import com.venueon.post.application.port.in.CreatePostUseCase;
 import com.venueon.post.application.port.in.GetPostQuery;
+import com.venueon.post.application.port.in.PostAdminUseCase;
 import com.venueon.post.application.port.in.PostBookmarkUseCase;
 import com.venueon.post.application.port.in.PostLikeUseCase;
-import com.venueon.post.application.port.in.PostPinUseCase;
 import com.venueon.post.application.port.in.dto.CreatePostRequest;
 import com.venueon.post.application.port.in.dto.CreatePostResponse;
 import com.venueon.post.application.port.in.dto.PostListResponse;
@@ -30,7 +30,7 @@ public class PostController {
     private final GetPostQuery getPostQuery;
     private final PostLikeUseCase postLikeUseCase;
     private final PostBookmarkUseCase postBookmarkUseCase;
-    private final PostPinUseCase postPinUseCase;
+    private final PostAdminUseCase postAdminUseCase;
 
     /**
      * 1단계: 게시글 등록
@@ -132,7 +132,17 @@ public class PostController {
      */
     @PatchMapping("/{id}/pin")
     public ResponseEntity<Void> togglePin(@PathVariable Long id) {
-        postPinUseCase.togglePin(id);
+        postAdminUseCase.togglePin(id);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 게시글 공지 설정 토글
+     * PATCH /posts/{id}/notice
+     */
+    @PatchMapping("/{id}/notice")
+    public ResponseEntity<Void> toggleNotice(@PathVariable Long id) {
+        postAdminUseCase.toggleNotice(id);
         return ResponseEntity.ok().build();
     }
 }
