@@ -1,0 +1,197 @@
+.dashboardWrapper {
+  padding: 40px;
+  background-color: white; /* 스크린샷 배경은 흰색 영역이 넓음 */
+  min-height: 100%;
+}
+
+.breadcrumb {
+  font-size: 20px;
+  font-weight: bold;
+  color: #111;
+  margin-bottom: 32px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid #4ade80;
+  color: #16a34a;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  background-color: transparent;
+}
+
+.eventTitle {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 32px;
+  color: #111;
+}
+
+.tabs {
+  display: flex;
+  gap: 24px;
+  border-bottom: 1px solid #eaeaea;
+  margin-bottom: 24px;
+}
+
+.tab {
+  font-size: 14px;
+  color: #666;
+  padding-bottom: 12px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.tabActive {
+  color: #111;
+  font-weight: bold;
+  border-bottom: 2px solid #111;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 400px;
+  background-color: #f1f5f9;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
+.thumbnailImage {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #111;
+}
+
+.descContent {
+  color: #555;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+.infoGrid {
+  display: flex;
+  gap: 60px;
+  margin-bottom: 40px;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infoLabel {
+  font-size: 12px;
+  color: #666;
+}
+
+.infoValue {
+  font-size: 16px;
+  color: #111;
+  font-weight: bold;
+}
+
+.hostSection {
+  margin-top: 40px;
+}
+
+.hostInfoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.hostLogo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #1d4ed8;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.hostLogoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hostText {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hostName {
+  font-weight: bold;
+  font-size: 16px;
+  color: #111;
+}
+
+.hostDesc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  max-width: 800px;
+}
+
+.actionArea {
+  margin-top: 60px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  border-top: 1px dotted #ccc;
+  padding-top: 24px;
+}
+
+.btn {
+  padding: 12px 32px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.btnPrimary {
+  background-color: #f1f5f9;
+  color: #333;
+}
+
+.btnOutline {
+  background-color: #334155;
+  color: white;
+}
+
+.btnDanger {
+  background-color: #ef4444;
+  color: white;
+}
+.btnDanger:hover {
+  background-color: #dc2626;
+}
+
+.btnBlue {
+  background-color: #3b82f6;
+  color: white;
+}
+.btnBlue:hover {
+  background-color: #2563eb;
+}

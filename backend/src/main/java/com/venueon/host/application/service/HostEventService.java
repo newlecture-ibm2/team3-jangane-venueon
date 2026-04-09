@@ -6,6 +6,7 @@ import com.venueon.event.domain.model.EventStatus;
 import com.venueon.host.adapter.out.persistence.HostEventMapper;
 import com.venueon.host.adapter.out.persistence.repository.HostEventJpaRepository;
 import com.venueon.host.application.port.in.GetHostEventsUseCase;
+import com.venueon.host.dto.HostEventDetailResponse;
 import com.venueon.host.dto.HostEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,5 +50,20 @@ public class HostEventService implements GetHostEventsUseCase {
         );
 
         return page.map(hostEventMapper::toResponse);
+    }
+
+    @Override
+    public HostEventDetailResponse getHostEventDetail(Long hostId, Long eventId) {
+        log.debug("호스트 이벤트 상세 조회: hostId={}, eventId={}", hostId, eventId);
+
+        EventJpaEntity entity = hostEventJpaRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다. ID: " + eventId));
+
+        // 호스트 본인의 이벤트인지 검증
+        if (!entity.getCreator().getId().equals(hostId)) {
+            throw new SecurityException("해당 이벤트에 대한 접근 권한이 없습니다.");
+        }
+
+        return hostEventMapper.toDetailResponse(entity);
     }
 }

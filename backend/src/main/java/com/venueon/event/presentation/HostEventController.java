@@ -10,14 +10,19 @@ import com.venueon.event.application.port.in.UpdateEventStatusUseCase;
 import com.venueon.event.application.port.in.UpdateEventUseCase;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventStatus;
+import com.venueon.host.presentation.HostAuthSupport;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * Host 전용 이벤트 API — 인증된 Host만 접근 가능
+ * Authentication 객체에서 hostId를 추출하여 사용
  */
+@Slf4j
 @RestController
 @RequestMapping("/host/events")
 @RequiredArgsConstructor
@@ -27,19 +32,20 @@ public class HostEventController {
     private final UpdateEventStatusUseCase updateEventStatusUseCase;
     private final DeleteEventUseCase deleteEventUseCase;
     private final UpdateEventUseCase updateEventUseCase;
+    private final HostAuthSupport hostAuthSupport;
 
     /**
      * 이벤트 생성
      * POST /host/events
-     *
-     * TODO: JWT에서 creatorId 추출 (현재는 헤더로 임시 전달)
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<EventDetailResponse> createEvent(
-            @RequestHeader("X-User-Id") Long creatorId,
+            Authentication authentication,
             @Valid @RequestBody EventCreateRequest request
     ) {
+        Long creatorId = hostAuthSupport.extractUserId(authentication);
+        log.debug("POST /host/events — creatorId={}", creatorId);
         Event created = createEventUseCase.createEvent(request.toCommand(creatorId));
         return ApiResponse.success(EventDetailResponse.from(created));
     }
@@ -47,15 +53,15 @@ public class HostEventController {
     /**
      * 이벤트 상태 변경 (DRAFT → PUBLISHED 등)
      * PATCH /host/events/{id}/status?status=PUBLISHED
-     *
-     * TODO: JWT에서 requesterId 추출
      */
     @PatchMapping("/{id}/status")
     public ApiResponse<EventDetailResponse> updateEventStatus(
+            Authentication authentication,
             @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long requesterId,
             @RequestParam EventStatus status
     ) {
+        Long requesterId = hostAuthSupport.extractUserId(authentication);
+        log.debug("PATCH /host/events/{}/status — requesterId={}, status={}", id, requesterId, status);
         Event updated = updateEventStatusUseCase.updateStatus(id, requesterId, status);
         return ApiResponse.success(EventDetailResponse.from(updated));
     }
@@ -67,11 +73,12 @@ public class HostEventController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteEvent(
-            @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long requesterId,
-            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String requesterRole
+            Authentication authentication,
+            @PathVariable Long id
     ) {
-        deleteEventUseCase.deleteEvent(id, requesterId, requesterRole);
+        Long requesterId = hostAuthSupport.extractUserId(authentication);
+        log.debug("DELETE /host/events/{} — requesterId={}", id, requesterId);
+        deleteEventUseCase.deleteEvent(id, requesterId, "HOST");
     }
 
     /**
@@ -80,12 +87,13 @@ public class HostEventController {
      */
     @PutMapping("/{id}")
     public ApiResponse<EventDetailResponse> updateEvent(
+            Authentication authentication,
             @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long requesterId,
-            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String requesterRole,
             @Valid @RequestBody EventUpdateRequest request
     ) {
-        Event updated = updateEventUseCase.updateEvent(request.toCommand(id, requesterId, requesterRole));
+        Long requesterId = hostAuthSupport.extractUserId(authentication);
+        log.debug("PUT /host/events/{} — requesterId={}", id, requesterId);
+        Event updated = updateEventUseCase.updateEvent(request.toCommand(id, requesterId, "HOST"));
         return ApiResponse.success(EventDetailResponse.from(updated));
     }
 }

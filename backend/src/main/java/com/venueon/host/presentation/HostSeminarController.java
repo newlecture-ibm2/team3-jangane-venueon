@@ -2,6 +2,7 @@ package com.venueon.host.presentation;
 
 import com.venueon.common.dto.ApiResponse;
 import com.venueon.host.application.port.in.GetHostEventsUseCase;
+import com.venueon.host.dto.HostEventDetailResponse;
 import com.venueon.host.dto.HostEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,23 @@ public class HostSeminarController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<HostEventResponse> result = getHostEventsUseCase.getHostDraftEvents(hostId, pageable);
+
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    /**
+     * 호스트 이벤트 상세 단건 조회
+     * GET /host/events/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<HostEventDetailResponse>> getMyEventDetail(
+            Authentication authentication,
+            @PathVariable Long id
+    ) {
+        Long hostId = hostAuthSupport.extractUserId(authentication);
+        log.debug("GET /host/events/{} — hostId={}", id, hostId);
+
+        HostEventDetailResponse result = getHostEventsUseCase.getHostEventDetail(hostId, id);
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }

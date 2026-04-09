@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/store/useAuthStore';
 import styles from './Sidebar.module.css';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 
@@ -78,13 +79,14 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
   const actualPathname = usePathname() || '';
   const pathname = fakePathname || actualPathname;
   const router = useRouter();
+  const { logout } = useAuth();
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  // 로그아웃 확인 클릭 시 동작 (가상의 로그아웃 후 로그인 페이지 이동)
-  const handleLogoutConfirm = () => {
+  // 로그아웃 확인 클릭 시 동작
+  const handleLogoutConfirm = async () => {
     setIsLogoutModalOpen(false);
-    // TODO: 실제 로그아웃 로직(API 호출, 토큰 삭제 등)은 이곳에 추가
+    await logout(); // 실제 로그아웃 로직(전역 상태 초기화, 세션 파기 API 호출)
     router.push('/login');
   };
 
