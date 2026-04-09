@@ -239,8 +239,8 @@ export default function AdminSettingsPage() {
 
           <div className={styles.searchAddArea}>
             <div className={styles.searchArea}>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <div style={{ flex: 1 }}>
+              <div className={styles.searchRow}>
+                <div className={styles.searchField}>
                   <InputField
                     variant="search"
                     placeholder="검색어를 입력하세요"
