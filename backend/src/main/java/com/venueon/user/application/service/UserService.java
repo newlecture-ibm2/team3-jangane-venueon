@@ -22,11 +22,16 @@ public class UserService implements UpdateUserProfileUseCase, UpdateUserPassword
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User updateProfile(String email, String nickname, String profileImg, java.util.List<String> categories, Boolean showBadge) {
+    public User updateProfile(String email, String nickname, String profileImg, java.util.List<String> categories,
+            Boolean showBadge) {
         log.debug("프로필 수정 시작: email={}, nickname={}", email, nickname);
 
         User user = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
+
+        if (!user.isActive()) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "탈퇴 처리된 사용자입니다.");
+        }
 
         // User 도메인의 비즈니스 메서드 호출
         user.updateProfile(nickname, profileImg, categories, showBadge);
@@ -45,6 +50,10 @@ public class UserService implements UpdateUserProfileUseCase, UpdateUserPassword
         User user = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
 
+        if (!user.isActive()) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "탈퇴 처리된 사용자입니다.");
+        }
+
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "현재 비밀번호가 일치하지 않습니다.");
         }
@@ -61,6 +70,10 @@ public class UserService implements UpdateUserProfileUseCase, UpdateUserPassword
 
         User user = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
+
+        if (!user.isActive()) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "이미 탈퇴 처리된 사용자입니다.");
+        }
 
         user.deactivate();
         userRepositoryPort.save(user);
