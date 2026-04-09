@@ -22,8 +22,16 @@ public class CategoryPersistenceAdapter implements CategoryPort {
 
     @Override
     public List<Category> findAllOrderBySortOrder() {
-        return categoryRepository.findAllByOrderBySortOrderAsc().stream()
-                .map(categoryMapper::toDomain)
+        return findAllWithEventCount();
+    }
+
+    @Override
+    public List<Category> findAllWithEventCount() {
+        return categoryRepository.findAllWithEventCount().stream()
+                .map(result -> categoryMapper.toDomain(
+                    (CategoryJpaEntity) result[0],
+                    (Long) result[1]
+                ))
                 .collect(Collectors.toList());
     }
 

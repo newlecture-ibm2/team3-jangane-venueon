@@ -104,6 +104,17 @@
   color: var(--color-text-gray-900);
 }
 
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eventCount {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+}
+
 .categoryDesc {
   font: var(--text-caption-regular);
   color: var(--color-text-gray-500);

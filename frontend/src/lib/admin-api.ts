@@ -87,6 +87,7 @@ export interface AdminCategoryItem {
   name: string;
   description: string;
   sortOrder: number;
+  eventCount: number;
 }
 
 export interface AdminCategoryRequest {
@@ -114,7 +115,5 @@ export const adminCategoryAPI = {
 
   /** 순서 변경 (PATCH) */
   updateOrder: (id: number, newOrder: number) =>
-    api.patch<ApiResponse<void>>(`/admin/categories/${id}/order`, newOrder, {
-      headers: { 'Content-Type': 'application/json' },
-    }),
+    api.patch<ApiResponse<void>>(`/admin/categories/${id}/order`, { sortOrder: newOrder }),
 };

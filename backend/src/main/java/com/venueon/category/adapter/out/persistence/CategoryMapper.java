@@ -8,12 +8,17 @@ import org.springframework.stereotype.Component;
 public class CategoryMapper {
 
     public Category toDomain(CategoryJpaEntity entity) {
+        return toDomain(entity, 0L);
+    }
+
+    public Category toDomain(CategoryJpaEntity entity, long eventCount) {
         if (entity == null) return null;
         return new Category(
             entity.getId(),
             entity.getName(),
             entity.getDescription(),
-            entity.getSortOrder()
+            entity.getSortOrder(),
+            eventCount
         );
     }
 

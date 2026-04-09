@@ -2,6 +2,7 @@ package com.venueon.category.adapter.in.web;
 
 import com.venueon.category.adapter.in.web.dto.CategoryRequest;
 import com.venueon.category.adapter.in.web.dto.CategoryResponse;
+import com.venueon.category.adapter.in.web.dto.UpdateOrderRequest;
 import com.venueon.category.application.port.in.CategoryUseCase;
 import com.venueon.category.domain.model.Category;
 import com.venueon.common.dto.ApiResponse;
@@ -25,7 +26,7 @@ public class AdminCategoryController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategories() {
         List<CategoryResponse> responses = categoryUseCase.getAllCategories().stream()
-                .map(c -> new CategoryResponse(c.getId(), c.getName(), c.getDescription(), c.getSortOrder()))
+                .map(c -> new CategoryResponse(c.getId(), c.getName(), c.getDescription(), c.getSortOrder(), c.getEventCount()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
@@ -34,7 +35,7 @@ public class AdminCategoryController {
     public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(@Valid @RequestBody CategoryRequest request) {
         Category category = new Category(null, request.name(), request.description(), request.sortOrder());
         Category saved = categoryUseCase.createCategory(category);
-        CategoryResponse response = new CategoryResponse(saved.getId(), saved.getName(), saved.getDescription(), saved.getSortOrder());
+        CategoryResponse response = new CategoryResponse(saved.getId(), saved.getName(), saved.getDescription(), saved.getSortOrder(), saved.getEventCount());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -44,7 +45,7 @@ public class AdminCategoryController {
             @Valid @RequestBody CategoryRequest request) {
         Category category = new Category(id, request.name(), request.description(), request.sortOrder());
         Category updated = categoryUseCase.updateCategory(id, category);
-        CategoryResponse response = new CategoryResponse(updated.getId(), updated.getName(), updated.getDescription(), updated.getSortOrder());
+        CategoryResponse response = new CategoryResponse(updated.getId(), updated.getName(), updated.getDescription(), updated.getSortOrder(), updated.getEventCount());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -57,8 +58,8 @@ public class AdminCategoryController {
     @PatchMapping("/{id}/order")
     public ResponseEntity<ApiResponse<Void>> updateOrder(
             @PathVariable Long id,
-            @RequestBody int newOrder) {
-        categoryUseCase.updateSortOrder(id, newOrder);
+            @RequestBody UpdateOrderRequest request) {
+        categoryUseCase.updateSortOrder(id, request.sortOrder());
         return ResponseEntity.ok(ApiResponse.success());
     }
 }

@@ -19,7 +19,7 @@ public class CategoryService implements CategoryUseCase {
     @Override
     @Transactional(readOnly = true)
     public List<Category> getAllCategories() {
-        return categoryPort.findAllOrderBySortOrder();
+        return categoryPort.findAllWithEventCount();
     }
 
     @Override

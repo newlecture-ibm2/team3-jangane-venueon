@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface CategoryPort {
     List<Category> findAllOrderBySortOrder();
+    List<Category> findAllWithEventCount();
+
     Category save(Category category);
     Optional<Category> findById(Long id);
     void delete(Long id);

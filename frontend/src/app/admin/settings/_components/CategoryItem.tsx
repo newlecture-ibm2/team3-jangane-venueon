@@ -5,14 +5,17 @@ import styles from '../page.module.css';
 import { Toggle, StatusTag } from '@/components/ui';
 import { 
   DeleteIcon, 
-  DragIcon
+  DragIcon,
+  EditIcon
 } from '@/components/icons';
 import { AdminCategoryItem } from '@/lib/admin-api';
 
 interface CategoryItemProps {
   item: AdminCategoryItem;
-  icon: React.ElementType;
+  isVisible: boolean;
   onDelete: (id: number) => void;
+  onEdit: (item: AdminCategoryItem) => void;
+  onToggleVisibility: (id: number, visible: boolean) => void;
   // Drag and Drop props
   index: number;
   onDragStart: (e: React.DragEvent, index: number) => void;
@@ -22,8 +25,10 @@ interface CategoryItemProps {
 
 export default function CategoryItem({ 
   item, 
-  icon: Icon, 
-  onDelete, 
+  isVisible,
+  onDelete,
+  onEdit,
+  onToggleVisibility,
   index,
   onDragStart,
   onDragOver,
@@ -39,11 +44,13 @@ export default function CategoryItem({
       onDragEnd={onDragEnd}
     >
       <div className={styles.itemInfo}>
-        <div className={styles.iconWrapper}>
-          <Icon width={20} height={20} />
-        </div>
         <div className={styles.nameContainer}>
-          <span className={styles.categoryName}>{item.name}</span>
+          <div className={styles.nameRow}>
+            <span className={styles.categoryName}>{item.name}</span>
+            <span className={styles.eventCount}>
+              ({item.eventCount})
+            </span>
+          </div>
           {item.description && (
             <span className={styles.categoryDesc}>{item.description}</span>
           )}
@@ -51,14 +58,20 @@ export default function CategoryItem({
       </div>
 
       <div className={styles.colExposure}>
-        <Toggle checked={true} onChange={() => {}} />
+        <Toggle 
+          checked={isVisible} 
+          onChange={() => onToggleVisibility(item.id, !isVisible)} 
+        />
       </div>
 
       <div className={styles.colStatus}>
-        <StatusTag domain="payment" status="결제 완료" />
+        <StatusTag domain="payment" status={isVisible ? '결제 완료' : '취소됨'} />
       </div>
 
       <div className={styles.itemActions}>
+        <button className={styles.iconButton} onClick={() => onEdit(item)}>
+          <EditIcon width={18} height={18} />
+        </button>
         <button className={styles.iconButton} onClick={() => onDelete(item.id)}>
           <DeleteIcon className={styles.deleteIcon} width={20} height={20} />
         </button>
