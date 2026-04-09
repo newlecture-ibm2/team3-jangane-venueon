@@ -2,8 +2,11 @@ package com.venueon.event.application.port.in;
 
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventType;
+import com.venueon.event.domain.model.PurchaseType;
+import com.venueon.event.adapter.in.web.dto.SessionCreateRequest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 이벤트 생성 유스케이스 (Port-In)
@@ -27,6 +30,9 @@ public interface CreateEventUseCase {
             int maxAttendees,
             String thumbnailUrl,
             LocalDateTime startDate,
-            LocalDateTime endDate
+            LocalDateTime endDate,
+            boolean hasSession,
+            PurchaseType purchaseType,
+            List<SessionCreateRequest> sessions
     ) {}
 }

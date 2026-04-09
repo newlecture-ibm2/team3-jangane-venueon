@@ -9,10 +9,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+import org.springframework.lang.NonNull;
+
+import org.springframework.data.jpa.repository.EntityGraph;
 
 public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
 
+    @EntityGraph(attributePaths = {"categories"})
     Optional<UserJpaEntity> findByEmail(String email);
+
+    @EntityGraph(attributePaths = {"categories"})
+    Optional<UserJpaEntity> findWithCategoriesById(Long id);
 
     Optional<UserJpaEntity> findByNickname(String nickname);
 

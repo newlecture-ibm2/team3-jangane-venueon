@@ -55,4 +55,39 @@ public class UserJpaEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "is_badge_visible", nullable = false)
+    @Builder.Default
+    private boolean isBadgeVisible = true;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_categories",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    @Builder.Default
+    private java.util.List<com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity> categories = new java.util.ArrayList<>();
+    
+    public void updateProfile(String nickname, String profileImg) {
+        this.nickname = nickname;
+        this.profileImg = profileImg;
+    }
+
+    public void updateBadgeVisibility(boolean isBadgeVisible) {
+        this.isBadgeVisible = isBadgeVisible;
+    }
+
+    public void updateCategories(java.util.List<com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity> newCategories) {
+        this.categories.clear();
+        if (newCategories != null) {
+            this.categories.addAll(newCategories);
+        }
+    }
+
+    public void softDelete() {
+        this.isActive = false;
+        // Optionally clear personal info or change email to prevent re-join blocks if required
+        // this.email = "deleted_" + this.id + "_" + this.email;
+    }
 }

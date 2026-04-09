@@ -13,6 +13,8 @@ public class CreateOrderRequest {
     @NotNull(message = "이벤트 ID는 필수입니다.")
     private Long eventId;
 
+    private Long sessionId;
+
     @Min(value = 1, message = "수량은 1 이상이어야 합니다.")
     private int quantity = 1;
 

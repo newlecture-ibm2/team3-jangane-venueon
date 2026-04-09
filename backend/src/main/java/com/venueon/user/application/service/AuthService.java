@@ -35,7 +35,8 @@ import java.util.UUID;
 @Slf4j
 @UseCase
 @RequiredArgsConstructor
-public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCase, GetUserInfoUseCase, GoogleLoginUseCase, UpgradeToHostUseCase {
+public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCase, GetUserInfoUseCase,
+        GoogleLoginUseCase, UpgradeToHostUseCase {
 
     private final UserRepositoryPort userRepositoryPort;
     private final HostProfileRepositoryPort hostProfileRepositoryPort;
@@ -76,7 +77,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
 
     @Override
     public User hostSignUp(String email, String password, String managerName,
-                           String orgName, String orgNumber, String orgDescription) {
+            String orgName, String orgNumber, String orgDescription) {
         log.debug("호스트 회원가입 시도: email={}", email);
 
         // 이메일 중복 체크
@@ -95,8 +96,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         // HostProfile 저장
         HostProfile hostProfile = new HostProfile(
                 null, savedUser.getId(), orgName, orgNumber,
-                managerName, orgDescription, null, null
-        );
+                managerName, orgDescription, null, null);
         hostProfileRepositoryPort.save(hostProfile);
 
         log.info("호스트 회원가입 완료: email={}, orgName={}", email, orgName);
@@ -110,6 +110,11 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         // 사용자 조회
         User user = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."));
+
+        // 탈퇴한 사용자 체크
+        if (!user.isActive()) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "탈퇴 처리된 계정입니다.");
+        }
 
         // 구글 소셜 계정은 비밀번호 로그인 불가
         if (user.isGoogleUser()) {
@@ -146,6 +151,11 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
 
         if (existingUser.isPresent()) {
             user = existingUser.get();
+
+            if (!user.isActive()) {
+                throw new BusinessException(ErrorCode.UNAUTHORIZED, "탈퇴 처리된 계정입니다.");
+            }
+
             log.info("구글 로그인 - 기존 회원: email={}", email);
         } else {
             // 소셜 로그인 사용자는 랜덤 비밀번호 (비밀번호 로그인 불가)
@@ -167,7 +177,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
 
     @Override
     public User upgradeToHost(String email, String managerName,
-                              String orgName, String orgNumber, String orgDescription) {
+            String orgName, String orgNumber, String orgDescription) {
         log.debug("호스트 업그레이드 시도: email={}", email);
 
         // 사용자 조회
@@ -183,15 +193,13 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         User upgradedUser = new User(
                 user.getId(), user.getEmail(), user.getPassword(), managerName,
                 UserRole.HOST, user.getProvider(),
-                user.getProfileImg(), user.getPhone(), user.isActive(), user.getCreatedAt(), user.getUpdatedAt()
-        );
+                user.getProfileImg(), user.getPhone(), user.isActive(), user.getCreatedAt(), user.getUpdatedAt());
         User savedUser = userRepositoryPort.save(upgradedUser);
 
         // HostProfile 생성
         HostProfile hostProfile = new HostProfile(
                 null, savedUser.getId(), orgName, orgNumber,
-                managerName, orgDescription != null ? orgDescription : "", null, null
-        );
+                managerName, orgDescription != null ? orgDescription : "", null, null);
         hostProfileRepositoryPort.save(hostProfile);
 
         log.info("호스트 업그레이드 완료: email={}, orgName={}", email, orgName);
@@ -200,8 +208,14 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepositoryPort.findByEmail(email)
+        User user = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
+
+        if (!user.isActive()) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "탈퇴 처리된 사용자입니다.");
+        }
+
+        return user;
     }
 
     /**

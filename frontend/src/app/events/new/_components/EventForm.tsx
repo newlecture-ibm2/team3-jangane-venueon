@@ -25,6 +25,11 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [hasSession, setHasSession] = useState<boolean>(initialData?.hasSession || false);
+  const [purchaseType, setPurchaseType] = useState<'SINGLE' | 'MULTI'>(initialData?.purchaseType || 'SINGLE');
+  const [activeTab, setActiveTab] = useState<'general' | 'sessions'>('general');
+  const [sessions, setSessions] = useState<any[]>(initialData?.sessions || []);
+
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     description: initialData?.description || '',
@@ -118,6 +123,10 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     }
   };
 
+  const calculatedTotalPrice = hasSession 
+    ? sessions.reduce((sum, s) => sum + (Number(s.price) || 0), 0)
+    : Number(formData.price) || 0;
+
   const handleSubmit = async (isDraft: boolean) => {
     setLoading(true);
     try {
@@ -139,12 +148,27 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         type: 'SEMINAR',
         location: formData.location,
         isOnline: isOnline,
-        price: parseInt(formData.price || '0', 10),
+        price: calculatedTotalPrice,
         maxAttendees: initialData?.maxAttendees || 50,
         thumbnailUrl: thumbnailUrl,
         startDate: startDateStr,
         endDate: endDateStr,
+        hasSession,
+        purchaseType,
+        sessions: hasSession ? sessions.map(s => ({
+          ...s,
+          price: Number(s.price) || 0,
+          maxAttendees: Number(s.maxAttendees) || 50,
+          startTime: s.date ? `${s.date}T10:00:00` : startDateStr,
+          endTime: s.date ? `${s.date}T18:00:00` : endDateStr,
+          location: s.location || formData.location,
+          isOnline: s.isOnline !== undefined ? s.isOnline : isOnline,
+          description: s.description || '',
+          onlineLink: s.onlineLink || '',
+        })) : undefined,
       };
+
+      console.log("[DEBUG] API Request Payload:", JSON.stringify(payload, null, 2));
 
       let res;
       if (mode === 'create') {
@@ -161,7 +185,17 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         });
       }
 
-      if (!res.ok) throw new Error(`세션 ${mode === 'create' ? '생성' : '수정'} 실패`);
+      if (!res.ok) {
+        let errMsg = `이벤트 ${mode === 'create' ? '생성' : '수정'} 실패`;
+        try {
+          const errData = await res.json();
+          console.error("[DEBUG] API Error Response:", JSON.stringify(errData, null, 2));
+          if (errData && errData.message) errMsg += ` - ${errData.message}`;
+        } catch (e) {
+          console.error("[DEBUG] API Error Response (Not JSON):", res.status, res.statusText);
+        }
+        throw new Error(errMsg);
+      }
 
       const resData = await res.json();
       const targetId = mode === 'create' ? resData.data.id : eventId;
@@ -261,59 +295,210 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         />
       </div>
 
-      <div className={styles.grid3}>
-        <div className={styles.formGroup}>
-          <label className={styles.label}>총 가격</label>
-          <div className={styles.priceInputWrapper}>
-            <span className={styles.currencyIcon}>₩</span>
+      <div className={styles.formGroup}>
+        <label className={styles.label}>세션을 사용하시겠습니까?</label>
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+            <input type="radio" name="hasSession" checked={!hasSession} onChange={() => setHasSession(false)} />
+            사용안함 (이벤트 전체 판매)
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+            <input type="radio" name="hasSession" checked={hasSession} onChange={() => setHasSession(true)} />
+            사용 (세션별 개별 판매)
+          </label>
+        </div>
+      </div>
+
+      <div style={{ marginTop: '2rem', padding: '1.5rem', background: '#f8f9fa', borderRadius: '8px', marginBottom: '2rem' }}>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+          {hasSession ? '세션 공통 설정 (기본값)' : '이벤트 상세 설정'}
+        </h3>
+        
+        <div className={styles.grid3}>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>총 가격</label>
+            <div className={styles.priceInputWrapper}>
+              <span className={styles.currencyIcon}>₩</span>
+              <input
+                type="number"
+                name="price"
+                className={styles.priceInput}
+                value={hasSession ? calculatedTotalPrice : formData.price}
+                onChange={handleChange}
+                disabled={hasSession}
+              />
+            </div>
+            {hasSession && <span style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px', display: 'block' }}>세션 설정에서 추가한 금액의 합계입니다.</span>}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>{hasSession ? '기본 날짜' : '날짜'}</label>
             <input
-              type="number"
-              name="price"
-              className={styles.priceInput}
-              value={formData.price}
+              type="date"
+              name="date"
+              className={styles.dateInput}
+              value={formData.date}
               onChange={handleChange}
             />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>온라인/오프라인</label>
+            <select
+              name="isOnlineStr"
+              className={styles.selectInput}
+              value={formData.isOnlineStr}
+              onChange={handleChange}
+            >
+              <option value="">옵션을 선택하세요.</option>
+              <option value="false">오프라인</option>
+              <option value="true">온라인</option>
+            </select>
           </div>
         </div>
 
         <div className={styles.formGroup}>
-          <label className={styles.label}>날짜</label>
+          <label className={styles.label}>{hasSession ? '기본 장소' : '장소'}</label>
           <input
-            type="date"
-            name="date"
-            className={styles.dateInput}
-            value={formData.date}
+            type="text"
+            name="location"
+            className={styles.standardInput}
+            placeholder="오프라인 강의일 경우 주소를 입력해주세요."
+            value={formData.location}
             onChange={handleChange}
+            disabled={formData.isOnlineStr === 'true'}
           />
         </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label}>온라인/오프라인</label>
-          <select
-            name="isOnlineStr"
-            className={styles.selectInput}
-            value={formData.isOnlineStr}
-            onChange={handleChange}
-          >
-            <option value="">옵션을 선택하세요.</option>
-            <option value="false">오프라인</option>
-            <option value="true">온라인</option>
-          </select>
-        </div>
+        {hasSession && (
+          <div className={styles.formGroup}>
+            <label className={styles.label}>세션 구매 방식</label>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                <input type="radio" name="purchaseType" checked={purchaseType === 'SINGLE'} onChange={() => setPurchaseType('SINGLE')} />
+                단일 선택 (고객이 1개의 세션만 선택 가능)
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                <input type="radio" name="purchaseType" checked={purchaseType === 'MULTI'} onChange={() => setPurchaseType('MULTI')} />
+                복수 선택 (고객이 여러 세션을 동시 구매 가능)
+              </label>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className={styles.formGroup}>
-        <label className={styles.label}>장소</label>
-        <input
-          type="text"
-          name="location"
-          className={styles.standardInput}
-          placeholder="오프라인 세션일 경우 주소를 입력해주세요."
-          value={formData.location}
-          onChange={handleChange}
-          disabled={formData.isOnlineStr === 'true'}
-        />
-      </div>
+      {hasSession && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', borderBottom: '2px solid #000', paddingBottom: '0.5rem' }}>세션 목록</h3>
+          <p style={{ color: '#666', fontSize: '0.9rem' }}>이벤트 내에 포함될 세션들을 아래에 추가해주세요. 날짜와 장소를 비워두면 위의 '공통 설정'을 자동으로 따릅니다.</p>
+          
+          {sessions.length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center', background: '#f9f9f9', borderRadius: '8px', border: '1px dashed #ccc' }}>
+              <p style={{ color: '#888', marginBottom: '1rem' }}>등록된 세션이 없습니다.</p>
+              <button 
+                type="button"
+                onClick={() => setSessions([...sessions, { title: '새 세션', price: 0, maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
+                style={{ padding: '0.5rem 1rem', background: '#000', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
+              >
+                + 세션 추가하기
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {sessions.map((session, index) => (
+                <div key={index} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem', position: 'relative' }}>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                        const newSessions = [...sessions];
+                        newSessions.splice(index, 1);
+                        setSessions(newSessions);
+                    }}
+                    style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer' }}
+                  >
+                    🗑️ 삭제
+                  </button>
+                  <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 제목</label>
+                      <input 
+                        type="text" 
+                        value={session.title || ''} 
+                        onChange={(e) => {
+                            const newSessions = [...sessions];
+                            newSessions[index].title = e.target.value;
+                            setSessions(newSessions);
+                        }}
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>가격</label>
+                      <input 
+                        type="number" 
+                        value={session.price || 0} 
+                        onChange={(e) => {
+                            const newSessions = [...sessions];
+                            newSessions[index].price = parseInt(e.target.value, 10);
+                            setSessions(newSessions);
+                        }}
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>정원 명수</label>
+                      <input 
+                        type="number" 
+                        value={session.maxAttendees || 0} 
+                        onChange={(e) => {
+                            const newSessions = [...sessions];
+                            newSessions[index].maxAttendees = parseInt(e.target.value, 10);
+                            setSessions(newSessions);
+                        }}
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 날짜 <span style={{fontWeight:'normal', color:'#666'}}>(비울시 일반설정 동기화)</span></label>
+                      <input 
+                        type="date" 
+                        value={session.date !== undefined ? session.date : formData.date} 
+                        onChange={(e) => {
+                            const newSessions = [...sessions];
+                            newSessions[index].date = e.target.value === "" ? undefined : e.target.value;
+                            setSessions(newSessions);
+                        }}
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 장소 <span style={{fontWeight:'normal', color:'#666'}}>(비울시 일반설정 동기화)</span></label>
+                      <input 
+                        type="text" 
+                        value={session.location !== undefined ? session.location : formData.location} 
+                        placeholder="일반 설정과 다른 경우 입력"
+                        onChange={(e) => {
+                            const newSessions = [...sessions];
+                            newSessions[index].location = e.target.value === "" ? undefined : e.target.value;
+                            setSessions(newSessions);
+                        }}
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button 
+                type="button"
+                onClick={() => setSessions([...sessions, { title: '새 세션', price: 0, maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
+                style={{ padding: '1rem', background: '#f5f5f5', color: '#333', borderRadius: '8px', border: '1px dashed #ccc', cursor: 'pointer', fontWeight: 'bold', marginTop: '0.5rem' }}
+              >
+                + 세션 항목 추가
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className={styles.bottomSection}>
         <div className={styles.hostSection}>

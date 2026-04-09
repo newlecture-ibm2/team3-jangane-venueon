@@ -45,15 +45,21 @@ function CheckoutContent() {
 
         const eventId = searchParams.get('eventId') || '1';
         const quantity = searchParams.get('quantity') || '1';
+        const sessionId = searchParams.get('sessionId');
+
+        const requestBody: any = {
+          eventId: Number(eventId),
+          quantity: Number(quantity),
+          paymentMethod: 'CARD',
+        };
+        if (sessionId) {
+          requestBody.sessionId = Number(sessionId);
+        }
 
         const res = await fetch('/api/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            eventId: Number(eventId),
-            quantity: Number(quantity),
-            paymentMethod: 'CARD',
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         if (!res.ok) {

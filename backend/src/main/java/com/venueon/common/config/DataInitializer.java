@@ -3,9 +3,12 @@ package com.venueon.common.config;
 import com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity;
 import com.venueon.category.adapter.out.persistence.repository.CategoryJpaRepository;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
+import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
+import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
+import com.venueon.event.domain.model.PurchaseType;
 import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
 import com.venueon.order.adapter.out.persistence.repository.OrderJpaRepository;
 import com.venueon.order.domain.model.OrderStatus;
@@ -44,6 +47,7 @@ public class DataInitializer implements ApplicationRunner {
     private final HostProfileJpaRepository hostProfileRepository;
     private final CategoryJpaRepository categoryRepository;
     private final EventJpaRepository eventRepository;
+    private final EventSessionJpaRepository eventSessionRepository;
     private final OrderJpaRepository orderRepository;
     private final ReportJpaRepository reportRepository;
     private final RefundJpaRepository refundRepository;
@@ -64,13 +68,14 @@ public class DataInitializer implements ApplicationRunner {
         List<UserJpaEntity> hosts = createHosts();
         List<CategoryJpaEntity> categories = createCategories();
         List<EventJpaEntity> events = createEvents(hosts, categories);
+        createSessions(events);
         List<OrderJpaEntity> orders = createOrders(users, events);
         List<ReportJpaEntity> reports = createReports(users, events);
         List<RefundJpaEntity> refunds = createRefunds(users, orders);
 
         log.info("=== 개발용 초기 데이터 생성 완료 ===");
         log.info("Admin: 1명, User: {}명, Host: {}명", users.size(), hosts.size());
-        log.info("Category: {}개, Event: {}개", categories.size(), events.size());
+        log.info("Category: {}개, Event: {}개, Session: {}개", categories.size(), events.size(), eventSessionRepository.count());
         log.info("Order: {}개, Report: {}개, Refund: {}개", orders.size(), reports.size(), refunds.size());
     }
 
@@ -342,6 +347,98 @@ public class DataInitializer implements ApplicationRunner {
                         .endDate(LocalDateTime.of(2026, 6, 29, 18, 0))
                         .build()
         ));
+    }
+
+    /**
+     * 세션 생성 — 모든 이벤트에 기본 세션(is_default=true) 생성
+     * AI Bootcamp(index 0)와 Future Science Conference(index 9)는 hasSession=true로 다중 세션 예시
+     */
+    private void createSessions(List<EventJpaEntity> events) {
+        // 1) 모든 이벤트에 기본 세션 생성
+        for (EventJpaEntity event : events) {
+            eventSessionRepository.save(EventSessionJpaEntity.builder()
+                    .event(event)
+                    .title(event.getTitle())
+                    .description(event.getDescription())
+                    .sortOrder(0)
+                    .startTime(event.getStartDate())
+                    .endTime(event.getEndDate())
+                    .location(event.getLocation())
+                    .isOnline(event.isOnline())
+                    .price(event.getPrice())
+                    .maxAttendees(event.getMaxAttendees())
+                    .isDefault(true)
+                    .build());
+        }
+
+        // 2) AI & Cloud Bootcamp — 다중 세션 예시 (hasSession=true 이벤트)
+        EventJpaEntity bootcamp = events.get(0);
+        eventSessionRepository.save(EventSessionJpaEntity.builder()
+                .event(bootcamp)
+                .title("Day 1: AI 모델 배포")
+                .description("TensorFlow/PyTorch 모델을 AWS SageMaker에 배포하는 실습")
+                .sortOrder(1)
+                .startTime(LocalDateTime.of(2026, 4, 12, 10, 0))
+                .endTime(LocalDateTime.of(2026, 4, 12, 18, 0))
+                .location("서울 강남구 테헤란로 123 넥스트코드 교육센터")
+                .price(80000)
+                .maxAttendees(40)
+                .isDefault(false)
+                .build());
+        eventSessionRepository.save(EventSessionJpaEntity.builder()
+                .event(bootcamp)
+                .title("Day 2: 클라우드 인프라 설계")
+                .description("AWS/GCP 기반 마이크로서비스 아키텍처 설계 및 배포 파이프라인 구축")
+                .sortOrder(2)
+                .startTime(LocalDateTime.of(2026, 4, 13, 10, 0))
+                .endTime(LocalDateTime.of(2026, 4, 13, 18, 0))
+                .location("서울 강남구 테헤란로 123 넥스트코드 교육센터")
+                .price(80000)
+                .maxAttendees(40)
+                .isDefault(false)
+                .build());
+
+        // 3) Future Science Conference — 다중 세션 예시 (온라인 포함)
+        EventJpaEntity sciConf = events.get(9);
+        eventSessionRepository.save(EventSessionJpaEntity.builder()
+                .event(sciConf)
+                .title("세션 A: 생명공학의 미래")
+                .description("유전자 편집 기술과 맞춤형 의료의 최신 연구 성과 발표")
+                .sortOrder(1)
+                .startTime(LocalDateTime.of(2026, 6, 28, 10, 0))
+                .endTime(LocalDateTime.of(2026, 6, 28, 12, 0))
+                .location("서울 동대문구 회기로 85 국제회의실 A홀")
+                .price(0)
+                .maxAttendees(100)
+                .isDefault(false)
+                .build());
+        eventSessionRepository.save(EventSessionJpaEntity.builder()
+                .event(sciConf)
+                .title("세션 B: 양자컴퓨팅")
+                .description("양자 알고리즘과 오류 보정 기술의 최신 동향")
+                .sortOrder(2)
+                .startTime(LocalDateTime.of(2026, 6, 28, 14, 0))
+                .endTime(LocalDateTime.of(2026, 6, 28, 16, 0))
+                .isOnline(true)
+                .onlineLink("https://zoom.us/j/1234567890")
+                .price(0)
+                .maxAttendees(200)
+                .isDefault(false)
+                .build());
+        eventSessionRepository.save(EventSessionJpaEntity.builder()
+                .event(sciConf)
+                .title("세션 C: 우주과학")
+                .description("차세대 우주탐사 기술과 민간 우주산업의 전망")
+                .sortOrder(3)
+                .startTime(LocalDateTime.of(2026, 6, 29, 10, 0))
+                .endTime(LocalDateTime.of(2026, 6, 29, 12, 0))
+                .location("서울 동대문구 회기로 85 국제회의실 B홀")
+                .price(0)
+                .maxAttendees(100)
+                .isDefault(false)
+                .build());
+
+        log.info("세션 생성 완료: 기본 세션 {}개, 추가 세션 5개", events.size());
     }
 
     private List<OrderJpaEntity> createOrders(List<UserJpaEntity> users, List<EventJpaEntity> events) {
