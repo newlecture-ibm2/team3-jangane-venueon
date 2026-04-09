@@ -71,4 +71,14 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
     List<OrderJpaEntity> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses);
 
     Page<OrderJpaEntity> findByEventIdIn(List<Long> eventIds, Pageable pageable);
+
+    @Query("SELECT COUNT(o) FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
+           "(o.status = 'PAID' OR o.status = 'REGISTERED') AND " +
+           "o.event.status = 'ONGOING'")
+    long countOngoingByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(o) FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
+           "(o.status = 'PAID' OR o.status = 'REGISTERED') AND " +
+           "o.event.status = 'ENDED'")
+    long countCompletedByUserId(@Param("userId") Long userId);
 }
