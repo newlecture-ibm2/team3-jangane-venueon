@@ -72,6 +72,14 @@
   background-color: var(--color-bg);
 }
 
+.sessionRow {
+  background-color: var(--color-text-gray-100) !important;
+}
+
+.indent {
+  padding-left: var(--space-32);
+}
+
 .header .row {
   background-color: var(--color-bg);
 }
