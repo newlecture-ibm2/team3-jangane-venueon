@@ -59,10 +59,18 @@ public class Post {
     }
 
     public void togglePin() {
+        if (this.isNotice) {
+            return; // 공지사항은 고정 해제 불가능
+        }
         this.isPinned = !this.isPinned;
     }
 
-    public void setNotice(boolean isNotice) {
-        this.isNotice = isNotice;
+    public void toggleNotice() {
+        this.isNotice = !this.isNotice;
+        if (this.isNotice) {
+            this.isPinned = true;
+        } else {
+            this.isPinned = false; // 공지 해제 시 고정도 함께 해제
+        }
     }
 }
