@@ -68,6 +68,48 @@ npm run dev
 
 ---
 
+## 🔗 주요 페이지 URL 목록 (테스트용)
+
+현재 페이지 간 링크 연결이 완벽하지 않을 수 있으므로, 아래 URL을 직접 입력하여 테스트하실 수 있습니다. (기본 포트: `3000` 가정)
+
+### 👤 사용자 페이지
+- **메인**: `http://localhost:3000/`
+- **로그인/회원가입**:
+  - 로그인: `/login`
+  - 일반 회원가입: `/signup`
+  - 호스트 회원가입: `/host-signup`
+- **이벤트(공연/행사)**:
+  - 목록: `/events`
+  - 상세: `/events/{id}` (예: `/events/1`)
+  - 등록(호스트용): `/events/new`
+- **커뮤니티**:
+  - 목록: `/community`
+  - 상세: `/community/{id}` (예: `/community/1`)
+  - 작성: `/community/create`
+  - 북마크 목록 데이터 테스트: `/api/posts/bookmarks/me`
+- **마이페이지**:
+  - 대시보드: `/mypage`
+  - 프로필 관리: `/mypage/profile`
+  - 내 이벤트 (참여 중): `/mypage/events`
+  - 내 주문/예약 목록: `/mypage/orders`
+  - 주문 내역 상세: `/mypage/orders/{id}` (예: `/mypage/orders/1`)
+  - 가입한 커뮤니티: `/mypage/community`
+  - 비밀번호 변경/보안: `/mypage/security`
+  - 찜 목록: `/mypage/wishlist`
+- **장바구니**: `/cart`
+
+### 👑 관리자 및 호스트
+- **호스트 대시보드**: `/host`
+- **관리자 대시보드**: `/admin`
+- **관리자 유저 관리**: `/admin/users`
+- **관리자 시스템 설정**: `/admin/settings`
+
+### 🧪 개발 및 테스트용
+- **UI 컴포넌트 테스트**: `/ui-test`
+- **사이드바 레이아웃 테스트**: `/sidebar-test`
+
+---
+
 ## 📁 프로젝트 구조
 
 ```text
