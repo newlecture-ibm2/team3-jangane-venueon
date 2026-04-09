@@ -40,7 +40,7 @@
   font-style: normal;
   font-weight: 400;
   line-height: 150%;
-  
+
   padding: 0;
   border: none;
   text-align: left;
@@ -72,12 +72,35 @@
   color: var(--Gray-700, #374151);
 }
 
-.hostCol { flex: 2 0 0; }
-.managerCol { flex: 1.5 0 0; }
-.bizNumCol { flex: 1.5 0 0; }
-.dateCol { flex: 1.5 0 0; }
-.statusCol { flex: 1 0 0; }
-.actionCol { flex: 0 0 32px; display: flex; justify-content: flex-end; }
+.hostCol {
+  flex: 2 0 0;
+}
+
+.managerCol {
+  flex: 1.5 0 0;
+}
+
+.bizNumCol {
+  flex: 1.5 0 0;
+}
+
+.dateCol {
+  flex: 1.5 0 0;
+}
+
+.statusCol {
+  flex: 1 0 0;
+}
+
+.table td.actionCol {
+  flex: 0 0 32px;
+  display: flex;
+  justify-content: flex-end;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: unset;
+  position: relative; /* z-index context for children */
+}
 
 .userProfile {
   display: flex;
@@ -112,12 +135,25 @@
   font-weight: 500;
 }
 
+.moreWrapper {
+  position: relative;
+  display: inline-flex;
+}
+
 .moreButton {
   background: none;
   border: none;
   cursor: pointer;
   color: #6B7280;
   padding: 4px;
+}
+
+.popover {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 8px;
+  /* Design for this popover is handled inside PopoverMenu.tsx/module.css */
 }
 
 .loading,

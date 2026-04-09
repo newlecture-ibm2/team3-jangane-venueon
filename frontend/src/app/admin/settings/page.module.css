@@ -1,0 +1,176 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.pageHeader {
+  margin-bottom: 32px;
+}
+
+.pageTitle {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+}
+
+.topActionArea {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+}
+
+.tabArea {
+  display: flex;
+  gap: 24px;
+}
+
+.tab {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-500);
+  padding-bottom: 8px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  background: none;
+}
+
+.activeTab {
+  color: var(--color-text-gray-900);
+  border-bottom: 2px solid var(--color-text-gray-900);
+}
+
+.searchAddArea {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.searchArea {
+  width: 100%;
+}
+
+.searchRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.searchField {
+  flex: 1;
+}
+
+.listHeader {
+  display: flex;
+  padding: 16px 24px;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 1px solid var(--color-text-gray-300);
+  margin-bottom: 12px;
+}
+
+.headerText {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-700);
+}
+
+.colName { flex: 1; }
+.colExposure { width: 60px; text-align: center; }
+.colStatus { width: 100px; text-align: center; }
+.colActions { width: 100px; }
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* User specified row style */
+.categoryItem {
+  display: flex;
+  height: 80px;
+  padding: 16px 24px;
+  align-items: center;
+  gap: 24px;
+  align-self: stretch;
+  border-radius: 12px;
+  background: var(--Brand-surface, #F3F4F6);
+}
+
+.itemInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.nameContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.categoryName {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eventCount {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+}
+
+.categoryDesc {
+  font: var(--text-caption-regular);
+  color: var(--color-text-gray-500);
+}
+
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: var(--color-text-gray-500);
+}
+
+.dragging {
+  opacity: 0.5;
+  background: var(--color-surface-hover, #E5E7EB);
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-gray-500);
+  padding: 4px;
+}
+
+.iconButton:disabled {
+  color: var(--color-text-gray-300);
+  cursor: not-allowed;
+}
+
+.deleteIcon {
+  color: var(--color-error);
+}
+
+.paginationArea {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}

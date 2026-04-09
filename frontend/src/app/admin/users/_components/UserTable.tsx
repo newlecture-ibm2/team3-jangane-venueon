@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './UserTable.module.css';
 import { MoreIcon } from '@/components/icons';
+import { PopoverMenu } from '@/components/ui';
 import type { AdminUserListItem } from '@/lib/admin-api';
 
 interface UserTableProps {
@@ -17,17 +18,26 @@ function formatDate(dateStr: string) {
   if (!dateStr) return '-';
   const d = new Date(dateStr);
   const pad = (n: number) => n.toString().padStart(2, '0');
-  
+
   const year = d.getFullYear();
   const month = pad(d.getMonth() + 1);
   const day = pad(d.getDate());
   const hours = pad(d.getHours());
   const minutes = pad(d.getMinutes());
-  
+
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
+const POPOVER_ITEMS = [
+  { value: 'edit', label: '편집' },
+  { value: 'delete', label: '삭제' },
+  { value: 'reject', label: '반려' },
+  { value: 'report', label: '경고' },
+];
+
 export default function UserTable({ users, isLoading, onViewDetail, onDeleteClick }: UserTableProps) {
+  const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
+
   if (isLoading) {
     return <div className={styles.loading}>로딩 중...</div>;
   }
@@ -39,6 +49,31 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
   // 주최자 관리/수강생 관리에 따라 헤더가 다를 수 있지만, 
   // 요청하신 디자인 사양(이미지) 기준으로 주최자 헤더를 구현합니다.
   const isHostView = users.length > 0 && users[0].role === 'HOST';
+
+  const handleMoreClick = (e: React.MouseEvent, userId: number) => {
+    e.stopPropagation();
+    setOpenPopoverId(prev => (prev === userId ? null : userId));
+  };
+
+  const handlePopoverSelect = (value: string, user: AdminUserListItem) => {
+    setOpenPopoverId(null);
+    switch (value) {
+      case 'edit':
+        onViewDetail(user.id);
+        break;
+      case 'delete':
+        onDeleteClick(user);
+        break;
+      case 'reject':
+        // TODO: 반려 로직 연결
+        console.log('반려:', user.id);
+        break;
+      case 'report':
+        // TODO: 신고 로직 연결
+        console.log('신고:', user.id);
+        break;
+    }
+  };
 
   return (
     <div className={styles.tableWrapper}>
@@ -79,12 +114,26 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
                 </span>
               </td>
               <td className={styles.actionCol}>
-                <button 
-                  className={styles.moreButton}
-                  onClick={() => onViewDetail(user.id)}
+                <div
+                  className={styles.moreWrapper}
+                  style={{ zIndex: openPopoverId === user.id ? 50 : 1 }}
                 >
-                  <MoreIcon />
-                </button>
+                  <button
+                    className={styles.moreButton}
+                    onClick={(e) => handleMoreClick(e, user.id)}
+                  >
+                    <MoreIcon />
+                  </button>
+                  {openPopoverId === user.id && (
+                    <PopoverMenu
+                      items={POPOVER_ITEMS}
+                      onSelect={(value) => handlePopoverSelect(value, user)}
+                      onClose={() => setOpenPopoverId(null)}
+                      width={140}
+                      className={styles.popover}
+                    />
+                  )}
+                </div>
               </td>
             </tr>
           ))}
