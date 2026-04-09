@@ -67,7 +67,7 @@ export default async function EventDetailPage({ params }: Props) {
   };
 
   const statusInfo = STATUS_MAP[event.status] || { label: event.status, variant: 'gray' };
-  const imageUrl = event.thumbnailUrl ? `${BACKEND_URL}/upload/${event.thumbnailUrl}` : '';
+  const imageUrl = event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : '';
 
   return (
     <div className={styles.container}>
@@ -178,7 +178,7 @@ export default async function EventDetailPage({ params }: Props) {
         <div className={styles.hostCard}>
           <div className={styles.hostImageWrapper}>
             {event.host?.profileImg ? (
-              <img src={`${BACKEND_URL}/upload/company-logo/${event.host.profileImg}`} alt={event.host.orgName} className={styles.hostImage} />
+              <img src={`/upload/${event.host.profileImg}`} alt={event.host.orgName} className={styles.hostImage} />
             ) : (
               <div style={{ width: '100%', height: '100%' }} />
             )}

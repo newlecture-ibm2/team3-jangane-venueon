@@ -6,7 +6,6 @@ import styles from './page.module.css';
 import { Card, CardGrid, InputField, Tabs, Pagination } from '@/components/ui';
 import { format } from 'date-fns';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 interface EventData {
   id: number;
@@ -56,7 +55,7 @@ export default function Home() {
       if (resData.success) {
         setEvents(resData.data.content);
         setTotalPages(resData.data.totalPages);
-        
+
         // Wishlist도 동시에 조회 (비로그인이거나 에러시 조용히 넘어감)
         try {
           const wlRes = await fetch('/api/wishlists/me?size=100');
@@ -111,7 +110,7 @@ export default function Home() {
       </section>
 
       <div className={styles.container}>
-        
+
         {/* 필터 및 검색 섹션 */}
         <section className={styles.filterSection}>
           <div className={styles.searchBox}>
@@ -124,7 +123,7 @@ export default function Home() {
             />
           </div>
           <div className={styles.tagGroup}>
-            <Tabs 
+            <Tabs
               variant="pill"
               options={categoryOptions}
               activeValue={activeCategory}
@@ -142,8 +141,8 @@ export default function Home() {
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => (
-                <div 
-                  key={event.id} 
+                <div
+                  key={event.id}
                   style={{ cursor: 'pointer' }}
                   onClick={() => router.push(`/events/${event.id}`)}
                 >
@@ -151,7 +150,7 @@ export default function Home() {
                     title={event.title}
                     eventId={event.id}
                     isWishlistedProp={wishlistSet.has(event.id)}
-                    imageUrl={event.thumbnailUrl ? `${BACKEND_URL}/upload/${event.thumbnailUrl}` : ''}
+                    imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
                     organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 시 실제 이름으로 변경
                     dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
                     location={event.isOnline ? '온라인' : event.location}
@@ -166,7 +165,7 @@ export default function Home() {
           {/* 페이지네이션 */}
           {!loading && totalPages > 1 && (
             <div className={styles.paginationContainer}>
-               <Pagination 
+              <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={(page) => setCurrentPage(page)}

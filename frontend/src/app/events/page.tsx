@@ -6,7 +6,6 @@ import styles from './page.module.css';
 import { Card, CardGrid, InputField, Tabs, Pagination } from '@/components/ui';
 import { format } from 'date-fns';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 interface EventData {
   id: number;
@@ -89,7 +88,7 @@ export default function EventsPage() {
             />
           </div>
           <div className={styles.tagGroup}>
-            <Tabs 
+            <Tabs
               variant="pill"
               options={categoryOptions}
               activeValue={activeCategory}
@@ -110,7 +109,7 @@ export default function EventsPage() {
                 <Link href={`/events/${event.id}`} key={event.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <Card
                     title={event.title}
-                    imageUrl={event.thumbnailUrl ? `${BACKEND_URL}/upload/${event.thumbnailUrl}` : ''}
+                    imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
                     organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 회사이름으로 변경
                     dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
                     location={event.isOnline ? '온라인' : event.location}
@@ -127,7 +126,7 @@ export default function EventsPage() {
           {/* 페이지네이션 */}
           {!loading && totalPages > 1 && (
             <div className={styles.paginationContainer}>
-               <Pagination 
+              <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={(page) => setCurrentPage(page)}
