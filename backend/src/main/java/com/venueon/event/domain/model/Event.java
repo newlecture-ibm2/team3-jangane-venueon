@@ -68,7 +68,24 @@ public class Event {
         this.status = EventStatus.PUBLISHED;
     }
 
+    public void prepare() {
+        if (this.status != EventStatus.PUBLISHED) {
+            throw new IllegalStateException("PUBLISHED 상태에서만 모집 마감이 가능합니다.");
+        }
+        this.status = EventStatus.PREPARING;
+    }
+
+    public void start() {
+        if (this.status != EventStatus.PREPARING) {
+            throw new IllegalStateException("PREPARING 상태에서만 강의 시작이 가능합니다.");
+        }
+        this.status = EventStatus.ONGOING;
+    }
+
     public void end() {
+        if (this.status != EventStatus.ONGOING && this.status != EventStatus.PREPARING) {
+            throw new IllegalStateException("강의 준비 중 또는 진행 중인 상태에서만 종료가 가능합니다.");
+        }
         this.status = EventStatus.ENDED;
     }
 

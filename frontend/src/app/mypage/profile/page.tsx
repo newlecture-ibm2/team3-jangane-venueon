@@ -45,7 +45,8 @@ export default function ProfileSettingsPage() {
         if (catRes.ok) {
            const catData = await catRes.json();
            if (catData.data) {
-             setAvailableCategories(catData.data);
+             const names = catData.data.map((c: any) => c.name);
+             setAvailableCategories(names);
            }
         }
       } catch (e) {

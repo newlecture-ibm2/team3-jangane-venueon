@@ -71,7 +71,10 @@ export default function HostEventDetailPage({ params }: { params: Promise<{ id: 
   const handleDelete = async () => {
     if (!confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
     try {
-      await api.delete(`/host/events/${eventId}`);
+      const res = await fetch(`/api/host/events/${eventId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        throw new Error('삭제 처리 중 오류가 발생했습니다.');
+      }
       alert('삭제되었습니다.');
       router.push('/host/events');
     } catch (err) {
@@ -83,6 +86,7 @@ export default function HostEventDetailPage({ params }: { params: Promise<{ id: 
     switch (status) {
       case 'DRAFT': return '임시 저장';
       case 'PUBLISHED': return '모집 중';
+      case 'PREPARING': return '강의 준비 중';
       case 'ONGOING': return '진행 중';
       case 'ENDED': return '종료됨';
       default: return status;
@@ -192,14 +196,36 @@ export default function HostEventDetailPage({ params }: { params: Promise<{ id: 
               </div>
 
               <div className={styles.actionArea}>
+                {/* 1. DRAFT 상태: 공개하기만 가능 */}
                 {eventData.status === 'DRAFT' && (
                   <button className={`${styles.btn} ${styles.btnBlue}`} onClick={() => handleStatusChange('PUBLISHED')}>
-                    공개하기 (PUBLISHED)
+                    공개하기
                   </button>
                 )}
+
+                {/* 2. PUBLISHED 상태: 모집 마감만 가능 */}
                 {eventData.status === 'PUBLISHED' && (
+                  <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => handleStatusChange('PREPARING')}>
+                    모집 마감
+                  </button>
+                )}
+
+                {/* 3. PREPARING 상태: 강의 시작 또는 종료 가능 */}
+                {eventData.status === 'PREPARING' && (
+                  <>
+                    <button className={`${styles.btn} ${styles.btnBlue}`} onClick={() => handleStatusChange('ONGOING')}>
+                      강의 시작
+                    </button>
+                    <button className={`${styles.btn} ${styles.btnOutline}`} onClick={() => handleStatusChange('ENDED')}>
+                      종료하기
+                    </button>
+                  </>
+                )}
+
+                {/* 4. ONGOING 상태: 종료하기만 가능 */}
+                {eventData.status === 'ONGOING' && (
                   <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => handleStatusChange('ENDED')}>
-                    종료하기 (ENDED)
+                    종료하기
                   </button>
                 )}
                 

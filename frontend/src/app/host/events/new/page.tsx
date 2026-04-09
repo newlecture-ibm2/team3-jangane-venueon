@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Sidebar from '@/components/layout/Sidebar';
@@ -35,6 +35,23 @@ export default function HostEventCreatePage() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await api.get<{ data: { id: number; name: string }[] }>('/categories');
+        if (res.data) {
+          setCategories(res.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch categories:', err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   /** 공통 필드 변경 핸들러 */
   const handleChange = (
@@ -62,6 +79,75 @@ export default function HostEventCreatePage() {
     return null;
   };
 
+  /** 파일 업로드 처리 */
+  const uploadThumbnail = async (file: File) => {
+    try {
+      setSubmitting(true);
+      
+      /**
+       * 2번 방식 적용: 공용 api.ts를 건드리지 않고 브라우저 표준 fetch를 직접 사용합니다.
+       * 이렇게 하면 조원분들이 api.ts를 수정하시더라도 충돌이 발생하지 않습니다.
+       */
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/files/upload?category=events', {
+        method: 'POST',
+        body: formData,
+        // Content-Type을 설정하지 않아야 브라우저가 자동으로 boundary가 포함된 multipart/form-data를 설정합니다.
+      });
+
+      if (!response.ok) {
+        throw new Error('이미지 업로드에 실패했습니다.');
+      }
+
+      const res = await response.json();
+      
+      // 서버 응답 구조가 success 플래그를 포함하는 경우를 대비
+      const filePath = res.data?.filePath;
+      if (filePath) {
+        setForm((prev) => ({ ...prev, thumbnailUrl: filePath }));
+      }
+    } catch (err: any) {
+      alert(err.message || '이미지 업로드에 실패했습니다.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      await uploadThumbnail(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      await uploadThumbnail(e.target.files[0]);
+    }
+  };
+
+  const removeThumbnail = () => {
+    setForm((prev) => ({ ...prev, thumbnailUrl: '' }));
+  };
+
+
   /** 서버 전송용 body 조립 */
   const buildRequestBody = () => ({
     title: form.title.trim(),
@@ -73,9 +159,13 @@ export default function HostEventCreatePage() {
     price: form.price ? Number(form.price) : 0,
     maxAttendees: form.maxAttendees ? Number(form.maxAttendees) : 0,
     thumbnailUrl: form.thumbnailUrl.trim() || null,
-    startDate: form.startDate,
-    endDate: form.endDate,
+    startDate: form.startDate ? (form.startDate.includes(':') && form.startDate.split(':').length === 2 ? `${form.startDate}:00` : form.startDate) : null,
+    endDate: form.endDate ? (form.endDate.includes(':') && form.endDate.split(':').length === 2 ? `${form.endDate}:00` : form.endDate) : null,
+    hasSession: false,
+    purchaseType: 'SINGLE',
+    sessions: [],
   });
+
 
   /** 임시 저장 — 생성 후 목록으로 이동 */
   const handleSaveDraft = async () => {
@@ -206,17 +296,22 @@ export default function HostEventCreatePage() {
 
                 <div className={styles.fieldGroup}>
                   <label htmlFor="categoryId" className={styles.fieldLabel}>
-                    카테고리 ID
+                    카테고리
                   </label>
-                  <input
+                  <select
                     id="categoryId"
                     name="categoryId"
-                    type="number"
-                    className={styles.fieldInput}
-                    placeholder="예) 1"
+                    className={styles.fieldSelect}
                     value={form.categoryId}
                     onChange={handleChange}
-                  />
+                  >
+                    <option value="">-- 미분류 --</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
                   <p className={styles.fieldHint}>비워두면 미분류로 등록됩니다.</p>
                 </div>
               </div>
@@ -330,21 +425,46 @@ export default function HostEventCreatePage() {
 
             {/* ── 썸네일 ── */}
             <div className={styles.section}>
-              <h2 className={styles.sectionTitle}>썸네일</h2>
-
+              <h2 className={styles.sectionTitle}>썸네일 이미지</h2>
+              
               <div className={styles.fieldGroup}>
-                <label htmlFor="thumbnailUrl" className={styles.fieldLabel}>
-                  썸네일 이미지 URL
-                </label>
-                <input
-                  id="thumbnailUrl"
-                  name="thumbnailUrl"
-                  className={styles.fieldInput}
-                  placeholder="https://example.com/image.jpg"
-                  value={form.thumbnailUrl}
-                  onChange={handleChange}
-                />
-                <p className={styles.fieldHint}>외부 이미지 URL을 입력해주세요. 비워두면 기본 이미지가 표시됩니다.</p>
+                {form.thumbnailUrl ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <img 
+                      src={`/api/upload/${form.thumbnailUrl}`} 
+                      alt="Thumbnail Preview" 
+                      className={styles.thumbnailPreview} 
+                      onError={(e) => {
+                        // 만약 상대경로 라우팅 방식이 다르면 기본 백엔드 주소로 fallback 시도
+                        (e.target as HTMLImageElement).src = `http://localhost:8080/upload/${form.thumbnailUrl}`;
+                      }}
+                    />
+                    <button type="button" className={styles.removeThumbnailBtn} onClick={removeThumbnail}>
+                      이미지 삭제
+                    </button>
+                  </div>
+                ) : (
+                  <div 
+                    className={`${styles.fileUploadArea} ${dragActive ? styles.dragActive : ''}`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <svg className={styles.uploadIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    <p className={styles.uploadText}>클릭하여 이미지를 선택하거나 파일을 끌어다 놓으세요</p>
+                    <p className={styles.uploadHint}>JPG, PNG 포맷 지원 (최대 5MB)</p>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      className={styles.hiddenInput} 
+                      accept="image/jpeg, image/png, image/webp" 
+                      onChange={handleFileChange}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

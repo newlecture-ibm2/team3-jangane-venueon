@@ -42,6 +42,7 @@ public class HostEventMapper {
                 entity.getMaxAttendees(),
                 entity.getLocation(),
                 entity.isOnline(),
+                entity.getCategory() != null ? entity.getCategory().getId() : null,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );

@@ -89,6 +89,8 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
         // 도메인 비즈니스 로직 위임
         switch (newStatus) {
             case PUBLISHED -> event.publish();
+            case PREPARING -> event.prepare();
+            case ONGOING -> event.start();
             case ENDED -> event.end();
             case CANCELLED -> event.cancel();
             default -> throw new IllegalArgumentException("지원하지 않는 상태 변경입니다: " + newStatus);
@@ -104,6 +106,10 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
 
         if (!"ADMIN".equals(command.requesterRole()) && !event.isOwnedBy(command.requesterId())) {
             throw new IllegalStateException("이벤트 수정 권한이 없습니다.");
+        }
+
+        if (!event.isEditable()) {
+            throw new IllegalStateException("임시 저장(DRAFT) 상태에서만 수정이 가능합니다.");
         }
 
         event.updateDetails(

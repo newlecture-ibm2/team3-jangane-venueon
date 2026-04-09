@@ -23,12 +23,18 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<?> getCategories() {
         List<CategoryJpaEntity> entities = categoryJpaRepository.findAllByOrderBySortOrderAsc();
-        List<String> categoryNames = entities.stream()
-                .map(CategoryJpaEntity::getName)
+        List<Map<String, Object>> categoryList = entities.stream()
+                .map(e -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", e.getId());
+                    map.put("name", e.getName());
+                    return map;
+                })
                 .collect(Collectors.toList());
         
         Map<String, Object> response = new HashMap<>();
-        response.put("data", categoryNames);
+        response.put("data", categoryList);
         return ResponseEntity.ok(response);
     }
+
 }

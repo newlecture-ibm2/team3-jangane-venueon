@@ -59,6 +59,17 @@ export default function HostEventsPage() {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'DRAFT': return '임시 저장';
+      case 'PUBLISHED': return '모집 중';
+      case 'PREPARING': return '강의 준비 중';
+      case 'ONGOING': return '진행 중';
+      case 'ENDED': return '종료됨';
+      default: return status;
+    }
+  };
+
   const handlePageChange = (newPage: number) => {
     if (eventsData && newPage >= 0 && newPage < eventsData.totalPages) {
       fetchEvents(activeTab, newPage);
@@ -69,7 +80,8 @@ export default function HostEventsPage() {
     { value: 'ALL', label: '전체' },
     { value: 'DRAFT', label: '임시 저장' },
     { value: 'PUBLISHED', label: '수강생 모집 중' },
-    { value: 'ONGOING', label: '강의 준비 중' },
+    { value: 'PREPARING', label: '강의 준비 중' },
+    { value: 'ONGOING', label: '진행 중' },
     { value: 'ENDED', label: '종료된 강의' },
   ];
 
@@ -110,7 +122,9 @@ export default function HostEventsPage() {
             ) : eventsData?.content && eventsData.content.length > 0 ? (
               eventsData.content.map((event) => (
                 <div key={event.id} className={styles.eventCard}>
-                  <span className={styles.cardBadge}>모집 중</span>
+                  <span className={`${styles.cardBadge} ${event.status === 'DRAFT' ? styles.cardBadgeDraft : event.status === 'ENDED' ? styles.cardBadgeEnded : ''}`}>
+                    {getStatusText(event.status)}
+                  </span>
                   <h3 className={styles.cardTitle}>{event.title}</h3>
                   <div className={styles.thumbnailPlaceholder}></div>
                   

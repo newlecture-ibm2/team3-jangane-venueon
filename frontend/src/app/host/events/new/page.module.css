@@ -252,6 +252,78 @@
   margin-top: 6px;
 }
 
+/* ── 파일 업로드 & 썸네일 ── */
+.fileUploadArea {
+  position: relative;
+  width: 100%;
+  padding: 40px 20px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.fileUploadArea:hover, .fileUploadArea.dragActive {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.uploadIcon {
+  width: 48px;
+  height: 48px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+.uploadText {
+  font-size: 15px;
+  color: #334155;
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.uploadHint {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.thumbnailPreview {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.removeThumbnailBtn {
+  margin-top: 12px;
+  padding: 6px 12px;
+  background: #fee2e2;
+  color: #ef4444;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.removeThumbnailBtn:hover {
+  background: #fecaca;
+}
+
 /* ── 반응형 ── */
 @media (max-width: 768px) {
   .dashboardWrapper {
