@@ -66,7 +66,8 @@ public class PostQueryService implements GetPostQuery {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
 
         return postRepositoryPort.findBookmarkedPostsByUserId(user.getId(), pageable)
-                .map(post -> new PostListResponse(
+                .map(post -> {
+                    return new PostListResponse(
                         post.getId(),
                         post.getTitle(),
                         post.getType(),
@@ -76,6 +77,13 @@ public class PostQueryService implements GetPostQuery {
                         post.getCommentCount(),
                         post.getLikeCount(),
                         true, // 북마크 목록이므로 무조건 true
+<<<<<<< Updated upstream
                         post.getCreatedAt()));
+=======
+                        post.isPinned(),
+                        post.isNotice(),
+                        post.getCreatedAt());
+                });
+>>>>>>> Stashed changes
     }
 }

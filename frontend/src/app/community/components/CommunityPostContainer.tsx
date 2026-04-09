@@ -54,6 +54,7 @@ export default function CommunityPostContainer({ communityId }: Props) {
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
   const [isLikeSubmitting, setIsLikeSubmitting] = useState(false);
+  const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
 
   const fetchPosts = async (silent = false) => {
     if (!silent) setIsLoading(true);
@@ -106,15 +107,24 @@ export default function CommunityPostContainer({ communityId }: Props) {
         body: JSON.stringify({
           postId: selectedPostId,
           content: value,
+<<<<<<< Updated upstream
           parentId: null // 나중에 대댓글 구현 시 확장
+=======
+          parentId: replyToCommentId
+>>>>>>> Stashed changes
         }),
       });
 
       if (!response.ok) throw new Error('댓글 등록 실패');
 
       showToast('댓글 등록 완료', 'success');
+<<<<<<< Updated upstream
       // 댓글 목록 갱신
       fetchComments(selectedPostId);
+=======
+      setReplyToCommentId(null); // 전송 후 초기화
+      fetchComments(selectedPostId, true); // 사일런트 업데이트 (깜빡임 방지)
+>>>>>>> Stashed changes
     } catch (error) {
       console.error(error);
       showToast('댓글 등록 실패', 'error', '서버 오류가 발생했습니다.');
@@ -201,6 +211,35 @@ export default function CommunityPostContainer({ communityId }: Props) {
     }
   }, [selectedPostId]);
 
+<<<<<<< Updated upstream
+=======
+  const postTypeToKorean = (type: string) => {
+    switch (type) {
+      case 'NOTICE': return '공지';
+      case 'FREE': return '자유';
+      case 'QUESTION': return '질문';
+      case 'INFO': return '정보';
+      default: return '일반';
+    }
+  };
+
+  // 댓글 계층 구조화 로직
+  const organizedComments = React.useMemo(() => {
+    const roots = comments.filter(c => !c.parentId);
+    const result: { comment: CommentResponse; level: number }[] = [];
+
+    roots.forEach(root => {
+      result.push({ comment: root, level: 0 });
+      const children = comments.filter(c => c.parentId === root.id);
+      children.forEach(child => {
+        result.push({ comment: child, level: 1 });
+      });
+    });
+
+    return result;
+  }, [comments]);
+
+>>>>>>> Stashed changes
   const selectedPost = posts.find(p => p.id === selectedPostId) || null;
 
   return (
@@ -218,10 +257,15 @@ export default function CommunityPostContainer({ communityId }: Props) {
         </div>
 
         <div className={styles.postList}>
+<<<<<<< Updated upstream
           {isLoading ? (
             <div className={styles.loadingOrEmpty}>
               데이터를 불러오는 중입니다...
             </div>
+=======
+          {isLoading && posts.length === 0 ? (
+            <div className={styles.loadingOrEmpty}>데이터를 불러오는 중입니다...</div>
+>>>>>>> Stashed changes
           ) : posts.length === 0 ? (
             <div className={styles.loadingOrEmpty}>
               게시글이 없습니다.
@@ -333,21 +377,39 @@ export default function CommunityPostContainer({ communityId }: Props) {
 
             {/* 2-4. 댓글 리스트 영역 */}
             <div className={styles.commentList}>
-              {isCommentsLoading ? (
+              {isCommentsLoading && comments.length === 0 ? (
                 <div className={styles.commentStatus}>댓글을 불러오는 중...</div>
-              ) : comments.length === 0 ? (
+              ) : organizedComments.length === 0 ? (
                 <div className={styles.commentStatus}>첫 번째 댓글을 남겨보세요!</div>
               ) : (
-                comments.map(comment => (
-                  <CommunityCommentItem
-                    key={comment.id}
-                    username={comment.authorNickname}
-                    date={new Date(comment.createdAt).toLocaleDateString() + ' / ' + new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    content={comment.content}
-                    likeCount={comment.likeCount}
-                    onLike={() => handleCommentLikeToggle(comment.id)}
-                    menuItems={[{ value: 'report', label: '신고하기' }]}
-                  />
+                organizedComments.map(({ comment, level }) => (
+                  <React.Fragment key={comment.id}>
+                    <CommunityCommentItem
+                      username={comment.authorNickname}
+                      date={new Date(comment.createdAt).toLocaleDateString() + ' / ' + new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      content={comment.content}
+                      likeCount={comment.likeCount}
+                      onLike={() => handleCommentLikeToggle(comment.id)}
+                      onReply={() => setReplyToCommentId(comment.id)}
+                      level={level}
+                      menuItems={[{ value: 'report', label: '신고하기' }]}
+                    />
+                    {/* 답글 입력창: 현재 댓글이 답글 작성 대상이고 부모 댓글인 경우 바로 아래에 표시 */}
+                    {replyToCommentId === comment.id && (
+                      <div className={styles.inlineReplyInput} style={{ marginLeft: '48px' }}>
+                        <div className={styles.replyLine} />
+                        <div className={styles.replyToLabel}>
+                          <span>답글 작성 중</span>
+                          <button onClick={() => setReplyToCommentId(null)}>취소</button>
+                        </div>
+                        <CommentInput 
+                          onSubmit={handleCommentSubmit} 
+                          placeholder="답글을 입력하세요..." 
+                          disabled={isCommentSubmitting}
+                        />
+                      </div>
+                    )}
+                  </React.Fragment>
                 ))
               )}
             </div>
