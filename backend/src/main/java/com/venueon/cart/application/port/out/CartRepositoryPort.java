@@ -22,14 +22,14 @@ public interface CartRepositoryPort {
     Optional<Cart> findById(Long id);
 
     /**
-     * 사용자와 이벤트로 장바구니 항목 조회 (중복 체크용)
+     * 사용자와 특정 세션으로 장바구니 항목 조회 (중복 체크용)
      */
-    Optional<Cart> findByUserEmailAndEventId(String userEmail, Long eventId);
+    Optional<Cart> findByUserEmailAndSessionId(String userEmail, Long sessionId);
 
     /**
      * 장바구니 항목 존재 여부 확인
      */
-    boolean existsByUserEmailAndEventId(String userEmail, Long eventId);
+    boolean existsByUserEmailAndSessionId(String userEmail, Long sessionId);
 
     /**
      * 장바구니 항목 저장
