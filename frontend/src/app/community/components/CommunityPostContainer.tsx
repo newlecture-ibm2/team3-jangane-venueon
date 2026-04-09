@@ -99,7 +99,7 @@ export default function CommunityPostContainer({ communityId }: Props) {
     }
   };
 
-  const handleCommentSubmit = async (value: string) => {
+  const handleCommentSubmit = async (value: string, parentId: number | null = null) => {
     if (!selectedPostId || isCommentSubmitting) return;
 
     setIsCommentSubmitting(true);
@@ -110,15 +110,16 @@ export default function CommunityPostContainer({ communityId }: Props) {
         body: JSON.stringify({
           postId: selectedPostId,
           content: value,
-          parentId: replyToCommentId
+          parentId: parentId
         }),
       });
 
       if (!response.ok) throw new Error('댓글 등록 실패');
 
       showToast('댓글 등록 완료', 'success');
+
       setReplyToCommentId(null); // 전송 후 초기화
-      fetchComments(selectedPostId, true); // 사일런트 업데이트
+      fetchComments(selectedPostId, true); // 사일런트 업데이트 (깜빡임 방지)
     } catch (error) {
       console.error(error);
       showToast('댓글 등록 실패', 'error', '서버 오류가 발생했습니다.');
@@ -281,8 +282,10 @@ export default function CommunityPostContainer({ communityId }: Props) {
         </div>
 
         <div className={styles.postList}>
-          {isLoading ? (
+
+          {isLoading && posts.length === 0 ? (
             <div className={styles.loadingOrEmpty}>데이터를 불러오는 중입니다...</div>
+
           ) : posts.length === 0 ? (
             <div className={styles.loadingOrEmpty}>게시글이 없습니다.</div>
           ) : (
@@ -299,151 +302,154 @@ export default function CommunityPostContainer({ communityId }: Props) {
                 type={post.type}
               />
             ))
-          )}
-        </div>
+          )
+          }
+        </div >
 
         {totalPages > 1 && (
           <div className={styles.paginationWrapper}>
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
           </div>
-        )}
-      </div>
+        )
+        }
+      </div >
 
       {/* 2. 우측: 디테일 영역 */}
-      <div className={styles.rightDetail}>
-        {selectedPost ? (
-          <>
-            <div className={styles.detailHeader}>
-              <div>
-                <h2 className={styles.detailTitle}>
-                  <span className={styles.detailPostType}>[{postTypeToKorean(selectedPost.type)}]</span> {selectedPost.title}
-                </h2>
-                <div className={styles.detailMeta}>
-                  <UserProfile name={selectedPost.authorNickname} size="medium" />
-                  <span className={styles.divider}>|</span>
-                  <span>{new Date(selectedPost.createdAt).toLocaleDateString()} / {new Date(selectedPost.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      < div className={styles.rightDetail} >
+        {
+          selectedPost ? (
+            <>
+              <div className={styles.detailHeader}>
+                <div>
+                  <h2 className={styles.detailTitle}>
+                    <span className={styles.detailPostType}>[{postTypeToKorean(selectedPost.type)}]</span> {selectedPost.title}
+                  </h2>
+                  <div className={styles.detailMeta}>
+                    <UserProfile name={selectedPost.authorNickname} size="medium" />
+                    <span className={styles.divider}>|</span>
+                    <span>{new Date(selectedPost.createdAt).toLocaleDateString()} / {new Date(selectedPost.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                </div>
+                <div className={styles.detailActions}>
+                  <button
+                    className={styles.likeButton}
+                    onClick={handleLikeToggle}
+                    disabled={isLikeSubmitting}
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill={selectedPost.likeCount > 0 ? "#EF4444" : "none"}
+                      stroke={selectedPost.likeCount > 0 ? "#EF4444" : "currentColor"}
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>
+                    <span>{selectedPost.likeCount}</span>
+                  </button>
+                  <button
+                    className={styles.bookmarkButton}
+                    onClick={handleBookmarkToggle}
+                    title="북마크"
+                    type="button"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill={selectedPost.isBookmarked ? "#F59E0B" : "none"}
+                      stroke={selectedPost.isBookmarked ? "#F59E0B" : "currentColor"}
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                    </svg>
+                  </button>
+                  <button
+                    className={`${styles.adminButton} ${selectedPost.isPinned ? styles.active : ''}`}
+                    onClick={handlePinToggle}
+                    title={selectedPost.isNotice ? "공지사항은 고정 해제가 불가능합니다" : "상단 고정"}
+                    disabled={selectedPost.isNotice}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="17" x2="12" y2="22" /><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.79-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.76a2 2 0 0 1-1.11 1.79l-1.79.9A2 2 0 0 0 5 15.24Z" />
+                    </svg>
+                  </button>
+                  <button
+                    className={`${styles.adminButton} ${selectedPost.isNotice ? styles.noticeActive : ''}`}
+                    onClick={handleNoticeToggle}
+                    title="공지 설정"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+                    </svg>
+                  </button>
+                  <button className={styles.optionButton} type="button">•••</button>
                 </div>
               </div>
-              <div className={styles.detailActions}>
-                <button
-                  className={styles.likeButton}
-                  onClick={handleLikeToggle}
-                  disabled={isLikeSubmitting}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill={selectedPost.likeCount > 0 ? "#EF4444" : "none"}
-                    stroke={selectedPost.likeCount > 0 ? "#EF4444" : "currentColor"}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                  </svg>
-                  <span>{selectedPost.likeCount}</span>
-                </button>
-                <button
-                  className={styles.bookmarkButton}
-                  onClick={handleBookmarkToggle}
-                  title="북마크"
-                  type="button"
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill={selectedPost.isBookmarked ? "#F59E0B" : "none"}
-                    stroke={selectedPost.isBookmarked ? "#F59E0B" : "currentColor"}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-                  </svg>
-                </button>
-                <button
-                  className={`${styles.adminButton} ${selectedPost.isPinned ? styles.active : ''}`}
-                  onClick={handlePinToggle}
-                  title={selectedPost.isNotice ? "공지사항은 고정 해제가 불가능합니다" : "상단 고정"}
-                  disabled={selectedPost.isNotice}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="17" x2="12" y2="22" /><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.79-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.76a2 2 0 0 1-1.11 1.79l-1.79.9A2 2 0 0 0 5 15.24Z" />
-                  </svg>
-                </button>
-                <button
-                  className={`${styles.adminButton} ${selectedPost.isNotice ? styles.noticeActive : ''}`}
-                  onClick={handleNoticeToggle}
-                  title="공지 설정"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
-                  </svg>
-                </button>
-                <button className={styles.optionButton} type="button">•••</button>
+
+              <div className={styles.bodySection}>
+                <div className={styles.contentWrapper}>
+                  {selectedPost.content?.split('\n').map((line, index) => (
+                    <React.Fragment key={index}>{line}<br /></React.Fragment>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className={styles.bodySection}>
-              <div className={styles.contentWrapper}>
-                {selectedPost.content?.split('\n').map((line, index) => (
-                  <React.Fragment key={index}>{line}<br /></React.Fragment>
-                ))}
+              <div className={styles.commentInputWrapper}>
+                <CommentInput
+                  onSubmit={(v) => handleCommentSubmit(v)}
+                  disabled={isCommentSubmitting}
+                  placeholder={isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요.."}
+                />
               </div>
-            </div>
 
-            <div className={styles.commentInputWrapper}>
-              <CommentInput
-                onSubmit={handleCommentSubmit}
-                disabled={isCommentSubmitting}
-                placeholder={isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요.."}
-              />
-            </div>
-
-            <div className={styles.commentList}>
-              {isCommentsLoading ? (
-                <div className={styles.commentStatus}>댓글을 불러오는 중...</div>
-              ) : organizedComments.length === 0 ? (
-                <div className={styles.commentStatus}>첫 번째 댓글을 남겨보세요!</div>
-              ) : (
-                organizedComments.map(({ comment, level }: { comment: CommentResponse; level: number }) => (
-                  <React.Fragment key={comment.id}>
-                    <CommunityCommentItem
-                      username={comment.authorNickname}
-                      date={new Date(comment.createdAt).toLocaleDateString() + ' / ' + new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      content={comment.content}
-                      likeCount={comment.likeCount}
-                      onLike={() => handleCommentLikeToggle(comment.id)}
-                      onReply={() => setReplyToCommentId(comment.id)}
-                      level={level}
-                      menuItems={[{ value: 'report', label: '신고하기' }]}
-                    />
-                    {/* 답글 입력창: 현재 댓글이 답글 작성 대상이고 부모 댓글인 경우 바로 아래에 표시 */}
-                    {replyToCommentId === comment.id && (
-                      <div className={styles.inlineReplyInput} style={{ marginLeft: '48px' }}>
-                        <div className={styles.replyLine} />
-                        <div className={styles.replyToLabel}>
-                          <span>답글 작성 중</span>
-                          <button onClick={() => setReplyToCommentId(null)}>취소</button>
+              <div className={styles.commentList}>
+                {isCommentsLoading && comments.length === 0 ? (
+                  <div className={styles.commentStatus}>댓글을 불러오는 중...</div>
+                ) : organizedComments.length === 0 ? (
+                  <div className={styles.commentStatus}>첫 번째 댓글을 남겨보세요!</div>
+                ) : (
+                  organizedComments.map(({ comment, level }) => (
+                    <React.Fragment key={comment.id}>
+                      <CommunityCommentItem
+                        username={comment.authorNickname}
+                        date={new Date(comment.createdAt).toLocaleDateString() + ' / ' + new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        content={comment.content}
+                        likeCount={comment.likeCount}
+                        onLike={() => handleCommentLikeToggle(comment.id)}
+                        onReply={() => setReplyToCommentId(comment.id)}
+                        level={level}
+                        menuItems={[{ value: 'report', label: '신고하기' }]}
+                      />
+                      {/* 답글 입력창: 현재 댓글이 답글 작성 대상이고 부모 댓글인 경우 바로 아래에 표시 */}
+                      {replyToCommentId === comment.id && (
+                        <div className={styles.inlineReplyInput} style={{ marginLeft: '48px' }}>
+                          <div className={styles.replyLine} />
+                          <div className={styles.replyToLabel}>
+                            <span>답글 작성 중</span>
+                            <button onClick={() => setReplyToCommentId(null)}>취소</button>
+                          </div>
+                          <CommentInput
+                            onSubmit={(v) => handleCommentSubmit(v, comment.id)}
+                            placeholder="답글을 입력하세요..."
+                            disabled={isCommentSubmitting}
+                          />
                         </div>
-                        <CommentInput
-                          onSubmit={handleCommentSubmit}
-                          placeholder="답글을 입력하세요..."
-                          disabled={isCommentSubmitting}
-                        />
-                      </div>
-                    )}
-                  </React.Fragment>
-                ))
-              )}
-            </div>
-          </>
-        ) : (
-          <div className={styles.emptyDetail}>선택된 게시물이 없습니다.</div>
-        )}
-      </div>
-    </div>
+                      )}
+                    </React.Fragment>
+                  ))
+                )}
+              </div>
+            </>
+          ) : (
+            <div className={styles.emptyDetail}>선택된 게시물이 없습니다.</div>
+          )}
+      </div >
+    </div >
   );
 }
