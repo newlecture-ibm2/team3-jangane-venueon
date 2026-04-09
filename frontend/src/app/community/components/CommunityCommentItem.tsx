@@ -23,6 +23,10 @@ export interface CommunityCommentItemProps {
   likeCount?: number;
   /** 좋아요 클릭 시 콜백 */
   onLike?: () => void;
+  /** 답글 콜백 (추가) */
+  onReply?: () => void;
+  /** 댓글 깊이 (추가: 0:일반, 1:대댓글) */
+  level?: number;
 }
 
 export default function CommunityCommentItem({
@@ -34,15 +38,21 @@ export default function CommunityCommentItem({
   onMenuSelect,
   likeCount = 0,
   onLike,
+  onReply,
+  level = 0,
 }: CommunityCommentItemProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className={styles.item}>
+    <div className={styles.item} style={{ marginLeft: level > 0 ? `${level * 48}px` : 0 }}>
+      {level > 0 && <div className={styles.replyLine} />}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
-          <UserProfile name={username} imageUrl={avatarUrl} size="large" />
-          <span className={styles.date}>{date}</span>
+          <UserProfile name={username} imageUrl={avatarUrl} size="large" className={styles.commentAvatar} />
+          <div className={styles.userInfo}>
+            <span className={styles.username}>{username}</span>
+            <span className={styles.date}>{date}</span>
+          </div>
         </div>
 
         {menuItems && menuItems.length > 0 && (
@@ -96,7 +106,10 @@ export default function CommunityCommentItem({
           </svg>
           <span className={likeCount > 0 ? styles.activeLikeCount : styles.likeCount}>{likeCount}</span>
         </button>
-        <button className={styles.replyButton} type="button">답글 달기</button>
+        {/* 일반 댓글(level 0)인 경우에만 답글 버튼 표시 */}
+        {level === 0 && (
+          <button className={styles.replyButton} onClick={onReply} type="button">답글 달기</button>
+        )}
       </div>
     </div>
   );
