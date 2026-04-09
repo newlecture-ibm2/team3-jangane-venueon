@@ -51,6 +51,6 @@ public class GlobalExceptionHandler {
         log.error("Exception: {}", e.getMessage(), e);
         return ResponseEntity
                 .status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
-                .body(ApiResponse.error(ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
+                .body(ApiResponse.error("서버 내부 오류: " + e.getClass().getSimpleName() + " - " + e.getMessage()));
     }
 }

@@ -2,6 +2,7 @@ package com.venueon.event.adapter.in.web.dto;
 
 import com.venueon.event.application.port.in.UpdateEventUseCase.UpdateEventCommand;
 import com.venueon.event.domain.model.EventType;
+import com.venueon.event.domain.model.PurchaseType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -27,7 +28,10 @@ public record EventUpdateRequest(
         LocalDateTime startDate,
 
         @NotNull(message = "종료일은 필수입니다.")
-        LocalDateTime endDate
+        LocalDateTime endDate,
+        
+        boolean hasSession,
+        PurchaseType purchaseType
 ) {
     public UpdateEventCommand toCommand(Long eventId, Long requesterId, String requesterRole) {
         return new UpdateEventCommand(
@@ -44,7 +48,9 @@ public record EventUpdateRequest(
                 maxAttendees,
                 thumbnailUrl,
                 startDate,
-                endDate
+                endDate,
+                hasSession,
+                purchaseType != null ? purchaseType : PurchaseType.SINGLE
         );
     }
 }

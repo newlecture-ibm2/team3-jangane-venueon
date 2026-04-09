@@ -11,6 +11,8 @@ import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
+import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
+import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
     private final OrderJpaRepository orderJpaRepository;
     private final EventJpaRepository eventJpaRepository;
     private final UserJpaRepository userJpaRepository;
+    private final EventSessionJpaRepository eventSessionJpaRepository;
 
     @Override
     public Order save(Order order) {
@@ -40,9 +43,16 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
             EventJpaEntity event = eventJpaRepository.findById(order.getEventId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
+            EventSessionJpaEntity session = null;
+            if (order.getSessionId() != null) {
+                session = eventSessionJpaRepository.findById(order.getSessionId())
+                        .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND)); // Or Session NotFound
+            }
+
             entity = OrderJpaEntity.builder()
                     .user(user)
                     .event(event)
+                    .session(session)
                     .status(order.getStatus())
                     .quantity(order.getQuantity())
                     .amount(order.getAmount())
@@ -92,6 +102,19 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
     }
 
     @Override
+    public long countBySessionIdAndStatusIn(Long sessionId, List<OrderStatus> statuses) {
+        return orderJpaRepository.countBySessionIdAndStatusIn(sessionId, statuses);
+    }
+
+    @Override
+    public List<Order> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses) {
+        return orderJpaRepository.findByUserIdAndSessionIdAndStatusIn(userId, sessionId, statuses)
+                .stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Page<Order> findByUserId(Long userId, Pageable pageable) {
         return orderJpaRepository.findByUserId(userId, pageable).map(this::toDomain);
     }
@@ -127,6 +150,7 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
                 entity.getId(),
                 entity.getUser().getId(),
                 entity.getEvent().getId(),
+                entity.getSession() != null ? entity.getSession().getId() : null,
                 entity.getStatus(),
                 entity.getQuantity(),
                 entity.getAmount(),

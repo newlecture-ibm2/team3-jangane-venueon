@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * UserRepositoryPort 구현체 — JPA 연동
@@ -17,11 +19,35 @@ import java.util.Optional;
 public class UserPersistenceAdapter implements UserRepositoryPort {
 
     private final UserJpaRepository userJpaRepository;
+    private final com.venueon.category.adapter.out.persistence.repository.CategoryJpaRepository categoryJpaRepository;
     private final UserMapper userMapper;
 
     @Override
     public User save(User user) {
-        UserJpaEntity entity = userMapper.toEntity(user);
+        UserJpaEntity entity;
+        if (user.getId() != null) {
+            entity = userJpaRepository.findWithCategoriesById(user.getId()).orElse(userMapper.toEntity(user));
+            entity.updateProfile(user.getNickname(), user.getProfileImg());
+            entity.updateBadgeVisibility(user.isBadgeVisible());
+            if (!user.isActive()) {
+                entity.softDelete();
+            }
+        } else {
+            entity = userMapper.toEntity(user);
+        }
+
+        // 카테고리 업데이트
+        if (user.getCategories() != null) {
+            List<com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity> categoryEntities = 
+                user.getCategories().stream()
+                    .map(name -> categoryJpaRepository.findByName(name).orElse(null))
+                    .filter(c -> c != null)
+                    .collect(Collectors.toList());
+            entity.updateCategories(categoryEntities);
+        } else {
+            entity.updateCategories(new java.util.ArrayList<>());
+        }
+
         UserJpaEntity saved = userJpaRepository.save(entity);
         return userMapper.toDomain(saved);
     }

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
+import { getIronSession } from "iron-session";
+import { SessionData, sessionOptions } from "@/lib/session";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export async function PATCH(
@@ -14,14 +17,8 @@ export async function PATCH(
 
     // 세션에서 userId 추출
     const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get("session");
-    let userId = "1"; // 기본값
-    if (sessionCookie) {
-      try {
-        const session = JSON.parse(sessionCookie.value);
-        userId = String(session.id);
-      } catch {}
-    }
+    const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
+    const userId = String(session.userId || 5);
 
     // 백엔드는 쿼리 파라미터로 status를 받음
     const response = await fetch(
