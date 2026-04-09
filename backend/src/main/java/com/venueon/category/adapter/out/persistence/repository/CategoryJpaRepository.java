@@ -11,4 +11,8 @@ public interface CategoryJpaRepository extends JpaRepository<CategoryJpaEntity, 
     Optional<CategoryJpaEntity> findByName(String name);
 
     List<CategoryJpaEntity> findAllByOrderBySortOrderAsc();
+    
+    boolean existsByName(String name);
+    
+    boolean existsByNameAndIdNot(String name, Long id);
 }

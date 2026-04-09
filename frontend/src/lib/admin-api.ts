@@ -81,3 +81,40 @@ export const adminUserAPI = {
   deleteUser: (id: number) =>
     api.delete<ApiResponse<void>>(`/admin/users/${id}`),
 };
+
+export interface AdminCategoryItem {
+  id: number;
+  name: string;
+  description: string;
+  sortOrder: number;
+}
+
+export interface AdminCategoryRequest {
+  name: string;
+  description: string;
+  sortOrder: number;
+}
+
+export const adminCategoryAPI = {
+  /** 전체 카테고리 목록 조회 (정렬 순) */
+  getList: () =>
+    api.get<ApiResponse<AdminCategoryItem[]>>('/admin/categories'),
+
+  /** 신규 카테고리 생성 */
+  create: (data: AdminCategoryRequest) =>
+    api.post<ApiResponse<AdminCategoryItem>>('/admin/categories', data),
+
+  /** 카테고리 정보 수정 */
+  update: (id: number, data: AdminCategoryRequest) =>
+    api.put<ApiResponse<AdminCategoryItem>>(`/admin/categories/${id}`, data),
+
+  /** 카테고리 삭제 */
+  delete: (id: number) =>
+    api.delete<ApiResponse<void>>(`/admin/categories/${id}`),
+
+  /** 순서 변경 (PATCH) */
+  updateOrder: (id: number, newOrder: number) =>
+    api.patch<ApiResponse<void>>(`/admin/categories/${id}/order`, newOrder, {
+      headers: { 'Content-Type': 'application/json' },
+    }),
+};
