@@ -42,6 +42,13 @@ public class CartPersistenceAdapter implements CartRepositoryPort {
     }
 
     @Override
+    public List<Cart> findAllByIds(List<Long> ids) {
+        return cartJpaRepository.findAllById(ids).stream()
+                .map(cartMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<Cart> findByUserEmailAndSessionId(String userEmail, Long sessionId) {
         return cartJpaRepository.findByUserEmailAndEventSessionId(userEmail, sessionId)
                 .map(cartMapper::toDomain);
