@@ -98,7 +98,7 @@ public class OrderController {
      * GET /orders/me
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Page<OrderDetailResponse>>> getMyOrders(
+    public ResponseEntity<ApiResponse<Page<OrderSummaryResponse>>> getMyOrders(
             Authentication authentication,
             @RequestParam(required = false) String tab,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -106,7 +106,7 @@ public class OrderController {
         String email = authentication.getName();
         Long userId = orderService.getUserIdByEmail(email);
 
-        Page<OrderDetailResponse> response = orderService.getMyOrders(userId, tab, pageable);
+        Page<OrderSummaryResponse> response = orderService.getMyOrders(userId, tab, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
