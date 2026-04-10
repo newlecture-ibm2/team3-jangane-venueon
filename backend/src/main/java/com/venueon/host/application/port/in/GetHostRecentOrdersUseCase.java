@@ -1,6 +1,9 @@
 package com.venueon.host.application.port.in;
 
+import com.venueon.host.dto.HostAttendeeResponse;
 import com.venueon.host.dto.HostRecentOrderResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,4 +15,8 @@ public interface GetHostRecentOrdersUseCase {
     List<HostRecentOrderResponse> getRecentOrders(Long hostId, int size);
 
     int getCurrentMonthRevenue(Long hostId);
+
+    long getTotalAttendees(Long hostId);
+
+    Page<HostAttendeeResponse> getAttendees(Long hostId, Long eventId, String name, Pageable pageable);
 }

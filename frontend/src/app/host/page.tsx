@@ -16,6 +16,7 @@ interface RecentOrder {
 
 interface HostOrderSummary {
   currentMonthRevenue: number;
+  totalAttendees: number;
 }
 
 function getOrderStatusLabel(status: string) {
@@ -62,7 +63,7 @@ export default function HostDashboardPage() {
   const [stats, setStats] = useState({
     publishedCount: 0,
     draftCount: 0,
-    totalAttendees: 0, 
+    totalAttendees: 0,
     totalRevenue: 0,
     pendingRefunds: 0
   });
@@ -75,12 +76,13 @@ export default function HostDashboardPage() {
         const draftRes = await api.get<{ status: string; data: { totalElements: number } }>('/host/events/drafts?size=1');
         const recentOrdersRes = await api.get<{ status: string; data: RecentOrder[] }>('/host/orders/recent?size=5');
         const orderSummaryRes = await api.get<{ status: string; data: HostOrderSummary }>('/host/orders/summary');
-        
+
         setStats(prev => ({
           ...prev,
           publishedCount: publishedRes.data?.totalElements || 0,
           draftCount: draftRes.data?.totalElements || 0,
           totalRevenue: orderSummaryRes.data?.currentMonthRevenue || 0,
+          totalAttendees: orderSummaryRes.data?.totalAttendees || 0,
         }));
         setRecentOrders(recentOrdersRes.data || []);
       } catch (error) {
@@ -93,21 +95,21 @@ export default function HostDashboardPage() {
   return (
     <div className="container-sidebar">
       <div className={styles.sidebarWrapper}>
-        <button 
-          className={styles.mobileMenuButton} 
+        <button
+          className={styles.mobileMenuButton}
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
           {isSidebarOpen ? '닫기 ✕' : '메뉴 열기 ☰'}
         </button>
-        
+
         <div className={`${styles.sidebarInner} ${isSidebarOpen ? styles.mobileOpen : styles.mobileClosed}`}>
           <Sidebar role="host" className={styles.responsiveHostSidebar} />
         </div>
       </div>
-      
+
       <div className="sidebar">
         <div className={styles.dashboardWrapper}>
-          
+
           <header className={styles.header}>
             <h1 className={styles.pageTitle}>호스트 대시보드</h1>
             <p className={styles.pageSubtitle}>환영합니다! 현재 개설하신 강의들의 현황을 한눈에 확인하세요.</p>
@@ -119,18 +121,18 @@ export default function HostDashboardPage() {
               <p className={styles.cardTitle}>이번 달 누적 매출</p>
               <h2 className={styles.cardValue}>{stats.totalRevenue.toLocaleString()}원</h2>
             </div>
-            
-            <div className={styles.summaryCard}>
+
+            <Link href="/host/events" className={styles.summaryCard}>
               <div className={`${styles.cardIcon} ${styles.eventIcon}`}>📊</div>
               <p className={styles.cardTitle}>진행/게시 중인 이벤트</p>
               <h2 className={styles.cardValue}>{stats.publishedCount}개</h2>
-            </div>
+            </Link>
 
-            <div className={styles.summaryCard}>
+            <Link href="/host/attendees" className={styles.summaryCard}>
               <div className={`${styles.cardIcon} ${styles.userIcon}`}>👥</div>
               <p className={styles.cardTitle}>총 누적 수강생</p>
               <h2 className={styles.cardValue}>{stats.totalAttendees}명</h2>
-            </div>
+            </Link>
 
             <div className={styles.summaryCard}>
               <div className={`${styles.cardIcon} ${styles.refundIcon}`}>⚠️</div>
@@ -145,7 +147,7 @@ export default function HostDashboardPage() {
                 <h3 className={styles.sectionTitle}>최근 주문 내역</h3>
                 <Link href="/host/payments" className={styles.viewAllBtn}>전체 보기 &gt;</Link>
               </div>
-              
+
               <div className={styles.tableContainer}>
                 <table className={styles.table}>
                   <thead>
@@ -188,21 +190,21 @@ export default function HostDashboardPage() {
                 <h3 className={styles.sectionTitle}>빠른 작업</h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <Link href="/host/events/new" className="button" style={{ 
-                  background: '#1e293b', color: 'white', padding: '16px', borderRadius: '8px', 
-                  textAlign: 'center', textDecoration: 'none', fontWeight: '600' 
+                <Link href="/host/events/new" className="button" style={{
+                  background: '#1e293b', color: 'white', padding: '16px', borderRadius: '8px',
+                  textAlign: 'center', textDecoration: 'none', fontWeight: '600'
                 }}>
                   + 새로운 강의 개설하기
                 </Link>
-                <Link href="/host/events" className="button" style={{ 
-                  background: '#f1f5f9', color: '#1e293b', padding: '16px', borderRadius: '8px', 
-                  textAlign: 'center', textDecoration: 'none', fontWeight: '600' 
+                <Link href="/host/events" className="button" style={{
+                  background: '#f1f5f9', color: '#1e293b', padding: '16px', borderRadius: '8px',
+                  textAlign: 'center', textDecoration: 'none', fontWeight: '600'
                 }}>
                   내 강의 목록 관리
                 </Link>
-                <Link href="/host/requests" className="button" style={{ 
-                  background: '#f1f5f9', color: '#1e293b', padding: '16px', borderRadius: '8px', 
-                  textAlign: 'center', textDecoration: 'none', fontWeight: '600' 
+                <Link href="/host/requests" className="button" style={{
+                  background: '#f1f5f9', color: '#1e293b', padding: '16px', borderRadius: '8px',
+                  textAlign: 'center', textDecoration: 'none', fontWeight: '600'
                 }}>
                   운영팀에 요청하기
                 </Link>

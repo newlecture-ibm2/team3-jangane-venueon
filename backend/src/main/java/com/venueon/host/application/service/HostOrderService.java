@@ -2,12 +2,15 @@ package com.venueon.host.application.service;
 
 import com.venueon.common.annotation.UseCase;
 import com.venueon.host.application.port.in.GetHostRecentOrdersUseCase;
+import com.venueon.host.dto.HostAttendeeResponse;
 import com.venueon.host.dto.HostRecentOrderResponse;
 import com.venueon.order.adapter.out.persistence.repository.OrderJpaRepository;
 import com.venueon.order.domain.model.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,5 +47,16 @@ public class HostOrderService implements GetHostRecentOrdersUseCase {
                 startDateTime,
                 endDateTime
         );
+    }
+
+    @Override
+    public long getTotalAttendees(Long hostId) {
+        return orderJpaRepository.countTotalAttendeesByHostId(hostId);
+    }
+
+    @Override
+    public Page<HostAttendeeResponse> getAttendees(Long hostId, Long eventId, String name, Pageable pageable) {
+        log.debug("호스트 수강생 목록 조회: hostId={}, eventId={}, name={}, page={}, size={}", hostId, eventId, name, pageable.getPageNumber(), pageable.getPageSize());
+        return orderJpaRepository.findAttendeesByHostId(hostId, eventId, name, pageable);
     }
 }
