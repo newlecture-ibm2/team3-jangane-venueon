@@ -90,13 +90,7 @@
   background-color: var(--color-text-gray-300);
 }
 
-.tagSectionTitle {
-  font: var(--text-body-bold);
-  color: var(--color-text-gray-500);
-  text-transform: uppercase;
-}
-
-.categorySection {
+.keywordSection {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -110,7 +104,7 @@
   overflow: hidden; /* 3줄째로 넘어가면 가림 */
 }
 
-.categoryTag {
+.keywordTag {
   display: flex;
   flex-direction: row;
   justify-content: center;
