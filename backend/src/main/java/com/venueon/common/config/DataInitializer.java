@@ -8,6 +8,10 @@ import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
 import com.venueon.event.adapter.out.persistence.repository.SessionJpaRepository;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketSessionJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.repository.TicketJpaRepository;
+import com.venueon.ticket.adapter.out.persistence.repository.TicketSessionJpaRepository;
 import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
 import com.venueon.order.adapter.out.persistence.repository.OrderJpaRepository;
 import com.venueon.order.domain.model.OrderStatus;
@@ -54,6 +58,8 @@ public class DataInitializer implements ApplicationRunner {
     private final ReportJpaRepository reportRepository;
     private final RefundJpaRepository refundRepository;
     private final CartJpaRepository cartRepository;
+    private final TicketJpaRepository ticketRepository;
+    private final TicketSessionJpaRepository ticketSessionRepository;
     private final JdbcTemplate jdbcTemplate;
     private final PasswordEncoder passwordEncoder;
 
@@ -77,6 +83,7 @@ public class DataInitializer implements ApplicationRunner {
         List<CategoryJpaEntity> categories = createCategories();
         List<EventJpaEntity> events = createEvents(hosts, categories);
         createSessions(events);
+        createTickets(events);
         List<OrderJpaEntity> orders = createOrders(users, events);
         List<ReportJpaEntity> reports = createReports(users, events);
         List<RefundJpaEntity> refunds = createRefunds(users, orders);
@@ -84,7 +91,8 @@ public class DataInitializer implements ApplicationRunner {
 
         log.info("=== 개발용 초기 데이터 생성 완료 ===");
         log.info("Admin: 1명, User: {}명, Host: {}명", users.size(), hosts.size());
-        log.info("Category: {}개, Event: {}개, Session: {}개", categories.size(), events.size(), sessionRepository.count());
+        log.info("Category: {}개, Event: {}개, Session: {}개, Ticket: {}개",
+                categories.size(), events.size(), sessionRepository.count(), ticketRepository.count());
         log.info("Order: {}개, Report: {}개, Refund: {}개", orders.size(), reports.size(), refunds.size());
     }
 
@@ -449,6 +457,107 @@ public class DataInitializer implements ApplicationRunner {
                 .build());
 
         log.info("세션 생성 완료: 기본 세션 {}개, 추가 세션 5개", events.size());
+    }
+
+    /**
+     * 티켓 생성 — v6: 이벤트별 기본 티켓 + 다중 세션 이벤트에는 개별 세션 티켓
+     */
+    private void createTickets(List<EventJpaEntity> events) {
+        // 이벤트별 가격 정보 (이전 Event.price를 Ticket으로 이전)
+        int[] prices = {150000, 80000, 0, 30000, 120000, 50000, 65000, 40000, 90000, 0};
+        int[] originalPrices = {180000, 100000, 0, 35000, 150000, 60000, 75000, 50000, 110000, 0};
+        String[] ticketNames = {
+                "전체 패키지", "워크숍 참가권", "무료 입장", "요가 클래스 참가권",
+                "워크숍 참가권", "서밋 참가권", "마스터클래스 참가권",
+                "세미나 참가권", "아카데미 참가권", "무료 입장"
+        };
+
+        for (int i = 0; i < events.size(); i++) {
+            EventJpaEntity event = events.get(i);
+
+            // 기본 티켓 (전체 세션 포함)
+            TicketJpaEntity defaultTicket = ticketRepository.save(TicketJpaEntity.builder()
+                    .event(event)
+                    .name(ticketNames[i])
+                    .description(event.getTitle() + " 입장 티켓")
+                    .price(prices[i])
+                    .originalPrice(originalPrices[i])
+                    .maxQuantity(null) // 무제한 (세션 정원으로 관리)
+                    .soldCount(0)
+                    .isAllSessions(true)
+                    .sortOrder(0)
+                    .isActive(true)
+                    .build());
+
+            log.debug("기본 티켓 생성: {} (이벤트: {})", defaultTicket.getName(), event.getTitle());
+        }
+
+        // 다중 세션 이벤트(AI Bootcamp, Future Science Conference)에 개별 세션 티켓 추가
+        // AI Bootcamp (index 0)
+        EventJpaEntity bootcamp = events.get(0);
+        List<SessionJpaEntity> bootcampSessions = sessionRepository.findByEventIdOrderBySortOrder(bootcamp.getId());
+        // 개별 Day 1 티켓
+        if (bootcampSessions.size() > 1) {
+            TicketJpaEntity day1Ticket = ticketRepository.save(TicketJpaEntity.builder()
+                    .event(bootcamp)
+                    .name("Day 1: AI 모델 배포 입장권")
+                    .description("Day 1 세션만 참가")
+                    .price(80000)
+                    .originalPrice(100000)
+                    .maxQuantity(40)
+                    .isAllSessions(false)
+                    .sortOrder(1)
+                    .isActive(true)
+                    .build());
+            // Day 1 세션 매핑 (sortOrder=1)
+            SessionJpaEntity day1Session = bootcampSessions.stream()
+                    .filter(s -> s.getSortOrder() == 1).findFirst().orElse(null);
+            if (day1Session != null) {
+                ticketSessionRepository.save(TicketSessionJpaEntity.builder()
+                        .ticket(day1Ticket).session(day1Session).build());
+            }
+
+            TicketJpaEntity day2Ticket = ticketRepository.save(TicketJpaEntity.builder()
+                    .event(bootcamp)
+                    .name("Day 2: 클라우드 인프라 입장권")
+                    .description("Day 2 세션만 참가")
+                    .price(80000)
+                    .originalPrice(100000)
+                    .maxQuantity(40)
+                    .isAllSessions(false)
+                    .sortOrder(2)
+                    .isActive(true)
+                    .build());
+            SessionJpaEntity day2Session = bootcampSessions.stream()
+                    .filter(s -> s.getSortOrder() == 2).findFirst().orElse(null);
+            if (day2Session != null) {
+                ticketSessionRepository.save(TicketSessionJpaEntity.builder()
+                        .ticket(day2Ticket).session(day2Session).build());
+            }
+        }
+
+        // Future Science Conference (index 9)
+        EventJpaEntity sciConf = events.get(9);
+        List<SessionJpaEntity> sciSessions = sessionRepository.findByEventIdOrderBySortOrder(sciConf.getId());
+        if (sciSessions.size() > 1) {
+            for (int s = 1; s < sciSessions.size(); s++) {
+                SessionJpaEntity sci = sciSessions.get(s);
+                TicketJpaEntity sciTicket = ticketRepository.save(TicketJpaEntity.builder()
+                        .event(sciConf)
+                        .name(sci.getTitle() + " 입장권")
+                        .description(sci.getDescription())
+                        .price(0)
+                        .originalPrice(0)
+                        .isAllSessions(false)
+                        .sortOrder(s)
+                        .isActive(true)
+                        .build());
+                ticketSessionRepository.save(TicketSessionJpaEntity.builder()
+                        .ticket(sciTicket).session(sci).build());
+            }
+        }
+
+        log.info("티켓 생성 완료: 전체 {}개", ticketRepository.count());
     }
 
     private List<OrderJpaEntity> createOrders(List<UserJpaEntity> users, List<EventJpaEntity> events) {
