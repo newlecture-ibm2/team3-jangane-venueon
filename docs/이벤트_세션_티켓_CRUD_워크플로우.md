@@ -41,8 +41,8 @@
 graph LR
     P1["Phase 1<br/>Event 도메인 정리<br/>필드 제거 + 상태 모델"] --> P2["Phase 2<br/>Session 리팩토링<br/>모집 필드 추가"]
     P2 --> P3["Phase 3<br/>Ticket 도메인 신규<br/>전체 CRUD"]
-    P3 --> P4["Phase 4<br/>Order/Cart 연동<br/>ticketId 참조 전환"]
-    P4 --> P5["Phase 5<br/>프론트엔드 연동<br/>이벤트 생성 폼 수정"]
+    P3 --> P4["Phase 4<br/>프론트엔드 연동<br/>이벤트 생성 폼 수정"]
+    P3 -.-> P5["(참고) Order/Cart 연동<br/>타 담당자 영역"]
 ```
 
 ---
@@ -98,50 +98,48 @@ public enum RecruitmentStatus {
 
 **수정 범위:**
 
-| 파일 | 변경 |
-|------|------|
-| `Event.java` | 필드 제거, 생성자 수정, updateDetails 수정, Computed 메서드 추가 |
-| `EventJpaEntity.java` | price, maxAttendees, location, startDate, endDate, purchaseType, isOnline 컬럼 제거 |
-| `EventMapper.java` | 매핑 로직 수정 |
-| `CreateEventUseCase.java` | Command에서 price, maxAttendees, location, startDate, endDate, purchaseType 제거 |
-| `EventCreateRequest.java` | DTO에서 price, maxAttendees, location, isOnline, startDate, endDate, purchaseType 제거 |
-| `EventUpdateRequest.java` | 위와 동일 |
-| `UpdateEventUseCase.java` | Command 수정 |
-| `EventCommandService.java` | createEvent, updateEvent 로직 수정 |
-| `EventDetailResponse.java` | 세션/티켓 기반 응답으로 재구성 |
-| `EventListResponse.java` | minPrice, totalCapacity 등 Computed 필드 추가 |
+> `event/` = 공개 조회 (R), `host/event/` = 호스트 CUD (교훈 3 패키지 분리)
 
-### 1-5. DB 마이그레이션 (flyway 또는 DDL)
+| 파일 | 패키지 | 변경 |
+|------|--------|------|
+| `Event.java` | `event/domain/model/` | 필드 제거, 생성자 수정, Computed 메서드 추가, `validateForPublish()` 추가 |
+| `EventJpaEntity.java` | `event/adapter/out/` | price, maxAttendees, location, startDate, endDate, purchaseType, isOnline 컬럼 제거 |
+| `EventMapper.java` | `event/adapter/out/` | 매핑 로직 수정 |
+| `EventDetailResponse.java` | `event/adapter/in/web/dto/` | 세션/티켓 기반 응답으로 재구성 |
+| `EventListResponse.java` | `event/adapter/in/web/dto/` | minPrice, totalCapacity 등 Computed 필드 추가 |
+| `CreateEventUseCase.java` | `host/event/application/port/in/` | Command에서 price, maxAttendees 등 제거 |
+| `UpdateEventUseCase.java` | `host/event/application/port/in/` | Command 수정 |
+| `EventCreateRequest.java` | `host/event/adapter/in/web/dto/` | DTO에서 불필요 필드 제거 |
+| `EventUpdateRequest.java` | `host/event/adapter/in/web/dto/` | 위와 동일 |
+| `EventCommandService.java` | `host/event/application/service/` | createEvent, updateEvent 로직 수정 |
 
-```sql
--- Event 테이블에서 불필요 컬럼 제거
-ALTER TABLE events DROP COLUMN IF EXISTS price;
-ALTER TABLE events DROP COLUMN IF EXISTS max_attendees;
-ALTER TABLE events DROP COLUMN IF EXISTS location;
-ALTER TABLE events DROP COLUMN IF EXISTS is_online;
-ALTER TABLE events DROP COLUMN IF EXISTS start_date;
-ALTER TABLE events DROP COLUMN IF EXISTS end_date;
-ALTER TABLE events DROP COLUMN IF EXISTS purchase_type;
-```
+### 1-5. 스키마 변경 (JPA 자동 처리)
+
+> `spring.jpa.hibernate.ddl-auto=create` 사용 → Entity 수정 후 앱 재시작으로 자동 반영.  
+> `DataInitializer.java`에서 제거된 필드(가격, 장소 등) 참조 코드 제거 필요.
+
+**DataInitializer 수정 필요 항목:**
+- Event 생성 시 `price`, `maxAttendees`, `location`, `startDate`, `endDate`, `purchaseType` 제거
+- 세션에 모집 날짜 추가 (`recruitStartDate`, `recruitEndDate`)
 
 ### Phase 1 체크리스트
 
 - [ ] `PurchaseType.java` 삭제
 - [ ] `EventStatus.java` 수정 (PREPARING 제거)
-- [ ] `RecruitmentStatus.java` 생성
-- [ ] `Event.java` 필드 제거 + Computed 메서드 추가
-- [ ] `EventJpaEntity.java` 컬럼 제거
+- [ ] `RecruitmentStatus.java` 생성 (`event/domain/model/`)
+- [ ] `Event.java` 필드 제거 + Computed 메서드 + `validateForPublish()` 추가
+- [ ] `EventJpaEntity.java` 컬럼 제거 (`event/adapter/out/`)
 - [ ] `EventMapper.java` 매핑 수정
-- [ ] `CreateEventUseCase.java` Command 수정
-- [ ] `UpdateEventUseCase.java` Command 수정
-- [ ] `EventCreateRequest.java` DTO 수정
-- [ ] `EventUpdateRequest.java` DTO 수정
-- [ ] `EventCommandService.java` 서비스 로직 수정
-- [ ] `EventDetailResponse.java` 응답 재구성
-- [ ] `EventListResponse.java` Computed 필드 추가
+- [ ] `CreateEventUseCase.java` Command 수정 (`host/event/`)
+- [ ] `UpdateEventUseCase.java` Command 수정 (`host/event/`)
+- [ ] `EventCreateRequest.java` DTO 수정 (`host/event/`)
+- [ ] `EventUpdateRequest.java` DTO 수정 (`host/event/`)
+- [ ] `EventCommandService.java` 서비스 로직 수정 (`host/event/`)
+- [ ] `EventDetailResponse.java` 응답 재구성 (`event/`)
+- [ ] `EventListResponse.java` Computed 필드 추가 (`event/`)
 - [ ] PurchaseType 참조하는 모든 import 제거
-- [ ] DB 마이그레이션 스크립트 작성
-- [ ] 컴파일 확인
+- [ ] `DataInitializer.java` 수정 (제거된 필드 참조 제거)
+- [ ] 컴파일 + 앱 재시작 확인 (JPA ddl-auto로 테이블 자동 재생성)
 
 ---
 
@@ -222,15 +220,10 @@ EventSessionJpaEntity.java → SessionJpaEntity.java (클래스명만 변경)
 | `CreateSessionUseCase.java` | Command에서 price 제거, recruit 필드 추가 |
 | `EventSessionService.java` | `SessionService.java` (또는 유지) |
 
-### 2-5. DB 마이그레이션
+### 2-5. 스키마 변경 (JPA 자동 처리)
 
-```sql
--- Session 테이블 컬럼 변경
-ALTER TABLE event_sessions DROP COLUMN IF EXISTS price;
-ALTER TABLE event_sessions ADD COLUMN recruit_start_date TIMESTAMP;
-ALTER TABLE event_sessions ADD COLUMN recruit_end_date TIMESTAMP;
-ALTER TABLE event_sessions ADD COLUMN is_recruitment_closed BOOLEAN NOT NULL DEFAULT false;
-```
+> Entity 수정 후 앱 재시작으로 자동 반영.  
+> `DataInitializer.java`에서 세션 생성 시 `price` 제거, `recruitStartDate/EndDate` 추가 필요.
 
 ### Phase 2 체크리스트
 
@@ -242,10 +235,10 @@ ALTER TABLE event_sessions ADD COLUMN is_recruitment_closed BOOLEAN NOT NULL DEF
 - [ ] Mapper/Adapter/Repository 리네이밍
 - [ ] DTO (CreateRequest, UpdateRequest, Response) 수정
 - [ ] UseCase/Service 수정
-- [ ] Controller 수정 (모집 마감/재개 API 추가)
+- [ ] `host/event/` SessionController에 모집 마감/재개 API 추가
 - [ ] 기존 EventSession 참조하는 모든 파일 import 수정
-- [ ] DB 마이그레이션 스크립트
-- [ ] 컴파일 확인
+- [ ] `DataInitializer.java` 수정 (세션 시드 데이터 업데이트)
+- [ ] 컴파일 + 앱 재시작 확인
 
 ---
 
@@ -253,36 +246,48 @@ ALTER TABLE event_sessions ADD COLUMN is_recruitment_closed BOOLEAN NOT NULL DEF
 
 ### 3-1. 전체 생성 파일 목록
 
+> `ticket/` = 공개 조회 + 도메인/JPA, `host/ticket/` = 호스트 CUD (교훈 3 패키지 분리)
+
 ```
-com.venueon.ticket/
+com.venueon.ticket/                      ← 공개 조회 (R) + 도메인/JPA
 ├── domain/model/
 │   └── Ticket.java
 ├── application/
 │   ├── port/in/
-│   │   ├── CreateTicketUseCase.java
-│   │   ├── GetTicketUseCase.java
-│   │   ├── UpdateTicketUseCase.java
-│   │   └── DeleteTicketUseCase.java
+│   │   └── GetTicketUseCase.java
 │   ├── port/out/
 │   │   └── TicketRepositoryPort.java
 │   └── service/
-│       └── TicketService.java
+│       └── TicketQueryService.java
 ├── adapter/
 │   ├── in/web/
-│   │   ├── HostTicketController.java
-│   │   └── dto/
-│   │       ├── TicketCreateRequest.java
-│   │       ├── TicketUpdateRequest.java
+│   │   ├── TicketController.java        ← GET /events/{id}/tickets
+│   │   └── dto/response/
 │   │       └── TicketResponse.java
 │   └── out/persistence/
 │       ├── entity/
 │       │   ├── TicketJpaEntity.java
-│       │   └── TicketSessionJpaEntity.java (또는 @JoinTable)
+│       │   └── TicketSessionJpaEntity.java
 │       ├── repository/
 │       │   ├── TicketJpaRepository.java
 │       │   └── TicketSessionJpaRepository.java
 │       ├── TicketPersistenceAdapter.java
 │       └── TicketMapper.java
+
+com.venueon.host.ticket/                 ← 호스트 CUD
+├── application/
+│   ├── port/in/
+│   │   ├── CreateTicketUseCase.java
+│   │   ├── UpdateTicketUseCase.java
+│   │   └── DeleteTicketUseCase.java
+│   └── service/
+│       └── TicketCommandService.java
+├── adapter/
+│   └── in/web/
+│       ├── TicketController.java        ← POST/PUT/DELETE /host/events/{id}/tickets
+│       └── dto/request/
+│           ├── TicketCreateRequest.java
+│           └── TicketUpdateRequest.java
 ```
 
 ### 3-2. `Ticket.java` 도메인 모델
@@ -364,14 +369,14 @@ public class TicketSessionJpaEntity {
 }
 ```
 
-### 3-5. API 엔드포인트 (HostTicketController)
+### 3-5. API 엔드포인트
 
-| Method | Path | 설명 |
-|--------|------|------|
-| `GET` | `/v1/events/{eventId}/tickets` | 이벤트의 티켓 목록 (공개) |
-| `POST` | `/v1/host/events/{eventId}/tickets` | 티켓 생성 |
-| `PUT` | `/v1/host/tickets/{ticketId}` | 티켓 수정 |
-| `DELETE` | `/v1/host/tickets/{ticketId}` | 티켓 삭제 |
+| Method | Path | 컨트롤러 패키지 | 설명 |
+|--------|------|---------------|------|
+| `GET` | `/events/{eventId}/tickets` | `ticket/` TicketController | 이벤트의 티켓 목록 (공개) |
+| `POST` | `/host/events/{eventId}/tickets` | `host/ticket/` TicketController | 티켓 생성 |
+| `PUT` | `/host/tickets/{ticketId}` | `host/ticket/` TicketController | 티켓 수정 |
+| `DELETE` | `/host/tickets/{ticketId}` | `host/ticket/` TicketController | 티켓 삭제 |
 
 ### 3-6. TicketCreateRequest
 
@@ -417,50 +422,42 @@ hasSession=true (다중 세션):
   → 호스트가 티켓 직접 구성 (프론트에서 Step 4)
 ```
 
-### 3-9. DB 마이그레이션
+### 3-9. 스키마 생성 (JPA 자동 처리)
 
+> `TicketJpaEntity`, `TicketSessionJpaEntity` 작성 후 앱 재시작으로 `tickets`, `ticket_sessions` 테이블 자동 생성.  
+> `DataInitializer.java`에 티켓 시드 데이터 추가 필요.
+
+**참고: 테이블 구조 (JPA Entity에서 자동 생성됨)**
 ```sql
-CREATE TABLE tickets (
-    id              BIGSERIAL PRIMARY KEY,
-    event_id        BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    name            VARCHAR(100) NOT NULL,
-    description     TEXT,
-    price           INT NOT NULL DEFAULT 0,
-    original_price  INT NOT NULL DEFAULT 0,
-    max_quantity    INT,
-    sold_count      INT NOT NULL DEFAULT 0,
-    is_all_sessions BOOLEAN NOT NULL DEFAULT false,
-    sort_order      INT NOT NULL DEFAULT 0,
-    is_active       BOOLEAN NOT NULL DEFAULT true,
-    sales_start     TIMESTAMP,
-    sales_end       TIMESTAMP,
-    created_at      TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMP
-);
+-- tickets: id, event_id, name, description, price, original_price,
+--          max_quantity, sold_count, is_all_sessions, sort_order,
+--          is_active, sales_start, sales_end, created_at, updated_at
 
-CREATE TABLE ticket_sessions (
-    ticket_id  BIGINT NOT NULL REFERENCES tickets(id) ON DELETE CASCADE,
-    session_id BIGINT NOT NULL REFERENCES event_sessions(id) ON DELETE CASCADE,
-    PRIMARY KEY (ticket_id, session_id)
-);
+-- ticket_sessions: ticket_id, session_id (composite PK)
 ```
 
 ### Phase 3 체크리스트
 
-- [ ] `ticket/` 패키지 전체 생성
+**`ticket/` 패키지 (공개 조회 + 도메인/JPA):**
 - [ ] `Ticket.java` 도메인 모델
 - [ ] `TicketJpaEntity.java` + `TicketSessionJpaEntity.java`
 - [ ] `TicketJpaRepository.java` + `TicketSessionJpaRepository.java`
-- [ ] `TicketMapper.java`
-- [ ] `TicketPersistenceAdapter.java`
+- [ ] `TicketMapper.java` + `TicketPersistenceAdapter.java`
 - [ ] `TicketRepositoryPort.java` (port/out)
-- [ ] `CreateTicketUseCase.java`, `GetTicketUseCase.java`, `UpdateTicketUseCase.java`, `DeleteTicketUseCase.java`
-- [ ] `TicketService.java`
-- [ ] `HostTicketController.java`
-- [ ] `TicketCreateRequest.java`, `TicketUpdateRequest.java`, `TicketResponse.java`
-- [ ] 이벤트 생성 시 기본 티켓 자동 생성 로직 (EventCommandService)
-- [ ] DB 마이그레이션 (tickets, ticket_sessions)
-- [ ] 컴파일 + API 테스트
+- [ ] `GetTicketUseCase.java` + `TicketQueryService.java`
+- [ ] `TicketController.java` (공개 조회)
+- [ ] `TicketResponse.java`
+
+**`host/ticket/` 패키지 (호스트 CUD):**
+- [ ] `CreateTicketUseCase.java`, `UpdateTicketUseCase.java`, `DeleteTicketUseCase.java`
+- [ ] `TicketCommandService.java`
+- [ ] `TicketController.java` (호스트 CUD)
+- [ ] `TicketCreateRequest.java`, `TicketUpdateRequest.java`
+
+**공통:**
+- [ ] 이벤트 생성 시 기본 티켓 자동 생성 로직 (`host/event/` EventCommandService)
+- [ ] `DataInitializer.java`에 티켓 시드 데이터 추가
+- [ ] 컴파일 + 앱 재시작 + API 테스트
 
 ---
 
@@ -539,17 +536,10 @@ sequenceDiagram
     Controller-->>User: 200 OK
 ```
 
-### 4-6. DB 마이그레이션
+### 4-6. 스키마 변경 (JPA 자동 처리)
 
-```sql
--- Order 테이블
-ALTER TABLE orders DROP COLUMN IF EXISTS session_id;
-ALTER TABLE orders ADD COLUMN ticket_id BIGINT REFERENCES tickets(id);
-
--- Cart 테이블
-ALTER TABLE cart DROP COLUMN IF EXISTS event_id;
-ALTER TABLE cart ADD COLUMN ticket_id BIGINT REFERENCES tickets(id);
-```
+> Entity FK 수정 후 앱 재시작으로 자동 반영.  
+> `DataInitializer.java`에서 Order/Cart 생성 시 `ticketId` 참조로 변경 필요.
 
 ### Phase 4 체크리스트
 
@@ -562,8 +552,8 @@ ALTER TABLE cart ADD COLUMN ticket_id BIGINT REFERENCES tickets(id);
 - [ ] `CartService.java` — 장바구니 추가 로직 변경
 - [ ] `LoadEventInfoPort.java` (cart) — ticketId 기반으로 변경
 - [ ] `EventInfoAdapter.java` (cart) — 어댑터 수정
-- [ ] DB 마이그레이션
-- [ ] 컴파일 + API 테스트
+- [ ] `DataInitializer.java` 수정 (Order/Cart 시드 데이터 업데이트)
+- [ ] 컴파일 + 앱 재시작 + E2E 테스트
 
 ---
 
@@ -635,7 +625,7 @@ flowchart TD
         P1C --> P1D["Event.java 필드 제거"]
         P1D --> P1E["EventJpaEntity 컬럼 제거"]
         P1E --> P1F["Mapper/DTO/Service 수정"]
-        P1F --> P1G["DB 마이그레이션"]
+        P1F --> P1G["DataInitializer 수정"]
         P1G --> P1H["컴파일 확인"]
     end
 
@@ -648,7 +638,7 @@ flowchart TD
         P2D --> P2E["JPA Entity 수정"]
         P2E --> P2F["Mapper/DTO/Service 수정"]
         P2F --> P2G["모집 마감 API 추가"]
-        P2G --> P2H["DB 마이그레이션"]
+        P2G --> P2H["DataInitializer 수정"]
         P2H --> P2I["컴파일 확인"]
     end
 
@@ -658,35 +648,24 @@ flowchart TD
         P3A["ticket/ 패키지 생성"] --> P3B["Ticket.java 도메인"]
         P3B --> P3C["JPA Entity 2개"]
         P3C --> P3D["Repository/Mapper/Adapter"]
-        P3D --> P3E["UseCase 4개"]
-        P3E --> P3F["TicketService"]
-        P3F --> P3G["HostTicketController"]
+        P3D --> P3E["GetTicketUseCase + TicketController (ticket/)"]
+        P3E --> P3F["CUD UseCase + TicketCommandService (host/ticket/)"]
+        P3F --> P3G["TicketController - 호스트 CUD (host/ticket/)"]
         P3G --> P3H["EventCommandService에 기본 티켓 자동 생성"]
-        P3H --> P3I["DB 마이그레이션"]
+        P3H --> P3I["DataInitializer 수정"]
         P3I --> P3J["컴파일 + API 테스트"]
     end
 
     P3J --> P4
 
-    subgraph P4["Phase 4: Order/Cart 연동"]
-        P4A["Order: sessionId → ticketId"] --> P4B["Cart: eventId → ticketId"]
-        P4B --> P4C["CreateOrderRequest 수정"]
-        P4C --> P4D["OrderService 주문 로직 변경"]
-        P4D --> P4E["CartService 장바구니 로직 변경"]
-        P4E --> P4F["DB 마이그레이션"]
-        P4F --> P4G["컴파일 + E2E 테스트"]
+    subgraph P4["Phase 4: 프론트엔드 연동"]
+        P4A["이벤트 생성 폼 수정"] --> P4B["이벤트 상세 페이지 수정"]
+        P4B --> P4C["이벤트 목록 카드 수정"]
+        P4C --> P4D["통합 테스트"]
     end
 
-    P4G --> P5
-
-    subgraph P5["Phase 5: 프론트엔드 연동"]
-        P5A["이벤트 생성 폼 수정"] --> P5B["이벤트 상세 페이지 수정"]
-        P5B --> P5C["주문/장바구니 API 호출 변경"]
-        P5C --> P5D["이벤트 목록 카드 수정"]
-        P5D --> P5E["통합 테스트"]
-    end
-
-    P5 --> Done["완료"]
+    P4 --> Done["완료"]
+    P3J -.-> REF["(타 담당) Order/Cart 연동"]
 ```
 
 ---
@@ -694,10 +673,13 @@ flowchart TD
 ## 📌 주의사항
 
 > [!WARNING]
-> **Phase 순서를 반드시 지켜야 함.** Phase 1~2(Event/Session 정리)가 완료되어야 Phase 3(Ticket 생성)에서 참조 가능하고, Phase 3이 완료되어야 Phase 4(Order/Cart 연동)가 가능하다.
+> **Phase 순서를 반드시 지켜야 함.** Phase 1~2(Event/Session 정리)가 완료되어야 Phase 3(Ticket 생성)에서 참조 가능.
 
 > [!IMPORTANT]
-> **기존 데이터 마이그레이션:** 운영 데이터가 있을 경우 컬럼 제거 전에 데이터 이관 스크립트가 필요하다. 개발 환경에서는 DDL 직접 변경으로 충분.
+> **내 담당 범위:** Phase 1~3 (백엔드 CRUD) + Phase 4 (프론트엔드 연동). Order/Cart 연동은 해당 도메인 담당자가 Phase 3 완료 후 진행.
+
+> [!IMPORTANT]
+> **JPA ddl-auto=create 사용:** Entity 수정 후 앱 재시작으로 테이블이 자동 재생성된다. 별도의 SQL 마이그레이션 스크립트는 불필요. `DataInitializer.java`만 업데이트하면 된다.
 
 > [!NOTE]
 > **브랜치 전략:** 각 Phase별로 브랜치를 분리하거나, 전체를 하나의 feature 브랜치에서 작업 후 한 번에 PR하는 것을 권장.
