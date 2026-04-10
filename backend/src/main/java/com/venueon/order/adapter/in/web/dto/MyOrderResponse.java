@@ -27,10 +27,17 @@ public record MyOrderResponse(
     public static MyOrderResponse from(OrderJpaEntity order) {
         EventJpaEntity event = order.getEvent();
 
-        // v6: startDate, endDate, location, price는 Session/Ticket으로 이동
-        String dateRange = ""; // TODO: Session 기반으로 변경
+        com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity session = order.getSession();
+        
+        String dateRange = "";
+        String loc = "-";
 
-        String loc = "-"; // TODO: Session 기반으로 변경
+        if (session != null) {
+            if (session.getStartTime() != null && session.getEndTime() != null) {
+                dateRange = session.getStartTime().format(FMT) + " ~ " + session.getEndTime().format(FMT);
+            }
+            loc = session.isOnline() ? "온라인" : (session.getLocation() != null ? session.getLocation() : "미정");
+        }
 
         String statusLabel = mapStatus(order.getStatus().name(), event.getStatus().name());
 
