@@ -80,6 +80,9 @@ function CheckoutContent() {
         }
 
         if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('주문은 로그인 후에 사용할 수 있습니다.');
+          }
           const errorBody = await res.json().catch(() => null);
           throw new Error(errorBody?.message || `주문 생성 실패 (${res.status})`);
         }
