@@ -92,6 +92,9 @@ export default function Home() {
     }
   };
 
+  // 💡 최적화: 현재 시간은 반복문 밖에서 한 번만 연산
+  const nowTime = new Date().getTime();
+
   return (
     <div className="container-full">
       {/* 배너 섹션 (Hero) - 풀 와이드 */}
@@ -142,7 +145,6 @@ export default function Home() {
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => {
-                const nowTime = new Date().getTime();
                 const startTime = new Date(event.startDate).getTime();
                 const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
                 const dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
