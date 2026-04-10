@@ -5,7 +5,7 @@ import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Lo
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import CommunityCard from '@/app/community/components/CommunityCard';
-import { ConfirmModal, InputModal, UploadModal, PaymentModal } from '@/components/modal';
+import { ConfirmModal, InputModal, UploadModal, PaymentModal, InquiryModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 
 export default function UITestPage() {
@@ -27,6 +27,8 @@ export default function UITestPage() {
   const [isInputAdminOpen, setIsInputAdminOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [isInquiryUserOpen, setIsInquiryUserOpen] = useState(false);
+  const [isInquiryHostOpen, setIsInquiryHostOpen] = useState(false);
 
   // Tailwind CSS가 없는 환경이므로 순수 인라인 스타일로 깔끔한 테스트 레이아웃 구성
   const containerStyle: React.CSSProperties = {
@@ -442,6 +444,8 @@ export default function UITestPage() {
           <Button variant="outlined" onClick={() => setIsInputAdminOpen(true)}>2. 상세 내역 모달 (Admin)</Button>
           <Button variant="primary" onClick={() => setIsUploadOpen(true)}>3. 파일업로드 모달</Button>
           <Button variant="primary" onClick={() => setIsPaymentOpen(true)}>4. 결제 모달</Button>
+          <Button variant="outlined" onClick={() => setIsInquiryUserOpen(true)}>5. 1:1 문의 (User)</Button>
+          <Button variant="outlined" onClick={() => setIsInquiryHostOpen(true)}>5. 1:1 문의 (Host)</Button>
         </div>
       </div>
 
@@ -634,6 +638,28 @@ export default function UITestPage() {
           console.log('Payment Data:', data);
           alert(`결제 완료! \n- 수량: ${data.quantity}개 \n- 총액: ${data.totalPrice}원\n- 수단: ${data.paymentMethod}`);
           setIsPaymentOpen(false);
+        }}
+      />
+
+      {/* 5-1. InquiryModal (User) */}
+      <InquiryModal
+        isOpen={isInquiryUserOpen}
+        onClose={() => setIsInquiryUserOpen(false)}
+        role="user"
+        onSubmit={(data) => {
+          console.log('User Inquiry:', data);
+          alert(`문의 전송!\n- 유형: ${data.category}\n- 제목: ${data.title}\n- 내용: ${data.content}\n- 첨부: ${data.attachment?.name || '없음'}`);
+        }}
+      />
+
+      {/* 5-2. InquiryModal (Host) */}
+      <InquiryModal
+        isOpen={isInquiryHostOpen}
+        onClose={() => setIsInquiryHostOpen(false)}
+        role="host"
+        onSubmit={(data) => {
+          console.log('Host Inquiry:', data);
+          alert(`호스트 문의 전송!\n- 유형: ${data.category}\n- 제목: ${data.title}\n- 내용: ${data.content}\n- 첨부: ${data.attachment?.name || '없음'}`);
         }}
       />
 
