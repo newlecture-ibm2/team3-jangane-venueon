@@ -19,7 +19,7 @@ import java.util.UUID;
  * → /upload/event-thumbnail/{yyyy}/{MM}/{uuid}.{ext} 로 저장
  *
  * 폴더 구조: 카테고리 1차 분류 + 연/월 2차 분류 + UUID 파일명
- * @see docs/이미지_업로드_관리_전략.md §2
+ * @see "docs/이미지_업로드_관리_전략.md §2"
  */
 @RestController
 @RequestMapping("/files")
