@@ -12,9 +12,12 @@
   position: absolute;
   z-index: 50;
 
-  background: var(--color-bg);                    /* #FFFFFF */
-  border: 1px solid var(--color-text-gray-300);   /* #D1D5DB */
-  border-radius: var(--radius-md);                /* 8px */
+  background: var(--color-bg);
+  /* #FFFFFF */
+  border: 1px solid var(--color-text-gray-300);
+  /* #D1D5DB */
+  border-radius: var(--radius-md);
+  /* 8px */
   box-shadow: var(--shadow-md);
 
   max-height: 240px;
@@ -31,21 +34,25 @@
   gap: var(--space-8);
   width: 100%;
   cursor: pointer;
-  background: var(--color-bg);                    /* #FFFFFF */
+  background: var(--color-bg);
+  /* #FFFFFF */
   user-select: none;
   transition: background var(--transition);
 }
 
 .menuItem:hover {
-  background: var(--color-surface);               /* #F3F4F6 */
+  background: var(--color-surface);
+  /* #F3F4F6 */
 }
 
 .menuItemText {
   font: var(--text-body-medium);
-  color: var(--color-text-gray-500);              /* #6B7280 */
+  color: var(--color-text-gray-500);
+  /* #6B7280 */
   white-space: nowrap;
 }
 
 .menuItemSelected .menuItemText {
-  color: var(--color-text-gray-700);              /* #374151 */
+  color: var(--color-text-gray-700);
+  /* #374151 */
 }

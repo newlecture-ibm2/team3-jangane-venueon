@@ -6,7 +6,6 @@ import styles from './page.module.css';
 import { Card, CardGrid, InputField, Tabs, Pagination } from '@/components/ui';
 import { format } from 'date-fns';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 interface EventData {
   id: number;
@@ -56,7 +55,7 @@ export default function Home() {
       if (resData.success) {
         setEvents(resData.data.content);
         setTotalPages(resData.data.totalPages);
-        
+
         // Wishlist도 동시에 조회 (비로그인이거나 에러시 조용히 넘어감)
         try {
           const wlRes = await fetch('/api/wishlists/me?size=100');
@@ -114,7 +113,7 @@ export default function Home() {
       </section>
 
       <div className={styles.container}>
-        
+
         {/* 필터 및 검색 섹션 */}
         <section className={styles.filterSection}>
           <div className={styles.searchBox}>
@@ -127,7 +126,7 @@ export default function Home() {
             />
           </div>
           <div className={styles.tagGroup}>
-            <Tabs 
+            <Tabs
               variant="pill"
               options={categoryOptions}
               activeValue={activeCategory}
@@ -181,7 +180,7 @@ export default function Home() {
           {/* 페이지네이션 */}
           {!loading && totalPages > 1 && (
             <div className={styles.paginationContainer}>
-               <Pagination 
+              <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={(page) => setCurrentPage(page)}

@@ -41,8 +41,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
   React.useEffect(() => {
     if (initialData?.thumbnailUrl) {
-      const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-      setPreviewUrl(`${BACKEND_URL}/upload/${initialData.thumbnailUrl}`);
+      setPreviewUrl(`/upload/${initialData.thumbnailUrl}`);
       setThumbnailUrl(initialData.thumbnailUrl);
     }
   }, [initialData]);
@@ -76,7 +75,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('category', 'lecture-thumbnail');
+      formData.append('category', 'event-thumbnail');
 
       const res = await fetch('/api/files/upload', {
         method: 'POST',
@@ -123,7 +122,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     }
   };
 
-  const calculatedTotalPrice = hasSession 
+  const calculatedTotalPrice = hasSession
     ? sessions.reduce((sum, s) => sum + (Number(s.price) || 0), 0)
     : Number(formData.price) || 0;
 
@@ -313,7 +312,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
           {hasSession ? '세션 공통 설정 (기본값)' : '이벤트 상세 설정'}
         </h3>
-        
+
         <div className={styles.grid3}>
           <div className={styles.formGroup}>
             <label className={styles.label}>총 가격</label>
@@ -391,11 +390,11 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
           <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', borderBottom: '2px solid #000', paddingBottom: '0.5rem' }}>세션 목록</h3>
           <p style={{ color: '#666', fontSize: '0.9rem' }}>이벤트 내에 포함될 세션들을 아래에 추가해주세요. 날짜와 장소를 비워두면 위의 '공통 설정'을 자동으로 따릅니다.</p>
-          
+
           {sessions.length === 0 ? (
             <div style={{ padding: '2rem', textAlign: 'center', background: '#f9f9f9', borderRadius: '8px', border: '1px dashed #ccc' }}>
               <p style={{ color: '#888', marginBottom: '1rem' }}>등록된 세션이 없습니다.</p>
-              <button 
+              <button
                 type="button"
                 onClick={() => setSessions([...sessions, { title: '새 세션', price: 0, maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
                 style={{ padding: '0.5rem 1rem', background: '#000', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
@@ -407,12 +406,12 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {sessions.map((session, index) => (
                 <div key={index} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem', position: 'relative' }}>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => {
-                        const newSessions = [...sessions];
-                        newSessions.splice(index, 1);
-                        setSessions(newSessions);
+                      const newSessions = [...sessions];
+                      newSessions.splice(index, 1);
+                      setSessions(newSessions);
                     }}
                     style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer' }}
                   >
@@ -421,74 +420,74 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                   <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
                     <div style={{ gridColumn: '1 / -1' }}>
                       <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 제목</label>
-                      <input 
-                        type="text" 
-                        value={session.title || ''} 
+                      <input
+                        type="text"
+                        value={session.title || ''}
                         onChange={(e) => {
-                            const newSessions = [...sessions];
-                            newSessions[index].title = e.target.value;
-                            setSessions(newSessions);
+                          const newSessions = [...sessions];
+                          newSessions[index].title = e.target.value;
+                          setSessions(newSessions);
                         }}
-                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                       />
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>가격</label>
-                      <input 
-                        type="number" 
-                        value={session.price || 0} 
+                      <input
+                        type="number"
+                        value={session.price || 0}
                         onChange={(e) => {
-                            const newSessions = [...sessions];
-                            newSessions[index].price = parseInt(e.target.value, 10);
-                            setSessions(newSessions);
+                          const newSessions = [...sessions];
+                          newSessions[index].price = parseInt(e.target.value, 10);
+                          setSessions(newSessions);
                         }}
-                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                       />
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>정원 명수</label>
-                      <input 
-                        type="number" 
-                        value={session.maxAttendees || 0} 
+                      <input
+                        type="number"
+                        value={session.maxAttendees || 0}
                         onChange={(e) => {
-                            const newSessions = [...sessions];
-                            newSessions[index].maxAttendees = parseInt(e.target.value, 10);
-                            setSessions(newSessions);
+                          const newSessions = [...sessions];
+                          newSessions[index].maxAttendees = parseInt(e.target.value, 10);
+                          setSessions(newSessions);
                         }}
-                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                       />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 날짜 <span style={{fontWeight:'normal', color:'#666'}}>(비울시 일반설정 동기화)</span></label>
-                      <input 
-                        type="date" 
-                        value={session.date !== undefined ? session.date : formData.date} 
+                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 날짜 <span style={{ fontWeight: 'normal', color: '#666' }}>(비울시 일반설정 동기화)</span></label>
+                      <input
+                        type="date"
+                        value={session.date !== undefined ? session.date : formData.date}
                         onChange={(e) => {
-                            const newSessions = [...sessions];
-                            newSessions[index].date = e.target.value === "" ? undefined : e.target.value;
-                            setSessions(newSessions);
+                          const newSessions = [...sessions];
+                          newSessions[index].date = e.target.value === "" ? undefined : e.target.value;
+                          setSessions(newSessions);
                         }}
-                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                       />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 장소 <span style={{fontWeight:'normal', color:'#666'}}>(비울시 일반설정 동기화)</span></label>
-                      <input 
-                        type="text" 
-                        value={session.location !== undefined ? session.location : formData.location} 
+                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 장소 <span style={{ fontWeight: 'normal', color: '#666' }}>(비울시 일반설정 동기화)</span></label>
+                      <input
+                        type="text"
+                        value={session.location !== undefined ? session.location : formData.location}
                         placeholder="일반 설정과 다른 경우 입력"
                         onChange={(e) => {
-                            const newSessions = [...sessions];
-                            newSessions[index].location = e.target.value === "" ? undefined : e.target.value;
-                            setSessions(newSessions);
+                          const newSessions = [...sessions];
+                          newSessions[index].location = e.target.value === "" ? undefined : e.target.value;
+                          setSessions(newSessions);
                         }}
-                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                       />
                     </div>
                   </div>
                 </div>
               ))}
-              <button 
+              <button
                 type="button"
                 onClick={() => setSessions([...sessions, { title: '새 세션', price: 0, maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
                 style={{ padding: '1rem', background: '#f5f5f5', color: '#333', borderRadius: '8px', border: '1px dashed #ccc', cursor: 'pointer', fontWeight: 'bold', marginTop: '0.5rem' }}
