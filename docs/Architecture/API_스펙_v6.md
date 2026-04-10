@@ -53,7 +53,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 
 ---
 
-## 📌 1. User 모듈 (`/v1/auth`, `/v1/users`)
+## 📌 1. User 모듈 (`/auth`, `/users`)
 
 ### 1-1. 인증 API
 
@@ -108,7 +108,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 
 ---
 
-## 📌 2. Event 모듈 (`/v1/events`)
+## 📌 2. Event 모듈 (`/events`)
 
 ### 2-1. 이벤트 목록/검색 API
 
@@ -360,7 +360,7 @@ page(default:0), size(default:12)
 
 ---
 
-## 📌 3. Community 모듈 (`/v1/communities`)
+## 📌 3. Community 모듈 (`/communities`)
 
 ### 3-1. 커뮤니티 CRUD API
 
@@ -410,7 +410,7 @@ page(default:0), size(default:12)
 
 ---
 
-## 📌 4. Order 모듈 (`/v1/orders`) — 결제/환불
+## 📌 4. Order 모듈 (`/orders`) — 결제/환불
 
 ### 4-1. 주문/결제 API
 
@@ -486,7 +486,7 @@ page(default:0), size(default:12)
 
 ---
 
-## 📌 6. Badge 모듈 (`/v1/badges`)
+## 📌 6. Badge 모듈 (`/badges`)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -497,7 +497,7 @@ page(default:0), size(default:12)
 
 ---
 
-## 📌 7. Notification 모듈 (`/v1/notifications`)
+## 📌 7. Notification 모듈 (`/notifications`)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -510,7 +510,7 @@ page(default:0), size(default:12)
 
 ---
 
-## 📌 8. Report 모듈 (`/v1/reports`)
+## 📌 8. Report 모듈 (`/reports`)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -521,7 +521,7 @@ page(default:0), size(default:12)
 
 ---
 
-## 📌 9. Admin 모듈 (`/v1/admin`)
+## 📌 9. Admin 모듈 (`/admin`)
 
 ### 9-1. 대시보드
 
@@ -621,7 +621,7 @@ page(default:0), size(default:12)
 
 ---
 
-## 📌 10. Notice 모듈 (`/v1/notices`, `/v1/requests`)
+## 📌 10. Notice 모듈 (`/notices`, `/requests`)
 
 ### 10-1. 공지사항
 
@@ -652,7 +652,7 @@ page(default:0), size(default:12)
 
 ---
 
-## 📌 11. 마이페이지 통합 API (`/v1/mypage`)
+## 📌 11. 마이페이지 통합 API (`/mypage`)
 
 | # | Method | Path | Auth | 설명 |
 |---|--------|------|------|------|
@@ -666,7 +666,7 @@ page(default:0), size(default:12)
 
 ---
 
-## 📌 12. 파일 업로드 API (`/v1/upload`)
+## 📌 12. 파일 업로드 API (`/upload`)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|

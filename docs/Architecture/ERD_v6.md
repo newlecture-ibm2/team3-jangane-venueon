@@ -100,11 +100,11 @@ erDiagram
         int sort_order
         timestamp start_time "nullable"
         timestamp end_time "nullable"
-        varchar location
-        varchar region_sido
-        varchar region_sigungu
+        varchar location "nullable - 오프라인 시"
+        varchar region_sido "nullable - 오프라인 시"
+        varchar region_sigungu "nullable - 오프라인 시"
         boolean is_online
-        varchar online_link
+        varchar online_link "nullable - 온라인 시"
         int max_attendees "0=무제한"
         int current_attendees
         timestamp recruit_start_date "nullable"
@@ -411,6 +411,23 @@ erDiagram
 | is_default | BOOLEAN | | 기본 세션 여부 (DEFAULT false) |
 | created_at | TIMESTAMP | | 생성일 |
 | updated_at | TIMESTAMP | nullable | 수정일 |
+
+> [!IMPORTANT]
+> **Nullable 필드 검증 전략 (Application-Level Validation)**  
+> `start_time`, `end_time` 등 nullable 필드는 DRAFT 상태에서 임시저장을 허용하기 위해 DB 레벨에서는 nullable을 유지한다.  
+> **DRAFT → PUBLISHED 전환 시** 비즈니스 레이어에서 아래 항목을 필수 검증한다:
+>
+> | 필드 | DRAFT | PUBLISHED 검증 |
+> |------|-------|----------------|
+> | `start_time` | nullable ✅ | NOT NULL 필수 ❌ |
+> | `end_time` | nullable ✅ | NOT NULL 필수 ❌ |
+> | `end_time > start_time` | — | 종료 > 시작 필수 ❌ |
+> | `location` (is_online=false) | nullable ✅ | NOT NULL 필수 ❌ |
+> | `recruit_start_date` | nullable ✅ | null이면 즉시 모집 시작 ⚠️ |
+> | `recruit_end_date` | nullable ✅ | null이면 세션 시작까지 모집 ⚠️ |
+>
+> → PUBLISHED된 이벤트의 세션은 항상 `start_time`, `end_time`이 존재함을 보장.  
+> → Computed 상태 계산(ONGOING, RecruitmentStatus)이 안전하게 동작.
 
 ---
 
