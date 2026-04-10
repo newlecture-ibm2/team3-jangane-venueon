@@ -63,9 +63,9 @@ public class DevDataController {
                     map.put("title", e.getTitle());
                     map.put("type", e.getType().name());
                     map.put("status", e.getStatus().name());
-                    map.put("price", e.getPrice());
-                    map.put("maxAttendees", e.getMaxAttendees());
-                    map.put("location", e.getLocation());
+                    map.put("price", 0); // TODO: Ticket (Phase 3)
+                    map.put("maxAttendees", 0); // TODO: Session (Phase 2)
+                    map.put("location", "-"); // TODO: Session (Phase 2)
                     map.put("creator", e.getCreator().getNickname());
                     map.put("category", e.getCategory().getName());
                     return map;

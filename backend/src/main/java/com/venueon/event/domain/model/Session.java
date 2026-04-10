@@ -3,13 +3,14 @@ package com.venueon.event.domain.model;
 import java.time.LocalDateTime;
 
 /**
- * EventSession 도메인 모델 (순수 POJO)
+ * Session 도메인 모델 (순수 POJO)
  * JPA/Spring 의존 없음 — 비즈니스 로직만 포함
  *
- * 세션은 이벤트의 구매 단위이며, 각각 독립적인 장소/가격/정원을 가진다.
- * hasSession=false인 이벤트도 내부적으로 기본 세션(is_default=true) 1개가 자동 생성된다.
+ * v6 변경: EventSession → Session 리네이밍.
+ * price 제거 (가격은 Ticket의 속성).
+ * 모집 관리 필드 3개 추가: recruitStartDate, recruitEndDate, isRecruitmentClosed
  */
-public class EventSession {
+public class Session {
 
     private Long id;
     private Long eventId;
@@ -26,10 +27,14 @@ public class EventSession {
     private boolean isOnline;
     private String onlineLink;
 
-    // 가격 / 정원 (구매 단위)
-    private int price;
+    // 정원 (구매 단위의 가격은 Ticket으로 이동)
     private int maxAttendees;
     private int currentAttendees;
+
+    // 모집 관리
+    private LocalDateTime recruitStartDate;
+    private LocalDateTime recruitEndDate;
+    private boolean isRecruitmentClosed;
 
     // 시스템 관리
     private boolean isDefault;
@@ -37,15 +42,17 @@ public class EventSession {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    protected EventSession() {}
+    protected Session() {}
 
-    public EventSession(Long id, Long eventId, String title, String description, int sortOrder,
-                         LocalDateTime startTime, LocalDateTime endTime,
-                         String location, String regionSido, String regionSigungu,
-                         boolean isOnline, String onlineLink,
-                         int price, int maxAttendees, int currentAttendees,
-                         boolean isDefault,
-                         LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Session(Long id, Long eventId, String title, String description, int sortOrder,
+                   LocalDateTime startTime, LocalDateTime endTime,
+                   String location, String regionSido, String regionSigungu,
+                   boolean isOnline, String onlineLink,
+                   int maxAttendees, int currentAttendees,
+                   LocalDateTime recruitStartDate, LocalDateTime recruitEndDate,
+                   boolean isRecruitmentClosed,
+                   boolean isDefault,
+                   LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.eventId = eventId;
         this.title = title;
@@ -58,9 +65,11 @@ public class EventSession {
         this.regionSigungu = regionSigungu;
         this.isOnline = isOnline;
         this.onlineLink = onlineLink;
-        this.price = price;
         this.maxAttendees = maxAttendees;
         this.currentAttendees = currentAttendees;
+        this.recruitStartDate = recruitStartDate;
+        this.recruitEndDate = recruitEndDate;
+        this.isRecruitmentClosed = isRecruitmentClosed;
         this.isDefault = isDefault;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -103,7 +112,8 @@ public class EventSession {
                                LocalDateTime startTime, LocalDateTime endTime,
                                String location, String regionSido, String regionSigungu,
                                boolean isOnline, String onlineLink,
-                               int price, int maxAttendees) {
+                               int maxAttendees,
+                               LocalDateTime recruitStartDate, LocalDateTime recruitEndDate) {
         this.title = title;
         this.description = description;
         this.sortOrder = sortOrder;
@@ -114,8 +124,9 @@ public class EventSession {
         this.regionSigungu = regionSigungu;
         this.isOnline = isOnline;
         this.onlineLink = onlineLink;
-        this.price = price;
         this.maxAttendees = maxAttendees;
+        this.recruitStartDate = recruitStartDate;
+        this.recruitEndDate = recruitEndDate;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -124,6 +135,44 @@ public class EventSession {
      */
     public void changeSortOrder(int newOrder) {
         this.sortOrder = newOrder;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 이 세션의 모집 상태 계산
+     * 우선순위: 수동 마감 > 정원 초과 > 날짜 기반 > 기본(OPEN)
+     */
+    public RecruitmentStatus getRecruitmentStatus() {
+        if (isRecruitmentClosed) return RecruitmentStatus.CLOSED;
+        if (maxAttendees > 0 && currentAttendees >= maxAttendees) return RecruitmentStatus.CLOSED;
+        LocalDateTime now = LocalDateTime.now();
+        if (recruitStartDate != null && now.isBefore(recruitStartDate)) return RecruitmentStatus.PENDING;
+        if (recruitEndDate != null && now.isAfter(recruitEndDate)) return RecruitmentStatus.CLOSED;
+        return RecruitmentStatus.OPEN;
+    }
+
+    /**
+     * 이 세션의 진행 상태 계산
+     */
+    public EventStatus getSessionStatus() {
+        LocalDateTime now = LocalDateTime.now();
+        if (startTime != null && endTime != null) {
+            if (now.isBefore(startTime)) return EventStatus.PUBLISHED;
+            if (now.isAfter(endTime)) return EventStatus.ENDED;
+            return EventStatus.ONGOING;
+        }
+        return EventStatus.PUBLISHED;
+    }
+
+    /** 수동 마감 */
+    public void closeRecruitment() {
+        this.isRecruitmentClosed = true;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /** 마감 해제 */
+    public void openRecruitment() {
+        this.isRecruitmentClosed = false;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -141,9 +190,11 @@ public class EventSession {
     public String getRegionSigungu() { return regionSigungu; }
     public boolean getIsOnline() { return isOnline; }
     public String getOnlineLink() { return onlineLink; }
-    public int getPrice() { return price; }
     public int getMaxAttendees() { return maxAttendees; }
     public int getCurrentAttendees() { return currentAttendees; }
+    public LocalDateTime getRecruitStartDate() { return recruitStartDate; }
+    public LocalDateTime getRecruitEndDate() { return recruitEndDate; }
+    public boolean getIsRecruitmentClosed() { return isRecruitmentClosed; }
     public boolean getIsDefault() { return isDefault; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

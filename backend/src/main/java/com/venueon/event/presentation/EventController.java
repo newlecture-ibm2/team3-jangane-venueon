@@ -9,7 +9,6 @@ import com.venueon.event.application.port.out.LoadHostInfoPort.HostInfo;
 import com.venueon.event.application.service.EventQueryService;
 import com.venueon.event.adapter.in.web.dto.SessionResponse;
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventSession;
 import com.venueon.event.domain.model.EventType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * 이벤트 공개 API — 누구나 접근 가능
+ * v6: price 정렬 제거 (가격은 Ticket에서 관리)
  */
 @RestController
 @RequestMapping("/events")
@@ -34,7 +34,7 @@ public class EventController {
 
     /**
      * 이벤트 목록 조회 (검색/필터/페이징)
-     * GET /events?keyword=&categoryId=&type=&isOnline=&isFree=&minPrice=&maxPrice=&sort=&page=&size=
+     * GET /events?keyword=&categoryId=&type=&sort=&page=&size=
      */
     @GetMapping
     public ApiResponse<Page<EventListResponse>> getEventList(
@@ -63,30 +63,29 @@ public class EventController {
     }
 
     /**
-     * 이벤트 상세 조회 (Host 정보 포함)
+     * 이벤트 상세 조회 (Host 정보 + 세션 포함)
      * GET /events/{id}
      */
     @GetMapping("/{id}")
     public ApiResponse<EventDetailResponse> getEventDetail(@PathVariable Long id) {
         Event event = eventQueryService.getEventById(id);
         HostInfo hostInfo = eventQueryService.getHostInfoByCreatorId(event.getCreatorId());
-        
+
         List<SessionResponse> sessions = getSessionUseCase.getSessionsByEventId(id)
                 .stream()
                 .map(SessionResponse::from)
                 .collect(Collectors.toList());
-                
+
         EventDetailResponse response = EventDetailResponse.from(event, hostInfo, sessions);
         return ApiResponse.success(response);
     }
 
     /**
      * 정렬 조건에 따른 Pageable 생성
+     * v6: price 정렬 제거 (가격은 Ticket기반 — 향후 추가)
      */
     private Pageable createPageable(int page, int size, String sort) {
         Sort sortOrder = switch (sort) {
-            case "price_asc" -> Sort.by("price").ascending();
-            case "price_desc" -> Sort.by("price").descending();
             case "oldest" -> Sort.by("createdAt").ascending();
             default -> Sort.by("createdAt").descending(); // "latest"
         };

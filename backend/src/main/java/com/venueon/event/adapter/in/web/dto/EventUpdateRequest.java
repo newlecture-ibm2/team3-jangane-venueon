@@ -2,11 +2,13 @@ package com.venueon.event.adapter.in.web.dto;
 
 import com.venueon.event.application.port.in.UpdateEventUseCase.UpdateEventCommand;
 import com.venueon.event.domain.model.EventType;
-import com.venueon.event.domain.model.PurchaseType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
+/**
+ * 이벤트 수정 요청 DTO
+ * v6: price, maxAttendees, location, isOnline, startDate, endDate, purchaseType 제거
+ */
 public record EventUpdateRequest(
         Long categoryId,
 
@@ -18,20 +20,8 @@ public record EventUpdateRequest(
         @NotNull(message = "이벤트 유형은 필수입니다.")
         EventType type,
 
-        String location,
-        boolean isOnline,
-        int price,
-        int maxAttendees,
         String thumbnailUrl,
-
-        @NotNull(message = "시작일은 필수입니다.")
-        LocalDateTime startDate,
-
-        @NotNull(message = "종료일은 필수입니다.")
-        LocalDateTime endDate,
-        
-        boolean hasSession,
-        PurchaseType purchaseType
+        boolean hasSession
 ) {
     public UpdateEventCommand toCommand(Long eventId, Long requesterId, String requesterRole) {
         return new UpdateEventCommand(
@@ -42,15 +32,8 @@ public record EventUpdateRequest(
                 title,
                 description,
                 type,
-                location,
-                isOnline,
-                price,
-                maxAttendees,
                 thumbnailUrl,
-                startDate,
-                endDate,
-                hasSession,
-                purchaseType != null ? purchaseType : PurchaseType.SINGLE
+                hasSession
         );
     }
 }

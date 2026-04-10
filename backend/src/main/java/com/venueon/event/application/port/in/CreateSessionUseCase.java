@@ -1,12 +1,16 @@
 package com.venueon.event.application.port.in;
 
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventSession;
+import com.venueon.event.domain.model.Session;
 import java.time.LocalDateTime;
 
+/**
+ * 세션 생성 유스케이스
+ * v6: price 제거, regionSido/regionSigungu/recruitStartDate/recruitEndDate 추가
+ */
 public interface CreateSessionUseCase {
-    EventSession createSession(CreateSessionCommand command);
-    EventSession createDefaultSession(Event event);
+    Session createSession(CreateSessionCommand command);
+    Session createDefaultSession(Event event);
 
     record CreateSessionCommand(
         Long eventId,
@@ -17,9 +21,12 @@ public interface CreateSessionUseCase {
         LocalDateTime startTime,
         LocalDateTime endTime,
         String location,
+        String regionSido,
+        String regionSigungu,
         boolean isOnline,
         String onlineLink,
-        int price,
-        int maxAttendees
+        int maxAttendees,
+        LocalDateTime recruitStartDate,
+        LocalDateTime recruitEndDate
     ) {}
 }

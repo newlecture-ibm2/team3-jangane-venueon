@@ -27,14 +27,10 @@ public record MyOrderResponse(
     public static MyOrderResponse from(OrderJpaEntity order) {
         EventJpaEntity event = order.getEvent();
 
-        String dateRange = "";
-        if (event.getStartDate() != null && event.getEndDate() != null) {
-            dateRange = event.getStartDate().format(FMT) + " ~ " + event.getEndDate().format(FMT);
-        }
+        // v6: startDate, endDate, location, price는 Session/Ticket으로 이동
+        String dateRange = ""; // TODO: Session 기반으로 변경
 
-        String loc = event.isOnline()
-                ? "온라인"
-                : (event.getLocation() != null ? event.getLocation() : "미정");
+        String loc = "-"; // TODO: Session 기반으로 변경
 
         String statusLabel = mapStatus(order.getStatus().name(), event.getStatus().name());
 
@@ -45,7 +41,7 @@ public record MyOrderResponse(
                 event.getCreator().getNickname(),
                 dateRange,
                 loc,
-                event.getPrice(),
+                0, // price는 Phase 3에서 Ticket 기반으로 변경
                 event.getId()
         );
     }

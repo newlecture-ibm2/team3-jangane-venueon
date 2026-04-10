@@ -7,7 +7,7 @@ import com.venueon.event.application.port.in.*;
 import com.venueon.event.application.port.out.EventRepositoryPort;
 import com.venueon.event.application.port.out.SessionPort;
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventSession;
+import com.venueon.event.domain.model.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,35 +16,41 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * 세션 CRUD 서비스
+ * v6: EventSession → Session, price 제거, 모집 필드 추가
+ */
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class EventSessionService implements 
-        CreateSessionUseCase, UpdateSessionUseCase, DeleteSessionUseCase, 
+public class EventSessionService implements
+        CreateSessionUseCase, UpdateSessionUseCase, DeleteSessionUseCase,
         GetSessionUseCase, ReorderSessionUseCase {
 
     private final SessionPort sessionPort;
     private final EventRepositoryPort eventRepositoryPort;
 
     @Override
-    public EventSession createDefaultSession(Event event) {
-        EventSession session = new EventSession(
+    public Session createDefaultSession(Event event) {
+        Session session = new Session(
                 null,
                 event.getId(),
                 "기본 세션",
-                "이벤트 전체가 하나의 세션으로 판매됩니다.",
+                "이벤트 전체가 하나의 세션으로 운영됩니다.",
                 0,
-                event.getStartDate() != null ? event.getStartDate() : null,
-                event.getEndDate() != null ? event.getEndDate() : null,
-                event.getLocation() != null ? event.getLocation() : "미정",
-                null, // regionSido
-                null, // regionSigungu
-                event.getIsOnline(),
-                null, // onlineLink
-                event.getPrice(),
-                event.getMaxAttendees(),
-                0, // currentAttendees
-                true, // isDefault
+                null,      // startTime — DRAFT이므로 null 허용
+                null,      // endTime
+                null,      // location
+                null,      // regionSido
+                null,      // regionSigungu
+                false,     // isOnline
+                null,      // onlineLink
+                0,         // maxAttendees (0=무제한)
+                0,         // currentAttendees
+                null,      // recruitStartDate
+                null,      // recruitEndDate
+                false,     // isRecruitmentClosed
+                true,      // isDefault
                 null,
                 null
         );
@@ -52,14 +58,14 @@ public class EventSessionService implements
     }
 
     @Override
-    public EventSession createSession(CreateSessionCommand command) {
+    public Session createSession(CreateSessionCommand command) {
         Event event = getEventAndValidateOwner(command.eventId(), command.requesterId());
 
         if (!event.getHasSession()) {
             throw new IllegalStateException("세션 관리가 비활성화된 이벤트입니다.");
         }
 
-        EventSession session = new EventSession(
+        Session session = new Session(
                 null,
                 command.eventId(),
                 command.title(),
@@ -68,13 +74,15 @@ public class EventSessionService implements
                 command.startTime(),
                 command.endTime(),
                 command.location(),
-                null, // regionSido
-                null, // regionSigungu
+                command.regionSido(),
+                command.regionSigungu(),
                 command.isOnline(),
                 command.onlineLink(),
-                command.price(),
                 command.maxAttendees(),
                 0, // currentAttendees
+                command.recruitStartDate(),
+                command.recruitEndDate(),
+                false, // isRecruitmentClosed
                 false, // isDefault
                 null,
                 null
@@ -84,10 +92,10 @@ public class EventSessionService implements
     }
 
     @Override
-    public EventSession updateSession(UpdateSessionCommand command) {
+    public Session updateSession(UpdateSessionCommand command) {
         getEventAndValidateOwner(command.eventId(), command.requesterId());
 
-        EventSession session = sessionPort.findById(command.sessionId())
+        Session session = sessionPort.findById(command.sessionId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
 
         if (!session.getEventId().equals(command.eventId())) {
@@ -101,12 +109,13 @@ public class EventSessionService implements
                 command.startTime(),
                 command.endTime(),
                 command.location(),
-                null, // regionSido
-                null, // regionSigungu
+                command.regionSido(),
+                command.regionSigungu(),
                 command.isOnline(),
                 command.onlineLink(),
-                command.price(),
-                command.maxAttendees()
+                command.maxAttendees(),
+                command.recruitStartDate(),
+                command.recruitEndDate()
         );
 
         return sessionPort.save(session, command.eventId());
@@ -116,7 +125,7 @@ public class EventSessionService implements
     public void deleteSession(Long sessionId, Long eventId, Long requesterId) {
         getEventAndValidateOwner(eventId, requesterId);
 
-        EventSession session = sessionPort.findById(sessionId)
+        Session session = sessionPort.findById(sessionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
 
         if (!session.getEventId().equals(eventId)) {
@@ -127,15 +136,14 @@ public class EventSessionService implements
             throw new BusinessException(ErrorCode.SESSION_DELETE_NOT_ALLOWED);
         }
 
-        // TODO: Step 3에서 Order 연동 시, 해당 세션에 주문이 있는지 검증 추가
-        // if (orderRepositoryPort.existsBySessionId(sessionId)) { throw Error }
+        // TODO: Phase 3 이후 Order/Ticket 연동 시, 해당 세션에 판매된 티켓이 있는지 검증 추가
 
         sessionPort.deleteById(sessionId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventSession> getSessionsByEventId(Long eventId) {
+    public List<Session> getSessionsByEventId(Long eventId) {
         return sessionPort.findByEventId(eventId);
     }
 
@@ -143,13 +151,13 @@ public class EventSessionService implements
     public void reorderSessions(Long eventId, Long requesterId, List<Long> sessionIds) {
         getEventAndValidateOwner(eventId, requesterId);
 
-        List<EventSession> sessions = sessionPort.findByEventId(eventId);
-        Map<Long, EventSession> sessionMap = sessions.stream()
-                .collect(Collectors.toMap(EventSession::getId, Function.identity()));
+        List<Session> sessions = sessionPort.findByEventId(eventId);
+        Map<Long, Session> sessionMap = sessions.stream()
+                .collect(Collectors.toMap(Session::getId, Function.identity()));
 
         int order = 1;
         for (Long sessionId : sessionIds) {
-            EventSession session = sessionMap.get(sessionId);
+            Session session = sessionMap.get(sessionId);
             if (session != null) {
                 session.updateDetails(
                         session.getTitle(),
@@ -162,8 +170,9 @@ public class EventSessionService implements
                         session.getRegionSigungu(),
                         session.getIsOnline(),
                         session.getOnlineLink(),
-                        session.getPrice(),
-                        session.getMaxAttendees()
+                        session.getMaxAttendees(),
+                        session.getRecruitStartDate(),
+                        session.getRecruitEndDate()
                 );
                 sessionPort.save(session, eventId);
             }

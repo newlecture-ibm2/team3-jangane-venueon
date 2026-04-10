@@ -1,26 +1,27 @@
 package com.venueon.event.adapter.out.persistence;
 
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
-import com.venueon.event.domain.model.EventSession;
+import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
+import com.venueon.event.domain.model.Session;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * EventSessionJpaEntity ↔ EventSession 도메인 모델 변환
+ * SessionJpaEntity ↔ Session 도메인 모델 변환
+ * v6: EventSessionMapper → SessionMapper 리네이밍, price 제거, 모집 필드 추가
  */
 @Component
 @RequiredArgsConstructor
-public class EventSessionMapper {
+public class SessionMapper {
 
     private final EntityManager entityManager;
 
     /**
      * JPA Entity → 도메인 모델
      */
-    public EventSession toDomain(EventSessionJpaEntity entity) {
-        return new EventSession(
+    public Session toDomain(SessionJpaEntity entity) {
+        return new Session(
                 entity.getId(),
                 entity.getEvent() != null ? entity.getEvent().getId() : null,
                 entity.getTitle(),
@@ -33,9 +34,11 @@ public class EventSessionMapper {
                 entity.getRegionSigungu(),
                 entity.isOnline(),
                 entity.getOnlineLink(),
-                entity.getPrice(),
                 entity.getMaxAttendees(),
                 entity.getCurrentAttendees(),
+                entity.getRecruitStartDate(),
+                entity.getRecruitEndDate(),
+                entity.isRecruitmentClosed(),
                 entity.isDefault(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
@@ -45,8 +48,8 @@ public class EventSessionMapper {
     /**
      * 도메인 모델 → JPA Entity
      */
-    public EventSessionJpaEntity toJpaEntity(EventSession domain, EventJpaEntity eventEntity) {
-        return EventSessionJpaEntity.builder()
+    public SessionJpaEntity toJpaEntity(Session domain, EventJpaEntity eventEntity) {
+        return SessionJpaEntity.builder()
                 .id(domain.getId())
                 .event(eventEntity)
                 .title(domain.getTitle())
@@ -59,9 +62,11 @@ public class EventSessionMapper {
                 .regionSigungu(domain.getRegionSigungu())
                 .isOnline(domain.getIsOnline())
                 .onlineLink(domain.getOnlineLink())
-                .price(domain.getPrice())
                 .maxAttendees(domain.getMaxAttendees())
                 .currentAttendees(domain.getCurrentAttendees())
+                .recruitStartDate(domain.getRecruitStartDate())
+                .recruitEndDate(domain.getRecruitEndDate())
+                .isRecruitmentClosed(domain.getIsRecruitmentClosed())
                 .isDefault(domain.getIsDefault())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
@@ -71,7 +76,7 @@ public class EventSessionMapper {
     /**
      * 도메인 모델 → JPA Entity (eventId로 참조)
      */
-    public EventSessionJpaEntity toJpaEntity(EventSession domain, Long eventId) {
+    public SessionJpaEntity toJpaEntity(Session domain, Long eventId) {
         EventJpaEntity eventRef = entityManager.getReference(EventJpaEntity.class, eventId);
         return toJpaEntity(domain, eventRef);
     }

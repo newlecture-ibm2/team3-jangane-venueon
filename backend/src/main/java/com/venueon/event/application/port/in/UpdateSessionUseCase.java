@@ -1,10 +1,14 @@
 package com.venueon.event.application.port.in;
 
-import com.venueon.event.domain.model.EventSession;
+import com.venueon.event.domain.model.Session;
 import java.time.LocalDateTime;
 
+/**
+ * 세션 수정 유스케이스
+ * v6: price 제거, regionSido/regionSigungu/recruitStartDate/recruitEndDate 추가
+ */
 public interface UpdateSessionUseCase {
-    EventSession updateSession(UpdateSessionCommand command);
+    Session updateSession(UpdateSessionCommand command);
 
     record UpdateSessionCommand(
         Long sessionId,
@@ -16,9 +20,12 @@ public interface UpdateSessionUseCase {
         LocalDateTime startTime,
         LocalDateTime endTime,
         String location,
+        String regionSido,
+        String regionSigungu,
         boolean isOnline,
         String onlineLink,
-        int price,
-        int maxAttendees
+        int maxAttendees,
+        LocalDateTime recruitStartDate,
+        LocalDateTime recruitEndDate
     ) {}
 }

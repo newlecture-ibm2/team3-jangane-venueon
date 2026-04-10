@@ -7,8 +7,8 @@ import com.venueon.cart.application.port.out.CartRepositoryPort;
 import com.venueon.cart.application.port.out.LoadEventInfoPort;
 import com.venueon.cart.domain.model.Cart;
 import com.venueon.common.annotation.UseCase;
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
-import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
+import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
+import com.venueon.event.adapter.out.persistence.repository.SessionJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +27,7 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
 
     private final CartRepositoryPort cartRepositoryPort;
     private final LoadEventInfoPort loadEventInfoPort;
-    private final EventSessionJpaRepository eventSessionJpaRepository;
+    private final SessionJpaRepository sessionJpaRepository;
 
     // --- 조회 (Query) ---
 
@@ -72,24 +72,24 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, UpdateCart
         }
 
         // 해당 이벤트에 속한 모든 세션 조회
-        List<EventSessionJpaEntity> sessions = eventSessionJpaRepository.findByEventIdOrderBySortOrder(eventId);
+        List<SessionJpaEntity> sessions = sessionJpaRepository.findByEventIdOrderBySortOrder(eventId);
         if (sessions.isEmpty()) {
             throw new IllegalArgumentException("이벤트에 등록된 세션이 없습니다.");
         }
 
         List<Cart> addedCarts = new ArrayList<>();
 
-        for (EventSessionJpaEntity session : sessions) {
+        for (SessionJpaEntity session : sessions) {
             // 특성 세션이 이미 장바구니에 있는지 확인
             if (!cartRepositoryPort.existsByUserEmailAndSessionId(userEmail, session.getId())) {
-                Cart cart = Cart.create(
+                    Cart cart = Cart.create(
                         userEmail,
                         eventId,
                         event.title(),
                         session.getId(),
                         session.getTitle(),
-                        session.getPrice(),
-                        session.getPrice(), // discountedPrice
+                        0, // price — Phase 3에서 Ticket 기반으로 변경
+                        0, // discountedPrice
                         session.getStartTime()
                 );
                 addedCarts.add(cartRepositoryPort.save(cart));

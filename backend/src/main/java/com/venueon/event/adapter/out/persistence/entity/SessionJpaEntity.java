@@ -8,8 +8,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 /**
- * EventSession JPA Entity — DB 매핑 전용
- * 도메인 로직은 EventSession.java에 위치
+ * Session JPA Entity — DB 매핑 전용 (테이블명 event_sessions 유지)
+ * v6: price 제거, recruit_start_date/recruit_end_date/is_recruitment_closed 추가
+ * 클래스명 EventSessionJpaEntity → SessionJpaEntity 변경
  */
 @Entity
 @Table(name = "event_sessions")
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class EventSessionJpaEntity {
+public class SessionJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,10 +60,7 @@ public class EventSessionJpaEntity {
     @Column(name = "online_link")
     private String onlineLink;
 
-    // 가격 / 정원 (구매 단위)
-    @Builder.Default
-    private int price = 0;
-
+    // 정원
     @Column(name = "max_attendees")
     @Builder.Default
     private int maxAttendees = 0;
@@ -70,6 +68,17 @@ public class EventSessionJpaEntity {
     @Column(name = "current_attendees")
     @Builder.Default
     private int currentAttendees = 0;
+
+    // 모집 관리
+    @Column(name = "recruit_start_date")
+    private LocalDateTime recruitStartDate;
+
+    @Column(name = "recruit_end_date")
+    private LocalDateTime recruitEndDate;
+
+    @Column(name = "is_recruitment_closed")
+    @Builder.Default
+    private boolean isRecruitmentClosed = false;
 
     // 시스템 관리
     @Column(name = "is_default")

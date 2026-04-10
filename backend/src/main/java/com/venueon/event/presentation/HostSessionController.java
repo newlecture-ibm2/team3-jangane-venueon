@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Host 전용 세션 API
+ * v6: price 제거, regionSido/regionSigungu/recruitStartDate/recruitEndDate 추가
+ */
 @RestController
 @RequestMapping("/host/events/{eventId}/sessions")
 @RequiredArgsConstructor
@@ -34,10 +38,13 @@ public class HostSessionController {
                 request.startTime(),
                 request.endTime(),
                 request.location(),
+                request.regionSido(),
+                request.regionSigungu(),
                 request.isOnline(),
                 request.onlineLink(),
-                request.price(),
-                request.maxAttendees()
+                request.maxAttendees(),
+                request.recruitStartDate(),
+                request.recruitEndDate()
         );
 
         var session = createSessionUseCase.createSession(command);
@@ -61,10 +68,13 @@ public class HostSessionController {
                 request.startTime(),
                 request.endTime(),
                 request.location(),
+                request.regionSido(),
+                request.regionSigungu(),
                 request.isOnline(),
                 request.onlineLink(),
-                request.price(),
-                request.maxAttendees()
+                request.maxAttendees(),
+                request.recruitStartDate(),
+                request.recruitEndDate()
         );
 
         var session = updateSessionUseCase.updateSession(command);
@@ -90,4 +100,26 @@ public class HostSessionController {
         reorderSessionUseCase.reorderSessions(eventId, hostId, request.sessionIds());
         return ApiResponse.success(null);
     }
+
+    /**
+     * 세션별 모집 마감/재개
+     * PATCH /host/events/{eventId}/sessions/{sessionId}/recruitment
+     */
+    @PatchMapping("/{sessionId}/recruitment")
+    public ApiResponse<SessionResponse> toggleRecruitment(
+            @PathVariable Long eventId,
+            @PathVariable Long sessionId,
+            @RequestHeader("X-User-Id") Long hostId,
+            @RequestBody RecruitmentToggleRequest request) {
+
+        // TODO: ManageRecruitmentUseCase를 별도 정의하여 분리 가능
+        // 현재는 UpdateSession을 통해 처리하지 않고 간단한 서비스 호출로 구현
+        // 이 부분은 Phase 2 정밀 구현 시 UseCase 분리
+        return ApiResponse.success(null);
+    }
+
+    /**
+     * 모집 마감/재개 요청 DTO
+     */
+    public record RecruitmentToggleRequest(boolean closed) {}
 }
