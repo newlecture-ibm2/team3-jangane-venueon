@@ -393,9 +393,34 @@ public class OrderService {
      * 내 주문/결제 내역
      * API 스펙: GET /orders/me
      */
-    public Page<OrderDetailResponse> getMyOrders(Long userId, String tab, Pageable pageable) {
+    public Page<OrderSummaryResponse> getMyOrders(Long userId, String tab, Pageable pageable) {
         return orderRepository.findValidOrdersByUserId(userId, tab, pageable)
-                .map(this::toOrderDetailResponse);
+                .map(order -> {
+                    List<Order> relatedOrders = orderRepository.findAllByTossOrderId(order.getTossOrderId());
+                    
+                    int totalAmount = relatedOrders.stream().mapToInt(Order::getAmount).sum();
+                    int totalQuantity = relatedOrders.stream().mapToInt(Order::getQuantity).sum();
+                    
+                    String baseTitle = eventRepository.findById(order.getEventId())
+                            .map(EventJpaEntity::getTitle)
+                            .orElse("알 수 없는 이벤트");
+                    
+                    String orderName = baseTitle;
+                    if (relatedOrders.size() > 1) {
+                        orderName += " 외 " + (relatedOrders.size() - 1) + "건";
+                    }
+
+                    return OrderSummaryResponse.builder()
+                            .orderId(order.getId())
+                            .tossOrderId(order.getTossOrderId())
+                            .orderName(orderName)
+                            .totalAmount(totalAmount)
+                            .totalQuantity(totalQuantity)
+                            .status(order.getStatus().name())
+                            .orderedAt(order.getOrderedAt())
+                            .paidAt(order.getPaidAt())
+                            .build();
+                });
     }
 
     /**
@@ -413,50 +438,52 @@ public class OrderService {
             throw new BusinessException(ErrorCode.ORDER_ACCESS_DENIED);
         }
 
-        // 3. 이미 환불된 주문인지 검증
-        if (order.getStatus() == OrderStatus.REFUNDED || order.getStatus() == OrderStatus.CANCELLED) {
-            throw new BusinessException(ErrorCode.ALREADY_REFUNDED);
+        // 3. 일괄 환불을 위해 공유 tossOrderId에 속한 모든 주문 조회
+        List<Order> batchOrders = orderRepository.findAllByTossOrderId(order.getTossOrderId());
+
+        // 4. 환불 가능 상태 검증 (하나라도 환불된게 있으면 안됨 - 여기선 단순화)
+        for (Order o : batchOrders) {
+            if (o.getStatus() == OrderStatus.REFUNDED || o.getStatus() == OrderStatus.CANCELLED) {
+                throw new BusinessException(ErrorCode.ALREADY_REFUNDED);
+            }
+            if (o.getStatus() != OrderStatus.PAID) {
+                throw new BusinessException(ErrorCode.REFUND_NOT_ALLOWED);
+            }
         }
 
-        // 4. 환불 가능한 상태인지 검증 (PAID 상태만 환불 가능)
-        if (order.getStatus() != OrderStatus.PAID) {
-            throw new BusinessException(ErrorCode.REFUND_NOT_ALLOWED);
-        }
-
-        // 5. 토스 결제 취소 API 호출 (실제 결제건만)
+        // 5. 토스 결제 취소 API 호출 (배치 전체에 대해 1회 호출)
         if (order.getTossPaymentKey() != null && !"dummy_key".equals(order.getTossPaymentKey())) {
             tossPaymentClient.cancelPayment(order.getTossPaymentKey(), reason);
         }
 
-        // 6. 도메인 상태 변경
-        order.refund();
-        orderRepository.save(order);
-        
-        // 세션 참석자 감소
-        int qty = order.getQuantity();
-        Long evtId = order.getEventId();
-        if (order.getSessionId() != null) {
-            sessionPort.findById(order.getSessionId()).ifPresent(session -> {
-                session.decrementAttendees(qty);
-                sessionPort.save(session, evtId);
-            });
+        // 6. 모든 주문 상태 변경 및 참석자 감소
+        for (Order o : batchOrders) {
+            o.refund();
+            orderRepository.save(o);
+
+            if (o.getSessionId() != null) {
+                sessionPort.findById(o.getSessionId()).ifPresent(session -> {
+                    session.decrementAttendees(o.getQuantity());
+                    sessionPort.save(session, o.getEventId());
+                });
+            }
+
+            // 환불 이력 저장
+            refundSavePort.saveRefundRecord(o.getId(), userId, o.getAmount(), reason);
         }
 
-        // 7. refunds 테이블에 환불 이력 저장
-        refundSavePort.saveRefundRecord(orderId, userId, order.getAmount(), reason);
+        log.info("일괄 환불 완료: tossOrderId={}, count={}", order.getTossOrderId(), batchOrders.size());
 
-        log.info("환불 완료: orderId={}, reason={}", orderId, reason);
-
-        // 이벤트명 조회
         String eventTitle = eventRepository.findById(order.getEventId())
                 .map(EventJpaEntity::getTitle)
                 .orElse("알 수 없는 이벤트");
 
+        // 첫 번째 주문 기준으로 응답 생성
         return CancelOrderResponse.builder()
-                .orderId(order.getId())
+                .orderId(orderId)
                 .eventTitle(eventTitle)
-                .amount(order.getAmount())
-                .status(order.getStatus().name())
+                .amount(batchOrders.stream().mapToInt(Order::getAmount).sum())
+                .status(OrderStatus.REFUNDED.name())
                 .reason(reason)
                 .cancelledAt(LocalDateTime.now())
                 .build();
