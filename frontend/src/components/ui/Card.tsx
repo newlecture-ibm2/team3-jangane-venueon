@@ -17,6 +17,8 @@ export interface CardProps {
   price: string | number;
   actionButtonText?: string;
   onActionClick?: () => void;
+  secondaryActionText?: string;
+  onSecondaryActionClick?: () => void;
   eventId?: number;
   isWishlistedProp?: boolean;
 }
@@ -32,6 +34,8 @@ export default function Card({
   price,
   actionButtonText,
   onActionClick,
+  secondaryActionText,
+  onSecondaryActionClick,
   eventId,
   isWishlistedProp = false
 }: CardProps) {
@@ -115,7 +119,12 @@ export default function Card({
 
       {actionButtonText && (
         <div className={styles.actionWrapper}>
-          <Button variant="primary" style={{ width: '100%', height: '48px' }} onClick={onActionClick}>
+          {secondaryActionText && (
+            <Button variant="secondary" style={{ flex: 1, height: '48px', padding: 0 }} onClick={onSecondaryActionClick}>
+              {secondaryActionText}
+            </Button>
+          )}
+          <Button variant="primary" style={{ flex: 1, height: '48px', padding: 0 }} onClick={onActionClick}>
             {actionButtonText}
           </Button>
         </div>
