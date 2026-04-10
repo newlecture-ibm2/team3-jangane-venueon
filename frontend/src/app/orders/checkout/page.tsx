@@ -33,7 +33,7 @@ function CheckoutContent() {
   const [error, setError] = useState<string | null>(null);
   const orderCreated = useRef(false); // 중복 주문 생성 방지 플래그
 
-  // 1단계: 백엔드에 주문 생성 요청 (한 번만 실행)
+  // 1단계: 백엔드에 주문 생성 요청 (한  번만 실행)
   useEffect(() => {
     if (orderCreated.current) return; // 이미 주문 생성 요청한 경우 스킵
     orderCreated.current = true;
@@ -90,7 +90,7 @@ function CheckoutContent() {
         const json = await res.json();
         // 단건과 일괄 응답 모두 동일한 형식으로 매핑
         const data = json.data;
-        
+
         // 일괄 주문인 경우 success 페이지에서 조회용으로 사용할 대표 orderId를 localStorage에 임시 저장
         if (data.orderIds && data.orderIds.length > 0) {
           localStorage.setItem('batchOrderId', data.orderIds[0].toString());
