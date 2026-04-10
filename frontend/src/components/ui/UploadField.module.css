@@ -36,7 +36,7 @@
   gap: var(--space-12);
 
   width: 100%;
-  height: 170px; /* 피그마 지정 170px */
+  height: 140px;
 
   background: var(--color-text-gray-50); /* #F9FAFB */
   border: 1px dashed var(--color-text-gray-500); /* #6B7280 */

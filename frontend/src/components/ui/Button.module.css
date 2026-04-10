@@ -2,6 +2,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: var(--space-4);
   font: var(--text-body-bold);
   border: none;
   cursor: pointer;

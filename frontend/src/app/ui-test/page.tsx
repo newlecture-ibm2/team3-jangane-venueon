@@ -5,7 +5,7 @@ import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Lo
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import CommunityCard from '@/app/community/components/CommunityCard';
-import { ConfirmModal, InputModal, UploadModal, PaymentModal } from '@/components/modal';
+import { ConfirmModal, InputModal, UploadModal, PaymentModal, ReviewModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 
 export default function UITestPage() {
@@ -27,6 +27,7 @@ export default function UITestPage() {
   const [isInputAdminOpen, setIsInputAdminOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
 
   // Tailwind CSS가 없는 환경이므로 순수 인라인 스타일로 깔끔한 테스트 레이아웃 구성
   const containerStyle: React.CSSProperties = {
@@ -236,11 +237,12 @@ export default function UITestPage() {
 
       {/* 8. Card & CardGrid */}
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>8. Card & CardGrid (2-Cols Layout)</h2>
-        <p style={{ marginBottom: '16px', color: '#6B7280' }}>사이드바가 있는 페이지 공간에서 사용하는 2열 그리드입니다.</p>
+        <h2 style={titleStyle}>8. Card & CardGrid (Dashboard Layout / 2-Cols)</h2>
+        <p style={{ marginBottom: '16px', color: '#6B7280' }}>마이페이지, 어드민 등 대시보드(상태 표시용) 공간에서 사용하는 2열 그리드입니다.</p>
         <CardGrid layout="2-cols">
           <Card
             status="모집 중"
+            category="IT/프로그래밍"
             title="나만의 디자인 시스템으로 시작하는 프론트엔드 레벨업 가이드"
             organizer="UX/UI KOREA"
             dateTime="2026.04.15 (토) 14:00"
@@ -250,6 +252,7 @@ export default function UITestPage() {
           />
           <Card
             status="종료"
+            category="백엔드/DB"
             title="스프링 부트(Spring Boot) 백엔드 파이프라인 구축 세미나 - 심화편"
             organizer="Java Developer Group"
             dateTime="2026.03.11 (수) 19:00"
@@ -264,11 +267,14 @@ export default function UITestPage() {
       </div>
 
       <div style={sectionStyle}>
-        <h2 style={titleStyle}>9. Card & CardGrid (3-Cols Layout)</h2>
-        <p style={{ marginBottom: '16px', color: '#6B7280' }}>메인 페이지나 넓은 공간에서 사용하는 3열 그리드입니다.</p>
+        <h2 style={titleStyle}>9. Card & CardGrid (Landing Layout / 3-Cols)</h2>
+        <p style={{ marginBottom: '16px', color: '#6B7280' }}>메인 홈, 이벤트 탐색 등 랜딩 페이지 공간에서 사용하는 3열 그리드입니다.</p>
         <CardGrid layout="3-cols">
           <Card
+            variant="landing"
             status="게시 전"
+            dDay={4}
+            category="웹 개발"
             title="TypeScript 심화반: 고급 타입 시스템과 제네릭 마스터하기"
             organizer="토스 프론트엔드 팀"
             dateTime="2026.05.01 (금) 19:30"
@@ -276,7 +282,10 @@ export default function UITestPage() {
             price={150000}
           />
           <Card
+            variant="landing"
             status="진행 중"
+            dDay="D-Day"
+            category="UX/UI 디자인"
             title="Figma 완전 정복: 실무에서 쓰이는 컴포넌트 설계"
             organizer="디자인 스펙트럼"
             dateTime="2026.04.05 (수) 13:00"
@@ -284,7 +293,10 @@ export default function UITestPage() {
             price={45000}
           />
           <Card
+            variant="landing"
             status="준비 중"
+            dDay="진행 중"
+            category="AI/인공지능"
             title="2026 AI 트렌드 리포트: ChatGPT 이후의 세계"
             organizer="미래기술연구소"
             dateTime="2026.06.10 (수) 10:00"
@@ -431,6 +443,7 @@ export default function UITestPage() {
           <Button variant="outlined" onClick={() => setIsInputAdminOpen(true)}>2. 상세 내역 모달 (Admin)</Button>
           <Button variant="primary" onClick={() => setIsUploadOpen(true)}>3. 파일업로드 모달</Button>
           <Button variant="primary" onClick={() => setIsPaymentOpen(true)}>4. 결제 모달</Button>
+          <Button variant="outlined" onClick={() => setIsReviewOpen(true)}>5. 리뷰 작성 모달</Button>
         </div>
       </div>
 
@@ -456,8 +469,7 @@ export default function UITestPage() {
                 postType="프로젝트 모집"
                 timeAgo="방금 전"
                 title="함께 사이드 프로젝트 완성할 프론트엔드 개발자 찾습니다 👀"
-                tagSectionTitle="모집 파트"
-                categories={['UI/UX 디자이너', 'PM (기획)', '프론트엔드', '백엔드']}
+                keywords={['사이드프로젝트', '프론트엔드', '리액트', '주말코딩']}
               />
             </div>
           </div>
@@ -624,6 +636,18 @@ export default function UITestPage() {
           console.log('Payment Data:', data);
           alert(`결제 완료! \n- 수량: ${data.quantity}개 \n- 총액: ${data.totalPrice}원\n- 수단: ${data.paymentMethod}`);
           setIsPaymentOpen(false);
+        }}
+      />
+
+      {/* 5. ReviewModal */}
+      <ReviewModal
+        isOpen={isReviewOpen}
+        onClose={() => setIsReviewOpen(false)}
+        eventId={1}
+        eventTitle="TypeScript 심화반: 고급 타입 시스템과 제네릭 마스터하기"
+        onSubmitSuccess={() => {
+          alert('리뷰 등록 성공!');
+          setIsReviewOpen(false);
         }}
       />
 

@@ -8,8 +8,7 @@ export interface CommunityCardProps {
   postType?: string;
   timeAgo?: string;
   title: string;
-  tagSectionTitle?: string;
-  categories?: string[];
+  keywords?: string[];
   actionButtonText?: string;
   onActionClick?: () => void;
 }
@@ -18,8 +17,7 @@ export default function CommunityCard({
   postType,
   timeAgo,
   title,
-  tagSectionTitle,
-  categories = [],
+  keywords = [],
   actionButtonText,
   onActionClick
 }: CommunityCardProps) {
@@ -38,16 +36,13 @@ export default function CommunityCard({
         <h3 className={styles.title} title={title}>{title}</h3>
       </div>
 
-      {categories.length > 0 && (
+      {keywords.length > 0 && (
         <div className={styles.bottomSection}>
           <div className={styles.divider} />
-          {tagSectionTitle && (
-            <div className={styles.tagSectionTitle}>{tagSectionTitle}</div>
-          )}
-          <div className={styles.categorySection}>
-            {categories.map((category, index) => (
-              <div key={index} className={styles.categoryTag}>
-                {category}
+          <div className={styles.keywordSection}>
+            {keywords.map((keyword, index) => (
+              <div key={index} className={styles.keywordTag}>
+                #{keyword}
               </div>
             ))}
           </div>
