@@ -164,7 +164,7 @@ export default function Home() {
                       title={event.title}
                       eventId={event.id}
                       isWishlistedProp={wishlistSet.has(event.id)}
-                      imageUrl={event.thumbnailUrl ? `${BACKEND_URL}/upload/${event.thumbnailUrl}` : ''}
+                      imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
                       organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 이름으로 변경
                       dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
                       location={event.isOnline ? '온라인' : event.location}
