@@ -6,7 +6,6 @@ import styles from './page.module.css';
 import { Card, CardGrid, InputField, Tabs, Pagination } from '@/components/ui';
 import { format } from 'date-fns';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 interface EventData {
   id: number;
@@ -56,7 +55,7 @@ export default function Home() {
       if (resData.success) {
         setEvents(resData.data.content);
         setTotalPages(resData.data.totalPages);
-        
+
         // Wishlist도 동시에 조회 (비로그인이거나 에러시 조용히 넘어감)
         try {
           const wlRes = await fetch('/api/wishlists/me?size=100');
@@ -92,6 +91,9 @@ export default function Home() {
     }
   };
 
+  // 💡 최적화: 현재 시간은 반복문 밖에서 한 번만 연산
+  const nowTime = new Date().getTime();
+
   return (
     <div className="container-full">
       {/* 배너 섹션 (Hero) - 풀 와이드 */}
@@ -111,7 +113,7 @@ export default function Home() {
       </section>
 
       <div className={styles.container}>
-        
+
         {/* 필터 및 검색 섹션 */}
         <section className={styles.filterSection}>
           <div className={styles.searchBox}>
@@ -124,7 +126,7 @@ export default function Home() {
             />
           </div>
           <div className={styles.tagGroup}>
-            <Tabs 
+            <Tabs
               variant="pill"
               options={categoryOptions}
               activeValue={activeCategory}
@@ -141,32 +143,44 @@ export default function Home() {
             <div style={{ textAlign: 'center', padding: '100px 0' }}>등록된 세션가 없습니다.</div>
           ) : (
             <CardGrid layout="3-cols">
-              {events.map((event) => (
-                <div 
-                  key={event.id} 
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => router.push(`/events/${event.id}`)}
-                >
-                  <Card
-                    title={event.title}
-                    eventId={event.id}
-                    isWishlistedProp={wishlistSet.has(event.id)}
-                    imageUrl={event.thumbnailUrl ? `${BACKEND_URL}/upload/${event.thumbnailUrl}` : ''}
-                    organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 시 실제 이름으로 변경
-                    dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
-                    location={event.isOnline ? '온라인' : event.location}
-                    price={event.price}
-                    status={event.status}
-                  />
-                </div>
-              ))}
+              {events.map((event) => {
+                const startTime = new Date(event.startDate).getTime();
+                const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
+                const dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                
+                // 간단한 카테고리 맵핑 (프론트에서 관리하는 카테고리가 있다면 가져옴)
+                const categoryLabel = categoryOptions.find(c => c.value === String(event.categoryId))?.label || '기타';
+
+                return (
+                  <div 
+                    key={event.id} 
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => router.push(`/events/${event.id}`)}
+                  >
+                    <Card
+                      variant="landing"
+                      category={categoryLabel}
+                      dDay={dDayData}
+                      title={event.title}
+                      eventId={event.id}
+                      isWishlistedProp={wishlistSet.has(event.id)}
+                      imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
+                      organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 이름으로 변경
+                      dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
+                      location={event.isOnline ? '온라인' : event.location}
+                      price={event.price}
+                      status={event.status}
+                    />
+                  </div>
+                );
+              })}
             </CardGrid>
           )}
 
           {/* 페이지네이션 */}
           {!loading && totalPages > 1 && (
             <div className={styles.paginationContainer}>
-               <Pagination 
+              <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={(page) => setCurrentPage(page)}

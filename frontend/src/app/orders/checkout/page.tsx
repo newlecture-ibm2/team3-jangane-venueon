@@ -33,7 +33,7 @@ function CheckoutContent() {
   const [error, setError] = useState<string | null>(null);
   const orderCreated = useRef(false); // 중복 주문 생성 방지 플래그
 
-  // 1단계: 백엔드에 주문 생성 요청 (한 번만 실행)
+  // 1단계: 백엔드에 주문 생성 요청 (한  번만 실행)
   useEffect(() => {
     if (orderCreated.current) return; // 이미 주문 생성 요청한 경우 스킵
     orderCreated.current = true;
@@ -43,32 +43,68 @@ function CheckoutContent() {
         setLoading(true);
         setError(null);
 
-        const eventId = searchParams.get('eventId') || '1';
-        const quantity = searchParams.get('quantity') || '1';
-        const sessionId = searchParams.get('sessionId');
+        const cartIds = searchParams.get('cartIds');
+        const eventId = searchParams.get('eventId');
 
-        const requestBody: any = {
-          eventId: Number(eventId),
-          quantity: Number(quantity),
-          paymentMethod: 'CARD',
-        };
-        if (sessionId) {
-          requestBody.sessionId = Number(sessionId);
+        let res: Response;
+
+        if (cartIds) {
+          // 일괄 주문 모드 (장바구니에서 진입)
+          res = await fetch('/api/orders/batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              cartIds: cartIds.split(',').map(Number),
+              paymentMethod: 'CARD',
+            }),
+          });
+        } else {
+          // 단건 주문 모드 (기존 이벤트 상세에서 진입)
+          const quantity = searchParams.get('quantity') || '1';
+          const sessionId = searchParams.get('sessionId');
+
+          const requestBody: any = {
+            eventId: Number(eventId || '1'),
+            quantity: Number(quantity),
+            paymentMethod: 'CARD',
+          };
+          if (sessionId) {
+            requestBody.sessionId = Number(sessionId);
+          }
+
+          res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody),
+          });
         }
 
-        const res = await fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody),
-        });
-
         if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('주문은 로그인 후에 사용할 수 있습니다.');
+          }
           const errorBody = await res.json().catch(() => null);
           throw new Error(errorBody?.message || `주문 생성 실패 (${res.status})`);
         }
 
         const json = await res.json();
-        setOrderData(json.data);
+        // 단건과 일괄 응답 모두 동일한 형식으로 매핑
+        const data = json.data;
+
+        // 일괄 주문인 경우 success 페이지에서 조회용으로 사용할 대표 orderId를 localStorage에 임시 저장
+        if (data.orderIds && data.orderIds.length > 0) {
+          localStorage.setItem('batchOrderId', data.orderIds[0].toString());
+        }
+
+        setOrderData({
+          orderId: data.orderId || (data.orderIds ? data.orderIds[0] : 0),
+          tossOrderId: data.tossOrderId,
+          amount: data.amount ?? data.totalAmount,
+          orderName: data.orderName,
+          customerName: data.customerName,
+          customerEmail: data.customerEmail,
+          tossClientKey: data.tossClientKey,
+        });
       } catch (err: any) {
         console.error('주문 생성 에러:', err);
         setError(err.message || '주문을 생성하는 중 오류가 발생했습니다.');
@@ -127,7 +163,7 @@ function CheckoutContent() {
         orderName: orderData.orderName,
         customerName: orderData.customerName,
         customerEmail: orderData.customerEmail,
-        successUrl: `${window.location.origin}/orders/checkout/success`,
+        successUrl: `${window.location.origin}/orders/checkout/success?backendOrderId=${orderData.orderId}`,
         failUrl: `${window.location.origin}/orders/checkout/fail`,
       });
     } catch (err) {
@@ -234,7 +270,7 @@ function CheckoutContent() {
           className={styles.submitBtn}
           onClick={() => {
             if (!orderData) return;
-            window.location.href = `/orders/checkout/success?paymentKey=dummy_key&orderId=${orderData.tossOrderId}&amount=${orderData.amount}`;
+            window.location.href = `/orders/checkout/success?paymentKey=dummy_key&orderId=${orderData.tossOrderId}&amount=${orderData.amount}&backendOrderId=${orderData.orderId}`;
           }}
           type="button"
           size="large"

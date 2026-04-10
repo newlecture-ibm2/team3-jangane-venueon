@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import styles from './Sidebar.module.css';
 import ConfirmModal from '@/components/modal/ConfirmModal';
+import { useAuth } from '@/store/useAuthStore';
 
 import {
   DashboardIcon,
@@ -80,12 +81,12 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
   const router = useRouter();
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const { logout } = useAuth();
 
-  // 로그아웃 확인 클릭 시 동작 (가상의 로그아웃 후 로그인 페이지 이동)
-  const handleLogoutConfirm = () => {
+  // 로그아웃 확인 클릭 시 동작
+  const handleLogoutConfirm = async () => {
     setIsLogoutModalOpen(false);
-    // TODO: 실제 로그아웃 로직(API 호출, 토큰 삭제 등)은 이곳에 추가
-    router.push('/login');
+    await logout();
   };
 
   const getMenus = () => {

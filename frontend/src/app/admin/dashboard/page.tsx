@@ -13,7 +13,7 @@ export default function AdminDashboardPage() {
       <Sidebar role="admin" />
 
       {/* 우측 메인 콘텐츠 */}
-      <section className="sidebar">
+      <section className="sidebar-content">
         
         {/* 가이드에 명시된 대시보드 타이틀 추가 */}
         <h1 className={styles.pageTitle}>관리자 대시보드</h1>

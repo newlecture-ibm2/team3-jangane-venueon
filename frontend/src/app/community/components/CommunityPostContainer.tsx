@@ -17,6 +17,8 @@ interface PostListResponse {
   commentCount: number;
   likeCount: number;
   isBookmarked: boolean;
+  isPinned: boolean;
+  isNotice: boolean;
   createdAt: string;
 }
 
@@ -44,6 +46,7 @@ interface Props {
 
 export default function CommunityPostContainer({ communityId }: Props) {
   const { showToast } = useUIStore();
+
   const [posts, setPosts] = useState<PostListResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -54,6 +57,7 @@ export default function CommunityPostContainer({ communityId }: Props) {
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
   const [isLikeSubmitting, setIsLikeSubmitting] = useState(false);
+  const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
 
   const fetchPosts = async (silent = false) => {
     if (!silent) setIsLoading(true);
@@ -95,7 +99,7 @@ export default function CommunityPostContainer({ communityId }: Props) {
     }
   };
 
-  const handleCommentSubmit = async (value: string) => {
+  const handleCommentSubmit = async (value: string, parentId: number | null = null) => {
     if (!selectedPostId || isCommentSubmitting) return;
 
     setIsCommentSubmitting(true);
@@ -106,15 +110,16 @@ export default function CommunityPostContainer({ communityId }: Props) {
         body: JSON.stringify({
           postId: selectedPostId,
           content: value,
-          parentId: null // 나중에 대댓글 구현 시 확장
+          parentId: parentId
         }),
       });
 
       if (!response.ok) throw new Error('댓글 등록 실패');
 
       showToast('댓글 등록 완료', 'success');
-      // 댓글 목록 갱신
-      fetchComments(selectedPostId);
+
+      setReplyToCommentId(null); // 전송 후 초기화
+      fetchComments(selectedPostId, true); // 사일런트 업데이트 (깜빡임 방지)
     } catch (error) {
       console.error(error);
       showToast('댓글 등록 실패', 'error', '서버 오류가 발생했습니다.');
@@ -139,7 +144,6 @@ export default function CommunityPostContainer({ communityId }: Props) {
 
       if (!response.ok) throw new Error('좋아요 처리 실패');
 
-      // 게시글 목록 새로고침 (로딩 표시 없이 데이터만 갱신)
       fetchPosts(true);
     } catch (error) {
       console.error(error);
@@ -160,11 +164,46 @@ export default function CommunityPostContainer({ communityId }: Props) {
       if (!response.ok) throw new Error('북마크 처리 실패');
 
       showToast('북마크 상태가 변경되었습니다.', 'success');
-      // 게시글 목록 새로고침 (아이콘 상태 반영)
       fetchPosts(true);
     } catch (error) {
       console.error(error);
       showToast('북마크 처리 실패', 'error');
+    }
+  };
+
+  const handlePinToggle = async () => {
+    if (!selectedPostId) return;
+
+    try {
+      const response = await fetch(`/api/posts/${selectedPostId}/pin`, {
+        method: 'PATCH',
+      });
+
+      if (!response.ok) throw new Error('고정 처리 실패');
+
+      showToast('고정 상태가 변경되었습니다.', 'success');
+      fetchPosts(true);
+    } catch (error) {
+      console.error(error);
+      showToast('고정 처리 실패', 'error');
+    }
+  };
+
+  const handleNoticeToggle = async () => {
+    if (!selectedPostId) return;
+
+    try {
+      const response = await fetch(`/api/posts/${selectedPostId}/notice`, {
+        method: 'PATCH',
+      });
+
+      if (!response.ok) throw new Error('공지 처리 실패');
+
+      showToast('공지 상태가 변경되었습니다.', 'success');
+      fetchPosts(true);
+    } catch (error) {
+      console.error(error);
+      showToast('공지 처리 실패', 'error');
     }
   };
 
@@ -181,7 +220,6 @@ export default function CommunityPostContainer({ communityId }: Props) {
 
       if (!response.ok) throw new Error('댓글 좋아요 실패');
 
-      // 댓글 목록만 새로고침 (로딩 표시 없이 데이터만 갱신)
       if (selectedPostId) {
         fetchComments(selectedPostId, true);
       }
@@ -201,12 +239,38 @@ export default function CommunityPostContainer({ communityId }: Props) {
     }
   }, [selectedPostId]);
 
+  // 댓글 계층 구조화 로직 (5단계 핵심)
+  const organizedComments = React.useMemo(() => {
+    const roots = comments.filter(c => !c.parentId);
+    const result: { comment: CommentResponse; level: number }[] = [];
+
+    roots.forEach(root => {
+      result.push({ comment: root, level: 0 });
+      const children = comments.filter(c => c.parentId === root.id);
+      children.forEach(child => {
+        result.push({ comment: child, level: 1 });
+      });
+    });
+
+    return result;
+  }, [comments]);
+
+  const postTypeToKorean = (type: string) => {
+    switch (type) {
+      case 'NOTICE': return '공지';
+      case 'FREE': return '자유';
+      case 'QUESTION': return '질문';
+      case 'INFO': return '정보';
+      default: return '일반';
+    }
+  };
+
   const selectedPost = posts.find(p => p.id === selectedPostId) || null;
 
   return (
     <div className={styles.container}>
 
-      {/* 1. 좌측: 리스트 영역 (너비 고정) */}
+      {/* 1. 좌측: 리스트 영역 */}
       <div className={styles.leftSidebar}>
         <div className={styles.searchRow}>
           <div className={styles.searchInputWrapper}>
@@ -218,14 +282,12 @@ export default function CommunityPostContainer({ communityId }: Props) {
         </div>
 
         <div className={styles.postList}>
-          {isLoading ? (
-            <div className={styles.loadingOrEmpty}>
-              데이터를 불러오는 중입니다...
-            </div>
+
+          {isLoading && posts.length === 0 ? (
+            <div className={styles.loadingOrEmpty}>데이터를 불러오는 중입니다...</div>
+
           ) : posts.length === 0 ? (
-            <div className={styles.loadingOrEmpty}>
-              게시글이 없습니다.
-            </div>
+            <div className={styles.loadingOrEmpty}>게시글이 없습니다.</div>
           ) : (
             posts.map(post => (
               <CommunityPostItem
@@ -235,130 +297,159 @@ export default function CommunityPostContainer({ communityId }: Props) {
                 date={new Date(post.createdAt).toLocaleDateString() + ' / ' + new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 selected={post.id === selectedPostId}
                 onClick={() => setSelectedPostId(post.id)}
+                isPinned={post.isPinned}
+                isNotice={post.isNotice}
+                type={post.type}
               />
             ))
-          )}
-        </div>
+          )
+          }
+        </div >
 
-        {/* 좌측 리스트 페이징 영역 */}
         {totalPages > 1 && (
           <div className={styles.paginationWrapper}>
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
           </div>
-        )}
-      </div>
+        )
+        }
+      </div >
 
-      {/* 2. 우측: 디테일 영역 (나머지 공간 전부 차지) */}
-      <div className={styles.rightDetail}>
-        {selectedPost ? (
-          <>
-            {/* 2-1. 상세 상단 헤더 */}
-            <div className={styles.detailHeader}>
-              <div>
-                <h2 className={styles.detailTitle}>
-                  {selectedPost.title}
-                </h2>
-                <div className={styles.detailMeta}>
-                  <span>{new Date(selectedPost.createdAt).toLocaleDateString()} / {new Date(selectedPost.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      {/* 2. 우측: 디테일 영역 */}
+      < div className={styles.rightDetail} >
+        {
+          selectedPost ? (
+            <>
+              <div className={styles.detailHeader}>
+                <div>
+                  <h2 className={styles.detailTitle}>
+                    <span className={styles.detailPostType}>[{postTypeToKorean(selectedPost.type)}]</span> {selectedPost.title}
+                  </h2>
+                  <div className={styles.detailMeta}>
+                    <UserProfile name={selectedPost.authorNickname} size="medium" />
+                    <span className={styles.divider}>|</span>
+                    <span>{new Date(selectedPost.createdAt).toLocaleDateString()} / {new Date(selectedPost.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                </div>
+                <div className={styles.detailActions}>
+                  <button
+                    className={styles.likeButton}
+                    onClick={handleLikeToggle}
+                    disabled={isLikeSubmitting}
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill={selectedPost.likeCount > 0 ? "#EF4444" : "none"}
+                      stroke={selectedPost.likeCount > 0 ? "#EF4444" : "currentColor"}
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>
+                    <span>{selectedPost.likeCount}</span>
+                  </button>
+                  <button
+                    className={styles.bookmarkButton}
+                    onClick={handleBookmarkToggle}
+                    title="북마크"
+                    type="button"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill={selectedPost.isBookmarked ? "#F59E0B" : "none"}
+                      stroke={selectedPost.isBookmarked ? "#F59E0B" : "currentColor"}
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                    </svg>
+                  </button>
+                  <button
+                    className={`${styles.adminButton} ${selectedPost.isPinned ? styles.active : ''}`}
+                    onClick={handlePinToggle}
+                    title={selectedPost.isNotice ? "공지사항은 고정 해제가 불가능합니다" : "상단 고정"}
+                    disabled={selectedPost.isNotice}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="17" x2="12" y2="22" /><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.79-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.76a2 2 0 0 1-1.11 1.79l-1.79.9A2 2 0 0 0 5 15.24Z" />
+                    </svg>
+                  </button>
+                  <button
+                    className={`${styles.adminButton} ${selectedPost.isNotice ? styles.noticeActive : ''}`}
+                    onClick={handleNoticeToggle}
+                    title="공지 설정"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+                    </svg>
+                  </button>
+                  <button className={styles.optionButton} type="button">•••</button>
                 </div>
               </div>
-              <div className={styles.detailActions}>
-                <button
-                  className={styles.likeButton}
-                  onClick={handleLikeToggle}
-                  disabled={isLikeSubmitting}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill={selectedPost.likeCount > 0 ? "#EF4444" : "none"}
-                    stroke={selectedPost.likeCount > 0 ? "#EF4444" : "currentColor"}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                  </svg>
-                  <span>{selectedPost.likeCount}</span>
-                </button>
-                <button
-                  className={styles.bookmarkButton}
-                  onClick={handleBookmarkToggle}
-                  title="북마크"
-                  type="button"
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill={selectedPost.isBookmarked ? "#F59E0B" : "none"}
-                    stroke={selectedPost.isBookmarked ? "#F59E0B" : "currentColor"}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-                  </svg>
-                </button>
-                <button className={styles.optionButton} type="button">
-                  •••
-                </button>
+
+              <div className={styles.bodySection}>
+                <div className={styles.contentWrapper}>
+                  {selectedPost.content?.split('\n').map((line, index) => (
+                    <React.Fragment key={index}>{line}<br /></React.Fragment>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* 2-2. 작성자 및 본문 영역 */}
-            <div className={styles.bodySection}>
-              <div className={styles.authorWrapper}>
-                <UserProfile name={selectedPost.authorNickname} size="medium" />
+              <div className={styles.commentInputWrapper}>
+                <CommentInput
+                  onSubmit={(v) => handleCommentSubmit(v)}
+                  disabled={isCommentSubmitting}
+                  placeholder={isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요.."}
+                />
               </div>
-              <div className={styles.contentWrapper}>
-                {selectedPost.content?.split('\n').map((line, index) => (
-                  <React.Fragment key={index}>
-                    {line}
-                    <br />
-                  </React.Fragment>
-                ))}
+
+              <div className={styles.commentList}>
+                {isCommentsLoading && comments.length === 0 ? (
+                  <div className={styles.commentStatus}>댓글을 불러오는 중...</div>
+                ) : organizedComments.length === 0 ? (
+                  <div className={styles.commentStatus}>첫 번째 댓글을 남겨보세요!</div>
+                ) : (
+                  organizedComments.map(({ comment, level }) => (
+                    <React.Fragment key={comment.id}>
+                      <CommunityCommentItem
+                        username={comment.authorNickname}
+                        date={new Date(comment.createdAt).toLocaleDateString() + ' / ' + new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        content={comment.content}
+                        likeCount={comment.likeCount}
+                        onLike={() => handleCommentLikeToggle(comment.id)}
+                        onReply={() => setReplyToCommentId(comment.id)}
+                        level={level}
+                        menuItems={[{ value: 'report', label: '신고하기' }]}
+                      />
+                      {/* 답글 입력창: 현재 댓글이 답글 작성 대상이고 부모 댓글인 경우 바로 아래에 표시 */}
+                      {replyToCommentId === comment.id && (
+                        <div className={styles.inlineReplyInput} style={{ marginLeft: '48px' }}>
+                          <div className={styles.replyLine} />
+                          <div className={styles.replyToLabel}>
+                            <span>답글 작성 중</span>
+                            <button onClick={() => setReplyToCommentId(null)}>취소</button>
+                          </div>
+                          <CommentInput
+                            onSubmit={(v) => handleCommentSubmit(v, comment.id)}
+                            placeholder="답글을 입력하세요..."
+                            disabled={isCommentSubmitting}
+                          />
+                        </div>
+                      )}
+                    </React.Fragment>
+                  ))
+                )}
               </div>
-            </div>
-
-            {/* 2-3. 댓글 입력 영역 */}
-            <div className={styles.commentInputWrapper}>
-              <CommentInput
-                onSubmit={handleCommentSubmit}
-                disabled={isCommentSubmitting}
-                placeholder={isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요.."}
-              />
-            </div>
-
-            {/* 2-4. 댓글 리스트 영역 */}
-            <div className={styles.commentList}>
-              {isCommentsLoading ? (
-                <div className={styles.commentStatus}>댓글을 불러오는 중...</div>
-              ) : comments.length === 0 ? (
-                <div className={styles.commentStatus}>첫 번째 댓글을 남겨보세요!</div>
-              ) : (
-                comments.map(comment => (
-                  <CommunityCommentItem
-                    key={comment.id}
-                    username={comment.authorNickname}
-                    date={new Date(comment.createdAt).toLocaleDateString() + ' / ' + new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    content={comment.content}
-                    likeCount={comment.likeCount}
-                    onLike={() => handleCommentLikeToggle(comment.id)}
-                    menuItems={[{ value: 'report', label: '신고하기' }]}
-                  />
-                ))
-              )}
-            </div>
-          </>
-        ) : (
-          <div className={styles.emptyDetail}>
-            선택된 게시물이 없습니다.
-          </div>
-        )}
-      </div>
-
-    </div>
+            </>
+          ) : (
+            <div className={styles.emptyDetail}>선택된 게시물이 없습니다.</div>
+          )}
+      </div >
+    </div >
   );
 }

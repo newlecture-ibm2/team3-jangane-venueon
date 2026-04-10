@@ -1,5 +1,6 @@
 package com.venueon.order.adapter.out.persistence.repository;
 
+import com.venueon.host.dto.HostAttendeeResponse;
 import com.venueon.host.dto.HostRecentOrderResponse;
 import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
 import com.venueon.order.domain.model.OrderStatus;
@@ -66,9 +67,52 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
 
     java.util.Optional<OrderJpaEntity> findByTossOrderId(String tossOrderId);
 
+    List<OrderJpaEntity> findAllByTossOrderId(String tossOrderId);
+
     List<OrderJpaEntity> findByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);
     
     List<OrderJpaEntity> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses);
 
     Page<OrderJpaEntity> findByEventIdIn(List<Long> eventIds, Pageable pageable);
+
+    @Query("SELECT COUNT(o) FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
+           "(o.status = 'PAID' OR o.status = 'REGISTERED') AND " +
+           "o.event.status = 'ONGOING'")
+    long countOngoingByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(o) FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
+           "(o.status = 'PAID' OR o.status = 'REGISTERED') AND " +
+           "o.event.status = 'ENDED'")
+    long countCompletedByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(o) FROM OrderJpaEntity o " +
+           "JOIN o.event e " +
+           "WHERE e.creator.id = :hostId " +
+           "AND (o.status = 'PAID' OR o.status = 'REGISTERED')")
+    long countTotalAttendeesByHostId(@Param("hostId") Long hostId);
+
+    @Query("""
+            select new com.venueon.host.dto.HostAttendeeResponse(
+                o.id,
+                u.nickname,
+                u.email,
+                e.title,
+                o.amount,
+                coalesce(o.displayOrderedAt, o.orderedAt),
+                cast(o.status as string)
+            )
+            from OrderJpaEntity o
+            join o.user u
+            join o.event e
+            where e.creator.id = :hostId
+              and (o.status = 'PAID' or o.status = 'REGISTERED')
+              and (:eventId is null or e.id = :eventId)
+              and (:name is null or u.nickname like %:name%)
+            """)
+    Page<HostAttendeeResponse> findAttendeesByHostId(
+            @Param("hostId") Long hostId,
+            @Param("eventId") Long eventId,
+            @Param("name") String name,
+            Pageable pageable
+    );
 }

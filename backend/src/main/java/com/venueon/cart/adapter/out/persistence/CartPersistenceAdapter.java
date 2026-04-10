@@ -4,8 +4,8 @@ import com.venueon.cart.adapter.out.persistence.entity.CartJpaEntity;
 import com.venueon.cart.adapter.out.persistence.repository.CartJpaRepository;
 import com.venueon.cart.application.port.out.CartRepositoryPort;
 import com.venueon.cart.domain.model.Cart;
-import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
+import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
+import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class CartPersistenceAdapter implements CartRepositoryPort {
 
     private final CartJpaRepository cartJpaRepository;
     private final UserJpaRepository userJpaRepository;
-    private final EventJpaRepository eventJpaRepository;
+    private final EventSessionJpaRepository eventSessionJpaRepository;
     private final CartMapper cartMapper;
 
     @Override
@@ -42,24 +42,31 @@ public class CartPersistenceAdapter implements CartRepositoryPort {
     }
 
     @Override
-    public Optional<Cart> findByUserEmailAndEventId(String userEmail, Long eventId) {
-        return cartJpaRepository.findByUserEmailAndEventId(userEmail, eventId)
+    public List<Cart> findAllByIds(List<Long> ids) {
+        return cartJpaRepository.findAllById(ids).stream()
+                .map(cartMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Cart> findByUserEmailAndSessionId(String userEmail, Long sessionId) {
+        return cartJpaRepository.findByUserEmailAndEventSessionId(userEmail, sessionId)
                 .map(cartMapper::toDomain);
     }
 
     @Override
-    public boolean existsByUserEmailAndEventId(String userEmail, Long eventId) {
-        return cartJpaRepository.existsByUserEmailAndEventId(userEmail, eventId);
+    public boolean existsByUserEmailAndSessionId(String userEmail, Long sessionId) {
+        return cartJpaRepository.existsByUserEmailAndEventSessionId(userEmail, sessionId);
     }
 
     @Override
     public Cart save(Cart cart) {
-        // User와 Event 조회
+        // User와 EventSession 조회
         UserJpaEntity user = userJpaRepository.findByEmail(cart.getUserEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + cart.getUserEmail()));
 
-        EventJpaEntity event = eventJpaRepository.findById(cart.getEventId())
-                .orElseThrow(() -> new IllegalArgumentException("Event not found with id: " + cart.getEventId()));
+        EventSessionJpaEntity session = eventSessionJpaRepository.findById(cart.getSessionId())
+                .orElseThrow(() -> new IllegalArgumentException("EventSession not found with id: " + cart.getSessionId()));
 
         // 업데이트인 경우 기존 엔티티 조회
         CartJpaEntity entity;
@@ -68,7 +75,7 @@ public class CartPersistenceAdapter implements CartRepositoryPort {
                     .orElseThrow(() -> new IllegalArgumentException("Cart not found with id: " + cart.getId()));
             entity.updateQuantity(cart.getQuantity());
         } else {
-            entity = cartMapper.toEntity(cart, user, event);
+            entity = cartMapper.toEntity(cart, user, session);
         }
 
         CartJpaEntity saved = cartJpaRepository.save(entity);

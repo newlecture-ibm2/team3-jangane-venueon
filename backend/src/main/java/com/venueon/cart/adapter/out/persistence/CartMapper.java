@@ -3,6 +3,7 @@ package com.venueon.cart.adapter.out.persistence;
 import com.venueon.cart.adapter.out.persistence.entity.CartJpaEntity;
 import com.venueon.cart.domain.model.Cart;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
+import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import org.springframework.stereotype.Component;
 
@@ -18,32 +19,35 @@ public class CartMapper {
     public Cart toDomain(CartJpaEntity entity) {
         if (entity == null) return null;
 
-        EventJpaEntity event = entity.getEvent();
+        EventSessionJpaEntity session = entity.getEventSession();
+        EventJpaEntity event = session != null ? session.getEvent() : null;
 
         return new Cart(
                 entity.getId(),
                 entity.getUser() != null ? entity.getUser().getEmail() : null,
                 event != null ? event.getId() : null,
                 event != null ? event.getTitle() : null,
-                event != null ? event.getPrice() : 0,
-                event != null ? event.getPrice() : 0, // discountedPrice -> price (할인 없음)
+                session != null ? session.getId() : null,
+                session != null ? session.getTitle() : null,
+                session != null ? session.getPrice() : 0,
+                session != null ? session.getPrice() : 0, // discountedPrice -> price
                 entity.getQuantity(),
-                event != null ? event.getStartDate() : null,
+                session != null ? session.getStartTime() : null,
                 entity.getCreatedAt()
         );
     }
 
     /**
      * Domain Model -> JPA Entity (for save)
-     * Note: User와 Event는 ID로 조회하여 설정해야 함
+     * Note: User와 EventSession을 주입
      */
-    public CartJpaEntity toEntity(Cart cart, UserJpaEntity user, EventJpaEntity event) {
+    public CartJpaEntity toEntity(Cart cart, UserJpaEntity user, EventSessionJpaEntity session) {
         if (cart == null) return null;
 
         return CartJpaEntity.builder()
                 .id(cart.getId())
                 .user(user)
-                .event(event)
+                .eventSession(session)
                 .quantity(cart.getQuantity())
                 .createdAt(cart.getCreatedAt())
                 .build();

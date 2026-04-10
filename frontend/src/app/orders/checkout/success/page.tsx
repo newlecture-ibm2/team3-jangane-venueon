@@ -16,13 +16,9 @@ function CheckoutSuccessContent() {
   useEffect(() => {
     const confirmPayment = async () => {
       const paymentKey = searchParams.get('paymentKey');
-      const tossOrderId = searchParams.get('orderId');
+      const tossOrderId = searchParams.get('orderId'); // 토스가 보낸 결제 식별값 (venueon_batch_...)
       const amount = searchParams.get('amount');
-      const orderId = searchParams.get('orderId')?.match(/venueon_order_(\d+)_/)?.[1]
-        || new URLSearchParams(window.location.search).get('orderId');
-
-      // orderId가 URL에 별도 파라미터로 오는 경우 (우리 커스텀 파라미터)
-      const backendOrderId = new URLSearchParams(window.location.hash || window.location.search).get('orderId');
+      const backendOrderId = searchParams.get('backendOrderId'); // 우리가 보낸 내부 DB ID (숫자)
 
       if (!paymentKey || !tossOrderId || !amount) {
         setStatus('error');
@@ -30,9 +26,9 @@ function CheckoutSuccessContent() {
         return;
       }
 
-      // tossOrderId에서 백엔드 orderId 추출: venueon_order_{id}_{timestamp}
+      // 내부 orderId 식별 (쿼리 파라미터 backendOrderId 최우선)
       const match = tossOrderId.match(/venueon_order_(\d+)_/);
-      const extractedOrderId = match ? match[1] : backendOrderId;
+      let extractedOrderId = backendOrderId || (match ? match[1] : null);
 
       if (!extractedOrderId) {
         setStatus('error');

@@ -23,6 +23,11 @@ export interface CommunityCommentItemProps {
   likeCount?: number;
   /** 좋아요 클릭 시 콜백 */
   onLike?: () => void;
+  /** 답글 콜백 (추가) */
+  onReply?: () => void;
+  /** 댓글 깊이 (추가: 0:일반, 1:대댓글) */
+
+  level?: number;
 }
 
 export default function CommunityCommentItem({
@@ -34,15 +39,21 @@ export default function CommunityCommentItem({
   onMenuSelect,
   likeCount = 0,
   onLike,
+  onReply,
+  level = 0,
 }: CommunityCommentItemProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className={styles.item}>
+    <div className={styles.item} style={{ marginLeft: level > 0 ? `${level * 48}px` : 0 }}>
+      {level > 0 && <div className={styles.replyLine} />}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
-          <UserProfile name={username} imageUrl={avatarUrl} size="large" />
-          <span className={styles.date}>{date}</span>
+          <UserProfile name={username} imageUrl={avatarUrl} size="large" className={styles.commentAvatar} />
+          <div className={styles.userInfo}>
+            <span className={styles.username}>{username}</span>
+            <span className={styles.date}>{date}</span>
+          </div>
         </div>
 
         {menuItems && menuItems.length > 0 && (
@@ -74,29 +85,32 @@ export default function CommunityCommentItem({
       <p className={styles.content}>{content}</p>
 
       <div className={styles.footer}>
-        <button 
-          className={styles.likeButton} 
+        <button
+          className={styles.likeButton}
           onClick={(e) => {
             e.stopPropagation();
             onLike?.();
           }}
           type="button"
         >
-          <svg 
-            width="14" 
-            height="14" 
-            viewBox="0 0 24 24" 
-            fill={likeCount > 0 ? "#EF4444" : "none"} 
-            stroke={likeCount > 0 ? "#EF4444" : "#9CA3AF"} 
-            strokeWidth="2" 
-            strokeLinecap="round" 
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill={likeCount > 0 ? "#EF4444" : "none"}
+            stroke={likeCount > 0 ? "#EF4444" : "#9CA3AF"}
+            strokeWidth="2"
+            strokeLinecap="round"
             strokeLinejoin="round"
           >
             <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
           </svg>
           <span className={likeCount > 0 ? styles.activeLikeCount : styles.likeCount}>{likeCount}</span>
         </button>
-        <button className={styles.replyButton} type="button">답글 달기</button>
+        {/* 일반 댓글(level 0)인 경우에만 답글 버튼 표시 */}
+        {level === 0 && (
+          <button className={styles.replyButton} onClick={onReply} type="button">답글 달기</button>
+        )}
       </div>
     </div>
   );

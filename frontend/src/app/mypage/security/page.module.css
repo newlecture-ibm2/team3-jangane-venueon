@@ -1,0 +1,49 @@
+/* src/app/mypage/security/page.module.css */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-32);
+  width: 100%;
+}
+
+.pageTitle {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.profileSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 458px;
+  gap: var(--space-32);
+}
+
+/* 입력 필드 폼 영역 */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 410px;
+  gap: var(--space-24);
+}
+
+/* 하단 버튼 영역 */
+.actionButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: var(--space-12);
+  width: 100%;
+  max-width: 410px;
+  margin-top: var(--space-8);
+}
+
+.actionButtons>button {
+  flex: 1;
+}

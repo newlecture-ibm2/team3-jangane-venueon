@@ -28,13 +28,14 @@ public class PostQueryService implements GetPostQuery {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostListResponse> getPostsByCommunityId(Long communityId, PostType type, Pageable pageable, String email) {
+    public Page<PostListResponse> getPostsByCommunityId(Long communityId, PostType type, Pageable pageable,
+            String email) {
         Page<Post> postPage;
 
         // 사용자 식별
-        Long userId = (email != null && !email.isEmpty()) 
-            ? userRepositoryPort.findByEmail(email).map(User::getId).orElse(null) 
-            : null;
+        Long userId = (email != null && !email.isEmpty())
+                ? userRepositoryPort.findByEmail(email).map(User::getId).orElse(null)
+                : null;
 
         if (type != null) {
             postPage = postRepositoryPort.findByCommunityIdAndType(communityId, type, pageable);
@@ -44,18 +45,20 @@ public class PostQueryService implements GetPostQuery {
 
         return postPage.map(post -> {
             boolean isBookmarked = (userId != null) && postRepositoryPort.existsBookmark(post.getId(), userId);
-            
+
             return new PostListResponse(
-                post.getId(),
-                post.getTitle(),
-                post.getType(),
-                post.getAuthorNickname(),
-                post.getContent(),
-                post.getViewCount(),
-                post.getCommentCount(),
-                post.getLikeCount(),
-                isBookmarked,
-                post.getCreatedAt());
+                    post.getId(),
+                    post.getTitle(),
+                    post.getType(),
+                    post.getAuthorNickname(),
+                    post.getContent(),
+                    post.getViewCount(),
+                    post.getCommentCount(),
+                    post.getLikeCount(),
+                    isBookmarked,
+                    post.isPinned(),
+                    post.isNotice(),
+                    post.getCreatedAt());
         });
     }
 
@@ -66,16 +69,20 @@ public class PostQueryService implements GetPostQuery {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
 
         return postRepositoryPort.findBookmarkedPostsByUserId(user.getId(), pageable)
-                .map(post -> new PostListResponse(
-                        post.getId(),
-                        post.getTitle(),
-                        post.getType(),
-                        post.getAuthorNickname(),
-                        post.getContent(),
-                        post.getViewCount(),
-                        post.getCommentCount(),
-                        post.getLikeCount(),
-                        true, // 북마크 목록이므로 무조건 true
-                        post.getCreatedAt()));
+                .map(post -> {
+                    return new PostListResponse(
+                            post.getId(),
+                            post.getTitle(),
+                            post.getType(),
+                            post.getAuthorNickname(),
+                            post.getContent(),
+                            post.getViewCount(),
+                            post.getCommentCount(),
+                            post.getLikeCount(),
+                            true, // 북마크 목록이므로 무조건 true
+                            post.isPinned(),
+                            post.isNotice(),
+                            post.getCreatedAt());
+                });
     }
 }

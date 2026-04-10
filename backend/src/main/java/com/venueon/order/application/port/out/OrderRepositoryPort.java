@@ -16,6 +16,8 @@ public interface OrderRepositoryPort {
     
     Optional<Order> findByTossOrderId(String tossOrderId);
     
+    List<Order> findAllByTossOrderId(String tossOrderId);
+    
     List<Order> findByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);
     
     List<Order> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses);
@@ -27,4 +29,8 @@ public interface OrderRepositoryPort {
     Page<Order> findByUserId(Long userId, Pageable pageable);
 
     Page<Order> findValidOrdersByUserId(Long userId, String tab, Pageable pageable);
+
+    long countOngoingByUserId(Long userId);
+
+    long countCompletedByUserId(Long userId);
 }

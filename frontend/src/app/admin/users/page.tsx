@@ -94,10 +94,10 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className="container-sidebar">
       <Sidebar role="admin" />
 
-      <div className={styles.content}>
+      <div className="sidebar-content">
         <div className={styles.pageHeader}>
           <h1 className={styles.pageTitle}>사용자 관리</h1>
         </div>

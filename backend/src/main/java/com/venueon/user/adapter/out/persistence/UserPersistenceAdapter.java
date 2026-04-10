@@ -26,7 +26,7 @@ public class UserPersistenceAdapter implements UserRepositoryPort {
     public User save(User user) {
         UserJpaEntity entity;
         if (user.getId() != null) {
-            entity = userJpaRepository.findById(user.getId()).orElse(userMapper.toEntity(user));
+            entity = userJpaRepository.findWithCategoriesById(user.getId()).orElse(userMapper.toEntity(user));
             entity.updateProfile(user.getNickname(), user.getProfileImg());
             entity.updateBadgeVisibility(user.isBadgeVisible());
             if (!user.isActive()) {

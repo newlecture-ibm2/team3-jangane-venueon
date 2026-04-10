@@ -29,8 +29,8 @@ export default function ActivityTable() {
 
   return (
     <div className={styles.container}>
-      {/* 탭과 검색바를 시안처럼 좌우로 배치 */}
-      <div className={styles.tableHeaderArea}>
+      {/* 탭 영역 (첫 번째 줄) */}
+      <div className={styles.tabArea}>
         <div className={styles.tabs}>
           <button
             className={`${styles.tab} ${activeTab === 'refund' ? styles.activeTab : ''}`}
@@ -51,7 +51,10 @@ export default function ActivityTable() {
             긴급 처리 신고
           </button>
         </div>
+      </div>
 
+      {/* 검색어 영역 (두 번째 줄) - 사용자 관리와 동일한 위치(좌측) 구성 */}
+      <div className={styles.searchFilterArea}>
         <div className={styles.searchWrapper}>
           <InputField
             variant="search"

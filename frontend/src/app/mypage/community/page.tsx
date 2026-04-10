@@ -19,32 +19,28 @@ const MOCK_COMMUNITIES = [
     postType: "프로젝트 모집",
     timeAgo: "방금 전",
     title: "함께 사이드 프로젝트 완성할 프론트엔드 개발자 찾습니다 👀",
-    tagSectionTitle: "모집 파트",
-    categories: ['UI/UX 디자이너', 'PM (기획)', '프론트엔드', '백엔드']
+    keywords: ['사이드프로젝트', '프론트엔드', '리액트', '주말코딩']
   },
   {
     id: 2,
     postType: "스터디 모집",
     timeAgo: "2시간 전",
     title: "Next.js 14 앱 라우터 뽀개기 스터디 모집",
-    tagSectionTitle: "관심 분야",
-    categories: ['프론트엔드', 'Next.js', 'React']
+    keywords: ['Nextjs', '앱라우터', '스터디', '프론트엔드개발']
   },
   {
     id: 3,
     postType: "네트워킹",
     timeAgo: "1일 전",
     title: "판교 직장인 IT 네트워킹 및 정보 공유 모임",
-    tagSectionTitle: "모임 특징",
-    categories: ['오프라인', '친목', '정보공유']
+    keywords: ['판교', 'IT네트워킹', '직장인모임', '오프라인']
   },
   {
     id: 4,
     postType: "코드 리뷰",
     timeAgo: "2일 전",
     title: "서로 코드리뷰 해주면서 상부상조할 백엔드 개발자 분 모셔요",
-    tagSectionTitle: "사용 기술",
-    categories: ['Java', 'Spring Boot', 'MySQL']
+    keywords: ['코드리뷰', '백엔드', 'Java', '스프링부트']
   }
 ];
 
@@ -91,8 +87,7 @@ export default function MyCommunityPage() {
                   postType={community.postType}
                   timeAgo={community.timeAgo}
                   title={community.title}
-                  tagSectionTitle={community.tagSectionTitle}
-                  categories={community.categories}
+                  keywords={community.keywords}
                 />
               ))}
             </CardGrid>

@@ -89,6 +89,13 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
     }
 
     @Override
+    public List<Order> findAllByTossOrderId(String tossOrderId) {
+        return orderJpaRepository.findAllByTossOrderId(tossOrderId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<Order> findByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses) {
         return orderJpaRepository.findByUserIdAndEventIdAndStatusIn(userId, eventId, statuses)
                 .stream()
@@ -142,6 +149,16 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
         }
 
         return orderJpaRepository.findValidOrdersByUserIdAndEventStatuses(userId, hasStatuses, statuses, pageable).map(this::toDomain);
+    }
+
+    @Override
+    public long countOngoingByUserId(Long userId) {
+        return orderJpaRepository.countOngoingByUserId(userId);
+    }
+
+    @Override
+    public long countCompletedByUserId(Long userId) {
+        return orderJpaRepository.countCompletedByUserId(userId);
     }
 
     // --- Mapper ---

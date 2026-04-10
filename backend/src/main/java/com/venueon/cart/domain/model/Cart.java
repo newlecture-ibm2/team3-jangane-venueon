@@ -12,6 +12,8 @@ public class Cart {
     private String userEmail;
     private Long eventId;
     private String eventTitle;
+    private Long sessionId;
+    private String sessionTitle;
     private int price;
     private int discountedPrice;
     private int quantity;
@@ -21,12 +23,15 @@ public class Cart {
     protected Cart() {}
 
     public Cart(Long id, String userEmail, Long eventId, String eventTitle,
+                Long sessionId, String sessionTitle,
                 int price, int discountedPrice, int quantity,
                 LocalDateTime startDate, LocalDateTime createdAt) {
         this.id = id;
         this.userEmail = userEmail;
         this.eventId = eventId;
         this.eventTitle = eventTitle;
+        this.sessionId = sessionId;
+        this.sessionTitle = sessionTitle;
         this.price = price;
         this.discountedPrice = discountedPrice;
         this.quantity = quantity;
@@ -38,8 +43,9 @@ public class Cart {
      * 새로운 장바구니 항목 생성
      */
     public static Cart create(String userEmail, Long eventId, String eventTitle,
+                               Long sessionId, String sessionTitle,
                                int price, int discountedPrice, LocalDateTime startDate) {
-        return new Cart(null, userEmail, eventId, eventTitle, price, discountedPrice,
+        return new Cart(null, userEmail, eventId, eventTitle, sessionId, sessionTitle, price, discountedPrice,
                 1, startDate, LocalDateTime.now());
     }
 
@@ -82,6 +88,8 @@ public class Cart {
     public String getUserEmail() { return userEmail; }
     public Long getEventId() { return eventId; }
     public String getEventTitle() { return eventTitle; }
+    public Long getSessionId() { return sessionId; }
+    public String getSessionTitle() { return sessionTitle; }
     public int getPrice() { return price; }
     public int getDiscountedPrice() { return discountedPrice; }
     public int getQuantity() { return quantity; }
