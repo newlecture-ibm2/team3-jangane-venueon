@@ -74,6 +74,9 @@ export default function EventsPage() {
     }
   };
 
+  // 💡 최적화: 현재 시간은 카드 개수만큼 여러 번 계산할 필요 없이 한 번만 계산합니다.
+  const nowTime = new Date().getTime();
+
   return (
     <div className="container-full">
       <div className={styles.container}>
@@ -107,7 +110,6 @@ export default function EventsPage() {
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => {
-                const nowTime = new Date().getTime();
                 const startTime = new Date(event.startDate).getTime();
                 const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
                 const dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
