@@ -37,17 +37,43 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
     @Query("""
             select new com.venueon.host.dto.HostRecentOrderResponse(
                 o.id,
+                u.nickname,
                 e.title,
                 o.amount,
                 coalesce(o.displayOrderedAt, o.orderedAt),
                 cast(o.status as string)
             )
             from OrderJpaEntity o
+            join o.user u
             join o.event e
             where e.creator.id = :creatorId
             order by coalesce(o.displayOrderedAt, o.orderedAt) desc
             """)
     Page<HostRecentOrderResponse> findRecentOrdersByHostId(Long creatorId, Pageable pageable);
+
+    @Query("""
+            select new com.venueon.host.dto.HostRecentOrderResponse(
+                o.id,
+                u.nickname,
+                e.title,
+                o.amount,
+                coalesce(o.displayOrderedAt, o.orderedAt),
+                cast(o.status as string)
+            )
+            from OrderJpaEntity o
+            join o.user u
+            join o.event e
+            where e.creator.id = :creatorId
+              and (:status is null or o.status = :status)
+              and (:eventId is null or e.id = :eventId)
+            order by coalesce(o.displayOrderedAt, o.orderedAt) desc
+            """)
+    Page<HostRecentOrderResponse> findAllOrdersByHostId(
+            @Param("creatorId") Long creatorId,
+            @Param("status") OrderStatus status,
+            @Param("eventId") Long eventId,
+            Pageable pageable
+    );
 
     @Query("""
             select coalesce(sum(o.amount), 0)

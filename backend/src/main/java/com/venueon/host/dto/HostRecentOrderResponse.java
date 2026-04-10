@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
  */
 public record HostRecentOrderResponse(
         Long orderId,
+        String userName,
         String eventTitle,
         int amount,
         LocalDateTime orderedAt,
