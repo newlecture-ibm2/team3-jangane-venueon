@@ -66,6 +66,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
 
     java.util.Optional<OrderJpaEntity> findByTossOrderId(String tossOrderId);
 
+    List<OrderJpaEntity> findAllByTossOrderId(String tossOrderId);
+
     List<OrderJpaEntity> findByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);
     
     List<OrderJpaEntity> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses);
