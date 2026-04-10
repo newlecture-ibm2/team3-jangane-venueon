@@ -1,0 +1,99 @@
+/* src/components/modal/ReviewModal.module.css */
+
+/* 상단 텍스트 + 닫기 버튼 */
+.textWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.titleBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  flex-grow: 1;
+}
+
+.title {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+  width: 100%;
+}
+
+.subtitle {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-500);
+  margin: 0;
+  width: 100%;
+}
+
+/* 별점 영역 */
+.ratingWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.stars {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.starButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.starIcon {
+  width: 32px;
+  height: 32px;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.starButton:hover .starIcon {
+  transform: scale(1.15);
+}
+
+.starFilled {
+  color: var(--color-warning);
+}
+
+.starEmpty {
+  color: var(--color-text-gray-300);
+}
+
+.ratingLabel {
+  font: var(--text-caption-medium);
+  color: var(--color-text-gray-500);
+  min-height: 1.2em;
+}
+
+/* 에러 메시지 */
+.errorMessage {
+  font: var(--text-caption-medium);
+  color: var(--color-error);
+  margin: 0;
+  width: 100%;
+}
+
+/* 하단 버튼 */
+.buttonGroup {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+  height: 48px;
+}

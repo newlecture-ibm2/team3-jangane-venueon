@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Tabs, Pagination, InputField } from '@/components/ui';
+import { ReviewModal } from '@/components/modal';
 import styles from './page.module.css';
 
 interface LectureItem {
@@ -34,6 +35,10 @@ export default function MyPage() {
   const [wishlistSet, setWishlistSet] = useState<Set<number>>(new Set());
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  // 리뷰 모달 상태
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [reviewTarget, setReviewTarget] = useState<{ eventId: number; title: string } | null>(null);
 
   // 백엔드 API 호출
   const fetchOrders = useCallback(async (tab: string, page: number) => {
@@ -145,10 +150,17 @@ export default function MyPage() {
                   }
                   onActionClick={() => {
                     if (activeTab === 'completed') {
-                      // 리뷰 쓰기 모달 혹은 페이지 라우팅 코드로 수정 필요 (임시 라우팅)
-                      router.push(`/community`); 
+                      setReviewTarget({ eventId: lecture.eventId, title: lecture.title });
+                      setReviewModalOpen(true);
                     } else {
                       router.push(`/events/${lecture.eventId}`);
+                    }
+                  }}
+                  secondaryActionText={activeTab === 'enrolled' ? '리뷰 작성하기' : undefined}
+                  onSecondaryActionClick={() => {
+                    if (activeTab === 'enrolled') {
+                      setReviewTarget({ eventId: lecture.eventId, title: lecture.title });
+                      setReviewModalOpen(true);
                     }
                   }}
                 />
@@ -169,6 +181,20 @@ export default function MyPage() {
           </div>
         </div>
       </div>
+
+      {/* 리뷰 작성 모달 */}
+      {reviewTarget && (
+        <ReviewModal
+          isOpen={reviewModalOpen}
+          onClose={() => setReviewModalOpen(false)}
+          eventId={reviewTarget.eventId}
+          eventTitle={reviewTarget.title}
+          onSubmitSuccess={() => {
+            setReviewModalOpen(false);
+            setReviewTarget(null);
+          }}
+        />
+      )}
     </div>
   );
 }

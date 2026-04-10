@@ -5,7 +5,7 @@ import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Lo
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import CommunityCard from '@/app/community/components/CommunityCard';
-import { ConfirmModal, InputModal, UploadModal, PaymentModal } from '@/components/modal';
+import { ConfirmModal, InputModal, UploadModal, PaymentModal, ReviewModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 
 export default function UITestPage() {
@@ -27,6 +27,7 @@ export default function UITestPage() {
   const [isInputAdminOpen, setIsInputAdminOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
 
   // Tailwind CSS가 없는 환경이므로 순수 인라인 스타일로 깔끔한 테스트 레이아웃 구성
   const containerStyle: React.CSSProperties = {
@@ -442,6 +443,7 @@ export default function UITestPage() {
           <Button variant="outlined" onClick={() => setIsInputAdminOpen(true)}>2. 상세 내역 모달 (Admin)</Button>
           <Button variant="primary" onClick={() => setIsUploadOpen(true)}>3. 파일업로드 모달</Button>
           <Button variant="primary" onClick={() => setIsPaymentOpen(true)}>4. 결제 모달</Button>
+          <Button variant="outlined" onClick={() => setIsReviewOpen(true)}>5. 리뷰 작성 모달</Button>
         </div>
       </div>
 
@@ -634,6 +636,18 @@ export default function UITestPage() {
           console.log('Payment Data:', data);
           alert(`결제 완료! \n- 수량: ${data.quantity}개 \n- 총액: ${data.totalPrice}원\n- 수단: ${data.paymentMethod}`);
           setIsPaymentOpen(false);
+        }}
+      />
+
+      {/* 5. ReviewModal */}
+      <ReviewModal
+        isOpen={isReviewOpen}
+        onClose={() => setIsReviewOpen(false)}
+        eventId={1}
+        eventTitle="TypeScript 심화반: 고급 타입 시스템과 제네릭 마스터하기"
+        onSubmitSuccess={() => {
+          alert('리뷰 등록 성공!');
+          setIsReviewOpen(false);
         }}
       />
 
