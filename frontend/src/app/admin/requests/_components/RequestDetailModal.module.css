@@ -1,0 +1,160 @@
+/* Removed modalContent as ModalCard handles padding and gap */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalTitle {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-500);
+  cursor: pointer;
+  padding: var(--space-4);
+  transition: color var(--transition);
+}
+
+.closeButton:hover {
+  color: var(--color-text-gray-900);
+}
+
+.loadingState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-48) 0;
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-500);
+}
+
+/* 메타 정보 */
+.metaSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  background: var(--color-text-gray-50);
+  border-radius: var(--radius-md);
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.metaLabel {
+  font: var(--text-caption-medium);
+  color: var(--color-text-gray-500);
+  min-width: var(--space-80);
+}
+
+.metaValue {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-900);
+}
+
+/* 제목 + 본문 */
+.contentSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.requestTitle {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.requestContent {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-700);
+  line-height: var(--main-line-height);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* 첨부파일 */
+.attachmentSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.fileChip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-12) var(--space-16);
+  background: var(--color-surface);
+  /* UploadField 배경과 동일 (Gray/100) */
+  border: 1px dashed var(--color-text-gray-500);
+  /* UploadField 점선 보더 */
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.fileChip:hover {
+  background: var(--color-text-gray-50);
+  border-color: var(--color-text-gray-700);
+}
+
+.fileChipIcon {
+  width: var(--space-24);
+  height: var(--space-24);
+  color: var(--color-text-gray-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fileChipText {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+/* 어드민 코멘트 (읽기전용) */
+.adminCommentSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-16);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+}
+
+.adminCommentText {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-700);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* 처리 액션 영역 */
+.actionSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  border-top: 1px solid var(--color-text-gray-300);
+  padding-top: var(--space-24);
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-12);
+}

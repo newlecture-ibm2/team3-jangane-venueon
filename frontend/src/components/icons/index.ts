@@ -32,3 +32,4 @@ export { default as SecurityIcon } from './SecurityIcon';
 export { default as OrderIcon } from './OrderIcon';
 export { default as WishlistIcon } from './WishlistIcon';
 export { default as ReviewStarIcon } from './ReviewStarIcon';
+export { default as RequestIcon } from './RequestIcon';

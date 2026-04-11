@@ -7,8 +7,9 @@
 
 .profileImage {
   /* 피그마 스펙의 기본 배경색 (이미지가 없을 때) */
-  background-color: #1B10B9; 
-  border-radius: var(--radius-full); /* 원형 */
+  background-color: #1B10B9;
+  border-radius: var(--radius-full);
+  /* 원형 */
   flex: none;
   overflow: hidden;
   display: flex;
@@ -26,7 +27,8 @@
 .userName {
   display: flex;
   align-items: center;
-  color: var(--color-text-gray-700); /* #374151 */
+  color: var(--color-text-gray-700);
+  /* #374151 */
   flex: none;
   flex-grow: 1;
 }
@@ -35,7 +37,8 @@
    Size: Large
    =========================== */
 .large {
-  gap: var(--space-8); /* 8px */
+  gap: var(--space-8);
+  /* 8px */
   height: var(--space-36);
 }
 
@@ -53,7 +56,7 @@
    Size: Medium
    =========================== */
 .medium {
-  gap: var(--space-4);
+  gap: var(--space-8);
   height: var(--space-24);
 }
 
@@ -63,6 +66,6 @@
 }
 
 .medium .userName {
-  font: var(--text-caption-medium);
+  font: var(--text-body-medium);
   /* 150% */
 }

@@ -19,7 +19,8 @@ import {
   DelayedRefundIcon,
   SecurityIcon,
   OrderIcon,
-  WishlistIcon
+  WishlistIcon,
+  RequestIcon
 } from '@/components/icons';
 
 export interface SidebarProps {
@@ -100,6 +101,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
           { label: '커뮤니티 관리', href: '/admin/community', icon: CommunityIcon },
           { label: '신고 관리', href: '/admin/reports', icon: ReportIcon },
           { label: '환불 모니터링', href: '/admin/refunds', icon: DelayedRefundIcon },
+          { label: '요청 관리', href: '/admin/requests', icon: RequestIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
       case 'host':
