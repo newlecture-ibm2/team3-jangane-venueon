@@ -9,29 +9,19 @@ import PopoverMenu from '@/components/ui/PopoverMenu';
 import { MoreIcon } from '@/components/icons';
 import { useUIStore } from '@/store/useUIStore';
 
+import { adminReportAPI, AdminReportListItem } from '@/lib/admin-api';
+
 /* ──────────── 타입 정의 ──────────── */
-type TabKey = 'POST' | 'USER' | 'EVENT' | 'REFUND';
+type TabKey = 'POST' | 'USER' | 'EVENT';
 type StatusFilter = 'ALL' | 'PENDING' | 'IN_REVIEW' | 'RESOLVED' | 'REJECTED';
 
-interface ReportItem {
-  id: number;
-  targetType: string;
-  targetId: number;
-  reason: string;
-  detail: string;
-  status: 'PENDING' | 'RESOLVED' | 'REJECTED';
-  adminAction: string | null;
-  createdAt: string;
-  resolvedAt: string | null;
-  reporterNickname: string;
-  reporterId: number;
-  // 프론트 전용 추가 필드 (UI 표시용 더미)
-  title?: string;
+// API 데이터에 UI 필드를 보정하기 위한 타입
+interface ReportItem extends AdminReportListItem {
   authorName?: string;
+  title?: string;
   hostName?: string;
   schedule?: string;
   amount?: string;
-  registeredAt?: string;
 }
 
 /* ──────────── 탭 설정 ──────────── */
@@ -39,88 +29,14 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'POST', label: '게시글' },
   { key: 'USER', label: '사용자' },
   { key: 'EVENT', label: '프로그램' },
-  { key: 'REFUND', label: '환불지연' },
 ];
 
 const STATUS_FILTERS: { key: StatusFilter; label: string }[] = [
   { key: 'PENDING', label: '대기 중' },
-  { key: 'IN_REVIEW', label: '검토 중' },
+  // { key: 'IN_REVIEW', label: '검토 중' }, // 백엔드 ReportStatus에는 PENDING, RESOLVED, REJECTED만 있음
   { key: 'RESOLVED', label: '처리 완료' },
   { key: 'REJECTED', label: '반려' },
 ];
-
-/* ──────────── 더미 데이터 ──────────── */
-const DUMMY_POST: ReportItem[] = Array.from({ length: 5 }, (_, i) => ({
-  id: i + 1,
-  targetType: 'POST',
-  targetId: i + 100,
-  reason: '부적절한 내용',
-  detail: '',
-  status: 'PENDING' as const,
-  adminAction: null,
-  createdAt: '2026-03-29T10:00:00',
-  resolvedAt: null,
-  reporterNickname: '신고자',
-  reporterId: 10,
-  title: '게시물 제목 게시물 제목 게시물 제목 게시물 제목게시물 제목 게시물 제목 게시물...',
-  authorName: '호스트 이름',
-}));
-
-const DUMMY_USER: ReportItem[] = Array.from({ length: 5 }, (_, i) => ({
-  id: i + 20,
-  targetType: 'USER',
-  targetId: i + 200,
-  reason: '스팸 활동',
-  detail: '',
-  status: 'RESOLVED' as const,
-  adminAction: 'WARN',
-  createdAt: '2026-03-29T10:54:00',
-  resolvedAt: '2026-03-30T10:00:00',
-  reporterNickname: '신고자',
-  reporterId: 11,
-  authorName: '사용자 이름',
-}));
-
-const DUMMY_EVENT: ReportItem[] = Array.from({ length: 5 }, (_, i) => ({
-  id: i + 40,
-  targetType: 'EVENT',
-  targetId: i + 300,
-  reason: '허위 정보',
-  detail: '',
-  status: 'PENDING' as const,
-  adminAction: null,
-  createdAt: '2026-03-29T10:00:00',
-  resolvedAt: null,
-  reporterNickname: '신고자',
-  reporterId: 12,
-  title: '강의 제목 강의 제목 강의 제목 강의 제목 강의 제목 강의...',
-  hostName: '호스트 이름',
-  schedule: '10:00 - 11:00',
-}));
-
-const DUMMY_REFUND: ReportItem[] = Array.from({ length: 5 }, (_, i) => ({
-  id: i + 60,
-  targetType: 'REFUND',
-  targetId: i + 400,
-  reason: '환불 지연',
-  detail: '',
-  status: 'PENDING' as const,
-  adminAction: null,
-  createdAt: '2026-03-29T10:00:00',
-  resolvedAt: null,
-  reporterNickname: '신고자',
-  reporterId: 13,
-  authorName: '사용자 이름',
-  title: '강의 제목 강의 제목 강의 제목 강의 제목 강의 제...',
-  amount: '₩80,000',
-}));
-
-const DUMMY_MAP: Record<TabKey, ReportItem[]> = {
-  POST: DUMMY_POST,
-  USER: DUMMY_USER,
-  EVENT: DUMMY_EVENT,
-  REFUND: DUMMY_REFUND,
-};
 
 /* ──────────── 상태 → Tag 매핑 ──────────── */
 function StatusBadge({ status }: { status: string }) {
@@ -140,6 +56,7 @@ function StatusBadge({ status }: { status: string }) {
 
 /* ──────────── 날짜 포맷 ──────────── */
 function formatDate(dateStr: string) {
+  if (!dateStr) return '-';
   const d = new Date(dateStr);
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -156,43 +73,87 @@ export default function ReportTable() {
   const [showHidden, setShowHidden] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
+  const [reports, setReports] = useState<ReportItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { showToast } = useUIStore();
 
+  /* ── 데이터 가져오기 ── */
+  const fetchReports = useCallback(async () => {
+
+
+    setIsLoading(true);
+    try {
+      const response = await adminReportAPI.getReports({
+        targetType: activeTab,
+        status: statusFilter === 'ALL' ? undefined : statusFilter,
+        page: currentPage - 1,
+        size: 10,
+      });
+
+      if (response.status === 'success') {
+        const { content, totalPages } = response.data;
+        // 목록 데이터 보정 (API에는 title 등이 없으므로 targetId 등으로 표시하거나 보완 필요)
+        const mappedContent = content.map((item: any) => ({
+          ...item,
+          title: `[ID: ${item.targetId}] ${item.reason}`, // 임시 표시
+          authorName: item.reporterNickname, // 임시 표시
+        }));
+        setReports(mappedContent);
+        setTotalPages(totalPages);
+      }
+    } catch (error) {
+      console.error('Failed to fetch reports:', error);
+      showToast('신고 목록을 가져오는데 실패했습니다.', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeTab, statusFilter, currentPage, showToast]);
+
+  React.useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
+
   /* ── 탭 전환 ── */
-  const handleTabClick = useCallback((tab: TabKey) => {
+  const handleTabClick = (tab: TabKey) => {
     setActiveTab(tab);
     setCurrentPage(1);
     setOpenPopoverId(null);
-    // TODO: API 호출 – adminReportAPI.getList({ targetType: tab, status: statusFilter, page: 0 })
-  }, [statusFilter]);
+  };
 
   /* ── 상태 필터 전환 ── */
-  const handleStatusFilter = useCallback((status: StatusFilter) => {
+  const handleStatusFilter = (status: StatusFilter) => {
     setStatusFilter(status);
     setCurrentPage(1);
-    // TODO: API 호출
-  }, []);
+  };
 
   /* ── 더보기 메뉴 액션 ── */
-  const handlePopoverAction = useCallback((reportId: number, actionValue: string) => {
+  const handlePopoverAction = async (reportId: number, actionValue: string) => {
     setOpenPopoverId(null);
 
-    // TODO: adminReportAPI.processReport(reportId, { action: actionValue, status: 'RESOLVED' })
-    const actionLabels: Record<string, string> = {
-      HIDE: '숨김 처리',
-      DELETE: '삭제',
-      REJECT: '반려',
-      WARN: '경고',
-    };
+    try {
+      const response = await adminReportAPI.processReport(reportId, actionValue, 'RESOLVED');
+      if (response.status === 'success') {
+        const actionLabels: Record<string, string> = {
+          HIDE: '숨김 처리',
+          DELETE: '삭제',
+          REJECT: '반려',
+          WARN: '경고',
+        };
+        const label = actionLabels[actionValue] || actionValue;
+        showToast(`성공적으로 ${label} 처리되었습니다.`, 'success');
+        fetchReports(); // 목록 갱신
+      }
+    } catch (error) {
+      console.error('Failed to process report:', error);
+      showToast('처리에 실패했습니다.', 'error');
+    }
+  };
 
-    const label = actionLabels[actionValue] || actionValue;
-    showToast(`성공적으로 ${label} 처리되었습니다.`, 'success');
-  }, [showToast]);
-
-  /* ── 현재 데이터 (추후 API 연동 시 교체) ── */
-  const data = DUMMY_MAP[activeTab];
+  /* ── 현재 데이터 ── */
+  const data = reports;
 
   return (
     <div className={styles.container}>
@@ -275,15 +236,7 @@ export default function ReportTable() {
                   <th className={styles.colMore}></th>
                 </>
               )}
-              {activeTab === 'REFUND' && (
-                <>
-                  <th className={styles.colStudent}>수강생</th>
-                  <th className={styles.colTitle}>강의 제목</th>
-                  <th className={styles.colAmount}>환불 금액</th>
-                  <th className={styles.colStatus}>상태</th>
-                  <th className={styles.colMore}></th>
-                </>
-              )}
+
             </tr>
           </thead>
 
@@ -344,26 +297,7 @@ export default function ReportTable() {
                   </>
                 )}
 
-                {/* ── 환불지연 탭 ── */}
-                {activeTab === 'REFUND' && (
-                  <>
-                    <td className={styles.colStudent}>
-                      <div className={styles.userProfile}>
-                        <div className={styles.avatar}></div>
-                        <span className={styles.userName}>{item.authorName}</span>
-                      </div>
-                    </td>
-                    <td className={styles.colTitle}>
-                      <span className={styles.ellipsis}>{item.title}</span>
-                    </td>
-                    <td className={styles.colAmount}>
-                      <span className={styles.amountText}>{item.amount}</span>
-                    </td>
-                    <td className={styles.colStatus}>
-                      <StatusBadge status={item.status} />
-                    </td>
-                  </>
-                )}
+
 
                 {/* ── 더보기(⋮) – 공통 ── */}
                 <td className={styles.colMore}>
