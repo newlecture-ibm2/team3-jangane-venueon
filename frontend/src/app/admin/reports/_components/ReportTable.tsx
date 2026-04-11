@@ -80,11 +80,12 @@ export default function ReportTable() {
 
   const { showToast } = useUIStore();
 
+
   /* ── 데이터 가져오기 ── */
   const fetchReports = useCallback(async () => {
 
 
-    setIsLoading(true);
+      setIsLoading(true);
     try {
       const response = await adminReportAPI.getReports({
         targetType: activeTab,
@@ -93,13 +94,12 @@ export default function ReportTable() {
         size: 10,
       });
 
-      if (response.status === 'success') {
+      if (response.success) {
         const { content, totalPages } = response.data;
-        // 목록 데이터 보정 (API에는 title 등이 없으므로 targetId 등으로 표시하거나 보완 필요)
         const mappedContent = content.map((item: any) => ({
           ...item,
-          title: `[ID: ${item.targetId}] ${item.reason}`, // 임시 표시
-          authorName: item.reporterNickname, // 임시 표시
+          title: `[ID: ${item.targetId}] ${item.reason}`,
+          hostName: item.reporterNickname, // 임시로 신고자 닉네임 표시
         }));
         setReports(mappedContent);
         setTotalPages(totalPages);
@@ -135,7 +135,7 @@ export default function ReportTable() {
 
     try {
       const response = await adminReportAPI.processReport(reportId, actionValue, 'RESOLVED');
-      if (response.status === 'success') {
+      if (response.success) {
         const actionLabels: Record<string, string> = {
           HIDE: '숨김 처리',
           DELETE: '삭제',
@@ -266,7 +266,7 @@ export default function ReportTable() {
                     <td className={styles.colStudent}>
                       <div className={styles.userProfile}>
                         <div className={styles.avatar}></div>
-                        <span className={styles.userName}>{item.authorName}</span>
+                        <span className={styles.userName}>{item.reporterNickname}</span>
                       </div>
                     </td>
                     <td className={styles.colDate}>
@@ -336,7 +336,7 @@ export default function ReportTable() {
       <div className={styles.paginationArea}>
         <Pagination
           currentPage={currentPage}
-          totalPages={23}
+          totalPages={totalPages}
           onPageChange={setCurrentPage}
         />
       </div>

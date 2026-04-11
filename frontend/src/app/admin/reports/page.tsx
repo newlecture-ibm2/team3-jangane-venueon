@@ -3,7 +3,11 @@
 import React from 'react';
 import styles from './page.module.css';
 import { Sidebar } from '@/components/layout';
-import ReportTable from './_components/ReportTable';
+import dynamic from 'next/dynamic';
+
+const ReportTable = dynamic(() => import('./_components/ReportTable'), {
+  ssr: false,
+});
 
 export default function AdminReportsPage() {
   return (

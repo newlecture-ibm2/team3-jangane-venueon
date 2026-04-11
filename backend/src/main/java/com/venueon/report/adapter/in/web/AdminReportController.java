@@ -27,8 +27,7 @@ public class AdminReportController {
             @RequestParam(required = false) ReportTargetType targetType,
             @PageableDefault(size = 10) Pageable pageable) {
 
-        Page<ReportResponse> response = adminReportUseCase.getReports(status, targetType, pageable)
-                .map(ReportResponse::from);
+        Page<ReportResponse> response = adminReportUseCase.getReports(status, targetType, pageable);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

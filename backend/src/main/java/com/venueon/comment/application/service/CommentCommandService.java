@@ -11,6 +11,7 @@ import com.venueon.user.application.port.out.UserRepositoryPort;
 import com.venueon.user.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import com.venueon.common.annotation.UseCase;
 
 @UseCase
 @RequiredArgsConstructor

@@ -7,6 +7,7 @@ import com.venueon.admin.user.application.port.in.DeleteAdminUserUseCase;
 import com.venueon.comment.application.port.in.CommentAdminUseCase;
 import com.venueon.event.application.port.in.DeleteEventUseCase;
 import com.venueon.post.application.port.in.PostAdminUseCase;
+import com.venueon.report.adapter.in.web.dto.ReportResponse;
 import com.venueon.report.adapter.out.persistence.entity.ReportJpaEntity;
 import com.venueon.report.adapter.out.persistence.repository.ReportJpaRepository;
 import com.venueon.report.application.port.in.AdminReportUseCase;
@@ -32,15 +33,19 @@ public class AdminReportService implements AdminReportUseCase {
     private final DeleteEventUseCase deleteEventUseCase;
 
     @Override
-    public Page<ReportJpaEntity> getReports(ReportStatus status, ReportTargetType targetType, Pageable pageable) {
+    public Page<ReportResponse> getReports(ReportStatus status, ReportTargetType targetType, Pageable pageable) {
+        Page<ReportJpaEntity> reports;
         if (status != null && targetType != null) {
-            return reportRepository.findByTargetTypeAndStatus(targetType, status, pageable);
+            reports = reportRepository.findByTargetTypeAndStatus(targetType, status, pageable);
         } else if (status != null) {
-            return reportRepository.findByStatus(status, pageable);
+            reports = reportRepository.findByStatus(status, pageable);
         } else if (targetType != null) {
-            return reportRepository.findByTargetType(targetType, pageable);
+            reports = reportRepository.findByTargetType(targetType, pageable);
+        } else {
+            reports = reportRepository.findAll(pageable);
         }
-        return reportRepository.findAll(pageable);
+        
+        return reports.map(ReportResponse::from);
     }
 
     @Override
