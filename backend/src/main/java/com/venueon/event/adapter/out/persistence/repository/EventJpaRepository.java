@@ -13,13 +13,24 @@ public interface EventJpaRepository extends JpaRepository<EventJpaEntity, Long>,
 
     Page<EventJpaEntity> findByStatus(EventStatus status, Pageable pageable);
 
-    List<EventJpaEntity> findByCreatorId(Long creatorId);
+    Page<EventJpaEntity> findByStatusIn(List<EventStatus> statuses, Pageable pageable);
+
+    Page<EventJpaEntity> findByStatusInAndCategory_Id(List<EventStatus> statuses, Long categoryId, Pageable pageable);
 
     Page<EventJpaEntity> findByCreatorIdAndStatus(Long creatorId, EventStatus status, Pageable pageable);
 
+    Page<EventJpaEntity> findByTitleContainingIgnoreCaseAndStatusInAndCategory_Id(
+        String keyword, List<EventStatus> statuses, Long categoryId, Pageable pageable);
+
+    Page<EventJpaEntity> findByTitleContainingIgnoreCaseAndStatusIn(
+        String keyword, List<EventStatus> statuses, Pageable pageable);
+
+    Page<EventJpaEntity> findByTitleContainingIgnoreCaseAndCategory_Id(
+        String keyword, Long categoryId, Pageable pageable);
+
     Page<EventJpaEntity> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
 
-    Page<EventJpaEntity> findByCategoryId(Long categoryId, Pageable pageable);
+    Page<EventJpaEntity> findByCategory_Id(Long categoryId, Pageable pageable);
 
-    boolean existsByCategoryId(Long categoryId);
+    boolean existsByCategory_Id(Long categoryId);
 }

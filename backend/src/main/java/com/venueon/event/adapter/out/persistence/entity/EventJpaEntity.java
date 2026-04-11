@@ -88,4 +88,8 @@ public class EventJpaEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void toggleHidden() {
+        this.isHidden = !this.isHidden;
+    }
 }

@@ -117,3 +117,69 @@ export const adminCategoryAPI = {
   updateOrder: (id: number, newOrder: number) =>
     api.patch<ApiResponse<void>>(`/admin/categories/${id}/order`, { sortOrder: newOrder }),
 };
+
+export interface AdminReportListItem {
+  id: number;
+  targetId: number;
+  targetType: string;
+  reason: string;
+  reporterNickname: string;
+  status: string;
+  createdAt: string;
+}
+
+export const adminReportAPI = {
+  /** 신고 목록 조회 */
+  getReports: (params: {
+    status?: string;
+    targetType?: string;
+    page?: number;
+    size?: number;
+  }) => {
+    const cleanParams: Record<string, string> = {};
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') cleanParams[key] = String(value);
+    });
+    return api.get<ApiResponse<PageResponse<AdminReportListItem>>>('/admin/reports', { params: cleanParams });
+  },
+
+  /** 신고 처리 */
+  processReport: (id: number, action: string, status: string) =>
+    api.patch<ApiResponse<void>>(`/admin/reports/${id}`, { action, status }),
+};
+
+export interface AdminEventListItem {
+  id: number;
+  title: string;
+  currentAttendees: number;
+  createdAt: string;
+  status: string;
+  displayStatus: 'READY' | 'RECRUITING' | 'CLOSED';
+  isHidden: boolean;
+}
+
+export const adminEventAPI = {
+  /** 강의 목록 조회 */
+  getEvents: (params: { 
+    status?: string; 
+    categoryId?: number;
+    keyword?: string;
+    isHidden?: boolean;
+    page?: number; 
+    size?: number 
+  }) => {
+    const cleanParams: Record<string, string> = {};
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') cleanParams[key] = String(value);
+    });
+    return api.get<ApiResponse<PageResponse<AdminEventListItem>>>('/admin/events', { params: cleanParams });
+  },
+
+  /** 노출 상태 토글 */
+  toggleVisibility: (id: number) =>
+    api.patch<ApiResponse<void>>(`/admin/events/${id}/visibility`),
+
+  /** 강의 삭제 */
+  deleteEvent: (id: number) =>
+    api.delete<ApiResponse<void>>(`/admin/events/${id}`),
+};
