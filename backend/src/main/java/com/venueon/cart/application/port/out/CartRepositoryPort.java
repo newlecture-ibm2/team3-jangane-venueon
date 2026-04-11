@@ -32,6 +32,11 @@ public interface CartRepositoryPort {
     boolean existsByUserEmailAndSessionId(String userEmail, Long sessionId);
 
     /**
+     * 여러 ID로 장바구니 항목 일괄 조회
+     */
+    List<Cart> findAllByIds(List<Long> ids);
+
+    /**
      * 장바구니 항목 저장
      */
     Cart save(Cart cart);

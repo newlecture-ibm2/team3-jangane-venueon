@@ -29,11 +29,15 @@
 
 .summaryCard {
   background: white;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 24px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+  text-decoration: none; /* 링크 밑줄 제거 */
+  color: inherit;         /* 기본 텍스트 색상 유지 */
+  display: block;        /* 전체 영역 클릭 가능하도록 */
+  cursor: pointer;
 }
 
 .summaryCard:hover {
@@ -64,13 +68,13 @@
 }
 
 .userIcon {
-  background: #dcfce7;
-  color: #16a34a;
+  background: #e1fae9; /* 연한 민트/그린 배경 */
+  color: #7c3aed;      /* 보라색 아이콘 */
 }
 
 .refundIcon {
-  background: #fee2e2;
-  color: #dc2626;
+  background: #fff1f2;
+  color: #f43f5e;
 }
 
 .cardTitle {
@@ -81,9 +85,10 @@
 }
 
 .cardValue {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #020617; /* 더 진한 색상 */
+  letter-spacing: -0.02em;
 }
 
 /* Detail Sections */
@@ -256,4 +261,35 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Filter Bar Styles */
+.filterBar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.selectBox, .searchBox {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+  background-color: white;
+  color: #1e293b;
+}
+
+.selectBox:focus, .searchBox:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
 }

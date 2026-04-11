@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './cart.module.css';
 import Button from '@/components/ui/Button';
 import Checkbox from '@/components/ui/Checkbox';
@@ -17,8 +18,11 @@ export default function CartPage() {
     updateQuantity,
     removeItem,
     toggleSelectAll,
-    toggleSelectItem
+    toggleSelectItem,
+    getCheckedCartIds
   } = useCart();
+
+  const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -191,6 +195,16 @@ export default function CartPage() {
             variant="primary"
             size="large"
             className={styles.orderButton}
+            onClick={() => {
+              const cartIds = getCheckedCartIds();
+              if (cartIds.length === 0) {
+                alert('주문할 항목을 선택해주세요.');
+                return;
+              }
+              const params = new URLSearchParams();
+              params.set('cartIds', cartIds.join(','));
+              router.push(`/orders/checkout?${params.toString()}`);
+            }}
           >
             <span>주문하기</span>
             {checkedItemsCount > 0 && (

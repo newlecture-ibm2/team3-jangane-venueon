@@ -16,6 +16,8 @@ public interface OrderRepositoryPort {
     
     Optional<Order> findByTossOrderId(String tossOrderId);
     
+    List<Order> findAllByTossOrderId(String tossOrderId);
+    
     List<Order> findByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);
     
     List<Order> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses);

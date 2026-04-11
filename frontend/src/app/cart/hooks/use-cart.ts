@@ -235,6 +235,19 @@ export const useCart = () => {
 
   const checkedItemsCount = processedCartItems.filter(item => item.checked).length;
 
+  // 체크된 세션들의 cartId(숫자) 목록 반환
+  const getCheckedCartIds = (): number[] => {
+    const ids: number[] = [];
+    cartItems.forEach(item => {
+      item.sessions?.forEach(session => {
+        if (session.checked) {
+          ids.push(Number(session.id));
+        }
+      });
+    });
+    return ids;
+  };
+
   return {
     cartItems: processedCartItems,
     loading,
@@ -244,6 +257,7 @@ export const useCart = () => {
     removeItem,
     toggleSelectAll,
     toggleSelectItem,
+    getCheckedCartIds,
     refresh: fetchItems
   };
 };

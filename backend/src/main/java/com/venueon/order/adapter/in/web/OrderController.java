@@ -39,6 +39,22 @@ public class OrderController {
     }
 
     /**
+     * 장바구니 일괄 주문 생성 (PENDING 상태)
+     * POST /orders/batch
+     */
+    @PostMapping("/batch")
+    public ResponseEntity<ApiResponse<CreateBatchOrderResponse>> createBatchOrder(
+            Authentication authentication,
+            @Valid @RequestBody CreateBatchOrderRequest request) {
+
+        String email = authentication.getName();
+        Long userId = orderService.getUserIdByEmail(email);
+
+        CreateBatchOrderResponse response = orderService.createBatchOrder(userId, email, request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    /**
      * 토스 결제 승인 요청
      * POST /orders/{id}/confirm
      */
@@ -82,7 +98,7 @@ public class OrderController {
      * GET /orders/me
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Page<OrderDetailResponse>>> getMyOrders(
+    public ResponseEntity<ApiResponse<Page<OrderSummaryResponse>>> getMyOrders(
             Authentication authentication,
             @RequestParam(required = false) String tab,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -90,7 +106,7 @@ public class OrderController {
         String email = authentication.getName();
         Long userId = orderService.getUserIdByEmail(email);
 
-        Page<OrderDetailResponse> response = orderService.getMyOrders(userId, tab, pageable);
+        Page<OrderSummaryResponse> response = orderService.getMyOrders(userId, tab, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

@@ -73,6 +73,9 @@ export default function EventsPage() {
     }
   };
 
+  // 💡 최적화: 현재 시간은 카드 개수만큼 여러 번 계산할 필요 없이 한 번만 계산합니다.
+  const nowTime = new Date().getTime();
+
   return (
     <div className="container-full">
       <div className={styles.container}>
@@ -105,21 +108,30 @@ export default function EventsPage() {
             <div style={{ textAlign: 'center', padding: '100px 0' }}>검색 결과가 없습니다.</div>
           ) : (
             <CardGrid layout="3-cols">
-              {events.map((event) => (
-                <Link href={`/events/${event.id}`} key={event.id} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <Card
-                    title={event.title}
-                    imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
-                    organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 회사이름으로 변경
-                    dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
-                    location={event.isOnline ? '온라인' : event.location}
-                    price={event.price}
-                    status={event.status}
-                    tagVariant="green"
-                    tagText="모집 중" // 일단 하드코딩 피그마 처럼
-                  />
-                </Link>
-              ))}
+              {events.map((event) => {
+                const startTime = new Date(event.startDate).getTime();
+                const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
+                const dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                
+                const categoryLabel = categoryOptions.find(c => c.value === String(event.categoryId))?.label || '기타';
+
+                return (
+                  <Link href={`/events/${event.id}`} key={event.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Card
+                      variant="landing"
+                      category={categoryLabel}
+                      dDay={dDayData}
+                      title={event.title}
+                      imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
+                      organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 회사이름으로 변경
+                      dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
+                      location={event.isOnline ? '온라인' : event.location}
+                      price={event.price}
+                      status={event.status}
+                    />
+                  </Link>
+                );
+              })}
             </CardGrid>
           )}
 
