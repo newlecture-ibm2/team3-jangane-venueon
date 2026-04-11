@@ -35,6 +35,7 @@ export interface PageResponse<T> {
 }
 
 export interface ApiResponse<T> {
+  success: boolean;
   status: string;
   data: T;
   message?: string;
