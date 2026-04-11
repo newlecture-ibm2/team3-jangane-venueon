@@ -615,13 +615,15 @@ Step 4 — 미리보기 + 게시 (유지)
 | `POST /cart { eventId }` | `POST /cart { ticketId }` |
 | `GET /events/{id}` 응답의 `price` | `tickets[]` 배열로 변경 |
 
-### Phase 5 체크리스트
+### Phase 5 체크리스트 (진행 중)
 
 - [ ] 이벤트 생성 폼 Step 2 수정 (세션에 모집 기간 추가)
-- [ ] 이벤트 생성 폼 Step 3 변경 (티켓 CRUD UI)
-- [ ] 이벤트 상세 페이지 — 티켓 목록 + 선택 UI
-- [ ] 주문 API 호출: eventId → ticketId
-- [ ] 장바구니 API 호출: eventId → ticketId
+- [x] 이벤트 생성 폼 Step 3 변경 (티켓 CRUD UI)
+- [x] 이벤트 상세 페이지 — 티켓 목록 + 선택 UI (`TicketList` 컴포넌트, 할인율/잔여수량/판매상태 표시)
+- [x] 이벤트 상세 페이지 — 세션 카드 v6 (모집 상태 Tag 표시, `session.price` 제거)
+- [x] 이벤트 상세 페이지 — 가격 범위 표시 (`minPrice ~ maxPrice`, 할인 배지)
+- [ ] 주문 API 호출: eventId → ticketId (Order 담당자 영역)
+- [ ] 장바구니 API 호출: eventId → ticketId (Cart 담당자 영역)
 - [ ] 이벤트 목록 카드 — minPrice / 할인 표시 로직 수정
 - [ ] 호스트 대시보드 — 티켓별 판매 현황
 

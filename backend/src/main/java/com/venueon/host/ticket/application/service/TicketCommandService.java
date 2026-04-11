@@ -34,10 +34,8 @@ public class TicketCommandService implements CreateTicketUseCase, UpdateTicketUs
         Event event = eventRepositoryPort.findById(command.eventId())
                 .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다. ID: " + command.eventId()));
 
-        // 2. 소유자 확인
-        if (!event.isOwnedBy(command.hostId())) {
-            throw new IllegalStateException("티켓 생성 권한이 없습니다.");
-        }
+        // 2. 소유자 확인 (ADMIN은 우회)
+        validateOwnership(event, command.hostId(), command.hostRole(), "티켓 생성");
 
         // 3. isAllSessions=false면 sessionIds 필수
         if (!command.isAllSessions()) {
@@ -83,12 +81,10 @@ public class TicketCommandService implements CreateTicketUseCase, UpdateTicketUs
         Ticket ticket = ticketRepositoryPort.findById(command.ticketId())
                 .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다. ID: " + command.ticketId()));
 
-        // 2. 이벤트 소유자 확인
+        // 2. 이벤트 소유자 확인 (ADMIN은 우회)
         Event event = eventRepositoryPort.findById(ticket.getEventId())
                 .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다."));
-        if (!event.isOwnedBy(command.hostId())) {
-            throw new IllegalStateException("티켓 수정 권한이 없습니다.");
-        }
+        validateOwnership(event, command.hostId(), command.hostRole(), "티켓 수정");
 
         // 3. isAllSessions=false 검증
         if (!command.isAllSessions()) {
@@ -110,17 +106,15 @@ public class TicketCommandService implements CreateTicketUseCase, UpdateTicketUs
     }
 
     @Override
-    public void deleteTicket(Long ticketId, Long hostId) {
+    public void deleteTicket(Long ticketId, Long hostId, String hostRole) {
         // 1. 티켓 조회
         Ticket ticket = ticketRepositoryPort.findById(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다. ID: " + ticketId));
 
-        // 2. 이벤트 소유자 확인
+        // 2. 이벤트 소유자 확인 (ADMIN은 우회)
         Event event = eventRepositoryPort.findById(ticket.getEventId())
                 .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다."));
-        if (!event.isOwnedBy(hostId)) {
-            throw new IllegalStateException("티켓 삭제 권한이 없습니다.");
-        }
+        validateOwnership(event, hostId, hostRole, "티켓 삭제");
 
         // 3. 판매된 티켓이 있으면 삭제 불가
         if (!ticket.isDeletable()) {
@@ -128,5 +122,17 @@ public class TicketCommandService implements CreateTicketUseCase, UpdateTicketUs
         }
 
         ticketRepositoryPort.deleteById(ticketId);
+    }
+
+    /**
+     * 이벤트 소유권 검증 — ADMIN 역할은 모든 이벤트 관리 가능
+     */
+    private void validateOwnership(Event event, Long requesterId, String requesterRole, String action) {
+        if ("ADMIN".equalsIgnoreCase(requesterRole)) {
+            return; // ADMIN 역할은 모든 이벤트에 대해 권한 보유
+        }
+        if (!event.isOwnedBy(requesterId)) {
+            throw new IllegalStateException(action + " 권한이 없습니다.");
+        }
     }
 }

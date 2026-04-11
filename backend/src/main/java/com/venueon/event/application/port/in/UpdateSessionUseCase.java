@@ -14,6 +14,7 @@ public interface UpdateSessionUseCase {
         Long sessionId,
         Long eventId,
         Long requesterId,
+        String requesterRole,
         String title,
         String description,
         int sortOrder,

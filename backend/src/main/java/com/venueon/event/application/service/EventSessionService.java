@@ -59,7 +59,7 @@ public class EventSessionService implements
 
     @Override
     public Session createSession(CreateSessionCommand command) {
-        Event event = getEventAndValidateOwner(command.eventId(), command.requesterId());
+        Event event = getEventAndValidateOwner(command.eventId(), command.requesterId(), command.requesterRole());
 
         if (!event.getHasSession()) {
             throw new IllegalStateException("세션 관리가 비활성화된 이벤트입니다.");
@@ -93,7 +93,7 @@ public class EventSessionService implements
 
     @Override
     public Session updateSession(UpdateSessionCommand command) {
-        getEventAndValidateOwner(command.eventId(), command.requesterId());
+        getEventAndValidateOwner(command.eventId(), command.requesterId(), command.requesterRole());
 
         Session session = sessionPort.findById(command.sessionId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
@@ -122,8 +122,8 @@ public class EventSessionService implements
     }
 
     @Override
-    public void deleteSession(Long sessionId, Long eventId, Long requesterId) {
-        getEventAndValidateOwner(eventId, requesterId);
+    public void deleteSession(Long sessionId, Long eventId, Long requesterId, String requesterRole) {
+        getEventAndValidateOwner(eventId, requesterId, requesterRole);
 
         Session session = sessionPort.findById(sessionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
@@ -148,8 +148,8 @@ public class EventSessionService implements
     }
 
     @Override
-    public void reorderSessions(Long eventId, Long requesterId, List<Long> sessionIds) {
-        getEventAndValidateOwner(eventId, requesterId);
+    public void reorderSessions(Long eventId, Long requesterId, String requesterRole, List<Long> sessionIds) {
+        getEventAndValidateOwner(eventId, requesterId, requesterRole);
 
         List<Session> sessions = sessionPort.findByEventId(eventId);
         Map<Long, Session> sessionMap = sessions.stream()
@@ -179,9 +179,17 @@ public class EventSessionService implements
         }
     }
 
-    private Event getEventAndValidateOwner(Long eventId, Long requesterId) {
+    /**
+     * 이벤트 소유권 검증 — ADMIN 역할은 모든 이벤트 관리 가능
+     */
+    private Event getEventAndValidateOwner(Long eventId, Long requesterId, String requesterRole) {
         Event event = eventRepositoryPort.findById(eventId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
+
+        // ADMIN 역할이면 소유권 검증 우회
+        if ("ADMIN".equalsIgnoreCase(requesterRole)) {
+            return event;
+        }
 
         if (!event.isOwnedBy(requesterId)) {
             throw new BusinessException(ErrorCode.FORBIDDEN);

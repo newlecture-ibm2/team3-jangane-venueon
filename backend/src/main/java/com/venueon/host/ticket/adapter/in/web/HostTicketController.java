@@ -38,13 +38,14 @@ public class HostTicketController {
     public ResponseEntity<ApiResponse<TicketResponse>> createTicket(
             @PathVariable Long eventId,
             @RequestHeader(value = "X-Host-Id", required = false) Long headerHostId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole,
             Authentication authentication,
             @Valid @RequestBody TicketCreateRequest request) {
 
         Long hostId = resolveHostId(headerHostId, authentication);
 
         CreateTicketUseCase.CreateTicketCommand command = new CreateTicketUseCase.CreateTicketCommand(
-                eventId, hostId,
+                eventId, hostId, userRole,
                 request.name(), request.description(),
                 request.price(), request.originalPrice(),
                 request.maxQuantity(), request.isAllSessions(),
@@ -63,13 +64,14 @@ public class HostTicketController {
     public ResponseEntity<ApiResponse<TicketResponse>> updateTicket(
             @PathVariable Long ticketId,
             @RequestHeader(value = "X-Host-Id", required = false) Long headerHostId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole,
             Authentication authentication,
             @Valid @RequestBody TicketUpdateRequest request) {
 
         Long hostId = resolveHostId(headerHostId, authentication);
 
         UpdateTicketUseCase.UpdateTicketCommand command = new UpdateTicketUseCase.UpdateTicketCommand(
-                ticketId, hostId,
+                ticketId, hostId, userRole,
                 request.name(), request.description(),
                 request.price(), request.originalPrice(),
                 request.maxQuantity(), request.isAllSessions(),
@@ -89,10 +91,11 @@ public class HostTicketController {
     public ResponseEntity<ApiResponse<Void>> deleteTicket(
             @PathVariable Long ticketId,
             @RequestHeader(value = "X-Host-Id", required = false) Long headerHostId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole,
             Authentication authentication) {
 
         Long hostId = resolveHostId(headerHostId, authentication);
-        deleteTicketUseCase.deleteTicket(ticketId, hostId);
+        deleteTicketUseCase.deleteTicket(ticketId, hostId, userRole);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 

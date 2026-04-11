@@ -17,6 +17,7 @@ export interface EventFormProps {
 export default function EventForm({ mode = 'create', eventId, initialData }: EventFormProps) {
   const router = useRouter();
   const { showToast } = useUIStore();
+  const [isMounted, setIsMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
@@ -29,6 +30,17 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   const [purchaseType, setPurchaseType] = useState<'SINGLE' | 'MULTI'>(initialData?.purchaseType || 'SINGLE');
   const [activeTab, setActiveTab] = useState<'general' | 'sessions'>('general');
   const [sessions, setSessions] = useState<any[]>(initialData?.sessions || []);
+  const [tickets, setTickets] = useState<any[]>(
+    (initialData?.tickets || []).length > 0
+      ? initialData!.tickets.map((t: any) => ({
+          ...t,
+          selectedSessionIndices: t.sessionIds 
+            ? t.sessionIds.map((sid: number) => (initialData?.sessions || []).findIndex((s: any) => s.id === sid)).filter((i: number) => i !== -1)
+            : []
+        }))
+      : [{ name: '기본 티켓', price: 0, originalPrice: 0, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }]
+  );
+  const [deletedTicketIds, setDeletedTicketIds] = useState<number[]>([]);
 
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
@@ -40,11 +52,20 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   });
 
   React.useEffect(() => {
+    setIsMounted(true);
     if (initialData?.thumbnailUrl) {
       setPreviewUrl(`/upload/${initialData.thumbnailUrl}`);
       setThumbnailUrl(initialData.thumbnailUrl);
     }
   }, [initialData]);
+
+  if (!isMounted) {
+    return (
+      <div className={styles.formContainer} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
+        <p style={{ color: '#888', fontSize: '1rem' }}>로딩 중...</p>
+      </div>
+    );
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -122,9 +143,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     }
   };
 
-  const calculatedTotalPrice = hasSession
-    ? sessions.reduce((sum, s) => sum + (Number(s.price) || 0), 0)
-    : Number(formData.price) || 0;
+  const calculatedTotalPrice = 0;
 
   const handleSubmit = async (isDraft: boolean) => {
     setLoading(true);
@@ -141,30 +160,12 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
       // API 요청 분기 (create / edit)
       const payload = {
-        categoryId: 1, // 테스트용 하드코딩
-        title: formData.title || '새 세션',
+        categoryId: initialData?.categoryId || 1,
+        title: formData.title || '새 이벤트',
         description: formData.description,
-        type: 'SEMINAR',
-        location: formData.location,
-        isOnline: isOnline,
-        price: calculatedTotalPrice,
-        maxAttendees: initialData?.maxAttendees || 50,
+        type: initialData?.type || 'SEMINAR',
         thumbnailUrl: thumbnailUrl,
-        startDate: startDateStr,
-        endDate: endDateStr,
         hasSession,
-        purchaseType,
-        sessions: hasSession ? sessions.map(s => ({
-          ...s,
-          price: Number(s.price) || 0,
-          maxAttendees: Number(s.maxAttendees) || 50,
-          startTime: s.date ? `${s.date}T10:00:00` : startDateStr,
-          endTime: s.date ? `${s.date}T18:00:00` : endDateStr,
-          location: s.location || formData.location,
-          isOnline: s.isOnline !== undefined ? s.isOnline : isOnline,
-          description: s.description || '',
-          onlineLink: s.onlineLink || '',
-        })) : undefined,
       };
 
       console.log("[DEBUG] API Request Payload:", JSON.stringify(payload, null, 2));
@@ -199,6 +200,116 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       const resData = await res.json();
       const targetId = mode === 'create' ? resData.data.id : eventId;
 
+      // 세션 저장 로직
+      const savedSessionIds: number[] = [];
+      if (hasSession && sessions.length > 0) {
+        for (const session of sessions) {
+          const sessionDate = session.date || formData.date;
+          let startTime = new Date().toISOString();
+          let endTime = new Date().toISOString();
+          if (sessionDate) {
+            startTime = `${sessionDate}T10:00:00`;
+            endTime = `${sessionDate}T18:00:00`;
+          }
+
+          const sessionPayload = {
+            title: session.title || '새 세션',
+            description: session.description || '세션 설명',
+            sortOrder: session.sortOrder || 0,
+            startTime,
+            endTime,
+            location: session.location || formData.location || '',
+            regionSido: session.regionSido || '서울',
+            regionSigungu: session.regionSigungu || '강남구',
+            isOnline: formData.isOnlineStr === 'true',
+            onlineLink: session.onlineLink || '',
+            maxAttendees: Number(session.maxAttendees) || 0,
+            recruitStartDate: session.recruitStartDate || null,
+            recruitEndDate: session.recruitEndDate || null,
+          };
+
+          if (session.id) {
+            const putRes = await fetch(`/api/host/events/${targetId}/sessions/${session.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(sessionPayload)
+            });
+            if (!putRes.ok) {
+              console.error(`[DEBUG] Session PUT failed:`, putRes.status, await putRes.text().catch(() => ''));
+            }
+            savedSessionIds.push(session.id);
+          } else {
+            const sessRes = await fetch(`/api/host/events/${targetId}/sessions`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(sessionPayload)
+            });
+            if (!sessRes.ok) {
+              console.error(`[DEBUG] Session POST failed:`, sessRes.status, await sessRes.text().catch(() => ''));
+            }
+            const sessData = await sessRes.json();
+            if (sessData?.data?.id) {
+              savedSessionIds.push(sessData.data.id);
+            }
+          }
+        }
+      }
+
+      // 티켓 저장 로직
+      // 1) 삭제된 티켓 처리 (DB에 존재하는 티켓만)
+      for (const deletedId of deletedTicketIds) {
+        try {
+          await fetch(`/api/host/tickets/${deletedId}`, { method: 'DELETE' });
+        } catch (e) {
+          console.error(`Failed to delete ticket ${deletedId}:`, e);
+        }
+      }
+
+      // 2) 생성/수정
+      if (tickets.length > 0) {
+        for (const t of tickets) {
+          // 유효성 검증
+          if (!t.isAllSessions && (!t.selectedSessionIndices || t.selectedSessionIndices.length === 0)) {
+            throw new Error(`"${t.name || '새 티켓'}" 티켓에 포함할 세션을 1개 이상 선택해주세요.`);
+          }
+
+          const ticketPayload = {
+            name: t.name,
+            description: t.description || '',
+            originalPrice: Number(t.originalPrice) || Number(t.price) || 0,
+            price: Number(t.price) || 0,
+            isAllSessions: Boolean(t.isAllSessions),
+            maxQuantity: t.maxQuantity ? Number(t.maxQuantity) : null,
+            sessionIds: t.isAllSessions 
+              ? [] 
+              : (t.selectedSessionIndices || []).map((idx: number) => savedSessionIds[idx]).filter((id: any) => id !== undefined),
+            sortOrder: 0,
+            salesStart: t.salesStart || null,
+            salesEnd: t.salesEnd || null,
+          };
+          
+          if (t.id) {
+            const ticketPutRes = await fetch(`/api/host/tickets/${t.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({...ticketPayload, isActive: t.isActive !== false})
+            });
+            if (!ticketPutRes.ok) {
+              console.error(`[DEBUG] Ticket PUT ${t.id} failed:`, ticketPutRes.status, await ticketPutRes.text().catch(() => ''));
+            }
+          } else {
+            const ticketPostRes = await fetch(`/api/host/events/${targetId}/tickets`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(ticketPayload)
+            });
+            if (!ticketPostRes.ok) {
+              console.error(`[DEBUG] Ticket POST failed:`, ticketPostRes.status, await ticketPostRes.text().catch(() => ''));
+            }
+          }
+        }
+      }
+
       if (mode === 'create' && !isDraft) {
         // 바로 게시하기 (새로 만들 때만)
         const publishRes = await fetch(`/api/events/${targetId}/status`, {
@@ -209,8 +320,9 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         if (!publishRes.ok) throw new Error('상태 변경 실패');
       }
 
-      showToast(mode === 'create' ? (isDraft ? '임시 저장되었습니다.' : '세션가 성공적으로 게시되었습니다.') : '세션가 성공적으로 수정되었습니다.', 'success');
-      router.push(`/events/${targetId}`);
+      showToast(mode === 'create' ? (isDraft ? '임시 저장되었습니다.' : '이벤트가 성공적으로 게시되었습니다.') : '이벤트가 성공적으로 수정되었습니다.', 'success');
+      // 서버 컴포넌트 캐시를 우회하기 위해 하드 네비게이션
+      window.location.href = `/events/${targetId}`;
     } catch (err: any) {
       showToast(err.message, 'error');
     } finally {
@@ -295,16 +407,26 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>세션을 사용하시겠습니까?</label>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-            <input type="radio" name="hasSession" checked={!hasSession} onChange={() => setHasSession(false)} />
-            사용안함 (이벤트 전체 판매)
-          </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-            <input type="radio" name="hasSession" checked={hasSession} onChange={() => setHasSession(true)} />
-            사용 (세션별 개별 판매)
-          </label>
+        <label className={styles.label}>이벤트 운영 방식</label>
+        <div className={styles.methodCardsContainer}>
+          <div 
+            className={`${styles.methodCard} ${!hasSession ? styles.activeMethod : ''}`}
+            onClick={() => setHasSession(false)}
+          >
+            <div className={styles.methodInfo}>
+              <span className={styles.methodTitle}>단일 이벤트 (고정 패키지)</span>
+              <span className={styles.methodDesc}>지정된 날짜/주제 그대로 참여하는 기본적인 형태의 이벤트입니다.</span>
+            </div>
+          </div>
+          <div 
+            className={`${styles.methodCard} ${hasSession ? styles.activeMethod : ''}`}
+            onClick={() => setHasSession(true)}
+          >
+            <div className={styles.methodInfo}>
+              <span className={styles.methodTitle}>복합 이벤트 (다중 세션)</span>
+              <span className={styles.methodDesc}>일정/주제가 나뉘어 있어, 고객이 원하는 세션을 취향껏 고를 수 있습니다.</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -313,22 +435,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           {hasSession ? '세션 공통 설정 (기본값)' : '이벤트 상세 설정'}
         </h3>
 
-        <div className={styles.grid3}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>총 가격</label>
-            <div className={styles.priceInputWrapper}>
-              <span className={styles.currencyIcon}>₩</span>
-              <input
-                type="number"
-                name="price"
-                className={styles.priceInput}
-                value={hasSession ? calculatedTotalPrice : formData.price}
-                onChange={handleChange}
-                disabled={hasSession}
-              />
-            </div>
-            {hasSession && <span style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px', display: 'block' }}>세션 설정에서 추가한 금액의 합계입니다.</span>}
-          </div>
+        <div className={styles.grid2}>
 
           <div className={styles.formGroup}>
             <label className={styles.label}>{hasSession ? '기본 날짜' : '날짜'}</label>
@@ -396,7 +503,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               <p style={{ color: '#888', marginBottom: '1rem' }}>등록된 세션이 없습니다.</p>
               <button
                 type="button"
-                onClick={() => setSessions([...sessions, { title: '새 세션', price: 0, maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
+                onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
                 style={{ padding: '0.5rem 1rem', background: '#000', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
               >
                 + 세션 추가하기
@@ -417,7 +524,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                   >
                     🗑️ 삭제
                   </button>
-                  <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+                  <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(3, 1fr)' }}>
                     <div style={{ gridColumn: '1 / -1' }}>
                       <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 제목</label>
                       <input
@@ -426,19 +533,6 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                         onChange={(e) => {
                           const newSessions = [...sessions];
                           newSessions[index].title = e.target.value;
-                          setSessions(newSessions);
-                        }}
-                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>가격</label>
-                      <input
-                        type="number"
-                        value={session.price || 0}
-                        onChange={(e) => {
-                          const newSessions = [...sessions];
-                          newSessions[index].price = parseInt(e.target.value, 10);
                           setSessions(newSessions);
                         }}
                         style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
@@ -489,7 +583,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               ))}
               <button
                 type="button"
-                onClick={() => setSessions([...sessions, { title: '새 세션', price: 0, maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
+                onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
                 style={{ padding: '1rem', background: '#f5f5f5', color: '#333', borderRadius: '8px', border: '1px dashed #ccc', cursor: 'pointer', fontWeight: 'bold', marginTop: '0.5rem' }}
               >
                 + 세션 항목 추가
@@ -498,6 +592,164 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           )}
         </div>
       )}
+
+      {/* 🔴 티켓 설정 섹션 추가 */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', borderBottom: '2px solid #000', paddingBottom: '0.5rem' }}>티켓 설정</h3>
+        <p style={{ color: '#666', fontSize: '0.9rem' }}>고객이 구매할 티켓 종류를 설정합니다. 세션에 연동할 수도 있습니다.</p>
+
+        {tickets.length === 0 ? (
+          <div style={{ padding: '2rem', textAlign: 'center', background: '#f9f9f9', borderRadius: '8px', border: '1px dashed #ccc' }}>
+            <p style={{ color: '#888', marginBottom: '1rem' }}>등록된 티켓이 없습니다.</p>
+            <button
+              type="button"
+              onClick={() => setTickets([...tickets, { name: '새 티켓', price: 0, originalPrice: 0, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }])}
+              style={{ padding: '0.5rem 1rem', background: '#000', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
+            >
+              + 티켓 추가하기
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {tickets.map((ticket, index) => (
+              <div key={index} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem', position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const removed = tickets[index];
+                    if (removed.id) {
+                      setDeletedTicketIds(prev => [...prev, removed.id]);
+                    }
+                    const newTickets = [...tickets];
+                    newTickets.splice(index, 1);
+                    setTickets(newTickets);
+                  }}
+                  style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer' }}
+                >
+                  🗑️ 삭제
+                </button>
+                <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>티켓 이름</label>
+                    <input
+                      type="text"
+                      value={ticket.name || ''}
+                      onChange={(e) => {
+                        const newTickets = [...tickets];
+                        newTickets[index].name = e.target.value;
+                        setTickets(newTickets);
+                      }}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>정가 (할인 전 가격)</label>
+                    <input
+                      type="number"
+                      value={ticket.originalPrice || 0}
+                      onChange={(e) => {
+                        const newTickets = [...tickets];
+                        newTickets[index].originalPrice = parseInt(e.target.value, 10);
+                        setTickets(newTickets);
+                      }}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>판매가 (실제 가격)</label>
+                    <input
+                      type="number"
+                      value={ticket.price || 0}
+                      onChange={(e) => {
+                        const newTickets = [...tickets];
+                        newTickets[index].price = parseInt(e.target.value, 10);
+                        if (!newTickets[index].originalPrice || newTickets[index].originalPrice < newTickets[index].price) {
+                          newTickets[index].originalPrice = newTickets[index].price;
+                        }
+                        setTickets(newTickets);
+                      }}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>수량 제한 <span style={{ fontWeight: 'normal', color: '#666' }}>(비우면 무제한)</span></label>
+                    <input
+                      type="number"
+                      value={ticket.maxQuantity || ''}
+                      onChange={(e) => {
+                        const newTickets = [...tickets];
+                        newTickets[index].maxQuantity = e.target.value === "" ? "" : parseInt(e.target.value, 10);
+                        setTickets(newTickets);
+                      }}
+                      placeholder="무제한"
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>적용 대상</label>
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                        <input type="radio" checked={ticket.isAllSessions !== false} onChange={() => {
+                          const newTickets = [...tickets];
+                          newTickets[index].isAllSessions = true;
+                          setTickets(newTickets);
+                        }} />
+                        전체 이벤트 (패키지)
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                        <input type="radio" checked={ticket.isAllSessions === false} onChange={() => {
+                          const newTickets = [...tickets];
+                          newTickets[index].isAllSessions = false;
+                          if (!newTickets[index].selectedSessionIndices) newTickets[index].selectedSessionIndices = [];
+                          setTickets(newTickets);
+                        }} />
+                        개별 세션
+                      </label>
+                    </div>
+                  </div>
+                  
+                  {ticket.isAllSessions === false && hasSession && (
+                    <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem', padding: '1rem', background: '#f5f5f5', borderRadius: '8px', border: '1px solid #ddd' }}>
+                      <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>포함할 세션 선택</label>
+                      {sessions.length === 0 && (
+                        <p style={{ color: '#ff4d4f', fontSize: '0.8rem', margin: 0 }}>⚠️ 위에서 먼저 세션을 추가해주세요.</p>
+                      )}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {sessions.map((s, sIndex) => (
+                          <label key={sIndex} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem' }}>
+                            <input 
+                              type="checkbox" 
+                              checked={(ticket.selectedSessionIndices || []).includes(sIndex)}
+                              onChange={(e) => {
+                                const newTickets = [...tickets];
+                                const current = newTickets[index].selectedSessionIndices || [];
+                                if (e.target.checked) {
+                                  newTickets[index].selectedSessionIndices = [...current, sIndex];
+                                } else {
+                                  newTickets[index].selectedSessionIndices = current.filter((i: number) => i !== sIndex);
+                                }
+                                setTickets(newTickets);
+                              }}
+                            />
+                            {s.title || `세션 ${sIndex + 1}`} {s.date ? `(${s.date})` : ''} - 정원 {s.maxAttendees || 50}명
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setTickets([...tickets, { name: '새 티켓', price: 0, originalPrice: 0, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }])}
+              style={{ padding: '1rem', background: '#f5f5f5', color: '#333', borderRadius: '8px', border: '1px dashed #ccc', cursor: 'pointer', fontWeight: 'bold', marginTop: '0.5rem' }}
+            >
+              + 티켓 항목 추가
+            </button>
+          </div>
+        )}
+      </div>
 
       <div className={styles.bottomSection}>
         <div className={styles.hostSection}>

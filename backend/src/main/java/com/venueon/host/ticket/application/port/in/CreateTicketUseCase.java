@@ -15,6 +15,7 @@ public interface CreateTicketUseCase {
     record CreateTicketCommand(
             Long eventId,
             Long hostId,
+            String hostRole,
             String name,
             String description,
             int price,

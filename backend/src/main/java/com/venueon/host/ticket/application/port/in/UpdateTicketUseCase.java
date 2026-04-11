@@ -15,6 +15,7 @@ public interface UpdateTicketUseCase {
     record UpdateTicketCommand(
             Long ticketId,
             Long hostId,
+            String hostRole,
             String name,
             String description,
             int price,

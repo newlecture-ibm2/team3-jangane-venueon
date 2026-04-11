@@ -10,17 +10,19 @@ import { format } from 'date-fns';
 interface EventData {
   id: number;
   title: string;
-  thumbnailUrl: string;
+  thumbnailUrl: string | null;
   type: string;
   status: string;
-  location: string;
-  isOnline: boolean;
-  price: number;
-  maxAttendees: number;
-  startDate: string;
-  endDate: string;
   categoryId: number;
   creatorId: number;
+  createdAt: string;
+  hasSession: boolean;
+  // Note: location, price, startDate are missing in EventListResponse v6
+  // They will be computed logically from Ticket/Session in the future.
+  location?: string;
+  isOnline?: boolean;
+  price?: number;
+  startDate?: string;
 }
 
 export default function Home() {
@@ -144,9 +146,17 @@ export default function Home() {
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => {
-                const startTime = new Date(event.startDate).getTime();
-                const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
-                const dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                let dDayData: number | string | undefined = undefined;
+                let dateTimeStr = '일정 미정';
+
+                if (event.startDate) {
+                  const startTime = new Date(event.startDate).getTime();
+                  const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
+                  dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                  try {
+                    dateTimeStr = format(new Date(event.startDate), 'yyyy년 M월 d일 a h시');
+                  } catch(e) {}
+                }
                 
                 // 간단한 카테고리 맵핑 (프론트에서 관리하는 카테고리가 있다면 가져옴)
                 const categoryLabel = categoryOptions.find(c => c.value === String(event.categoryId))?.label || '기타';
@@ -166,9 +176,9 @@ export default function Home() {
                       isWishlistedProp={wishlistSet.has(event.id)}
                       imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
                       organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 이름으로 변경
-                      dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
-                      location={event.isOnline ? '온라인' : event.location}
-                      price={event.price}
+                      dateTime={dateTimeStr}
+                      location={event.location || '장소 미정'}
+                      price={event.price || 0}
                       status={event.status}
                     />
                   </div>

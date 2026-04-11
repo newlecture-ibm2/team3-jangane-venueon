@@ -5,5 +5,5 @@ package com.venueon.host.ticket.application.port.in;
  */
 public interface DeleteTicketUseCase {
 
-    void deleteTicket(Long ticketId, Long hostId);
+    void deleteTicket(Long ticketId, Long hostId, String hostRole);
 }

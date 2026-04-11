@@ -52,6 +52,7 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                 CreateSessionUseCase.CreateSessionCommand sessionCommand = new CreateSessionUseCase.CreateSessionCommand(
                         savedEvent.getId(),
                         command.creatorId(),
+                        "HOST", // 이벤트 생성자는 HOST 역할
                         sessionReq.title(),
                         sessionReq.description(),
                         sessionReq.sortOrder(),

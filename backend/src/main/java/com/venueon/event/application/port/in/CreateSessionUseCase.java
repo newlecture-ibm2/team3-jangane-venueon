@@ -15,6 +15,7 @@ public interface CreateSessionUseCase {
     record CreateSessionCommand(
         Long eventId,
         Long requesterId,
+        String requesterRole,
         String title,
         String description,
         int sortOrder,

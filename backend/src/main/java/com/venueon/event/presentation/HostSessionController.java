@@ -27,11 +27,13 @@ public class HostSessionController {
     public ApiResponse<SessionResponse> createSession(
             @PathVariable Long eventId,
             @RequestHeader("X-User-Id") Long hostId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole,
             @Valid @RequestBody SessionCreateRequest request) {
 
         var command = new CreateSessionUseCase.CreateSessionCommand(
                 eventId,
                 hostId,
+                userRole,
                 request.title(),
                 request.description(),
                 request.sortOrder(),
@@ -56,12 +58,14 @@ public class HostSessionController {
             @PathVariable Long eventId,
             @PathVariable Long sessionId,
             @RequestHeader("X-User-Id") Long hostId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole,
             @Valid @RequestBody SessionUpdateRequest request) {
 
         var command = new UpdateSessionUseCase.UpdateSessionCommand(
                 sessionId,
                 eventId,
                 hostId,
+                userRole,
                 request.title(),
                 request.description(),
                 request.sortOrder(),
@@ -85,9 +89,10 @@ public class HostSessionController {
     public ApiResponse<Void> deleteSession(
             @PathVariable Long eventId,
             @PathVariable Long sessionId,
-            @RequestHeader("X-User-Id") Long hostId) {
+            @RequestHeader("X-User-Id") Long hostId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole) {
 
-        deleteSessionUseCase.deleteSession(sessionId, eventId, hostId);
+        deleteSessionUseCase.deleteSession(sessionId, eventId, hostId, userRole);
         return ApiResponse.success(null);
     }
 
@@ -95,9 +100,10 @@ public class HostSessionController {
     public ApiResponse<Void> reorderSessions(
             @PathVariable Long eventId,
             @RequestHeader("X-User-Id") Long hostId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole,
             @Valid @RequestBody SessionReorderRequest request) {
 
-        reorderSessionUseCase.reorderSessions(eventId, hostId, request.sessionIds());
+        reorderSessionUseCase.reorderSessions(eventId, hostId, userRole, request.sessionIds());
         return ApiResponse.success(null);
     }
 
