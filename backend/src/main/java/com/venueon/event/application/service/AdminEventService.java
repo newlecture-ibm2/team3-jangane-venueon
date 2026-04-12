@@ -1,12 +1,18 @@
 package com.venueon.event.application.service;
 
+import com.venueon.event.adapter.in.web.dto.EventAdminDetailResponse;
 import com.venueon.event.adapter.in.web.dto.EventAdminResponse;
+import com.venueon.event.adapter.in.web.dto.SessionResponse;
+import com.venueon.event.adapter.out.persistence.EventSessionMapper;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
 import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
 import com.venueon.event.application.port.in.AdminEventUseCase;
 import com.venueon.event.domain.model.EventStatus;
+import com.venueon.user.adapter.out.persistence.entity.HostProfileJpaEntity;
+import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
+import com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,6 +33,8 @@ public class AdminEventService implements AdminEventUseCase {
 
     private final EventJpaRepository eventRepository;
     private final EventSessionJpaRepository sessionRepository;
+    private final HostProfileJpaRepository hostProfileRepository;
+    private final EventSessionMapper sessionMapper;
 
     @Override
     public Page<EventAdminResponse> getEvents(String status, Long categoryId, String keyword, Boolean isHidden, Pageable pageable) {
@@ -97,6 +105,64 @@ public class AdminEventService implements AdminEventUseCase {
             throw new IllegalArgumentException("존재하지 않는 강의입니다. ID: " + id);
         }
         eventRepository.deleteById(id);
+    }
+
+    @Override
+    public EventAdminDetailResponse getEventDetail(Long id) {
+        log.info("AdminEventService.getEventDetail - id: {}", id);
+        
+        EventJpaEntity event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다. ID: " + id));
+        
+        List<EventSessionJpaEntity> sessions = sessionRepository.findByEventIdOrderBySortOrder(id);
+        
+        UserJpaEntity creator = event.getCreator();
+        HostProfileJpaEntity hostProfile = hostProfileRepository.findByUserId(creator.getId()).orElse(null);
+        
+        return convertToDetailResponse(event, sessions, hostProfile);
+    }
+
+    private EventAdminDetailResponse convertToDetailResponse(EventJpaEntity entity, List<EventSessionJpaEntity> sessions, HostProfileJpaEntity hostProfile) {
+        List<SessionResponse> sessionResponses = sessions.stream()
+                .map(sessionMapper::toDomain)
+                .map(SessionResponse::from)
+                .toList();
+
+        EventAdminDetailResponse.HostInfo hostInfo = EventAdminDetailResponse.HostInfo.builder()
+                .userId(entity.getCreator().getId())
+                .email(entity.getCreator().getEmail())
+                .nickname(entity.getCreator().getNickname())
+                .profileImg(entity.getCreator().getProfileImg())
+                .orgName(hostProfile != null ? hostProfile.getOrgName() : null)
+                .orgNumber(hostProfile != null ? hostProfile.getOrgNumber() : null)
+                .managerName(hostProfile != null ? hostProfile.getManagerName() : null)
+                .orgDescription(hostProfile != null ? hostProfile.getOrgDescription() : null)
+                .build();
+
+        return EventAdminDetailResponse.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .type(entity.getType())
+                .status(entity.getStatus())
+                .displayStatus(mapToDisplayStatus(entity.getStatus()))
+                .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
+                .categoryName(entity.getCategory() != null ? entity.getCategory().getName() : "미지정")
+                .location(entity.getLocation())
+                .isOnline(entity.isOnline())
+                .price(entity.getPrice())
+                .maxAttendees(entity.getMaxAttendees())
+                .thumbnailUrl(entity.getThumbnailUrl())
+                .startDate(entity.getStartDate())
+                .endDate(entity.getEndDate())
+                .hasSession(entity.isHasSession())
+                .purchaseType(entity.getPurchaseType())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .isHidden(entity.isHidden())
+                .host(hostInfo)
+                .sessions(sessionResponses)
+                .build();
     }
 
     private EventAdminResponse convertToResponse(EventJpaEntity entity) {

@@ -148,7 +148,6 @@ export const adminReportAPI = {
   processReport: (id: number, action: string, status: string) =>
     api.patch<ApiResponse<void>>(`/admin/reports/${id}`, { action, status }),
 };
-
 export interface AdminEventListItem {
   id: number;
   title: string;
@@ -157,6 +156,52 @@ export interface AdminEventListItem {
   status: string;
   displayStatus: 'READY' | 'RECRUITING' | 'CLOSED';
   isHidden: boolean;
+}
+
+export interface AdminEventDetail extends AdminEventListItem {
+  description: string;
+  type: string;
+  categoryId: number;
+  categoryName: string;
+  location: string;
+  isOnline: boolean;
+  price: number;
+  maxAttendees: number;
+  thumbnailUrl: string;
+  startDate: string;
+  endDate: string;
+  hasSession: boolean;
+  purchaseType: string;
+  updatedAt: string;
+  host: AdminHostInfo;
+  sessions: AdminEventSession[];
+}
+
+export interface AdminHostInfo {
+  userId: number;
+  email: string;
+  nickname: string;
+  profileImg: string;
+  orgName: string;
+  orgNumber: string;
+  managerName: string;
+  orgDescription: string;
+}
+
+export interface AdminEventSession {
+  id: number;
+  title: string;
+  description: string;
+  sortOrder: number;
+  startTime: string;
+  endTime: string;
+  location: string;
+  isOnline: boolean;
+  onlineLink: string;
+  price: number;
+  maxAttendees: number;
+  currentAttendees: number;
+  isDefault: boolean;
 }
 
 export const adminEventAPI = {
@@ -175,6 +220,10 @@ export const adminEventAPI = {
     });
     return api.get<ApiResponse<PageResponse<AdminEventListItem>>>('/admin/events', { params: cleanParams });
   },
+
+  /** 강의 상세 조회 */
+  getEvent: (id: number) =>
+    api.get<ApiResponse<AdminEventDetail>>(`/admin/events/${id}`),
 
   /** 노출 상태 토글 */
   toggleVisibility: (id: number) =>

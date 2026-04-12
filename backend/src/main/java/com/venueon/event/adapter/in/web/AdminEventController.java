@@ -2,6 +2,7 @@ package com.venueon.event.adapter.in.web;
 
 import com.venueon.common.dto.ApiResponse;
 import com.venueon.event.application.port.in.AdminEventUseCase;
+import com.venueon.event.adapter.in.web.dto.EventAdminDetailResponse;
 import com.venueon.event.adapter.in.web.dto.EventAdminResponse;
 import com.venueon.event.domain.model.EventStatus;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,11 @@ public class AdminEventController {
             @PageableDefault(size = 10) Pageable pageable) {
         
         return ResponseEntity.ok(ApiResponse.success(adminEventUseCase.getEvents(status, categoryId, keyword, isHidden, pageable)));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<EventAdminDetailResponse>> getEvent(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(adminEventUseCase.getEventDetail(id)));
     }
 
     @PatchMapping("/{id}/visibility")

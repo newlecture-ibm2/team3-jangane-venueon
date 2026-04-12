@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import styles from './EventTable.module.css';
 import { DeleteIcon, MoreIcon } from '@/components/icons';
 import { Checkbox, Pagination, Tag, Toggle, InputField, PopoverMenu } from '@/components/ui';
@@ -23,11 +24,6 @@ function formatDate(dateStr: string) {
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
-const POPOVER_ITEMS = [
-  { value: 'edit', label: '편집' },
-  { value: 'hide', label: '숨김 처리' },
-  { value: 'delete', label: '삭제' },
-];
 
 export default function EventTable() {
   const [activeTab, setActiveTab] = useState('ALL');
@@ -40,10 +36,11 @@ export default function EventTable() {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [showHiddenOnly, setShowHiddenOnly] = useState(false);
-  
+
   // 팝오버 및 모달 상태
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, eventId: 0, title: '' });
+  const [hideModal, setHideModal] = useState({ isOpen: false, eventId: 0 });
 
   const { showToast } = useUIStore();
 
@@ -131,11 +128,14 @@ export default function EventTable() {
   };
 
   const handlePopoverSelect = (value: string, event: AdminEventListItem) => {
-    setOpenPopoverId(null);
     if (value === 'delete') {
       handleDeleteClick(event);
     } else if (value === 'hide') {
-      handleToggleVisibility(event.id);
+      if (event.isHidden) {
+        handleToggleVisibility(event.id); // 노출 전환은 바로 처리
+      } else {
+        setHideModal({ isOpen: true, eventId: event.id }); // 숨김 처리 시에만 모달
+      }
     } else if (value === 'edit') {
       showToast('강의 편집 페이지로 이동합니다. (준비 중)', 'info');
     }
@@ -177,8 +177,8 @@ export default function EventTable() {
           ))}
         </div>
         <div className={styles.checkboxArea}>
-          <Checkbox 
-            label="숨김 처리된 강의 보기" 
+          <Checkbox
+            label="숨김 처리된 강의 보기"
             checked={showHiddenOnly}
             onChange={(e) => setShowHiddenOnly(e.target.checked)}
           />
@@ -188,9 +188,9 @@ export default function EventTable() {
       {/* 2) 검색바 (공통 InputField 활용) */}
       <div className={styles.filterRow}>
         <div className={styles.searchArea}>
-          <InputField 
-            variant="search" 
-            placeholder="강의 제목으로 검색하세요" 
+          <InputField
+            variant="search"
+            placeholder="강의 제목으로 검색하세요"
             className={styles.searchInput}
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
@@ -201,14 +201,14 @@ export default function EventTable() {
       {/* 3) 카테고리 필터 영역 (검색바 아래로 이동) */}
       <div className={styles.categoryRow}>
         <div className={styles.categoryChips}>
-          <button 
+          <button
             className={`${styles.chip} ${selectedCategoryId === null ? styles.activeChip : ''}`}
             onClick={() => { setSelectedCategoryId(null); setCurrentPage(1); }}
           >
             전체
           </button>
           {categories.map((cat) => (
-            <button 
+            <button
               key={cat.id}
               className={`${styles.chip} ${selectedCategoryId === cat.id ? styles.activeChip : ''}`}
               onClick={() => { setSelectedCategoryId(cat.id); setCurrentPage(1); }}
@@ -241,49 +241,55 @@ export default function EventTable() {
               events
                 .filter(ev => !showHiddenOnly || ev.isHidden)
                 .map((event) => (
-                <tr key={event.id}>
-                  <td className={styles.colTitle}>
-                    <span className={styles.eventTitle}>{event.title}</span>
-                  </td>
-                  <td className={styles.colAttendees}>{event.currentAttendees}명</td>
-                  <td className={styles.colDate}>
-                    {formatDate(event.createdAt)}
-                  </td>
-                  <td className={styles.colStatus}>
-                    {getStatusTag(event.displayStatus)}
-                  </td>
-                  <td className={styles.colVisibility}>
-                    <Toggle 
-                      checked={!event.isHidden} 
-                      onChange={() => handleToggleVisibility(event.id)}
-                    />
-                  </td>
-                  <td className={styles.colAction}>
-                    <div className={styles.actionGroup}>
-                      <button className={styles.deleteBtn} onClick={() => handleDeleteClick(event)}>
-                        <DeleteIcon />
-                      </button>
-                      <div className={styles.moreWrapper}>
-                        <button 
-                          className={styles.iconButton} 
-                          onClick={() => setOpenPopoverId(openPopoverId === event.id ? null : event.id)}
-                        >
-                          <MoreIcon />
+                  <tr key={event.id}>
+                    <td className={styles.colTitle}>
+                      <Link href={`/admin/events/${event.id}`} className={styles.eventTitleLink}>
+                        {event.title}
+                      </Link>
+                    </td>
+                    <td className={styles.colAttendees}>{event.currentAttendees}명</td>
+                    <td className={styles.colDate}>
+                      {formatDate(event.createdAt)}
+                    </td>
+                    <td className={styles.colStatus}>
+                      {getStatusTag(event.displayStatus)}
+                    </td>
+                    <td className={styles.colVisibility}>
+                      <Toggle
+                        checked={!event.isHidden}
+                        onChange={() => handleToggleVisibility(event.id)}
+                      />
+                    </td>
+                    <td className={styles.colAction}>
+                      <div className={styles.actionGroup}>
+                        <button className={styles.deleteBtn} onClick={() => handleDeleteClick(event)}>
+                          <DeleteIcon />
                         </button>
-                        {openPopoverId === event.id && (
-                          <PopoverMenu 
-                            items={POPOVER_ITEMS}
-                            onSelect={(v) => handlePopoverSelect(v, event)}
-                            onClose={() => setOpenPopoverId(null)}
-                            width={120}
-                            className={styles.popover}
-                          />
-                        )}
+                        <div className={styles.moreWrapper}>
+                          <button
+                            className={styles.iconButton}
+                            onClick={() => setOpenPopoverId(openPopoverId === event.id ? null : event.id)}
+                          >
+                            <MoreIcon />
+                          </button>
+                          {openPopoverId === event.id && (
+                            <PopoverMenu
+                              items={[
+                                { value: 'edit', label: '편집' },
+                                { value: 'hide', label: event.isHidden ? '숨김 해제' : '숨김 처리' },
+                                { value: 'delete', label: '삭제' },
+                              ]}
+                              onSelect={(v) => handlePopoverSelect(v, event)}
+                              onClose={() => setOpenPopoverId(null)}
+                              width={120}
+                              className={styles.popover}
+                            />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                  </tr>
+                ))
             )}
           </tbody>
         </table>
@@ -292,7 +298,7 @@ export default function EventTable() {
       {/* 4) 페이지네이션 */}
       {totalPages > 1 && (
         <div className={styles.paginationArea}>
-          <Pagination 
+          <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
@@ -301,7 +307,7 @@ export default function EventTable() {
       )}
 
       {/* 삭제 확인 모달 */}
-      <ConfirmModal 
+      <ConfirmModal
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })}
         onConfirm={handleConfirmDelete}
@@ -311,6 +317,23 @@ export default function EventTable() {
         confirmText="삭제"
         cancelText="취소"
       />
+
+      {/* 숨김 확인 모달 (CSS 변수 오버라이드로 레이아웃은 유지하되 버튼 색상만 변경) */}
+      <div style={{ '--color-error': 'var(--color-primary)' } as React.CSSProperties}>
+        <ConfirmModal
+          isOpen={hideModal.isOpen}
+          onClose={() => setHideModal({ ...hideModal, isOpen: false })}
+          onConfirm={() => {
+            handleToggleVisibility(hideModal.eventId);
+            setHideModal({ ...hideModal, isOpen: false });
+          }}
+          title="해당 강의를 목록에서 숨기시겠습니까?"
+          subtitle="숨김 처리 시 수강생 페이지에 노출되지 않으며, 언제든지 다시 노출할 수 있습니다."
+          status="danger"
+          confirmText="숨기기"
+          cancelText="취소"
+        />
+      </div>
     </div>
   );
 }
