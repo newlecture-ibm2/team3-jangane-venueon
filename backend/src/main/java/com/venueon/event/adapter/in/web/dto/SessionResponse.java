@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 /**
  * 세션 응답 DTO
  * v6: price 제거, regionSido/regionSigungu 추가, recruitmentStatus/sessionStatus 추가
+ * 정원연동: remainingCapacity, isRecruitmentClosed 추가
  */
 public record SessionResponse(
     Long id,
@@ -28,7 +29,9 @@ public record SessionResponse(
     RecruitmentStatus recruitmentStatus,
     EventStatus sessionStatus,
     LocalDateTime recruitStartDate,
-    LocalDateTime recruitEndDate
+    LocalDateTime recruitEndDate,
+    boolean isRecruitmentClosed,
+    int remainingCapacity          // Computed: maxAttendees - currentAttendees (0이면 무제한)
 ) {
     public static SessionResponse from(Session session) {
         return new SessionResponse(
@@ -50,7 +53,10 @@ public record SessionResponse(
             session.getRecruitmentStatus(),
             session.getSessionStatus(),
             session.getRecruitStartDate(),
-            session.getRecruitEndDate()
+            session.getRecruitEndDate(),
+            session.getIsRecruitmentClosed(),
+            session.getRemainingCapacity()
         );
     }
 }
+

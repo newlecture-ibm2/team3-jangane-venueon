@@ -69,6 +69,30 @@
   letter-spacing: 0.02em;
 }
 
+/* 마감 임박 및 불가 사유 추가 */
+.urgencyBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-warning, #ff9800);
+  color: #fff;
+  font: var(--text-caption-medium);
+  letter-spacing: 0.02em;
+}
+
+.unavailableReason {
+  font: var(--text-caption-regular);
+  color: var(--color-error);
+  margin-top: 4px;
+}
+
+.recruitEndText {
+  font: var(--text-caption-regular);
+  color: var(--color-text-gray-500);
+  margin-top: 8px;
+}
+
 /* 이름/설명/세션 컨텐츠 영역 */
 .ticketContent {
   display: flex;

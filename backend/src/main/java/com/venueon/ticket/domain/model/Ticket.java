@@ -89,9 +89,25 @@ public class Ticket {
         this.soldCount += qty;
     }
 
+    /**
+     * 재고 차감 — 설계서 표준 인터페이스 (decreaseStock)
+     * @see #incrementSoldCount(int)
+     */
+    public void decreaseStock(int qty) {
+        incrementSoldCount(qty);
+    }
+
     /** 판매 수량 감소 (환불 등) */
     public void decrementSoldCount(int qty) {
         this.soldCount = Math.max(0, this.soldCount - qty);
+    }
+
+    /**
+     * 재고 복구 — 설계서 표준 인터페이스 (increaseStock)
+     * @see #decrementSoldCount(int)
+     */
+    public void increaseStock(int qty) {
+        decrementSoldCount(qty);
     }
 
     /** 수정 */

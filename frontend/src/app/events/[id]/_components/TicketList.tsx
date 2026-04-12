@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Button, Tag } from '@/components/ui';
 import styles from './TicketList.module.css';
+import { format, differenceInDays } from 'date-fns';
 
 interface Ticket {
   id: number;
@@ -21,6 +22,16 @@ interface Ticket {
   salesEnd: string | null;
   sortOrder: number;
   sessionIds: number[];
+  isPurchasable?: boolean;
+  unavailableReason?: string | null;
+  recruitEndDate?: string | null;
+}
+
+function getUrgencyLevel(endDateStr: string | null | undefined) {
+  if (!endDateStr) return null;
+  const daysLeft = differenceInDays(new Date(endDateStr), new Date());
+  if (daysLeft >= 0 && daysLeft <= 3) return `마감 D-${daysLeft === 0 ? 'Day' : daysLeft}`;
+  return null;
 }
 
 interface TicketListProps {
@@ -46,8 +57,10 @@ export default function TicketList({ tickets, sessions, eventStatus }: TicketLis
     <div className={styles.ticketListWrapper}>
       <div className={styles.ticketGrid}>
         {tickets.map((ticket) => {
+          // 새로 추가된 isPurchasable 기반 판단 (v6 정원 연동) - 백엔드가 없거나 이전 버전이면 기존 로직으로 Fallback
           const isSoldOut = ticket.remainingQuantity !== null && ticket.remainingQuantity <= 0;
-          const isSelectable = ticket.isOnSale && !isSoldOut && canPurchase;
+          const isSelectable = (ticket.isPurchasable ?? (ticket.isOnSale && !isSoldOut)) && canPurchase;
+          const urgencyText = getUrgencyLevel(ticket.recruitEndDate);
 
           return (
             <div
@@ -67,9 +80,15 @@ export default function TicketList({ tickets, sessions, eventStatus }: TicketLis
                   {ticket.discountRate > 0 && (
                     <span className={styles.discountBadge}>{ticket.discountRate}% 할인</span>
                   )}
+                  {isSelectable && urgencyText && (
+                    <span className={styles.urgencyBadge}>{urgencyText}</span>
+                  )}
                 </div>
-                {isSoldOut && <Tag variant="red">매진</Tag>}
-                {!isSoldOut && !ticket.isOnSale && <Tag variant="gray">판매 종료</Tag>}
+                { ticket.isPurchasable === false ? (
+                  <Tag variant="red">선택 불가</Tag>
+                ) : (
+                  <Tag variant="green">선택 가능</Tag>
+                )}
               </div>
 
               {/* 이름/설명/세션 - 상단 영역 */}
@@ -89,6 +108,12 @@ export default function TicketList({ tickets, sessions, eventStatus }: TicketLis
                         ? sessions.filter(s => ticket.sessionIds.includes(s.id)).map(s => s.title).join(' • ')
                         : '선택된 세션 없음'
                     }
+                  </div>
+                )}
+                
+                {ticket.isPurchasable === false && ticket.unavailableReason && (
+                  <div className={styles.unavailableReason}>
+                    ⚠️ {ticket.unavailableReason}
                   </div>
                 )}
               </div>
@@ -113,6 +138,12 @@ export default function TicketList({ tickets, sessions, eventStatus }: TicketLis
                     </span>
                   ) : (
                     <span className={styles.stockText}>수량 무제한</span>
+                  )}
+
+                  {ticket.recruitEndDate && (
+                    <div className={styles.recruitEndText}>
+                      마감: {format(new Date(ticket.recruitEndDate), 'MM.dd HH:mm')}
+                    </div>
                   )}
                 </div>
               </div>

@@ -99,10 +99,35 @@ public class Session {
     }
 
     /**
+     * 참석자 수 증가 — 설계서 표준 인터페이스 (increaseAttendees)
+     * @see #incrementAttendees(int)
+     */
+    public void increaseAttendees(int quantity) {
+        incrementAttendees(quantity);
+    }
+
+    /**
      * 참석자 수 감소 (주문 취소/환불 시)
      */
     public void decrementAttendees(int quantity) {
         this.currentAttendees = Math.max(0, this.currentAttendees - quantity);
+    }
+
+    /**
+     * 참석자 수 감소 — 설계서 표준 인터페이스 (decreaseAttendees)
+     * @see #decrementAttendees(int)
+     */
+    public void decreaseAttendees(int quantity) {
+        decrementAttendees(quantity);
+    }
+
+    /**
+     * 잔여 정원 계산 (Computed)
+     * maxAttendees가 0이면 무제한이므로 0 반환
+     */
+    public int getRemainingCapacity() {
+        if (maxAttendees == 0) return 0; // 무제한
+        return Math.max(0, maxAttendees - currentAttendees);
     }
 
     /**

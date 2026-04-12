@@ -29,16 +29,35 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   const [hasSession, setHasSession] = useState<boolean>(initialData?.hasSession || false);
   const [purchaseType, setPurchaseType] = useState<'SINGLE' | 'MULTI'>(initialData?.purchaseType || 'SINGLE');
   const [activeTab, setActiveTab] = useState<'general' | 'sessions'>('general');
-  const [sessions, setSessions] = useState<any[]>(initialData?.sessions || []);
+  const [sessions, setSessions] = useState<any[]>(
+    (initialData?.sessions || []).map((s: any) => ({
+      ...s,
+      // 기존 ISO datetime → 분리된 date + time 필드로 변환
+      startDate: s.startTime ? s.startTime.substring(0, 10) : '',
+      startTimeOnly: s.startTime ? s.startTime.substring(11, 16) : '10:00',
+      endDate: s.endTime ? s.endTime.substring(0, 10) : '',
+      endTimeOnly: s.endTime ? s.endTime.substring(11, 16) : '18:00',
+      useRecruitPeriod: !!(s.recruitStartDate || s.recruitEndDate),
+      recruitStartDate: s.recruitStartDate ? s.recruitStartDate.substring(0, 10) : '',
+      recruitEndDate: s.recruitEndDate ? s.recruitEndDate.substring(0, 10) : '',
+    }))
+  );
   const [tickets, setTickets] = useState<any[]>(
     (initialData?.tickets || []).length > 0
-      ? initialData!.tickets.map((t: any) => ({
-          ...t,
-          selectedSessionIndices: t.sessionIds 
-            ? t.sessionIds.map((sid: number) => (initialData?.sessions || []).findIndex((s: any) => s.id === sid)).filter((i: number) => i !== -1)
-            : []
-        }))
-      : [{ name: '기본 티켓', price: 0, originalPrice: 0, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }]
+      ? initialData!.tickets.map((t: any) => {
+          const hasDiscount = t.originalPrice > 0 && t.price < t.originalPrice;
+          return {
+            ...t,
+            // 할인 있으면: price=정가(originalPrice), discountPrice=할인가(price)
+            price: hasDiscount ? t.originalPrice : t.price,
+            discountPrice: hasDiscount ? t.price : undefined,
+            useDiscount: hasDiscount,
+            selectedSessionIndices: t.sessionIds 
+              ? t.sessionIds.map((sid: number) => (initialData?.sessions || []).findIndex((s: any) => s.id === sid)).filter((i: number) => i !== -1)
+              : []
+          };
+        })
+      : [{ name: '기본 티켓', price: 0, originalPrice: 0, useDiscount: false, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }]
   );
   const [deletedTicketIds, setDeletedTicketIds] = useState<number[]>([]);
 
@@ -204,12 +223,26 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       const savedSessionIds: number[] = [];
       if (hasSession && sessions.length > 0) {
         for (const session of sessions) {
-          const sessionDate = session.date || formData.date;
-          let startTime = new Date().toISOString();
-          let endTime = new Date().toISOString();
-          if (sessionDate) {
-            startTime = `${sessionDate}T10:00:00`;
-            endTime = `${sessionDate}T18:00:00`;
+          // 세션 기간: 날짜+시간을 합쳐서 ISO 형식 생성
+          let startTime = null;
+          let endTime = null;
+          if (session.startDate) {
+            startTime = `${session.startDate}T${session.startTimeOnly || '10:00'}:00`;
+          }
+          if (session.endDate) {
+            endTime = `${session.endDate}T${session.endTimeOnly || '18:00'}:00`;
+          }
+
+          // 모집 기간
+          let recruitStartDate = null;
+          let recruitEndDate = null;
+          if (session.useRecruitPeriod) {
+            if (session.recruitStartDate) {
+              recruitStartDate = `${session.recruitStartDate}T00:00:00`;
+            }
+            if (session.recruitEndDate) {
+              recruitEndDate = `${session.recruitEndDate}T23:59:00`;
+            }
           }
 
           const sessionPayload = {
@@ -224,8 +257,8 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             isOnline: formData.isOnlineStr === 'true',
             onlineLink: session.onlineLink || '',
             maxAttendees: Number(session.maxAttendees) || 0,
-            recruitStartDate: session.recruitStartDate || null,
-            recruitEndDate: session.recruitEndDate || null,
+            recruitStartDate,
+            recruitEndDate,
           };
 
           if (session.id) {
@@ -273,11 +306,16 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             throw new Error(`"${t.name || '새 티켓'}" 티켓에 포함할 세션을 1개 이상 선택해주세요.`);
           }
 
+          // 할인 토글 기반으로 originalPrice / price 결정
+          const basePrice = Number(t.price) || 0;
+          const finalOriginalPrice = t.useDiscount ? basePrice : basePrice;
+          const finalPrice = t.useDiscount ? (Number(t.discountPrice) || basePrice) : basePrice;
+
           const ticketPayload = {
             name: t.name,
             description: t.description || '',
-            originalPrice: Number(t.originalPrice) || Number(t.price) || 0,
-            price: Number(t.price) || 0,
+            originalPrice: finalOriginalPrice,
+            price: finalPrice,
             isAllSessions: Boolean(t.isAllSessions),
             maxQuantity: t.maxQuantity ? Number(t.maxQuantity) : null,
             sessionIds: t.isAllSessions 
@@ -503,37 +541,41 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               <p style={{ color: '#888', marginBottom: '1rem' }}>등록된 세션이 없습니다.</p>
               <button
                 type="button"
-                onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
+                onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
                 style={{ padding: '0.5rem 1rem', background: '#000', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
               >
                 + 세션 추가하기
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {sessions.map((session, index) => (
-                <div key={index} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem', position: 'relative' }}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newSessions = [...sessions];
-                      newSessions.splice(index, 1);
-                      setSessions(newSessions);
-                    }}
-                    style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer' }}
-                  >
-                    🗑️ 삭제
-                  </button>
-                  <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                <div key={index} style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '1.5rem', position: 'relative', background: '#fafbfc' }}>
+                  {/* 헤더: 세션 번호 + 삭제 */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid #eee' }}>
+                    <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#333' }}>세션 {index + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newSessions = [...sessions];
+                        newSessions.splice(index, 1);
+                        setSessions(newSessions);
+                      }}
+                      style={{ background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '0.85rem' }}
+                    >
+                      🗑️ 삭제
+                    </button>
+                  </div>
+
+                  {/* 기본 정보: 제목, 정원, 장소 */}
+                  <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: '1.25rem' }}>
                     <div style={{ gridColumn: '1 / -1' }}>
                       <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 제목</label>
                       <input
                         type="text"
                         value={session.title || ''}
                         onChange={(e) => {
-                          const newSessions = [...sessions];
-                          newSessions[index].title = e.target.value;
-                          setSessions(newSessions);
+                          const ns = [...sessions]; ns[index].title = e.target.value; setSessions(ns);
                         }}
                         style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                       />
@@ -544,46 +586,123 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                         type="number"
                         value={session.maxAttendees || 0}
                         onChange={(e) => {
-                          const newSessions = [...sessions];
-                          newSessions[index].maxAttendees = parseInt(e.target.value, 10);
-                          setSessions(newSessions);
+                          const ns = [...sessions]; ns[index].maxAttendees = parseInt(e.target.value, 10); setSessions(ns);
                         }}
                         style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                       />
                     </div>
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 날짜 <span style={{ fontWeight: 'normal', color: '#666' }}>(비울시 일반설정 동기화)</span></label>
-                      <input
-                        type="date"
-                        value={session.date !== undefined ? session.date : formData.date}
-                        onChange={(e) => {
-                          const newSessions = [...sessions];
-                          newSessions[index].date = e.target.value === "" ? undefined : e.target.value;
-                          setSessions(newSessions);
-                        }}
-                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
-                      />
-                    </div>
-                    <div>
+                    <div style={{ gridColumn: 'span 2' }}>
                       <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 장소 <span style={{ fontWeight: 'normal', color: '#666' }}>(비울시 일반설정 동기화)</span></label>
                       <input
                         type="text"
                         value={session.location !== undefined ? session.location : formData.location}
                         placeholder="일반 설정과 다른 경우 입력"
                         onChange={(e) => {
-                          const newSessions = [...sessions];
-                          newSessions[index].location = e.target.value === "" ? undefined : e.target.value;
-                          setSessions(newSessions);
+                          const ns = [...sessions]; ns[index].location = e.target.value === '' ? undefined : e.target.value; setSessions(ns);
                         }}
                         style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                       />
                     </div>
                   </div>
+
+                  {/* ── 세션 기간 섹션 ── */}
+                  <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#333', marginBottom: '0.75rem' }}>📅 세션 기간 <span style={{ fontWeight: 'normal', color: '#999', fontSize: '0.75rem' }}>미설정 시 호스트가 수동으로 시작/종료 관리</span></div>
+                    <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>시작 날짜</label>
+                        <input
+                          type="date"
+                          value={session.startDate || ''}
+                          onChange={(e) => {
+                            const ns = [...sessions]; ns[index].startDate = e.target.value || ''; setSessions(ns);
+                          }}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>시작 시간</label>
+                        <input
+                          type="time"
+                          value={session.startTimeOnly || '10:00'}
+                          onChange={(e) => {
+                            const ns = [...sessions]; ns[index].startTimeOnly = e.target.value; setSessions(ns);
+                          }}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>종료 날짜</label>
+                        <input
+                          type="date"
+                          value={session.endDate || ''}
+                          onChange={(e) => {
+                            const ns = [...sessions]; ns[index].endDate = e.target.value || ''; setSessions(ns);
+                          }}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>종료 시간</label>
+                        <input
+                          type="time"
+                          value={session.endTimeOnly || '18:00'}
+                          onChange={(e) => {
+                            const ns = [...sessions]; ns[index].endTimeOnly = e.target.value; setSessions(ns);
+                          }}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ── 모집 기간 섹션 ── */}
+                  <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: '8px', padding: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700', color: '#333' }}>
+                        <input
+                          type="checkbox"
+                          checked={session.useRecruitPeriod || false}
+                          onChange={(e) => {
+                            const ns = [...sessions]; ns[index].useRecruitPeriod = e.target.checked; setSessions(ns);
+                          }}
+                        />
+                        📋 모집 기간 설정
+                      </label>
+                      <span style={{ fontSize: '0.75rem', color: '#999' }}>체크 해제 시 게시 즉시 모집이 시작됩니다</span>
+                    </div>
+                    {session.useRecruitPeriod && (
+                      <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>모집 시작일</label>
+                          <input
+                            type="date"
+                            value={session.recruitStartDate || ''}
+                            onChange={(e) => {
+                              const ns = [...sessions]; ns[index].recruitStartDate = e.target.value; setSessions(ns);
+                            }}
+                            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>모집 마감일</label>
+                          <input
+                            type="date"
+                            value={session.recruitEndDate || ''}
+                            onChange={(e) => {
+                              const ns = [...sessions]; ns[index].recruitEndDate = e.target.value; setSessions(ns);
+                            }}
+                            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem' }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
               <button
                 type="button"
-                onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, date: undefined, location: undefined }])}
+                onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
                 style={{ padding: '1rem', background: '#f5f5f5', color: '#333', borderRadius: '8px', border: '1px dashed #ccc', cursor: 'pointer', fontWeight: 'bold', marginTop: '0.5rem' }}
               >
                 + 세션 항목 추가
@@ -603,7 +722,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             <p style={{ color: '#888', marginBottom: '1rem' }}>등록된 티켓이 없습니다.</p>
             <button
               type="button"
-              onClick={() => setTickets([...tickets, { name: '새 티켓', price: 0, originalPrice: 0, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }])}
+              onClick={() => setTickets([...tickets, { name: '새 티켓', price: 0, originalPrice: 0, useDiscount: false, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }])}
               style={{ padding: '0.5rem 1rem', background: '#000', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
             >
               + 티켓 추가하기
@@ -643,33 +762,58 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>정가 (할인 전 가격)</label>
+                    <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>가격 (원)</label>
                     <input
                       type="number"
-                      value={ticket.originalPrice || 0}
+                      min="0"
+                      value={ticket.price || 0}
                       onChange={(e) => {
                         const newTickets = [...tickets];
-                        newTickets[index].originalPrice = parseInt(e.target.value, 10);
+                        newTickets[index].price = parseInt(e.target.value, 10) || 0;
                         setTickets(newTickets);
                       }}
                       style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>판매가 (실제 가격)</label>
-                    <input
-                      type="number"
-                      value={ticket.price || 0}
-                      onChange={(e) => {
-                        const newTickets = [...tickets];
-                        newTickets[index].price = parseInt(e.target.value, 10);
-                        if (!newTickets[index].originalPrice || newTickets[index].originalPrice < newTickets[index].price) {
-                          newTickets[index].originalPrice = newTickets[index].price;
-                        }
-                        setTickets(newTickets);
-                      }}
-                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
-                    />
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={ticket.useDiscount || false}
+                        onChange={(e) => {
+                          const newTickets = [...tickets];
+                          newTickets[index].useDiscount = e.target.checked;
+                          if (!e.target.checked) {
+                            newTickets[index].discountPrice = undefined;
+                          }
+                          setTickets(newTickets);
+                        }}
+                      />
+                      할인 적용
+                    </label>
+                    {ticket.useDiscount && (
+                      <div>
+                        <input
+                          type="number"
+                          min="0"
+                          max={ticket.price || 0}
+                          placeholder="할인가 입력"
+                          value={ticket.discountPrice ?? ''}
+                          onChange={(e) => {
+                            const newTickets = [...tickets];
+                            const val = parseInt(e.target.value, 10);
+                            newTickets[index].discountPrice = isNaN(val) ? '' : val;
+                            setTickets(newTickets);
+                          }}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                        />
+                        {ticket.price > 0 && ticket.discountPrice !== undefined && ticket.discountPrice !== '' && (
+                          <p style={{ fontSize: '0.75rem', color: '#1890ff', marginTop: '0.25rem' }}>
+                            → {Math.round((1 - (ticket.discountPrice / ticket.price)) * 100)}% 할인 (₩{(ticket.discountPrice || 0).toLocaleString()})
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>수량 제한 <span style={{ fontWeight: 'normal', color: '#666' }}>(비우면 무제한)</span></label>
@@ -742,7 +886,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             ))}
             <button
               type="button"
-              onClick={() => setTickets([...tickets, { name: '새 티켓', price: 0, originalPrice: 0, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }])}
+              onClick={() => setTickets([...tickets, { name: '새 티켓', price: 0, originalPrice: 0, useDiscount: false, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }])}
               style={{ padding: '1rem', background: '#f5f5f5', color: '#333', borderRadius: '8px', border: '1px dashed #ccc', cursor: 'pointer', fontWeight: 'bold', marginTop: '0.5rem' }}
             >
               + 티켓 항목 추가

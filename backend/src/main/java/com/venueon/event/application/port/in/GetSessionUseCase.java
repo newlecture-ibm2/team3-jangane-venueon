@@ -9,4 +9,9 @@ import java.util.List;
  */
 public interface GetSessionUseCase {
     List<Session> getSessionsByEventId(Long eventId);
+
+    /**
+     * 여러 이벤트 ID로 세션 벌크 조회 (N+1 방지)
+     */
+    List<Session> getSessionsByEventIds(List<Long> eventIds);
 }

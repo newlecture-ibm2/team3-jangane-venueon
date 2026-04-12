@@ -10,6 +10,7 @@ import com.venueon.event.application.service.EventQueryService;
 import com.venueon.event.adapter.in.web.dto.SessionResponse;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventType;
+import com.venueon.event.domain.model.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -55,9 +57,22 @@ public class EventController {
 
         Pageable pageable = createPageable(page, size, sort);
 
-        Page<EventListResponse> result = eventQueryService
-                .getEventList(condition, pageable)
-                .map(EventListResponse::from);
+        Page<Event> eventPage = eventQueryService.getEventList(condition, pageable);
+
+        // B방식: 벌크 세션 조회 — N+1 방지
+        List<Long> eventIds = eventPage.getContent().stream()
+                .map(Event::getId)
+                .toList();
+
+        List<Session> allSessions = getSessionUseCase.getSessionsByEventIds(eventIds);
+
+        // 이벤트 ID별로 세션 그룹핑
+        Map<Long, List<Session>> sessionsByEventId = allSessions.stream()
+                .collect(Collectors.groupingBy(Session::getEventId));
+
+        Page<EventListResponse> result = eventPage.map(event ->
+                EventListResponse.from(event, sessionsByEventId.getOrDefault(event.getId(), List.of()))
+        );
 
         return ApiResponse.success(result);
     }

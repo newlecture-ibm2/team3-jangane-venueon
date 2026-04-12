@@ -66,7 +66,7 @@ export default async function EventDetailPage({ params }: Props) {
   }
 
   const STATUS_MAP: Record<string, { label: string; variant: 'green' | 'purple' | 'gray' | 'red' }> = {
-    PUBLISHED: { label: '모집 중', variant: 'green' },
+    PUBLISHED: { label: '게시됨', variant: 'green' },
     ONGOING: { label: '진행 중', variant: 'purple' },
     DRAFT: { label: '게시 전', variant: 'gray' },
     ENDED: { label: '종료', variant: 'gray' },
@@ -82,14 +82,17 @@ export default async function EventDetailPage({ params }: Props) {
   const statusInfo = STATUS_MAP[event.status] || { label: event.status, variant: 'gray' };
   const imageUrl = event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : '';
 
-  // v6: 세션에서 이벤트 기간/장소 도출
+  // v6: 이벤트 기간은 백엔드의 Computed 필드(event.startDate, event.endDate) 또는 세션 도출을 사용
   const sessions = event.sessions || [];
-  const startDate = sessions.length > 0
-    ? sessions.reduce((min: string, s: any) => s.startTime && s.startTime < min ? s.startTime : min, sessions[0]?.startTime || '')
-    : null;
-  const endDate = sessions.length > 0
-    ? sessions.reduce((max: string, s: any) => s.endTime && s.endTime > max ? s.endTime : max, sessions[0]?.endTime || '')
-    : null;
+  const startDate = event.startDate;
+  const endDate = event.endDate;
+
+  // 모집 기간 도출
+  const validRecruitStartDates = sessions.map((s: any) => s.recruitStartDate).filter(Boolean).map((d: string) => new Date(d).getTime());
+  const validRecruitEndDates = sessions.map((s: any) => s.recruitEndDate).filter(Boolean).map((d: string) => new Date(d).getTime());
+  
+  const recruitStartDate = validRecruitStartDates.length > 0 ? new Date(Math.min(...validRecruitStartDates)).toISOString() : null;
+  const recruitEndDate = validRecruitEndDates.length > 0 ? new Date(Math.max(...validRecruitEndDates)).toISOString() : null;
 
   // v6: 티켓에서 가격 범위 도출
   const activePrices = tickets.filter((t: any) => t.isActive).map((t: any) => t.price);
@@ -107,9 +110,20 @@ export default async function EventDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      {/* 헤더 섹션 */}
+      {/* 헤더 섹션 — 듀얼 뱃지 */}
       <div className={styles.headerSection}>
-        <Tag variant={statusInfo.variant}>{statusInfo.label}</Tag>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {/* 모집상태 뱃지 */}
+          {event.recruitmentStatus && (
+            <Tag variant={RECRUIT_MAP[event.recruitmentStatus]?.variant || 'gray'}>
+              {RECRUIT_MAP[event.recruitmentStatus]?.label || event.recruitmentStatus}
+            </Tag>
+          )}
+          {/* 강의상태 뱃지 (DRAFT/PUBLISHED는 숨김) */}
+          {event.status && event.status !== 'DRAFT' && event.status !== 'PUBLISHED' && (
+            <Tag variant={statusInfo.variant}>{statusInfo.label}</Tag>
+          )}
+        </div>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>{event.title}</h1>
           <EventActionMenu eventId={event.id.toString()} creatorId={event.creatorId} />
@@ -149,11 +163,25 @@ export default async function EventDetailPage({ params }: Props) {
           </div>
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>일정</span>
-            <span className={styles.infoValue}>
+            <span className={styles.infoValue} suppressHydrationWarning>
               {startDate
                 ? `${format(new Date(startDate), 'yyyy.MM.dd')}${endDate ? ` ~ ${format(new Date(endDate), 'yyyy.MM.dd')}` : ''}`
                 : '일정 미정'
               }
+            </span>
+          </div>
+          <div className={styles.infoItem}>
+            <span className={styles.infoLabel}>모집</span>
+            <span className={styles.infoValue} suppressHydrationWarning>
+              {recruitStartDate || recruitEndDate
+                ? `${recruitStartDate ? format(new Date(recruitStartDate), 'yyyy.MM.dd') : '상시 모집'} ~ ${recruitEndDate ? format(new Date(recruitEndDate), 'yyyy.MM.dd') : '상시 모집'}`
+                : '상시 모집'
+              }
+              <span style={{ marginLeft: '8px' }}>
+                <Tag variant={RECRUIT_MAP[event.recruitmentStatus]?.variant || 'gray'}>
+                  {RECRUIT_MAP[event.recruitmentStatus]?.label || event.recruitmentStatus || '모집 상태 미정'}
+                </Tag>
+              </span>
             </span>
           </div>
           <div className={styles.infoItem}>
@@ -181,10 +209,11 @@ export default async function EventDetailPage({ params }: Props) {
                   {session.description && (
                     <p className={styles.sessionDesc}>{session.description}</p>
                   )}
-                  <div className={styles.sessionMeta}>
-                    <span>🕒 {session.startTime ? `${format(new Date(session.startTime), 'MM.dd HH:mm')} ~ ${format(new Date(session.endTime), 'HH:mm')}` : '시간 미정'}</span>
+                  <div className={styles.sessionMeta} suppressHydrationWarning>
+                    <span suppressHydrationWarning>🕒 {session.startTime ? `${format(new Date(session.startTime), 'MM.dd HH:mm')} ~ ${session.endTime ? format(new Date(session.endTime), 'MM.dd HH:mm') : '미정'}` : '시간 미정'}</span>
+                    <span suppressHydrationWarning>📋 모집 {session.recruitStartDate ? format(new Date(session.recruitStartDate), 'MM.dd') : ''} ~ {session.recruitEndDate ? format(new Date(session.recruitEndDate), 'MM.dd') : ''}</span>
                     <span>🏫 {session.isOnline ? '온라인' : (session.location || '장소 미정')}</span>
-                    <span>👤 {session.currentAttendees || 0} / {session.maxAttendees || '∞'} 명</span>
+                    <span>👤 {session.currentAttendees || 0} / {session.maxAttendees || '∞'} 명 (잔여 {session.remainingCapacity !== undefined ? session.remainingCapacity : '∞'}석)</span>
                   </div>
                 </div>
               );

@@ -57,4 +57,32 @@ public class SessionPersistenceAdapter implements SessionPort {
     public int countByEventId(Long eventId) {
         return sessionRepository.countByEventId(eventId);
     }
+
+    @Override
+    public List<Session> findAllByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return sessionRepository.findAllByIds(ids)
+                .stream()
+                .map(sessionMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public Optional<Session> findByIdForUpdate(Long id) {
+        return sessionRepository.findByIdForUpdate(id)
+                .map(sessionMapper::toDomain);
+    }
+
+    @Override
+    public List<Session> findByEventIds(List<Long> eventIds) {
+        if (eventIds == null || eventIds.isEmpty()) {
+            return List.of();
+        }
+        return sessionRepository.findByEventIdIn(eventIds)
+                .stream()
+                .map(sessionMapper::toDomain)
+                .toList();
+    }
 }

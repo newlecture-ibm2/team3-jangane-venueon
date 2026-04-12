@@ -148,6 +148,12 @@ public class EventSessionService implements
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Session> getSessionsByEventIds(List<Long> eventIds) {
+        return sessionPort.findByEventIds(eventIds);
+    }
+
+    @Override
     public void reorderSessions(Long eventId, Long requesterId, String requesterRole, List<Long> sessionIds) {
         getEventAndValidateOwner(eventId, requesterId, requesterRole);
 
