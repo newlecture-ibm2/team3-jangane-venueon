@@ -18,6 +18,7 @@ export interface CardProps {
   dateTime: string;
   location: string;
   price: string | number;
+  originalPrice?: string | number;
   actionButtonText?: string;
   onActionClick?: () => void;
   secondaryActionText?: string;
@@ -39,6 +40,7 @@ export default function Card({
   dateTime,
   location,
   price,
+  originalPrice,
   actionButtonText,
   onActionClick,
   secondaryActionText,
@@ -152,6 +154,11 @@ export default function Card({
       </div>
 
       <div className={styles.priceSection}>
+        {originalPrice && (
+          <span className={styles.originalPrice}>
+            {typeof originalPrice === 'number' ? `₩${originalPrice.toLocaleString()}` : originalPrice}
+          </span>
+        )}
         <span className={styles.price}>{formattedPrice}</span>
       </div>
 

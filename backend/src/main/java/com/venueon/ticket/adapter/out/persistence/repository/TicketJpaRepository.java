@@ -26,4 +26,11 @@ public interface TicketJpaRepository extends JpaRepository<TicketJpaEntity, Long
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT t FROM TicketJpaEntity t WHERE t.id = :id")
     Optional<TicketJpaEntity> findByIdForUpdate(@Param("id") Long id);
+
+    /**
+     * 여러 이벤트 ID로 티켓 벌크 조회
+     * 이벤트 목록 API에서 N+1 방지용 (가격 정보 표시)
+     */
+    @Query("SELECT t FROM TicketJpaEntity t WHERE t.event.id IN :eventIds ORDER BY t.event.id, t.sortOrder")
+    List<TicketJpaEntity> findByEventIdIn(@Param("eventIds") List<Long> eventIds);
 }

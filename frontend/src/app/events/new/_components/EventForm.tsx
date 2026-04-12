@@ -59,9 +59,11 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         })
       : [{ name: '기본 티켓', price: 0, originalPrice: 0, useDiscount: false, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }]
   );
+  const [categories, setCategories] = useState<{id: number, name: string}[]>([]);
   const [deletedTicketIds, setDeletedTicketIds] = useState<number[]>([]);
 
   const [formData, setFormData] = useState({
+    categoryId: initialData?.categoryId ? String(initialData.categoryId) : '1',
     title: initialData?.title || '',
     description: initialData?.description || '',
     price: initialData?.price !== undefined ? initialData.price.toString() : '',
@@ -76,6 +78,18 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       setPreviewUrl(`/upload/${initialData.thumbnailUrl}`);
       setThumbnailUrl(initialData.thumbnailUrl);
     }
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/categories');
+        const resData = await res.json();
+        if (resData.success && resData.data) {
+          setCategories(resData.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch categories:', err);
+      }
+    };
+    fetchCategories();
   }, [initialData]);
 
   if (!isMounted) {
@@ -179,7 +193,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
       // API 요청 분기 (create / edit)
       const payload = {
-        categoryId: initialData?.categoryId || 1,
+        categoryId: parseInt(formData.categoryId, 10) || 1,
         title: formData.title || '새 이벤트',
         description: formData.description,
         type: initialData?.type || 'SEMINAR',
@@ -375,6 +389,20 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       </button>
 
       <div className={styles.formGroup}>
+        <label className={styles.label}>카테고리</label>
+        <select
+          name="categoryId"
+          className={styles.selectInput}
+          value={formData.categoryId}
+          onChange={handleChange}
+        >
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className={styles.formGroup}>
         <label className={styles.label}>세션 제목</label>
         <input
           type="text"
@@ -539,13 +567,22 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           {sessions.length === 0 ? (
             <div style={{ padding: '2rem', textAlign: 'center', background: '#f9f9f9', borderRadius: '8px', border: '1px dashed #ccc' }}>
               <p style={{ color: '#888', marginBottom: '1rem' }}>등록된 세션이 없습니다.</p>
-              <button
-                type="button"
-                onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
-                style={{ padding: '0.5rem 1rem', background: '#000', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
-              >
-                + 세션 추가하기
-              </button>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, onlineLink: '', isOnline: false, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
+                  style={{ padding: '0.5rem 1rem', background: '#2b8a3e', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
+                >
+                  + 오프라인 세션 추가
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, onlineLink: '', isOnline: true, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
+                  style={{ padding: '0.5rem 1rem', background: '#1c7ed6', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
+                >
+                  + 온라인 세션 추가
+                </button>
+              </div>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -553,7 +590,12 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                 <div key={index} style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '1.5rem', position: 'relative', background: '#fafbfc' }}>
                   {/* 헤더: 세션 번호 + 삭제 */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid #eee' }}>
-                    <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#333' }}>세션 {index + 1}</span>
+                    <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#333' }}>
+                      <span style={{ background: session.isOnline ? '#e7f5ff' : '#ebfbee', color: session.isOnline ? '#1c7ed6' : '#2b8a3e', fontSize: '0.75rem', padding: '0.2rem 0.4rem', borderRadius: '4px', marginRight: '0.5rem' }}>
+                        {session.isOnline ? '🌐 온라인' : '🏠 오프라인'}
+                      </span>
+                      세션 {index + 1}
+                    </span>
                     <button
                       type="button"
                       onClick={() => {
@@ -592,16 +634,33 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                       />
                     </div>
                     <div style={{ gridColumn: 'span 2' }}>
-                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>세션 장소 <span style={{ fontWeight: 'normal', color: '#666' }}>(비울시 일반설정 동기화)</span></label>
-                      <input
-                        type="text"
-                        value={session.location !== undefined ? session.location : formData.location}
-                        placeholder="일반 설정과 다른 경우 입력"
-                        onChange={(e) => {
-                          const ns = [...sessions]; ns[index].location = e.target.value === '' ? undefined : e.target.value; setSessions(ns);
-                        }}
-                        style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
-                      />
+                      <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>
+                        {session.isOnline ? '온라인 접속 링크 ' : '세션 장소 '}
+                        <span style={{ fontWeight: 'normal', color: '#666' }}>
+                          {session.isOnline ? '(구매 완료 고객에게만 공개됩니다)' : '(비울시 일반설정 동기화)'}
+                        </span>
+                      </label>
+                      {session.isOnline ? (
+                        <input
+                          type="text"
+                          value={session.onlineLink || ''}
+                          placeholder="Zoom 링크 등을 입력해주세요"
+                          onChange={(e) => {
+                            const ns = [...sessions]; ns[index].onlineLink = e.target.value; setSessions(ns);
+                          }}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={session.location !== undefined ? session.location : formData.location}
+                          placeholder="일반 설정과 다른 경우 입력"
+                          onChange={(e) => {
+                            const ns = [...sessions]; ns[index].location = e.target.value === '' ? undefined : e.target.value; setSessions(ns);
+                          }}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                        />
+                      )}
                     </div>
                   </div>
 
@@ -700,13 +759,22 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                   </div>
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
-                style={{ padding: '1rem', background: '#f5f5f5', color: '#333', borderRadius: '8px', border: '1px dashed #ccc', cursor: 'pointer', fontWeight: 'bold', marginTop: '0.5rem' }}
-              >
-                + 세션 항목 추가
-              </button>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, onlineLink: '', isOnline: false, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
+                  style={{ flex: 1, padding: '1rem', background: '#ebfbee', color: '#2b8a3e', borderRadius: '8px', border: '1px dashed #2b8a3e', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  + 오프라인 세션 추가
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, onlineLink: '', isOnline: true, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
+                  style={{ flex: 1, padding: '1rem', background: '#e7f5ff', color: '#1c7ed6', borderRadius: '8px', border: '1px dashed #1c7ed6', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  + 온라인 세션 추가
+                </button>
+              </div>
             </div>
           )}
         </div>

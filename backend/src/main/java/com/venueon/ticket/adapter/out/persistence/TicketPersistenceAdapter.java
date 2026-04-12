@@ -114,6 +114,14 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
     }
 
     @Override
+    public List<Ticket> findByEventIds(List<Long> eventIds) {
+        if (eventIds == null || eventIds.isEmpty()) return List.of();
+        return ticketJpaRepository.findByEventIdIn(eventIds).stream()
+                .map(ticketMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public void deleteById(Long id) {
         ticketSessionJpaRepository.deleteByTicketId(id);

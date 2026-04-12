@@ -35,6 +35,11 @@ public class TicketQueryService implements GetTicketUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다. ID: " + ticketId));
     }
 
+    @Override
+    public List<Ticket> getTicketsByEventIds(List<Long> eventIds) {
+        return ticketRepositoryPort.findByEventIds(eventIds);
+    }
+
     /**
      * 정원 연동 포함된 티켓 목록 조회
      * 각 티켓의 연결된 세션을 조회하여 isPurchasable, unavailableReason, recruitEndDate를 계산

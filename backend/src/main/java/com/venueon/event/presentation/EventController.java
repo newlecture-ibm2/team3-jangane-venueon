@@ -11,6 +11,8 @@ import com.venueon.event.adapter.in.web.dto.SessionResponse;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventType;
 import com.venueon.event.domain.model.Session;
+import com.venueon.ticket.application.port.in.GetTicketUseCase;
+import com.venueon.ticket.domain.model.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 
 /**
  * 이벤트 공개 API — 누구나 접근 가능
- * v6: price 정렬 제거 (가격은 Ticket에서 관리)
+ * v8: 티켓 벌크 조회 추가 (가격/할인 정보 N+1 방지)
  */
 @RestController
 @RequestMapping("/events")
@@ -33,6 +35,7 @@ public class EventController {
 
     private final EventQueryService eventQueryService;
     private final GetSessionUseCase getSessionUseCase;
+    private final GetTicketUseCase getTicketUseCase;
 
     /**
      * 이벤트 목록 조회 (검색/필터/페이징)
@@ -44,34 +47,39 @@ public class EventController {
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) EventType type,
             @RequestParam(required = false) Boolean isOnline,
-            @RequestParam(required = false) Boolean isFree,
-            @RequestParam(required = false) Integer minPrice,
-            @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false, defaultValue = "latest") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size
     ) {
         EventSearchCondition condition = new EventSearchCondition(
-                keyword, categoryId, type, isOnline, isFree, minPrice, maxPrice, sort
+                keyword, categoryId, type, isOnline, sort
         );
 
         Pageable pageable = createPageable(page, size, sort);
 
         Page<Event> eventPage = eventQueryService.getEventList(condition, pageable);
 
-        // B방식: 벌크 세션 조회 — N+1 방지
+        // 벌크 조회 — N+1 방지
         List<Long> eventIds = eventPage.getContent().stream()
                 .map(Event::getId)
                 .toList();
 
+        // 세션 벌크 조회
         List<Session> allSessions = getSessionUseCase.getSessionsByEventIds(eventIds);
-
-        // 이벤트 ID별로 세션 그룹핑
         Map<Long, List<Session>> sessionsByEventId = allSessions.stream()
                 .collect(Collectors.groupingBy(Session::getEventId));
 
+        // 티켓 벌크 조회 (가격/할인 정보)
+        List<Ticket> allTickets = getTicketUseCase.getTicketsByEventIds(eventIds);
+        Map<Long, List<Ticket>> ticketsByEventId = allTickets.stream()
+                .collect(Collectors.groupingBy(Ticket::getEventId));
+
         Page<EventListResponse> result = eventPage.map(event ->
-                EventListResponse.from(event, sessionsByEventId.getOrDefault(event.getId(), List.of()))
+                EventListResponse.from(
+                        event,
+                        sessionsByEventId.getOrDefault(event.getId(), List.of()),
+                        ticketsByEventId.getOrDefault(event.getId(), List.of())
+                )
         );
 
         return ApiResponse.success(result);

@@ -13,15 +13,17 @@ interface EventData {
   thumbnailUrl: string | null;
   type: string;
   status: string;
+  recruitmentStatus: string;
   categoryId: number;
   creatorId: number;
   createdAt: string;
   hasSession: boolean;
-  // Note: location, price, startDate are missing in EventListResponse v6
-  // They will be computed logically from Ticket/Session in the future.
-  location?: string;
-  isOnline?: boolean;
-  price?: number;
+  minPrice: number | null;
+  maxPrice: number | null;
+  hasDiscount: boolean;
+  originalPrice: number | null;
+  primaryLocation: string | null;
+  isOnline: boolean;
   startDate?: string;
 }
 
@@ -35,20 +37,39 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
 
-  const categoryOptions = [
-    { value: 'all', label: '전체보기' },
-    { value: '1', label: '디자인' },
-    { value: '2', label: '개발' },
-    { value: '3', label: '마케팅' },
-  ];
+  const [categoryOptions, setCategoryOptions] = useState<{value: string, label: string}[]>([
+    { value: 'all', label: '전체보기' }
+  ]);
 
-  const fetchEvents = async (page: number, keyword: string = '') => {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/categories');
+        const resData = await res.json();
+        if (resData.success && resData.data) {
+          const opts = resData.data.map((c: any) => ({
+            value: String(c.id),
+            label: c.name
+          }));
+          setCategoryOptions([{ value: 'all', label: '전체보기' }, ...opts]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const fetchEvents = async (page: number, keyword: string = '', categoryId: string = 'all') => {
     setLoading(true);
     try {
       // Backend pagination is 0-indexed, UI is 1-indexed
       let url = `/api/events?page=${page - 1}&size=12&sort=latest`;
       if (keyword) {
         url += `&keyword=${encodeURIComponent(keyword)}`;
+      }
+      if (categoryId !== 'all') {
+        url += `&categoryId=${categoryId}`;
       }
 
       const res = await fetch(url);
@@ -82,14 +103,14 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchEvents(currentPage, searchQuery);
-  }, [currentPage]);
+    fetchEvents(currentPage, searchQuery, activeCategory);
+  }, [currentPage, activeCategory]);
 
   // Handle Search Submit
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setCurrentPage(1);
-      fetchEvents(1, searchQuery);
+      fetchEvents(1, searchQuery, activeCategory);
     }
   };
 
@@ -177,9 +198,11 @@ export default function Home() {
                       imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
                       organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 이름으로 변경
                       dateTime={dateTimeStr}
-                      location={event.location || '장소 미정'}
-                      price={event.price || 0}
+                      location={event.isOnline ? '온라인 (Zoom 등)' : (event.primaryLocation || '장소 미정')}
+                      price={event.minPrice !== null ? (event.hasDiscount ? `${event.minPrice.toLocaleString()}원` : event.minPrice) : 0}
+                      originalPrice={event.hasDiscount && event.originalPrice ? event.originalPrice : undefined}
                       status={event.status}
+                      recruitmentStatus={event.recruitmentStatus}
                     />
                   </div>
                 );
