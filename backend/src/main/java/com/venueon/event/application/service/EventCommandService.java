@@ -61,6 +61,8 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                         sessionReq.location(),
                         sessionReq.regionSido(),
                         sessionReq.regionSigungu(),
+                        null, // addressRoad
+                        null, // addressDetail
                         sessionReq.isOnline(),
                         sessionReq.onlineLink(),
                         sessionReq.maxAttendees(),

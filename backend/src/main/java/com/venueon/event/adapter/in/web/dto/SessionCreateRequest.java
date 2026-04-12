@@ -16,6 +16,8 @@ public record SessionCreateRequest(
     String location,
     String regionSido,
     String regionSigungu,
+    String addressRoad,
+    String addressDetail,
     boolean isOnline,
     String onlineLink,
     int maxAttendees,

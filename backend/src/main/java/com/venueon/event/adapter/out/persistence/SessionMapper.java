@@ -32,6 +32,8 @@ public class SessionMapper {
                 entity.getLocation(),
                 entity.getRegionSido(),
                 entity.getRegionSigungu(),
+                entity.getAddressRoad(),
+                entity.getAddressDetail(),
                 entity.isOnline(),
                 entity.getOnlineLink(),
                 entity.getMaxAttendees(),
@@ -60,6 +62,8 @@ public class SessionMapper {
                 .location(domain.getLocation())
                 .regionSido(domain.getRegionSido())
                 .regionSigungu(domain.getRegionSigungu())
+                .addressRoad(domain.getAddressRoad())
+                .addressDetail(domain.getAddressDetail())
                 .isOnline(domain.getIsOnline())
                 .onlineLink(domain.getOnlineLink())
                 .maxAttendees(domain.getMaxAttendees())

@@ -24,6 +24,8 @@ public class Session {
     private String location;
     private String regionSido;
     private String regionSigungu;
+    private String addressRoad;
+    private String addressDetail;
     private boolean isOnline;
     private String onlineLink;
 
@@ -47,6 +49,7 @@ public class Session {
     public Session(Long id, Long eventId, String title, String description, int sortOrder,
                    LocalDateTime startTime, LocalDateTime endTime,
                    String location, String regionSido, String regionSigungu,
+                   String addressRoad, String addressDetail,
                    boolean isOnline, String onlineLink,
                    int maxAttendees, int currentAttendees,
                    LocalDateTime recruitStartDate, LocalDateTime recruitEndDate,
@@ -63,6 +66,8 @@ public class Session {
         this.location = location;
         this.regionSido = regionSido;
         this.regionSigungu = regionSigungu;
+        this.addressRoad = addressRoad;
+        this.addressDetail = addressDetail;
         this.isOnline = isOnline;
         this.onlineLink = onlineLink;
         this.maxAttendees = maxAttendees;
@@ -136,6 +141,7 @@ public class Session {
     public void updateDetails(String title, String description, int sortOrder,
                                LocalDateTime startTime, LocalDateTime endTime,
                                String location, String regionSido, String regionSigungu,
+                               String addressRoad, String addressDetail,
                                boolean isOnline, String onlineLink,
                                int maxAttendees,
                                LocalDateTime recruitStartDate, LocalDateTime recruitEndDate) {
@@ -147,6 +153,8 @@ public class Session {
         this.location = location;
         this.regionSido = regionSido;
         this.regionSigungu = regionSigungu;
+        this.addressRoad = addressRoad;
+        this.addressDetail = addressDetail;
         this.isOnline = isOnline;
         this.onlineLink = onlineLink;
         this.maxAttendees = maxAttendees;
@@ -213,6 +221,8 @@ public class Session {
     public String getLocation() { return location; }
     public String getRegionSido() { return regionSido; }
     public String getRegionSigungu() { return regionSigungu; }
+    public String getAddressRoad() { return addressRoad; }
+    public String getAddressDetail() { return addressDetail; }
     public boolean getIsOnline() { return isOnline; }
     public String getOnlineLink() { return onlineLink; }
     public int getMaxAttendees() { return maxAttendees; }

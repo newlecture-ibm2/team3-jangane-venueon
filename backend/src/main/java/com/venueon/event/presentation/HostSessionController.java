@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Host 전용 세션 API
- * v6: price 제거, regionSido/regionSigungu/recruitStartDate/recruitEndDate 추가
+ * v8: 모집 수동관리 API, 주소 필드(addressRoad, addressDetail) 추가
  */
 @RestController
 @RequestMapping("/host/events/{eventId}/sessions")
@@ -22,6 +22,7 @@ public class HostSessionController {
     private final UpdateSessionUseCase updateSessionUseCase;
     private final DeleteSessionUseCase deleteSessionUseCase;
     private final ReorderSessionUseCase reorderSessionUseCase;
+    private final ManageRecruitmentUseCase manageRecruitmentUseCase;
 
     @PostMapping
     public ApiResponse<SessionResponse> createSession(
@@ -42,6 +43,8 @@ public class HostSessionController {
                 request.location(),
                 request.regionSido(),
                 request.regionSigungu(),
+                request.addressRoad(),
+                request.addressDetail(),
                 request.isOnline(),
                 request.onlineLink(),
                 request.maxAttendees(),
@@ -74,6 +77,8 @@ public class HostSessionController {
                 request.location(),
                 request.regionSido(),
                 request.regionSigungu(),
+                request.addressRoad(),
+                request.addressDetail(),
                 request.isOnline(),
                 request.onlineLink(),
                 request.maxAttendees(),
@@ -110,18 +115,21 @@ public class HostSessionController {
     /**
      * 세션별 모집 마감/재개
      * PATCH /host/events/{eventId}/sessions/{sessionId}/recruitment
+     * Body: { "closed": true | false }
      */
     @PatchMapping("/{sessionId}/recruitment")
     public ApiResponse<SessionResponse> toggleRecruitment(
             @PathVariable Long eventId,
             @PathVariable Long sessionId,
             @RequestHeader("X-User-Id") Long hostId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole,
             @RequestBody RecruitmentToggleRequest request) {
 
-        // TODO: ManageRecruitmentUseCase를 별도 정의하여 분리 가능
-        // 현재는 UpdateSession을 통해 처리하지 않고 간단한 서비스 호출로 구현
-        // 이 부분은 Phase 2 정밀 구현 시 UseCase 분리
-        return ApiResponse.success(null);
+        var command = new ManageRecruitmentUseCase.ToggleRecruitmentCommand(
+                sessionId, eventId, hostId, userRole, request.closed()
+        );
+        var session = manageRecruitmentUseCase.toggleRecruitment(command);
+        return ApiResponse.success(SessionResponse.from(session));
     }
 
     /**
@@ -129,3 +137,4 @@ public class HostSessionController {
      */
     public record RecruitmentToggleRequest(boolean closed) {}
 }
+

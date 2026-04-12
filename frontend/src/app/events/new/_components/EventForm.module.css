@@ -326,25 +326,26 @@
 .methodCard {
   flex: 1;
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 24px;
-  border-radius: var(--radius-lg);
-  border: 2px solid var(--color-text-gray-200);
-  background: var(--color-bg);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-text-gray-300);
+  background: var(--color-text-white);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
 .methodCard:hover {
+  background: #f9f9f9;
   border-color: var(--color-text-gray-400);
-  background: var(--color-text-gray-50);
 }
 
 .activeMethod {
   border-color: var(--color-primary);
-  background: #f7f8ff; /* 아주 연한 프라이머리 색상 배경 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: #f4f7ff;
+  border-width: 1px;
 }
 
 .methodIcon {
@@ -361,14 +362,14 @@
 
 .methodInfo {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
 }
 
 .methodTitle {
-  font: var(--text-body-bold);
-  font-size: 1.1rem;
-  color: var(--color-text-gray-900);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-gray-800);
 }
 
 .activeMethod .methodTitle {
@@ -376,9 +377,9 @@
 }
 
 .methodDesc {
-  font: var(--text-caption-regular);
-  color: var(--color-text-gray-600);
-  line-height: 1.4;
+  font-size: 0.85rem;
+  color: var(--color-text-gray-500);
+  font-weight: 400;
 }
 
 @media screen and (max-width: 600px) {

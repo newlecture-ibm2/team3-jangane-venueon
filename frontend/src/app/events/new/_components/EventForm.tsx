@@ -70,6 +70,10 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     date: initialData?.startDate ? initialData.startDate.substring(0, 10) : '',
     isOnlineStr: initialData?.isOnline !== undefined ? String(initialData.isOnline) : '',
     location: initialData?.location || '',
+    addressRoad: '',
+    addressDetail: '',
+    regionSido: '',
+    regionSigungu: '',
   });
 
   React.useEffect(() => {
@@ -265,9 +269,11 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             sortOrder: session.sortOrder || 0,
             startTime,
             endTime,
-            location: session.location || formData.location || '',
-            regionSido: session.regionSido || '서울',
-            regionSigungu: session.regionSigungu || '강남구',
+            location: session.useCustomAddress ? session.location : formData.location || '',
+            regionSido: session.useCustomAddress ? session.regionSido : formData.regionSido || '서울',
+            regionSigungu: session.useCustomAddress ? session.regionSigungu : formData.regionSigungu || '강남구',
+            addressRoad: session.useCustomAddress ? session.addressRoad : formData.addressRoad || '',
+            addressDetail: session.useCustomAddress ? session.addressDetail : formData.addressDetail || '',
             isOnline: formData.isOnlineStr === 'true',
             onlineLink: session.onlineLink || '',
             maxAttendees: Number(session.maxAttendees) || 0,
@@ -529,34 +535,70 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           </div>
         </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label}>{hasSession ? '기본 장소' : '장소'}</label>
-          <input
-            type="text"
-            name="location"
-            className={styles.standardInput}
-            placeholder="오프라인 강의일 경우 주소를 입력해주세요."
-            value={formData.location}
-            onChange={handleChange}
-            disabled={formData.isOnlineStr === 'true'}
-          />
-        </div>
-
-        {hasSession && (
+        {!formData.isOnlineStr || formData.isOnlineStr === 'false' ? (
           <div className={styles.formGroup}>
-            <label className={styles.label}>세션 구매 방식</label>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input type="radio" name="purchaseType" checked={purchaseType === 'SINGLE'} onChange={() => setPurchaseType('SINGLE')} />
-                단일 선택 (고객이 1개의 세션만 선택 가능)
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input type="radio" name="purchaseType" checked={purchaseType === 'MULTI'} onChange={() => setPurchaseType('MULTI')} />
-                복수 선택 (고객이 여러 세션을 동시 구매 가능)
-              </label>
+            <label className={styles.label}>{hasSession ? '기본 장소 (오프라인)' : '장소 (오프라인)'}</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <input
+                type="text"
+                name="location"
+                className={styles.standardInput}
+                placeholder="장소명 입력 (예: 코엑스 컨벤션센터)"
+                value={formData.location}
+                onChange={handleChange}
+              />
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  name="addressRoad"
+                  value={formData.addressRoad || ''}
+                  readOnly
+                  placeholder="주소 검색 시 자동 채워집니다."
+                  style={{ flex: 1, padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: '#f5f5f5' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    new (window as any).daum.Postcode({
+                      oncomplete: (data: any) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          addressRoad: data.address,
+                          regionSido: data.sido,
+                          regionSigungu: data.sigungu
+                        }));
+                      }
+                    }).open();
+                  }}
+                  style={{ padding: '0.5rem 1rem', background: '#333', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  📍 주소 검색
+                </button>
+              </div>
+              <input
+                type="text"
+                name="addressDetail"
+                value={formData.addressDetail || ''}
+                placeholder="상세 주소 (3층 세미나실 등)"
+                onChange={handleChange}
+                style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+              />
             </div>
           </div>
+        ) : (
+          <div className={styles.formGroup}>
+            <label className={styles.label}>{hasSession ? '기본 위치' : '장소'}</label>
+            <input
+              type="text"
+              name="location"
+              className={styles.standardInput}
+              value="온라인 진행"
+              disabled
+            />
+          </div>
         )}
+
+
       </div>
 
       {hasSession && (
@@ -570,7 +612,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                 <button
                   type="button"
-                  onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, onlineLink: '', isOnline: false, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
+                  onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, addressRoad: '', addressDetail: '', regionSido: '', regionSigungu: '', onlineLink: '', isOnline: false, useRecruitPeriod: false, useCustomAddress: false, recruitStartDate: '', recruitEndDate: '' }])}
                   style={{ padding: '0.5rem 1rem', background: '#2b8a3e', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
                 >
                   + 오프라인 세션 추가
@@ -635,9 +677,9 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                     </div>
                     <div style={{ gridColumn: 'span 2' }}>
                       <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>
-                        {session.isOnline ? '온라인 접속 링크 ' : '세션 장소 '}
+                        {session.isOnline ? '온라인 접속 링크 ' : '세션 장소 (오프라인)'}
                         <span style={{ fontWeight: 'normal', color: '#666' }}>
-                          {session.isOnline ? '(구매 완료 고객에게만 공개됩니다)' : '(비울시 일반설정 동기화)'}
+                          {session.isOnline ? '(구매 완료 고객에게만 공개됩니다)' : ''}
                         </span>
                       </label>
                       {session.isOnline ? (
@@ -651,15 +693,70 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                           style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                         />
                       ) : (
-                        <input
-                          type="text"
-                          value={session.location !== undefined ? session.location : formData.location}
-                          placeholder="일반 설정과 다른 경우 입력"
-                          onChange={(e) => {
-                            const ns = [...sessions]; ns[index].location = e.target.value === '' ? undefined : e.target.value; setSessions(ns);
-                          }}
-                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
-                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', color: '#333' }}>
+                            <input
+                              type="checkbox"
+                              checked={session.useCustomAddress || false}
+                              onChange={(e) => {
+                                const ns = [...sessions]; ns[index].useCustomAddress = e.target.checked; setSessions(ns);
+                              }}
+                            />
+                            개별 장소 설정 (체크 해제 시 기본 장소 상속)
+                          </label>
+                          {session.useCustomAddress ? (
+                            <>
+                              <input
+                                type="text"
+                                value={session.location || ''}
+                                placeholder="장소명 입력 (예: 코엑스 컨벤션센터)"
+                                onChange={(e) => {
+                                  const ns = [...sessions]; ns[index].location = e.target.value === '' ? undefined : e.target.value; setSessions(ns);
+                                }}
+                                style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                              />
+                              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <input
+                                  type="text"
+                                  value={session.addressRoad || ''}
+                                  readOnly
+                                  placeholder="주소 검색 시 자동 채워집니다."
+                                  style={{ flex: 1, padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: '#f5f5f5' }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    new (window as any).daum.Postcode({
+                                      oncomplete: (data: any) => {
+                                        const ns = [...sessions];
+                                        ns[index].addressRoad = data.address;
+                                        ns[index].regionSido = data.sido;
+                                        ns[index].regionSigungu = data.sigungu;
+                                        setSessions(ns);
+                                      }
+                                    }).open();
+                                  }}
+                                  style={{ padding: '0.5rem 1rem', background: '#333', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                                >
+                                  📍 주소 검색
+                                </button>
+                              </div>
+                              <input
+                                type="text"
+                                value={session.addressDetail || ''}
+                                placeholder="상세 주소 (호스트 수동 입력: 3층 세미나실 등)"
+                                onChange={(e) => {
+                                  const ns = [...sessions]; ns[index].addressDetail = e.target.value; setSessions(ns);
+                                }}
+                                style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                              />
+                            </>
+                          ) : (
+                            <div style={{ padding: '0.75rem', backgroundColor: '#f8f9fa', border: '1px dashed #ced4da', borderRadius: '4px', fontSize: '0.85rem', color: '#6c757d' }}>
+                              현재 최상단의 <b>[기본 장소]</b> 설정을 따르고 있습니다.
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -762,7 +859,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
                 <button
                   type="button"
-                  onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, onlineLink: '', isOnline: false, useRecruitPeriod: false, recruitStartDate: '', recruitEndDate: '' }])}
+                  onClick={() => setSessions([...sessions, { title: '새 세션', maxAttendees: 50, sortOrder: sessions.length, startDate: '', startTimeOnly: '10:00', endDate: '', endTimeOnly: '18:00', location: undefined, addressRoad: '', addressDetail: '', regionSido: '', regionSigungu: '', onlineLink: '', isOnline: false, useRecruitPeriod: false, useCustomAddress: false, recruitStartDate: '', recruitEndDate: '' }])}
                   style={{ flex: 1, padding: '1rem', background: '#ebfbee', color: '#2b8a3e', borderRadius: '8px', border: '1px dashed #2b8a3e', cursor: 'pointer', fontWeight: 'bold' }}
                 >
                   + 오프라인 세션 추가
@@ -783,7 +880,31 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       {/* 🔴 티켓 설정 섹션 추가 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
         <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', borderBottom: '2px solid #000', paddingBottom: '0.5rem' }}>티켓 설정</h3>
-        <p style={{ color: '#666', fontSize: '0.9rem' }}>고객이 구매할 티켓 종류를 설정합니다. 세션에 연동할 수도 있습니다.</p>
+        <p style={{ color: '#666', fontSize: '0.9rem' }}>고객이 구매할 티켓 종류와 구매 방식을 설정합니다.</p>
+
+        <div className={styles.formGroup} style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '8px' }}>
+          <label className={styles.label} style={{ fontSize: '1rem' }}>결제 진행 방식 (티켓 구매 옵션)</label>
+          <div className={styles.methodCardsContainer}>
+            <div 
+              className={`${styles.methodCard} ${purchaseType === 'SINGLE' ? styles.activeMethod : ''}`}
+              onClick={() => setPurchaseType('SINGLE')}
+            >
+              <div className={styles.methodInfo}>
+                <span className={styles.methodTitle}>단일 결제</span>
+                <span className={styles.methodDesc}>티켓 1장만 선택하여 구매 가능</span>
+              </div>
+            </div>
+            <div 
+              className={`${styles.methodCard} ${purchaseType === 'MULTI' ? styles.activeMethod : ''}`}
+              onClick={() => setPurchaseType('MULTI')}
+            >
+              <div className={styles.methodInfo}>
+                <span className={styles.methodTitle}>복수 결제</span>
+                <span className={styles.methodDesc}>티켓 여러 장 복수 구매 가능</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {tickets.length === 0 ? (
           <div style={{ padding: '2rem', textAlign: 'center', background: '#f9f9f9', borderRadius: '8px', border: '1px dashed #ccc' }}>

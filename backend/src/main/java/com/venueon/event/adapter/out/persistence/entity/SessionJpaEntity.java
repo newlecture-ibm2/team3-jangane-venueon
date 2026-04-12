@@ -53,6 +53,12 @@ public class SessionJpaEntity {
     @Column(name = "region_sigungu")
     private String regionSigungu;
 
+    @Column(name = "address_road", length = 200)
+    private String addressRoad;
+
+    @Column(name = "address_detail", length = 100)
+    private String addressDetail;
+
     @Column(name = "is_online")
     @Builder.Default
     private boolean isOnline = false;

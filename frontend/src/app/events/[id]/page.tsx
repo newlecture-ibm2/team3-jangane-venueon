@@ -7,6 +7,7 @@ import { Tag, Button } from '@/components/ui';
 import { format } from 'date-fns';
 import EventActionMenu from './_components/EventActionMenu';
 import TicketList from './_components/TicketList';
+import HostManagementPanel from './_components/HostManagementPanel';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -109,6 +110,12 @@ export default async function EventDetailPage({ params }: Props) {
           ← 이벤트 목록 보기
         </Link>
       </div>
+
+      {/* 호스트 관리 패널 (현재 로그인한 유저 = 이벤트 생성자인 경우). 임시로 유저 ID = 1 */}
+      {/* 실제 프로덕션에서는 auth() 등의 세션을 통해 확인 */}
+      {event.creatorId === 1 && (
+        <HostManagementPanel eventId={event.id} status={event.status} sessions={sessions} />
+      )}
 
       {/* 헤더 섹션 — 듀얼 뱃지 */}
       <div className={styles.headerSection}>

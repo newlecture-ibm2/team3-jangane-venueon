@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class EventSessionService implements
         CreateSessionUseCase, UpdateSessionUseCase, DeleteSessionUseCase,
-        GetSessionUseCase, ReorderSessionUseCase {
+        GetSessionUseCase, ReorderSessionUseCase, ManageRecruitmentUseCase {
 
     private final SessionPort sessionPort;
     private final EventRepositoryPort eventRepositoryPort;
@@ -43,6 +43,8 @@ public class EventSessionService implements
                 null,      // location
                 null,      // regionSido
                 null,      // regionSigungu
+                null,      // addressRoad
+                null,      // addressDetail
                 false,     // isOnline
                 null,      // onlineLink
                 0,         // maxAttendees (0=무제한)
@@ -76,6 +78,8 @@ public class EventSessionService implements
                 command.location(),
                 command.regionSido(),
                 command.regionSigungu(),
+                command.addressRoad(),
+                command.addressDetail(),
                 command.isOnline(),
                 command.onlineLink(),
                 command.maxAttendees(),
@@ -111,6 +115,8 @@ public class EventSessionService implements
                 command.location(),
                 command.regionSido(),
                 command.regionSigungu(),
+                command.addressRoad(),
+                command.addressDetail(),
                 command.isOnline(),
                 command.onlineLink(),
                 command.maxAttendees(),
@@ -174,6 +180,8 @@ public class EventSessionService implements
                         session.getLocation(),
                         session.getRegionSido(),
                         session.getRegionSigungu(),
+                        session.getAddressRoad(),
+                        session.getAddressDetail(),
                         session.getIsOnline(),
                         session.getOnlineLink(),
                         session.getMaxAttendees(),
@@ -183,6 +191,28 @@ public class EventSessionService implements
                 sessionPort.save(session, eventId);
             }
         }
+    }
+
+    // ── P2: 모집 상태 수동 관리 ──
+
+    @Override
+    public Session toggleRecruitment(ToggleRecruitmentCommand command) {
+        getEventAndValidateOwner(command.eventId(), command.requesterId(), command.requesterRole());
+
+        Session session = sessionPort.findById(command.sessionId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
+
+        if (!session.getEventId().equals(command.eventId())) {
+            throw new IllegalArgumentException("세션이 해당 이벤트에 속하지 않습니다.");
+        }
+
+        if (command.closed()) {
+            session.closeRecruitment();
+        } else {
+            session.openRecruitment();
+        }
+
+        return sessionPort.save(session, command.eventId());
     }
 
     /**
