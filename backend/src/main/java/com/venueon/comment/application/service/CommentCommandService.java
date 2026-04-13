@@ -19,7 +19,8 @@ import com.venueon.common.annotation.UseCase;
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class CommentCommandService implements CreateCommentUseCase, CommentLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase {
+public class CommentCommandService
+        implements CreateCommentUseCase, CommentLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase {
 
     private final CommentRepositoryPort commentRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
@@ -47,15 +48,14 @@ public class CommentCommandService implements CreateCommentUseCase, CommentLikeU
                 saved.getContent(),
                 saved.getParentId(),
                 saved.getLikeCount(),
-                saved.getCreatedAt()
-        );
+                saved.getCreatedAt());
     }
 
     @Override
     public void toggleLike(Long commentId, String email) {
         User user = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
-        
+
         Comment comment = commentRepositoryPort.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + commentId));
 
@@ -74,8 +74,10 @@ public class CommentCommandService implements CreateCommentUseCase, CommentLikeU
     public void updateComment(Long id, UpdateCommentRequest request) {
         Comment comment = commentRepositoryPort.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + id));
-        
+
         comment.update(request.content());
+    }
+
     public void hideComment(Long commentId) {
         Comment comment = commentRepositoryPort.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));
