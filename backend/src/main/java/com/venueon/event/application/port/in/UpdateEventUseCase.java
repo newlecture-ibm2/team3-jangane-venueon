@@ -2,9 +2,11 @@ package com.venueon.event.application.port.in;
 
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventType;
-import com.venueon.event.domain.model.PurchaseType;
-import java.time.LocalDateTime;
 
+/**
+ * 이벤트 수정 유스케이스
+ * v6: price, maxAttendees, location, isOnline, startDate, endDate, purchaseType 제거
+ */
 public interface UpdateEventUseCase {
     Event updateEvent(UpdateEventCommand command);
 
@@ -16,15 +18,8 @@ public interface UpdateEventUseCase {
             String title,
             String description,
             EventType type,
-            String location,
-            boolean isOnline,
-            int price,
-            int maxAttendees,
             String thumbnailUrl,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            boolean hasSession,
-            PurchaseType purchaseType
+            boolean hasSession
     ) {
     }
 }

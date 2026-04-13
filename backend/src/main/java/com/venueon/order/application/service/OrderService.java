@@ -14,7 +14,7 @@ import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.order.adapter.in.web.dto.*;
 import com.venueon.event.application.port.out.SessionPort;
-import com.venueon.event.domain.model.EventSession;
+import com.venueon.event.domain.model.Session;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +64,7 @@ public class OrderService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
         // 3. 세션 조회 및 검증
-        EventSession session = null;
+        Session session = null;
         if (request.getSessionId() != null) {
             session = sessionPort.findById(request.getSessionId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND)); // Session Not Found
@@ -95,8 +95,8 @@ public class OrderService {
             throw new BusinessException(ErrorCode.EVENT_FULL);
         }
 
-        // 5. 주문 금액 계산 (세션 금액 기준)
-        int totalAmount = session.getPrice() * request.getQuantity();
+        // 5. 주문 금액 계산 (Phase 3에서 Ticket 기반으로 변경)
+        int totalAmount = 0; // TODO: Ticket price * quantity
 
         // 6. 순수 도메인 모델 생성 및 초기 저장
         Order pendingOrder = Order.createPending(userId, request.getEventId(), session.getId(), request.getQuantity(), totalAmount,
@@ -163,7 +163,7 @@ public class OrderService {
 
         for (Cart cart : carts) {
             // 세션 조회 및 검증
-            EventSession session = sessionPort.findById(cart.getSessionId())
+            Session session = sessionPort.findById(cart.getSessionId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
 
             // 중복 주문 검증
@@ -182,8 +182,8 @@ public class OrderService {
                 throw new BusinessException(ErrorCode.EVENT_FULL);
             }
 
-            // 주문 금액 계산
-            int itemAmount = session.getPrice() * cart.getQuantity();
+            // 주문 금액 계산 (Phase 3에서 Ticket 기반으로 변경)
+            int itemAmount = 0; // TODO: Ticket price * quantity
             totalAmount += itemAmount;
 
             // Order 생성
@@ -497,7 +497,7 @@ public class OrderService {
 
         String eventTitle = event != null ? event.getTitle() : "알 수 없는 이벤트";
         String organizer = event != null ? "호스트 " + event.getCreator().getId() : "알 수 없는 호스트";
-        String location = event != null ? (event.isOnline() ? "온라인" : event.getLocation()) : "-";
+        String location = "-"; // v6: location은 Session에서 관리, 향후 세션 기반 조회로 변경
 
         return OrderDetailResponse.builder()
                 .orderId(order.getId())
@@ -511,7 +511,7 @@ public class OrderService {
                 .paidAt(order.getPaidAt())
                 .organizer(organizer)
                 .location(location)
-                .eventStartDate(event != null ? event.getStartDate() : null)
+                .eventStartDate(null) // v6: Session에서 관리, eventStartDate 제거 예정
                 .eventStatus(event != null ? event.getStatus().name() : "DRAFT")
                 .build();
     }

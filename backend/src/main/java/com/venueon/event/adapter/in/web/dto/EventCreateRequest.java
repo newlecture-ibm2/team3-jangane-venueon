@@ -2,15 +2,14 @@ package com.venueon.event.adapter.in.web.dto;
 
 import com.venueon.event.application.port.in.CreateEventUseCase.CreateEventCommand;
 import com.venueon.event.domain.model.EventType;
-import com.venueon.event.domain.model.PurchaseType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * 이벤트 생성 요청 DTO
+ * v6: price, maxAttendees, location, isOnline, startDate, endDate, purchaseType 제거
  */
 public record EventCreateRequest(
         Long categoryId,
@@ -23,20 +22,9 @@ public record EventCreateRequest(
         @NotNull(message = "이벤트 유형은 필수입니다.")
         EventType type,
 
-        String location,
-        boolean isOnline,
-        int price,
-        int maxAttendees,
         String thumbnailUrl,
 
-        @NotNull(message = "시작일은 필수입니다.")
-        LocalDateTime startDate,
-
-        @NotNull(message = "종료일은 필수입니다.")
-        LocalDateTime endDate,
-        
         boolean hasSession,
-        PurchaseType purchaseType,
         List<SessionCreateRequest> sessions
 ) {
     /**
@@ -49,15 +37,8 @@ public record EventCreateRequest(
                 title,
                 description,
                 type,
-                location,
-                isOnline,
-                price,
-                maxAttendees,
                 thumbnailUrl,
-                startDate,
-                endDate,
                 hasSession,
-                purchaseType != null ? purchaseType : PurchaseType.SINGLE,
                 sessions
         );
     }

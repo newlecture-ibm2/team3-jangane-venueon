@@ -20,13 +20,13 @@ export async function PATCH(
     const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
     const userId = String(session.userId || 5);
 
-    // 백엔드는 쿼리 파라미터로 status를 받음
     const response = await fetch(
       `${API_BASE_URL}/host/events/${id}/status?status=${status}`,
       {
         method: "PATCH",
         headers: {
           "X-User-Id": userId,
+          "X-User-Role": session.role || "HOST",
         },
       }
     );

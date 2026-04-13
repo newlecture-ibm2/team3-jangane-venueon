@@ -55,6 +55,7 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
 
     /**
      * 검색/필터 조건을 JPA Specification으로 변환
+     * v6: price, isOnline 컬럼이 이벤트에서 제거됨 → 세션/티켓 기반으로 재구현 필요
      */
     private Specification<EventJpaEntity> buildSpecification(EventSearchCondition condition) {
         return (root, query, cb) -> {
@@ -84,27 +85,8 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
                 predicates.add(cb.equal(root.get("type"), condition.type()));
             }
 
-            // 온라인 여부 필터
-            if (condition.isOnline() != null) {
-                predicates.add(cb.equal(root.get("isOnline"), condition.isOnline()));
-            }
-
-            // 무료 여부 필터
-            if (condition.isFree() != null) {
-                if (condition.isFree()) {
-                    predicates.add(cb.equal(root.get("price"), 0));
-                } else {
-                    predicates.add(cb.greaterThan(root.get("price"), 0));
-                }
-            }
-
-            // 가격 범위 필터
-            if (condition.minPrice() != null) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("price"), condition.minPrice()));
-            }
-            if (condition.maxPrice() != null) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("price"), condition.maxPrice()));
-            }
+            // TODO: isOnline 필터 — 세션 JOIN 기반으로 재구현 예정 (EventJpaEntity에 sessions 관계 매핑 추가 후)
+            // TODO: 지역(regionSido/regionSigungu) 필터 — 세션 JOIN 기반으로 추가 예정
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
