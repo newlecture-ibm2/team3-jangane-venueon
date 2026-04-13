@@ -2,11 +2,10 @@ package com.venueon.post.application.service;
 
 import com.venueon.common.annotation.UseCase;
 import com.venueon.post.application.port.in.CreatePostUseCase;
-import com.venueon.post.application.port.in.PostAdminUseCase;
-import com.venueon.post.application.port.in.PostBookmarkUseCase;
-import com.venueon.post.application.port.in.PostLikeUseCase;
+import com.venueon.post.application.port.in.*;
 import com.venueon.post.application.port.in.dto.CreatePostRequest;
 import com.venueon.post.application.port.in.dto.CreatePostResponse;
+import com.venueon.post.application.port.in.dto.UpdatePostRequest;
 import com.venueon.post.application.port.out.PostRepositoryPort;
 import com.venueon.post.domain.model.Post;
 import com.venueon.user.application.port.out.UserRepositoryPort;
@@ -17,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, PostBookmarkUseCase, PostAdminUseCase {
+public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, PostBookmarkUseCase, PostAdminUseCase, UpdatePostUseCase, DeletePostUseCase {
 
         private final PostRepositoryPort postRepositoryPort;
         private final UserRepositoryPort userRepositoryPort;
@@ -42,6 +41,23 @@ public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, P
                                 savedPost.getId(),
                                 savedPost.getTitle(),
                                 savedPost.getCreatedAt());
+        }
+
+        @Override
+        public void updatePost(Long id, UpdatePostRequest request) {
+                Post post = postRepositoryPort.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + id));
+
+                post.update(request.title(), request.content(), request.type());
+                postRepositoryPort.save(post);
+        }
+
+        @Override
+        public void deletePost(Long id) {
+                postRepositoryPort.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + id));
+
+                postRepositoryPort.delete(id);
         }
 
         @Override

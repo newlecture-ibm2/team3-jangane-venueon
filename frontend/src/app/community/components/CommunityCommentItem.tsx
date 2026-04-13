@@ -28,6 +28,16 @@ export interface CommunityCommentItemProps {
   /** 댓글 깊이 (추가: 0:일반, 1:대댓글) */
 
   level?: number;
+  /** 수정 모드 여부 */
+  isEditing?: boolean;
+  /** 수정 중인 본문 값 */
+  editingValue?: string;
+  /** 수정 중인 본문 값 변경 콜백 */
+  onEditingValueChange?: (value: string) => void;
+  /** 수정 완료(저장) 콜백 */
+  onSave?: () => void;
+  /** 수정 취소 콜백 */
+  onCancel?: () => void;
 }
 
 export default function CommunityCommentItem({
@@ -41,6 +51,11 @@ export default function CommunityCommentItem({
   onLike,
   onReply,
   level = 0,
+  isEditing = false,
+  editingValue = '',
+  onEditingValueChange,
+  onSave,
+  onCancel,
 }: CommunityCommentItemProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -82,7 +97,23 @@ export default function CommunityCommentItem({
         )}
       </div>
 
-      <p className={styles.content}>{content}</p>
+      {isEditing ? (
+        <div className={styles.editSection}>
+          <textarea
+            className={styles.editTextarea}
+            value={editingValue}
+            onChange={(e) => onEditingValueChange?.(e.target.value)}
+            rows={3}
+            autoFocus
+          />
+          <div className={styles.editActions}>
+            <button className={styles.cancelButton} onClick={onCancel} type="button">취소</button>
+            <button className={styles.saveButton} onClick={onSave} type="button">수정완료</button>
+          </div>
+        </div>
+      ) : (
+        <p className={styles.content}>{content}</p>
+      )}
 
       <div className={styles.footer}>
         <button

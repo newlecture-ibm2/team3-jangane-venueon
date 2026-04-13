@@ -12,6 +12,7 @@ public record PostListResponse(
                 Long id,
                 String title,
                 PostType type,
+                Long authorId,
                 String authorNickname,
                 String content,
                 int viewCount,

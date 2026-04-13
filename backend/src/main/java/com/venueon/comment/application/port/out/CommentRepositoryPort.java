@@ -16,4 +16,5 @@ public interface CommentRepositoryPort {
     boolean existsLike(Long commentId, Long userId);
     void saveLike(Long commentId, Long userId);
     void deleteLike(Long commentId, Long userId);
+    void delete(Long id);
 }

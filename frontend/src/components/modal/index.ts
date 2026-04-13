@@ -6,3 +6,4 @@ export { default as UploadModal } from './UploadModal';
 export { default as PaymentModal } from './PaymentModal';
 export { default as InquiryModal } from './InquiryModal';
 export { default as ReviewModal } from './ReviewModal';
+export { default as ReportModal } from './ReportModal';

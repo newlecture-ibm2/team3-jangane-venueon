@@ -61,7 +61,7 @@ public class SessionJpaEntity {
 
     @Column(name = "is_online")
     @Builder.Default
-    private boolean isOnline = false;
+    private Boolean isOnline = false;
 
     @Column(name = "online_link")
     private String onlineLink;
@@ -84,7 +84,7 @@ public class SessionJpaEntity {
 
     @Column(name = "is_recruitment_closed")
     @Builder.Default
-    private boolean isRecruitmentClosed = false;
+    private Boolean isRecruitmentClosed = false;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "forced_recruitment_status")
@@ -97,7 +97,7 @@ public class SessionJpaEntity {
     // 시스템 관리
     @Column(name = "is_default")
     @Builder.Default
-    private boolean isDefault = false;
+    private Boolean isDefault = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -106,4 +106,16 @@ public class SessionJpaEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public boolean isOnline() {
+        return isOnline != null && isOnline;
+    }
+
+    public boolean isRecruitmentClosed() {
+        return isRecruitmentClosed != null && isRecruitmentClosed;
+    }
+
+    public boolean isDefault() {
+        return isDefault != null && isDefault;
+    }
 }

@@ -55,11 +55,23 @@ public class EventJpaEntity {
 
     @Column(name = "has_session")
     @Builder.Default
-    private boolean hasSession = false;
+    private Boolean hasSession = false;
+
+    public boolean isHasSession() {
+        return hasSession != null && hasSession;
+    }
+
+    public boolean hasSession() {
+        return isHasSession();
+    }
 
     @Column(name = "is_hidden", nullable = false)
     @Builder.Default
-    private boolean isHidden = false;
+    private Boolean isHidden = false;
+
+    public boolean isHidden() {
+        return isHidden != null && isHidden;
+    }
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

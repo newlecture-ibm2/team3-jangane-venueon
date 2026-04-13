@@ -40,4 +40,10 @@ public class Comment {
             this.likeCount--;
         }
     }
+
+    public void update(String content) {
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
+    }
 }

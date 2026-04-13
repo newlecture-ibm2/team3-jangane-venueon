@@ -1,16 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Pagination, InputField, UserProfile, CommentInput, Button } from '@/components/ui';
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import { useUIStore } from '@/store/useUIStore';
 import styles from './CommunityPostContainer.module.css';
+import { ReportModal } from '@/components/modal';
+import { PopoverMenu } from '@/components/ui';
+import { MoreIcon } from '@/components/icons';
+import { useAuth } from '@/store/useAuthStore';
 
 interface PostListResponse {
   id: number;
   title: string;
   type: string;
+  authorId: number;
   authorNickname: string;
   content: string;
   viewCount: number;
@@ -45,7 +51,9 @@ interface Props {
 }
 
 export default function CommunityPostContainer({ communityId }: Props) {
+  const router = useRouter();
   const { showToast } = useUIStore();
+  const { user } = useAuth();
 
   const [posts, setPosts] = useState<PostListResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,6 +66,17 @@ export default function CommunityPostContainer({ communityId }: Props) {
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
   const [isLikeSubmitting, setIsLikeSubmitting] = useState(false);
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
+
+  // 댓글 수정/신고 관련 상태
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingCommentValue, setEditingCommentValue] = useState('');
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportTarget, setReportTarget] = useState<{ type: 'POST' | 'COMMENT', id: number }>({ type: 'POST', id: 0 });
+
+  const handleOpenReport = (type: 'POST' | 'COMMENT', id: number) => {
+    setReportTarget({ type, id });
+    setIsReportModalOpen(true);
+  };
 
   const fetchPosts = async (silent = false) => {
     if (!silent) setIsLoading(true);
@@ -207,6 +226,77 @@ export default function CommunityPostContainer({ communityId }: Props) {
     }
   };
 
+  const handlePostDelete = async (postId: number) => {
+    if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) return;
+
+    try {
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('삭제 실패');
+
+      showToast('게시글이 삭제되었습니다.', 'success');
+      setSelectedPostId(null);
+      fetchPosts();
+    } catch (error) {
+      console.error(error);
+      showToast('삭제 실패', 'error');
+    }
+  };
+
+  const handlePostEdit = (postId: number) => {
+    router.push(`/community/${communityId}/posts/${postId}/edit`);
+  };
+
+  const handleCommentDelete = async (commentId: number) => {
+    if (!confirm('정말로 이 댓글을 삭제하시겠습니까?')) return;
+
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('삭제 실패');
+
+      showToast('댓글이 삭제되었습니다.', 'success');
+      if (selectedPostId) fetchComments(selectedPostId, true);
+    } catch (error) {
+      console.error(error);
+      showToast('삭제 실패', 'error');
+    }
+  };
+
+  const handleCommentEdit = (commentId: number) => {
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) return;
+
+    setEditingCommentId(commentId);
+    setEditingCommentValue(comment.content);
+  };
+
+  const handleCommentUpdateSubmit = async () => {
+    if (!editingCommentId || !editingCommentValue.trim()) return;
+
+    try {
+      const response = await fetch(`/api/comments/${editingCommentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: editingCommentValue }),
+      });
+
+      if (!response.ok) throw new Error('수정 실패');
+
+      showToast('댓글이 수정되었습니다.', 'success');
+      setEditingCommentId(null);
+      setEditingCommentValue('');
+      if (selectedPostId) fetchComments(selectedPostId, true);
+    } catch (error) {
+      console.error(error);
+      showToast('수정 실패', 'error');
+    }
+  };
+
   const handleCommentLikeToggle = async (commentId: number) => {
     try {
       const response = await fetch(`/api/comments/${commentId}/like`, {
@@ -228,6 +318,8 @@ export default function CommunityPostContainer({ communityId }: Props) {
       showToast('좋아요 처리 실패', 'error');
     }
   };
+
+  const [isPostMenuOpen, setIsPostMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchPosts();
@@ -388,7 +480,39 @@ export default function CommunityPostContainer({ communityId }: Props) {
                       <path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
                     </svg>
                   </button>
-                  <button className={styles.optionButton} type="button">•••</button>
+                  <div className={styles.optionButtonWrapper}>
+                    <button 
+                      className={styles.optionButton} 
+                      type="button"
+                      onClick={() => setIsPostMenuOpen(!isPostMenuOpen)}
+                    >
+                      <MoreIcon />
+                    </button>
+                    {isPostMenuOpen && (
+                      <PopoverMenu
+                        items={[
+                          { value: 'report', label: '신고하기' },
+                          ...(user?.id === selectedPost.authorId ? [
+                            { value: 'edit', label: '수정하기' },
+                            { value: 'delete', label: '삭제하기' }
+                          ] : [])
+                        ]}
+                        onSelect={(value) => {
+                          if (value === 'report' && selectedPostId) {
+                            handleOpenReport('POST', selectedPostId);
+                          } else if (value === 'edit' && selectedPostId) {
+                            handlePostEdit(selectedPostId);
+                          } else if (value === 'delete' && selectedPostId) {
+                            handlePostDelete(selectedPostId);
+                          }
+                          setIsPostMenuOpen(false);
+                        }}
+                        onClose={() => setIsPostMenuOpen(false)}
+                        width={120}
+                        style={{ top: '100%', right: 0, marginTop: '4px' }}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -424,7 +548,30 @@ export default function CommunityPostContainer({ communityId }: Props) {
                         onLike={() => handleCommentLikeToggle(comment.id)}
                         onReply={() => setReplyToCommentId(comment.id)}
                         level={level}
-                        menuItems={[{ value: 'report', label: '신고하기' }]}
+                        isEditing={editingCommentId === comment.id}
+                        editingValue={editingCommentValue}
+                        onEditingValueChange={setEditingCommentValue}
+                        onSave={handleCommentUpdateSubmit}
+                        onCancel={() => {
+                          setEditingCommentId(null);
+                          setEditingCommentValue('');
+                        }}
+                        menuItems={[
+                          { value: 'report', label: '신고하기' },
+                          ...(user?.id === comment.authorId ? [
+                            { value: 'edit', label: '수정하기' },
+                            { value: 'delete', label: '삭제하기' }
+                          ] : [])
+                        ]}
+                        onMenuSelect={(value) => {
+                          if (value === 'report') {
+                            handleOpenReport('COMMENT', comment.id);
+                          } else if (value === 'edit') {
+                            handleCommentEdit(comment.id);
+                          } else if (value === 'delete') {
+                            handleCommentDelete(comment.id);
+                          }
+                        }}
                       />
                       {/* 답글 입력창: 현재 댓글이 답글 작성 대상이고 부모 댓글인 경우 바로 아래에 표시 */}
                       {replyToCommentId === comment.id && (
@@ -445,6 +592,14 @@ export default function CommunityPostContainer({ communityId }: Props) {
                   ))
                 )}
               </div>
+
+              {/* 신고 모달 */}
+              <ReportModal
+                isOpen={isReportModalOpen}
+                onClose={() => setIsReportModalOpen(false)}
+                targetType={reportTarget.type}
+                targetId={reportTarget.id}
+              />
             </>
           ) : (
             <div className={styles.emptyDetail}>선택된 게시물이 없습니다.</div>
