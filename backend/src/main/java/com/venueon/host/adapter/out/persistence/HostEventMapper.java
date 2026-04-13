@@ -23,6 +23,7 @@ public class HostEventMapper {
                 entity.getMaxAttendees(),
                 entity.getLocation(),
                 entity.isOnline(),
+                entity.getDescription(),
                 entity.getCreatedAt()
         );
     }

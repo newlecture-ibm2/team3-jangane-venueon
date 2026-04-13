@@ -56,5 +56,17 @@ public class HostSeminarController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<HostEventResponse>> getMyEventDetail(
+            Authentication authentication,
+            @PathVariable Long id
+    ) {
+        Long hostId = hostAuthSupport.extractUserId(authentication);
+        log.debug("GET /host/events/{} — hostId={}", id, hostId);
+
+        HostEventResponse result = getHostEventsUseCase.getHostEvent(hostId, id);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
 }
 

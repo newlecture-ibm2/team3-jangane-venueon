@@ -16,5 +16,9 @@ public interface HostEventJpaRepository extends JpaRepository<EventJpaEntity, Lo
     Page<EventJpaEntity> findByCreatorId(Long creatorId, Pageable pageable);
 
     /** 호스트 본인의 이벤트 — 상태 필터 (페이지네이션) */
+    /** 호스트 본인의 이벤트 — 상태 필터 (페이지네이션) */
     Page<EventJpaEntity> findByCreatorIdAndStatus(Long creatorId, EventStatus status, Pageable pageable);
+
+    /** 호스트 본인의 상세 조회 */
+    java.util.Optional<EventJpaEntity> findByIdAndCreatorId(Long id, Long creatorId);
 }
