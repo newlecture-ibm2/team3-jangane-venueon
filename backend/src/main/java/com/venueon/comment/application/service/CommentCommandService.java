@@ -1,6 +1,6 @@
 package com.venueon.comment.application.service;
 
-import com.venueon.comment.application.port.in.CommentAdminUseCase;
+import com.venueon.common.annotation.UseCase;
 import com.venueon.comment.application.port.in.CommentLikeUseCase;
 import com.venueon.comment.application.port.in.CreateCommentUseCase;
 import com.venueon.comment.application.port.in.dto.CommentResponse;
@@ -11,12 +11,11 @@ import com.venueon.user.application.port.out.UserRepositoryPort;
 import com.venueon.user.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import com.venueon.common.annotation.UseCase;
 
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class CommentCommandService implements CreateCommentUseCase, CommentLikeUseCase, CommentAdminUseCase {
+public class CommentCommandService implements CreateCommentUseCase, CommentLikeUseCase {
 
     private final CommentRepositoryPort commentRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
@@ -65,21 +64,5 @@ public class CommentCommandService implements CreateCommentUseCase, CommentLikeU
         }
 
         commentRepositoryPort.save(comment);
-    }
-
-    @Override
-    public void hideComment(Long commentId) {
-        Comment comment = commentRepositoryPort.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));
-        comment.hide();
-        commentRepositoryPort.save(comment);
-    }
-
-    @Override
-    public void deleteComment(Long commentId) {
-        if (!commentRepositoryPort.existsById(commentId)) {
-            throw new IllegalArgumentException("Comment not found: " + commentId);
-        }
-        commentRepositoryPort.deleteById(commentId);
     }
 }

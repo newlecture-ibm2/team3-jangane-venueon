@@ -54,10 +54,4 @@ public class ReportJpaEntity {
 
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;
-
-    public void resolve(AdminAction adminAction, ReportStatus status) {
-        this.adminAction = adminAction;
-        this.status = status;
-        this.resolvedAt = LocalDateTime.now();
-    }
 }

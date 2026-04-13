@@ -27,8 +27,4 @@ public interface PostRepositoryPort {
     void deleteBookmark(Long postId, Long userId);
     
     Page<Post> findBookmarkedPostsByUserId(Long userId, Pageable pageable);
-
-    boolean existsById(Long id);
-
-    void deleteById(Long id);
 }
