@@ -10,9 +10,18 @@ import com.venueon.event.application.port.in.UpdateEventStatusUseCase;
 import com.venueon.event.application.port.in.UpdateEventUseCase;
 import com.venueon.event.domain.model.Event;
 import com.venueon.event.domain.model.EventStatus;
+import com.venueon.host.application.port.in.GetHostEventsUseCase;
+import com.venueon.host.dto.HostEventResponse;
+import com.venueon.host.presentation.HostAuthSupport;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -27,6 +36,8 @@ public class HostEventController {
     private final UpdateEventStatusUseCase updateEventStatusUseCase;
     private final DeleteEventUseCase deleteEventUseCase;
     private final UpdateEventUseCase updateEventUseCase;
+    private final GetHostEventsUseCase getHostEventsUseCase;
+    private final HostAuthSupport hostAuthSupport;
 
     /**
      * 이벤트 생성
@@ -88,5 +99,49 @@ public class HostEventController {
     ) {
         Event updated = updateEventUseCase.updateEvent(request.toCommand(id, requesterId, requesterRole));
         return ApiResponse.success(EventDetailResponse.from(updated));
+    }
+
+    /**
+     * 호스트 이벤트 목록 조회
+     */
+    @GetMapping
+    public ApiResponse<Page<HostEventResponse>> getMyEvents(
+            Authentication authentication,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Long hostId = hostAuthSupport.extractUserId(authentication);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<HostEventResponse> result = getHostEventsUseCase.getHostEvents(hostId, status, pageable);
+        return ApiResponse.success(result);
+    }
+
+    /**
+     * 호스트 임시 저장 리스트 조회
+     */
+    @GetMapping("/drafts")
+    public ApiResponse<Page<HostEventResponse>> getMyDraftEvents(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Long hostId = hostAuthSupport.extractUserId(authentication);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<HostEventResponse> result = getHostEventsUseCase.getHostDraftEvents(hostId, pageable);
+        return ApiResponse.success(result);
+    }
+
+    /**
+     * 호스트 이벤트 상세 조회
+     */
+    @GetMapping("/{id}")
+    public ApiResponse<HostEventResponse> getMyEventDetail(
+            Authentication authentication,
+            @PathVariable Long id
+    ) {
+        Long hostId = hostAuthSupport.extractUserId(authentication);
+        HostEventResponse result = getHostEventsUseCase.getHostEvent(hostId, id);
+        return ApiResponse.success(result);
     }
 }

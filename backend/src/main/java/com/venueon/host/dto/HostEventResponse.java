@@ -17,5 +17,6 @@ public record HostEventResponse(
         int maxAttendees,
         String location,
         boolean isOnline,
+        String description,
         LocalDateTime createdAt
 ) {}
