@@ -35,6 +35,7 @@ public class CommunityPersistenceAdapter implements CommunityRepositoryPort {
         }
 
         CommunityJpaEntity entity = CommunityJpaEntity.builder()
+                .id(community.getId())
                 .creator(creator)
                 .event(event)
                 .name(community.getName())

@@ -2,7 +2,9 @@ package com.venueon.community.adapter.in.web;
 
 import com.venueon.community.application.port.in.dto.CommunityResponse;
 import com.venueon.community.application.port.in.dto.CreateCommunityRequest;
+import com.venueon.community.application.port.in.dto.UpdateCommunityRequest;
 import com.venueon.community.application.port.in.CreateCommunityUseCase;
+import com.venueon.community.application.port.in.UpdateCommunityUseCase;
 import com.venueon.community.application.port.in.GetCommunityQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class CommunityController {
 
     private final CreateCommunityUseCase createCommunityUseCase;
+    private final UpdateCommunityUseCase updateCommunityUseCase;
     private final GetCommunityQuery getCommunityQuery;
 
     /**
@@ -68,6 +71,19 @@ public class CommunityController {
     @GetMapping("/{id}")
     public ResponseEntity<CommunityResponse> getCommunity(@PathVariable Long id) {
         CommunityResponse response = getCommunityQuery.getCommunityById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 커뮤니티 수정
+     * PUT /communities/{id}
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<CommunityResponse> updateCommunity(
+            @PathVariable Long id,
+            @RequestBody UpdateCommunityRequest request) {
+
+        CommunityResponse response = updateCommunityUseCase.updateCommunity(id, request);
         return ResponseEntity.ok(response);
     }
 }
