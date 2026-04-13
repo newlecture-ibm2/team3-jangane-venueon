@@ -95,16 +95,6 @@ public class CommentPersistenceAdapter implements CommentRepositoryPort {
         commentLikeJpaRepository.deleteByCommentIdAndUserId(commentId, userId);
     }
 
-    @Override
-    public boolean existsById(Long id) {
-        return commentJpaRepository.existsById(id);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        commentJpaRepository.deleteById(id);
-    }
-
     private Comment mapToDomain(CommentJpaEntity entity) {
         return Comment.builder()
                 .id(entity.getId())
