@@ -73,9 +73,6 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        // 새로 추가된 boolean 컬럼의 NULL 값을 기본값으로 채움 (primitive boolean은 NULL 불가)
-        fixNullBooleanColumns();
-
         if (userRepository.count() > 0) {
             log.info("데이터가 이미 존재합니다. 장바구니 데이터를 ID 1번 사용자용으로 재구성하고, 누락된 신고 샘플이 있다면 생성합니다.");
             
@@ -759,18 +756,5 @@ public class DataInitializer implements ApplicationRunner {
         log.info("관리자용 장바구니 임시 데이터 생성 완료.");
     }
 
-    /**
-     * 새로 추가된 boolean 컬럼에 NULL이 남아있으면 primitive boolean 매핑 시 에러 발생.
-     * 서버 기동 시 NULL → false 로 채워줌.
-     */
-    private void fixNullBooleanColumns() {
-        try {
-            jdbcTemplate.execute("UPDATE event_sessions SET is_recruitment_closed = false WHERE is_recruitment_closed IS NULL");
-            jdbcTemplate.execute("UPDATE event_sessions SET is_default = false WHERE is_default IS NULL");
-            jdbcTemplate.execute("UPDATE event_sessions SET is_online = false WHERE is_online IS NULL");
-            log.info("세션 테이블 NULL boolean 컬럼 기본값 채움 완료.");
-        } catch (Exception e) {
-            log.warn("세션 테이블 NULL boolean 수정 중 오류 (무시): {}", e.getMessage());
-        }
-    }
+
 }

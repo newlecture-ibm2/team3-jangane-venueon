@@ -6,8 +6,9 @@ import com.venueon.report.domain.model.ReportTargetType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface ReportJpaRepository extends JpaRepository<ReportJpaEntity, Long> {
+public interface ReportJpaRepository extends JpaRepository<ReportJpaEntity, Long>, JpaSpecificationExecutor<ReportJpaEntity> {
 
     Page<ReportJpaEntity> findByReporterId(Long reporterId, Pageable pageable);
 

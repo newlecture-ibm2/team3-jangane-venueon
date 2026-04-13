@@ -83,13 +83,12 @@ export default function ReportTable() {
 
   /* ── 데이터 가져오기 ── */
   const fetchReports = useCallback(async () => {
-
-
-      setIsLoading(true);
+    setIsLoading(true);
     try {
       const response = await adminReportAPI.getReports({
         targetType: activeTab,
         status: statusFilter === 'ALL' ? undefined : statusFilter,
+        keyword: searchKeyword || undefined,
         page: currentPage - 1,
         size: 10,
       });
@@ -110,7 +109,7 @@ export default function ReportTable() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeTab, statusFilter, currentPage, showToast]);
+  }, [activeTab, statusFilter, searchKeyword, currentPage, showToast]);
 
   React.useEffect(() => {
     fetchReports();
@@ -134,12 +133,15 @@ export default function ReportTable() {
     setOpenPopoverId(null);
 
     try {
-      const response = await adminReportAPI.processReport(reportId, actionValue, 'RESOLVED');
+      // 액션이 DISMISS(반려)인 경우 상태를 REJECTED로, 그 외(DELETE, WARN 등)는 RESOLVED로 처리
+      const status = actionValue === 'DISMISS' ? 'REJECTED' : 'RESOLVED';
+      const response = await adminReportAPI.processReport(reportId, actionValue, status);
+      
       if (response.success) {
         const actionLabels: Record<string, string> = {
           HIDE: '숨김 처리',
           DELETE: '삭제',
-          REJECT: '반려',
+          DISMISS: '반려',
           WARN: '경고',
         };
         const label = actionLabels[actionValue] || actionValue;
@@ -315,7 +317,7 @@ export default function ReportTable() {
                       <PopoverMenu
                         items={[
                           { value: 'DELETE', label: '삭제' },
-                          { value: 'REJECT', label: '반려' },
+                          { value: 'DISMISS', label: '반려' },
                           { value: 'WARN', label: '경고' },
                         ]}
                         onSelect={(value) => handlePopoverAction(item.id, value)}
