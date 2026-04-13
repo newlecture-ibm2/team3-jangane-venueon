@@ -20,7 +20,8 @@ public class WishlistResponse {
     public static WishlistResponse of(WishlistItem item, Event event, HostInfo host) {
         String eventStatus = event.getStatus() != null ? event.getStatus().name() : "ONGOING";
         String organizerName = (host != null && host.nickname() != null) ? host.nickname() : "알 수 없는 호스트";
-        String dateStr = event.getStartDate() != null ? event.getStartDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")) : "-";
+        // v6: startDate, location, price는 Session/Ticket으로 이동
+        String dateStr = "-"; // TODO: Session 기반으로 변경
         
         return WishlistResponse.builder()
             .id(event.getId())
@@ -29,8 +30,8 @@ public class WishlistResponse {
             .title(event.getTitle())
             .organizer(organizerName)
             .dateTime(dateStr)
-            .location(event.getLocation() != null ? event.getLocation() : "온라인")
-            .price(event.getPrice())
+            .location("-") // TODO: Session 기반으로 변경
+            .price(0) // TODO: Ticket 기반으로 변경
             .build();
     }
 }

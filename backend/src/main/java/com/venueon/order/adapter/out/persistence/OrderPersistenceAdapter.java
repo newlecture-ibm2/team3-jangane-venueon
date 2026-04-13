@@ -11,8 +11,8 @@ import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
-import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
+import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
+import com.venueon.event.adapter.out.persistence.repository.SessionJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +30,7 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
     private final OrderJpaRepository orderJpaRepository;
     private final EventJpaRepository eventJpaRepository;
     private final UserJpaRepository userJpaRepository;
-    private final EventSessionJpaRepository eventSessionJpaRepository;
+    private final SessionJpaRepository sessionJpaRepository;
 
     @Override
     public Order save(Order order) {
@@ -43,9 +43,9 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
             EventJpaEntity event = eventJpaRepository.findById(order.getEventId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
-            EventSessionJpaEntity session = null;
+            SessionJpaEntity session = null;
             if (order.getSessionId() != null) {
-                session = eventSessionJpaRepository.findById(order.getSessionId())
+                session = sessionJpaRepository.findById(order.getSessionId())
                         .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND)); // Or Session NotFound
             }
 
@@ -134,7 +134,7 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
         if (tab != null && !tab.isEmpty()) {
             hasStatuses = true;
             if ("upcoming".equals(tab)) {
-                statuses.addAll(List.of(com.venueon.event.domain.model.EventStatus.DRAFT, com.venueon.event.domain.model.EventStatus.PUBLISHED, com.venueon.event.domain.model.EventStatus.PREPARING));
+                statuses.addAll(List.of(com.venueon.event.domain.model.EventStatus.DRAFT, com.venueon.event.domain.model.EventStatus.PUBLISHED));
             } else if ("enrolled".equals(tab)) {
                 statuses.add(com.venueon.event.domain.model.EventStatus.ONGOING);
             } else if ("completed".equals(tab)) {

@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic';
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { Tag, Button } from '@/components/ui';
 import { format } from 'date-fns';
 import EventActionMenu from './_components/EventActionMenu';
+import TicketList from './_components/TicketList';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -14,25 +14,31 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 async function getEventDetail(id: string) {
   try {
     const url = `${BACKEND_URL}/events/${id}`;
-    const res = await fetch(url, {
-      cache: 'no-store'
-    });
-
+    const res = await fetch(url, { cache: 'no-store' });
     const text = await res.text();
-    // 응답이 JSON 형식이 아닌 경우 로깅
     if (!text.startsWith('{') && !text.startsWith('[')) {
       console.error(`Backend returned non-JSON response from ${url}:`, text);
       return { error: 'Non-JSON response', detail: text, url };
     }
-
     const data = JSON.parse(text);
-    if (data.success) {
-      return data.data;
-    }
+    if (data.success) return data.data;
     return { error: 'Success false from backend', data };
   } catch (error: any) {
     console.error('Failed to fetch event details', error);
     return { error: 'Fetch catch err', message: error?.message };
+  }
+}
+
+async function getTickets(eventId: string) {
+  try {
+    const url = `${BACKEND_URL}/events/${eventId}/tickets`;
+    const res = await fetch(url, { cache: 'no-store' });
+    const data = await res.json();
+    if (data.success) return data.data || [];
+    return [];
+  } catch (error) {
+    console.error('Failed to fetch tickets', error);
+    return [];
   }
 }
 
@@ -42,15 +48,16 @@ interface Props {
 
 export default async function EventDetailPage({ params }: Props) {
   const { id } = await params;
-  const event = await getEventDetail(id);
-
-  console.log("EVENT PAYLOAD FROM BACKEND:", JSON.stringify(event, null, 2));
+  const [event, tickets] = await Promise.all([
+    getEventDetail(id),
+    getTickets(id),
+  ]);
 
   if (!event || event.error) {
     return (
       <div className={styles.container} style={{ textAlign: 'center', padding: '100px 0' }}>
-        <h2>세션를 찾을 수 없거나 불러오지 못했습니다.</h2>
-        <p>삭제되었거나 존재하지 않는 세션입니다.</p>
+        <h2>이벤트를 찾을 수 없거나 불러오지 못했습니다.</h2>
+        <p>삭제되었거나 존재하지 않는 이벤트입니다.</p>
         <div style={{ marginTop: 20, color: 'red', textAlign: 'left', background: '#ffebee', padding: 16 }}>
           <pre>{JSON.stringify(event, null, 2)}</pre>
         </div>
@@ -59,15 +66,39 @@ export default async function EventDetailPage({ params }: Props) {
   }
 
   const STATUS_MAP: Record<string, { label: string; variant: 'green' | 'purple' | 'gray' | 'red' }> = {
-    PUBLISHED: { label: '모집 중', variant: 'green' },
+    PUBLISHED: { label: '게시됨', variant: 'green' },
     ONGOING: { label: '진행 중', variant: 'purple' },
     DRAFT: { label: '게시 전', variant: 'gray' },
     ENDED: { label: '종료', variant: 'gray' },
     CANCELLED: { label: '취소', variant: 'red' },
   };
 
+  const RECRUIT_MAP: Record<string, { label: string; variant: 'green' | 'purple' | 'gray' | 'red' }> = {
+    OPEN: { label: '모집중', variant: 'green' },
+    PENDING: { label: '모집 대기', variant: 'gray' },
+    CLOSED: { label: '마감', variant: 'red' },
+  };
+
   const statusInfo = STATUS_MAP[event.status] || { label: event.status, variant: 'gray' };
   const imageUrl = event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : '';
+
+  // v6: 이벤트 기간은 백엔드의 Computed 필드(event.startDate, event.endDate) 또는 세션 도출을 사용
+  const sessions = event.sessions || [];
+  const startDate = event.startDate;
+  const endDate = event.endDate;
+
+  // 모집 기간 도출
+  const validRecruitStartDates = sessions.map((s: any) => s.recruitStartDate).filter(Boolean).map((d: string) => new Date(d).getTime());
+  const validRecruitEndDates = sessions.map((s: any) => s.recruitEndDate).filter(Boolean).map((d: string) => new Date(d).getTime());
+  
+  const recruitStartDate = validRecruitStartDates.length > 0 ? new Date(Math.min(...validRecruitStartDates)).toISOString() : null;
+  const recruitEndDate = validRecruitEndDates.length > 0 ? new Date(Math.max(...validRecruitEndDates)).toISOString() : null;
+
+  // v6: 티켓에서 가격 범위 도출
+  const activePrices = tickets.filter((t: any) => t.isActive).map((t: any) => t.price);
+  const minPrice = activePrices.length > 0 ? Math.min(...activePrices) : 0;
+  const maxPrice = activePrices.length > 0 ? Math.max(...activePrices) : 0;
+  const hasDiscount = tickets.some((t: any) => t.discountRate > 0);
 
   return (
     <div className={styles.container}>
@@ -75,13 +106,26 @@ export default async function EventDetailPage({ params }: Props) {
       {/* 뒤로 가기 바 */}
       <div className={styles.topBar}>
         <Link href="/" className={styles.backButton}>
-          ← 세션 목록 보기
+          ← 이벤트 목록 보기
         </Link>
       </div>
 
-      {/* 헤더 섹션 (상태 태그, 제목, 액션 버튼) */}
+
+
+      {/* 헤더 섹션 — 듀얼 뱃지 */}
       <div className={styles.headerSection}>
-        <Tag variant={statusInfo.variant}>{statusInfo.label}</Tag>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {/* 모집상태 뱃지 */}
+          {event.recruitmentStatus && (
+            <Tag variant={RECRUIT_MAP[event.recruitmentStatus]?.variant || 'gray'}>
+              {RECRUIT_MAP[event.recruitmentStatus]?.label || event.recruitmentStatus}
+            </Tag>
+          )}
+          {/* 강의상태 뱃지 (DRAFT/PUBLISHED는 숨김) */}
+          {event.status && event.status !== 'DRAFT' && event.status !== 'PUBLISHED' && (
+            <Tag variant={statusInfo.variant}>{statusInfo.label}</Tag>
+          )}
+        </div>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>{event.title}</h1>
           <EventActionMenu eventId={event.id.toString()} creatorId={event.creatorId} />
@@ -99,78 +143,92 @@ export default async function EventDetailPage({ params }: Props) {
         )}
       </div>
 
-      {/* 세션 정보 섹션 */}
+      {/* 이벤트 정보 섹션 */}
       <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>세션 정보</h3>
+        <h3 className={styles.sectionTitle}>이벤트 정보</h3>
         <div className={styles.description}>
           {event.description}
         </div>
 
         <div className={styles.infoGrid}>
           <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>총 가격</span>
+            <span className={styles.infoLabel}>가격</span>
             <span className={styles.infoValue}>
-              {event.price === 0 ? '무료' : `₩${event.price.toLocaleString()}`}
+              {minPrice === 0 && maxPrice === 0
+                ? '무료'
+                : minPrice === maxPrice
+                  ? `₩${minPrice.toLocaleString()}`
+                  : `₩${minPrice.toLocaleString()} ~ ₩${maxPrice.toLocaleString()}`
+              }
+              {hasDiscount && <span className={styles.discountLabel}> 할인</span>}
             </span>
           </div>
           <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>날짜</span>
-            <span className={styles.infoValue}>
-              {format(new Date(event.startDate), 'yyyy-MM-dd')}
+            <span className={styles.infoLabel}>일정</span>
+            <span className={styles.infoValue} suppressHydrationWarning>
+              {startDate
+                ? `${format(new Date(startDate), 'yyyy.MM.dd')}${endDate ? ` ~ ${format(new Date(endDate), 'yyyy.MM.dd')}` : ''}`
+                : '일정 미정'
+              }
             </span>
           </div>
           <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>장소</span>
-            <span className={styles.infoValue}>
-              {event.isOnline ? '온라인 세션' : event.location}
+            <span className={styles.infoLabel}>모집</span>
+            <span className={styles.infoValue} suppressHydrationWarning>
+              {recruitStartDate || recruitEndDate
+                ? `${recruitStartDate ? format(new Date(recruitStartDate), 'yyyy.MM.dd') : '상시 모집'} ~ ${recruitEndDate ? format(new Date(recruitEndDate), 'yyyy.MM.dd') : '상시 모집'}`
+                : '상시 모집'
+              }
+              <span style={{ marginLeft: '8px' }}>
+                <Tag variant={RECRUIT_MAP[event.recruitmentStatus]?.variant || 'gray'}>
+                  {RECRUIT_MAP[event.recruitmentStatus]?.label || event.recruitmentStatus || '모집 상태 미정'}
+                </Tag>
+              </span>
             </span>
+          </div>
+          <div className={styles.infoItem}>
+            <span className={styles.infoLabel}>유형</span>
+            <span className={styles.infoValue}>{event.type}</span>
           </div>
         </div>
       </section>
 
-      {/* 다중 세션 정보 섹션 (있는 경우에만 표시) */}
-      {event.hasSession && event.sessions && event.sessions.length > 0 && (
+      {/* 세션 일정 섹션 */}
+      {sessions.length > 0 && (
         <section className={styles.section}>
           <h3 className={styles.sectionTitle}>
-            세션 일정 ({event.purchaseType === 'PACKAGE' ? '패키지(전체 필수 수강)' : '선택형 수강'})
+            세션 일정 {event.hasSession ? `(${sessions.length}개 세션)` : ''}
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {event.sessions.map((session: any, index: number) => (
-              <div key={session.id || index} style={{ border: '1px solid #eaeaea', padding: '16px', borderRadius: '12px', background: '#fafafa' }}>
-                <h4 style={{ margin: '0 0 8px 0', fontSize: '16px' }}>{session.title || `세션 ${index + 1}`}</h4>
-                {session.description && (
-                  <p style={{ fontSize: '14px', color: '#666', marginBottom: '12px', lineHeight: '1.5' }}>
-                    {session.description}
-                  </p>
-                )}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '14px', color: '#333' }}>
-                  <span>🕒 <strong>시간:</strong> {format(new Date(session.startTime), 'MM-dd HH:mm')} ~ {format(new Date(session.endTime), 'HH:mm')}</span>
-                  <span>🏫 <strong>장소:</strong> {session.isOnline ? '온라인' : session.location}</span>
-                  <span>💰 <strong>가격:</strong> {session.price === 0 ? '무료' : `₩${session.price.toLocaleString()}`}</span>
-                  <span>👤 <strong>인원:</strong> {session.currentAttendees} / {session.maxAttendees} 명</span>
+          <div className={styles.sessionList}>
+            {sessions.map((session: any, index: number) => {
+              const recruitInfo = RECRUIT_MAP[session.recruitmentStatus] || { label: '—', variant: 'gray' };
+              return (
+                <div key={session.id || index} className={styles.sessionCard}>
+                  <div className={styles.sessionHeader}>
+                    <h4 className={styles.sessionTitle}>{session.title || `세션 ${index + 1}`}</h4>
+                    <Tag variant={recruitInfo.variant}>{recruitInfo.label}</Tag>
+                  </div>
+                  {session.description && (
+                    <p className={styles.sessionDesc}>{session.description}</p>
+                  )}
+                  <div className={styles.sessionMeta} suppressHydrationWarning>
+                    <span suppressHydrationWarning>🕒 {session.startTime ? `${format(new Date(session.startTime), 'MM.dd HH:mm')} ~ ${session.endTime ? format(new Date(session.endTime), 'MM.dd HH:mm') : '미정'}` : '시간 미정'}</span>
+                    <span suppressHydrationWarning>📋 모집 {session.recruitStartDate ? format(new Date(session.recruitStartDate), 'MM.dd') : ''} ~ {session.recruitEndDate ? format(new Date(session.recruitEndDate), 'MM.dd') : ''}</span>
+                    <span>🏫 {session.isOnline ? '온라인' : (session.location || '장소 미정')}</span>
+                    <span>👤 {session.currentAttendees || 0} / {session.maxAttendees || '∞'} 명 (잔여 {session.remainingCapacity !== undefined ? session.remainingCapacity : '∞'}석)</span>
+                  </div>
                 </div>
-                {/* 세션 개별 수강 신청 버튼 */}
-                {event.status === 'PUBLISHED' && session.currentAttendees < session.maxAttendees && (
-                  <div style={{ marginTop: '16px', textAlign: 'right' }}>
-                    <Link href={`/orders/checkout?eventId=${id}&quantity=1&sessionId=${session.id}`} style={{ textDecoration: 'none' }}>
-                      <Button variant="primary" size="medium">
-                        이 세션 수강 신청
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-                {event.status === 'PUBLISHED' && session.maxAttendees > 0 && session.currentAttendees >= session.maxAttendees && (
-                  <div style={{ marginTop: '16px', textAlign: 'right' }}>
-                    <Button variant="outlined" size="medium" disabled>
-                      정원 초과
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
+
+      {/* 티켓 선택 섹션 */}
+      <section className={styles.section}>
+        <h3 className={styles.sectionTitle}>티켓 선택</h3>
+        <TicketList tickets={tickets} sessions={sessions} eventStatus={event.status} />
+      </section>
 
       {/* 주최자 정보 섹션 */}
       <section className={styles.section}>
@@ -193,25 +251,8 @@ export default async function EventDetailPage({ params }: Props) {
       {/* 하단 액션 버튼 */}
       <div className={styles.bottomActionArea}>
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <Button variant="outlined" size="large">세션 목록</Button>
+          <Button variant="outlined" size="large">이벤트 목록</Button>
         </Link>
-        {event.status === 'PUBLISHED' ? (
-          event.hasSession ? (
-            <Button variant="primary" size="large" disabled>
-              ↑ 위 세션 목록에서 선택해주세요
-            </Button>
-          ) : (
-            <Link href={`/orders/checkout?eventId=${id}&quantity=1`} style={{ textDecoration: 'none' }}>
-              <Button variant="primary" size="large">
-                수강 신청
-              </Button>
-            </Link>
-          )
-        ) : (
-          <Button variant="primary" size="large" disabled>
-            신청 불가
-          </Button>
-        )}
       </div>
 
     </div>

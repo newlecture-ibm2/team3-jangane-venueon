@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * 공개 세션 조회 API — 누구나 접근 가능
+ */
 @RestController
 @RequestMapping("/events/{eventId}/sessions")
 @RequiredArgsConstructor

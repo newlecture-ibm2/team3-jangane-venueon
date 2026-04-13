@@ -18,12 +18,14 @@ export interface CardProps {
   dateTime: string;
   location: string;
   price: string | number;
+  originalPrice?: string | number;
   actionButtonText?: string;
   onActionClick?: () => void;
   secondaryActionText?: string;
   onSecondaryActionClick?: () => void;
   eventId?: number;
   isWishlistedProp?: boolean;
+  recruitmentStatus?: string;  // 모집상태 (OPEN, PENDING, CLOSED)
 }
 
 export default function Card({
@@ -38,12 +40,14 @@ export default function Card({
   dateTime,
   location,
   price,
+  originalPrice,
   actionButtonText,
   onActionClick,
   secondaryActionText,
   onSecondaryActionClick,
   eventId,
-  isWishlistedProp = false
+  isWishlistedProp = false,
+  recruitmentStatus
 }: CardProps) {
 
 
@@ -83,6 +87,14 @@ export default function Card({
           )}
 
           <div className={styles.topRight}>
+            {/* 모집상태 뱃지 (있으면 표시) */}
+            {recruitmentStatus && (
+              <StatusTag domain="recruitment" status={recruitmentStatus} />
+            )}
+            {/* 강의상태 뱃지 (DRAFT/PUBLISHED는 리스트에서 숨김) */}
+            {status && status !== 'DRAFT' && status !== 'PUBLISHED' && (
+              <StatusTag domain="course" status={status} />
+            )}
             {variant === 'default' && category && (
               <span className={styles.categoryText}>{category}</span>
             )}
@@ -142,6 +154,11 @@ export default function Card({
       </div>
 
       <div className={styles.priceSection}>
+        {originalPrice && (
+          <span className={styles.originalPrice}>
+            {typeof originalPrice === 'number' ? `₩${originalPrice.toLocaleString()}` : originalPrice}
+          </span>
+        )}
         <span className={styles.price}>{formattedPrice}</span>
       </div>
 

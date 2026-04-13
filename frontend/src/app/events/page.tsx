@@ -13,12 +13,13 @@ interface EventData {
   thumbnailUrl: string;
   type: string;
   status: string;
+  recruitmentStatus: string | null;
   location: string;
   isOnline: boolean;
   price: number;
   maxAttendees: number;
-  startDate: string;
-  endDate: string;
+  startDate: string | null;
+  endDate: string | null;
   categoryId: number;
   creatorId: number;
 }
@@ -109,9 +110,9 @@ export default function EventsPage() {
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => {
-                const startTime = new Date(event.startDate).getTime();
-                const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
-                const dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                const startTime = event.startDate ? new Date(event.startDate).getTime() : null;
+                const diffDays = startTime ? Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24)) : undefined;
+                const dDayData = diffDays !== undefined && diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
                 
                 const categoryLabel = categoryOptions.find(c => c.value === String(event.categoryId))?.label || '기타';
 
@@ -123,11 +124,12 @@ export default function EventsPage() {
                       dDay={dDayData}
                       title={event.title}
                       imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
-                      organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 회사이름으로 변경
-                      dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
-                      location={event.isOnline ? '온라인' : event.location}
-                      price={event.price}
+                      organizer={`호스트 ${event.creatorId}`}
+                      dateTime={event.startDate ? format(new Date(event.startDate), 'yyyy년 M월 d일 a h시') : '일정 미정'}
+                      location={event.isOnline ? '온라인' : (event.location || '장소 미정')}
+                      price={event.price ?? 0}
                       status={event.status}
+                      recruitmentStatus={event.recruitmentStatus || undefined}
                     />
                   </Link>
                 );

@@ -1,6 +1,6 @@
 package com.venueon.cart.adapter.out.persistence.entity;
 
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
+import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,7 +30,7 @@ public class CartJpaEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_session_id", nullable = false)
-    private EventSessionJpaEntity eventSession;
+    private SessionJpaEntity eventSession;
 
     @Column(nullable = false)
     @Builder.Default

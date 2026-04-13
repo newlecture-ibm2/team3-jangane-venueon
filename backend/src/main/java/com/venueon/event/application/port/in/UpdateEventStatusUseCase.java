@@ -8,5 +8,5 @@ import com.venueon.event.domain.model.EventStatus;
  */
 public interface UpdateEventStatusUseCase {
 
-    Event updateStatus(Long eventId, Long requesterId, EventStatus newStatus);
+    Event updateStatus(Long eventId, Long requesterId, String requesterRole, EventStatus newStatus);
 }

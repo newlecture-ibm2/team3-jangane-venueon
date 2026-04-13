@@ -4,8 +4,8 @@ import com.venueon.cart.adapter.out.persistence.entity.CartJpaEntity;
 import com.venueon.cart.adapter.out.persistence.repository.CartJpaRepository;
 import com.venueon.cart.application.port.out.CartRepositoryPort;
 import com.venueon.cart.domain.model.Cart;
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
-import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
+import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
+import com.venueon.event.adapter.out.persistence.repository.SessionJpaRepository;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class CartPersistenceAdapter implements CartRepositoryPort {
 
     private final CartJpaRepository cartJpaRepository;
     private final UserJpaRepository userJpaRepository;
-    private final EventSessionJpaRepository eventSessionJpaRepository;
+    private final SessionJpaRepository sessionJpaRepository;
     private final CartMapper cartMapper;
 
     @Override
@@ -65,8 +65,8 @@ public class CartPersistenceAdapter implements CartRepositoryPort {
         UserJpaEntity user = userJpaRepository.findByEmail(cart.getUserEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + cart.getUserEmail()));
 
-        EventSessionJpaEntity session = eventSessionJpaRepository.findById(cart.getSessionId())
-                .orElseThrow(() -> new IllegalArgumentException("EventSession not found with id: " + cart.getSessionId()));
+        SessionJpaEntity session = sessionJpaRepository.findById(cart.getSessionId())
+                .orElseThrow(() -> new IllegalArgumentException("Session not found with id: " + cart.getSessionId()));
 
         // 업데이트인 경우 기존 엔티티 조회
         CartJpaEntity entity;

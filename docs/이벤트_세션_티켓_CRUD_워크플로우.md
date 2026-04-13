@@ -1,6 +1,7 @@
 # 🔧 이벤트/세션/티켓 CRUD 구현 워크플로우
 
 > **작성일:** 2026-04-10  
+> **최종 수정:** 2026-04-11 (Phase 1~3 완료 반영)  
 > **기반 설계:** `티켓_중심_설계서.md`, `이벤트_상태관리_설계서.md`, `아키텍처_v6`, `ERD_v6`, `API_스펙_v6`  
 > **목표:** 현재 코드 → v6 아키텍처로 전환 (이벤트/세션/티켓 CRUD + 상태 관리)
 
@@ -122,24 +123,24 @@ public enum RecruitmentStatus {
 - Event 생성 시 `price`, `maxAttendees`, `location`, `startDate`, `endDate`, `purchaseType` 제거
 - 세션에 모집 날짜 추가 (`recruitStartDate`, `recruitEndDate`)
 
-### Phase 1 체크리스트
+### Phase 1 체크리스트 ✅ 완료 (2026-04-10)
 
-- [ ] `PurchaseType.java` 삭제
-- [ ] `EventStatus.java` 수정 (PREPARING 제거)
-- [ ] `RecruitmentStatus.java` 생성 (`event/domain/model/`)
-- [ ] `Event.java` 필드 제거 + Computed 메서드 + `validateForPublish()` 추가
-- [ ] `EventJpaEntity.java` 컬럼 제거 (`event/adapter/out/`)
-- [ ] `EventMapper.java` 매핑 수정
-- [ ] `CreateEventUseCase.java` Command 수정 (`host/event/`)
-- [ ] `UpdateEventUseCase.java` Command 수정 (`host/event/`)
-- [ ] `EventCreateRequest.java` DTO 수정 (`host/event/`)
-- [ ] `EventUpdateRequest.java` DTO 수정 (`host/event/`)
-- [ ] `EventCommandService.java` 서비스 로직 수정 (`host/event/`)
-- [ ] `EventDetailResponse.java` 응답 재구성 (`event/`)
-- [ ] `EventListResponse.java` Computed 필드 추가 (`event/`)
-- [ ] PurchaseType 참조하는 모든 import 제거
-- [ ] `DataInitializer.java` 수정 (제거된 필드 참조 제거)
-- [ ] 컴파일 + 앱 재시작 확인 (JPA ddl-auto로 테이블 자동 재생성)
+- [x] `PurchaseType.java` 삭제
+- [x] `EventStatus.java` 수정 (PREPARING 제거)
+- [x] `RecruitmentStatus.java` 생성 (`event/domain/model/`)
+- [x] `Event.java` 필드 제거 + Computed 메서드 + `validateForPublish()` 추가
+- [x] `EventJpaEntity.java` 컬럼 제거 (`event/adapter/out/`)
+- [x] `EventMapper.java` 매핑 수정
+- [x] `CreateEventUseCase.java` Command 수정 (`host/event/`)
+- [x] `UpdateEventUseCase.java` Command 수정 (`host/event/`)
+- [x] `EventCreateRequest.java` DTO 수정 (`host/event/`)
+- [x] `EventUpdateRequest.java` DTO 수정 (`host/event/`)
+- [x] `EventCommandService.java` 서비스 로직 수정 (`host/event/`)
+- [x] `EventDetailResponse.java` 응답 재구성 (`event/`)
+- [x] `EventListResponse.java` Computed 필드 추가 (`event/`)
+- [x] PurchaseType 참조하는 모든 import 제거
+- [x] `DataInitializer.java` 수정 (제거된 필드 참조 제거)
+- [x] 컴파일 + 앱 재시작 확인 (JPA ddl-auto로 테이블 자동 재생성)
 
 ---
 
@@ -225,20 +226,29 @@ EventSessionJpaEntity.java → SessionJpaEntity.java (클래스명만 변경)
 > Entity 수정 후 앱 재시작으로 자동 반영.  
 > `DataInitializer.java`에서 세션 생성 시 `price` 제거, `recruitStartDate/EndDate` 추가 필요.
 
-### Phase 2 체크리스트
+### Phase 2 체크리스트 ✅ 완료 (2026-04-10)
 
-- [ ] `EventSession.java` → `Session.java` 리네이밍
-- [ ] `Session.java`에서 price 제거, 모집 필드 3개 추가
-- [ ] `Session.java`에 getRecruitmentStatus(), getSessionStatus() 추가
-- [ ] `EventSessionJpaEntity.java` → `SessionJpaEntity.java` 리네이밍
-- [ ] JPA Entity에서 price 컬럼 제거, 모집 컬럼 3개 추가
-- [ ] Mapper/Adapter/Repository 리네이밍
-- [ ] DTO (CreateRequest, UpdateRequest, Response) 수정
-- [ ] UseCase/Service 수정
-- [ ] `host/event/` SessionController에 모집 마감/재개 API 추가
-- [ ] 기존 EventSession 참조하는 모든 파일 import 수정
-- [ ] `DataInitializer.java` 수정 (세션 시드 데이터 업데이트)
-- [ ] 컴파일 + 앱 재시작 확인
+- [x] `EventSession.java` → `Session.java` 리네이밍
+- [x] `Session.java`에서 price 제거, 모집 필드 3개 추가
+- [x] `Session.java`에 getRecruitmentStatus(), getSessionStatus() 추가
+- [x] `EventSessionJpaEntity.java` → `SessionJpaEntity.java` 리네이밍
+- [x] JPA Entity에서 price 컬럼 제거, 모집 컬럼 3개 추가
+- [x] Mapper/Adapter/Repository 리네이밍
+- [x] DTO (CreateRequest, UpdateRequest, Response) 수정
+- [x] UseCase/Service 수정
+- [x] `host/event/` SessionController에 모집 마감/재개 API 추가
+- [x] 기존 EventSession 참조하는 모든 파일 import 수정
+- [x] `DataInitializer.java` 수정 (세션 시드 데이터 업데이트)
+- [x] 컴파일 + 앱 재시작 확인
+
+> [!NOTE]
+> **Phase 2 부수 작업 — 타 모듈 컴파일 에러 최소 수정**  
+> Event/Session 필드 제거로 인해 Cart, Order, Wishlist, HostEvent 모듈에서 컴파일 에러가 발생하여  
+> **import 변경 + 플레이스홀더 값 대입**만 수행함. Order/Cart의 근본적인 FK 전환(`session_id → ticket_id`,  
+> `event_id → ticket_id`)은 Phase 4(타 담당자 영역)에서 진행 예정.  
+> 수정된 파일: `CartJpaEntity`, `CartMapper`, `CartPersistenceAdapter`, `CartService`,  
+> `OrderJpaEntity`, `OrderPersistenceAdapter`, `OrderService`, `MyOrderResponse`,  
+> `WishlistResponse`, `EventInfoAdapter`, `HostEventMapper`, `DevDataController`
 
 ---
 
@@ -436,28 +446,32 @@ hasSession=true (다중 세션):
 -- ticket_sessions: ticket_id, session_id (composite PK)
 ```
 
-### Phase 3 체크리스트
+### Phase 3 체크리스트 ✅ 완료 (2026-04-11)
 
 **`ticket/` 패키지 (공개 조회 + 도메인/JPA):**
-- [ ] `Ticket.java` 도메인 모델
-- [ ] `TicketJpaEntity.java` + `TicketSessionJpaEntity.java`
-- [ ] `TicketJpaRepository.java` + `TicketSessionJpaRepository.java`
-- [ ] `TicketMapper.java` + `TicketPersistenceAdapter.java`
-- [ ] `TicketRepositoryPort.java` (port/out)
-- [ ] `GetTicketUseCase.java` + `TicketQueryService.java`
-- [ ] `TicketController.java` (공개 조회)
-- [ ] `TicketResponse.java`
+- [x] `Ticket.java` 도메인 모델 (isOnSale, hasStock, getDiscountRate 등 비즈니스 메서드 포함)
+- [x] `TicketJpaEntity.java` + `TicketSessionJpaEntity.java` + `TicketSessionId.java`
+- [x] `TicketJpaRepository.java` + `TicketSessionJpaRepository.java`
+- [x] `TicketMapper.java` + `TicketPersistenceAdapter.java`
+- [x] `TicketRepositoryPort.java` (port/out)
+- [x] `GetTicketUseCase.java` + `TicketQueryService.java`
+- [x] `TicketController.java` (공개 조회: `GET /events/{eventId}/tickets`)
+- [x] `TicketResponse.java` (discountRate, remainingQuantity, isOnSale 등 computed 필드 포함)
 
 **`host/ticket/` 패키지 (호스트 CUD):**
-- [ ] `CreateTicketUseCase.java`, `UpdateTicketUseCase.java`, `DeleteTicketUseCase.java`
-- [ ] `TicketCommandService.java`
-- [ ] `TicketController.java` (호스트 CUD)
-- [ ] `TicketCreateRequest.java`, `TicketUpdateRequest.java`
+- [x] `CreateTicketUseCase.java`, `UpdateTicketUseCase.java`, `DeleteTicketUseCase.java`
+- [x] `TicketCommandService.java` (소유자 검증, 세션 매핑 검증, 판매 수량 검증 포함)
+- [x] `HostTicketController.java` (호스트 CUD: `POST/PUT/DELETE`)
+- [x] `TicketCreateRequest.java`, `TicketUpdateRequest.java`
 
 **공통:**
-- [ ] 이벤트 생성 시 기본 티켓 자동 생성 로직 (`host/event/` EventCommandService)
-- [ ] `DataInitializer.java`에 티켓 시드 데이터 추가
-- [ ] 컴파일 + 앱 재시작 + API 테스트
+- [ ] 이벤트 생성 시 기본 티켓 자동 생성 로직 (`host/event/` EventCommandService) — 미구현, Phase 5(프론트 연동) 시 추가 예정
+- [x] `DataInitializer.java`에 티켓 시드 데이터 추가 (기본 티켓 10개 + 개별 세션 티켓 5개 = 총 15개)
+- [x] 컴파일 + 앱 재시작 + API 테스트 (`GET /events/1/tickets`, `GET /events/10/tickets` 검증 완료)
+
+> [!NOTE]
+> **할인 구조:** 별도의 할인율 CRUD 없음. 티켓의 `price`(판매가)와 `originalPrice`(정가) 차이로
+> `discountRate`가 조회 시 자동 계산됨. 호스트가 티켓 생성/수정 시 두 가격을 직접 입력하는 방식.
 
 ---
 
@@ -601,13 +615,15 @@ Step 4 — 미리보기 + 게시 (유지)
 | `POST /cart { eventId }` | `POST /cart { ticketId }` |
 | `GET /events/{id}` 응답의 `price` | `tickets[]` 배열로 변경 |
 
-### Phase 5 체크리스트
+### Phase 5 체크리스트 (진행 중)
 
 - [ ] 이벤트 생성 폼 Step 2 수정 (세션에 모집 기간 추가)
-- [ ] 이벤트 생성 폼 Step 3 변경 (티켓 CRUD UI)
-- [ ] 이벤트 상세 페이지 — 티켓 목록 + 선택 UI
-- [ ] 주문 API 호출: eventId → ticketId
-- [ ] 장바구니 API 호출: eventId → ticketId
+- [x] 이벤트 생성 폼 Step 3 변경 (티켓 CRUD UI)
+- [x] 이벤트 상세 페이지 — 티켓 목록 + 선택 UI (`TicketList` 컴포넌트, 할인율/잔여수량/판매상태 표시)
+- [x] 이벤트 상세 페이지 — 세션 카드 v6 (모집 상태 Tag 표시, `session.price` 제거)
+- [x] 이벤트 상세 페이지 — 가격 범위 표시 (`minPrice ~ maxPrice`, 할인 배지)
+- [ ] 주문 API 호출: eventId → ticketId (Order 담당자 영역)
+- [ ] 장바구니 API 호출: eventId → ticketId (Cart 담당자 영역)
 - [ ] 이벤트 목록 카드 — minPrice / 할인 표시 로직 수정
 - [ ] 호스트 대시보드 — 티켓별 판매 현황
 

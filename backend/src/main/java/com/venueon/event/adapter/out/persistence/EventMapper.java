@@ -3,9 +3,6 @@ package com.venueon.event.adapter.out.persistence;
 import com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventStatus;
-import com.venueon.event.domain.model.EventType;
-import com.venueon.event.domain.model.PurchaseType;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * EventJpaEntity ↔ Event 도메인 모델 변환
+ * v6: price, maxAttendees, location, isOnline, startDate, endDate, purchaseType 제거
  */
 @Component
 @RequiredArgsConstructor
@@ -32,15 +30,9 @@ public class EventMapper {
                 entity.getDescription(),
                 entity.getType(),
                 entity.getStatus(),
-                entity.getLocation(),
-                entity.isOnline(),
-                entity.getPrice(),
-                entity.getMaxAttendees(),
                 entity.getThumbnailUrl(),
-                entity.getStartDate(),
-                entity.getEndDate(),
                 entity.isHasSession(),
-                entity.getPurchaseType(),
+                entity.isHidden(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
@@ -65,18 +57,11 @@ public class EventMapper {
                 .description(domain.getDescription())
                 .type(domain.getType())
                 .status(domain.getStatus())
-                .location(domain.getLocation())
-                .isOnline(domain.getIsOnline())
-                .price(domain.getPrice())
-                .maxAttendees(domain.getMaxAttendees())
                 .thumbnailUrl(domain.getThumbnailUrl())
-                .startDate(domain.getStartDate())
-                .endDate(domain.getEndDate())
                 .hasSession(domain.getHasSession())
-                .purchaseType(domain.getPurchaseType())
+                .isHidden(domain.getIsHidden())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
                 .build();
     }
 }
-

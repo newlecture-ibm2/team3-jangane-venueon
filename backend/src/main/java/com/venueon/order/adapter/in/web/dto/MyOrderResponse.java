@@ -27,14 +27,17 @@ public record MyOrderResponse(
     public static MyOrderResponse from(OrderJpaEntity order) {
         EventJpaEntity event = order.getEvent();
 
+        com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity session = order.getSession();
+        
         String dateRange = "";
-        if (event.getStartDate() != null && event.getEndDate() != null) {
-            dateRange = event.getStartDate().format(FMT) + " ~ " + event.getEndDate().format(FMT);
-        }
+        String loc = "-";
 
-        String loc = event.isOnline()
-                ? "온라인"
-                : (event.getLocation() != null ? event.getLocation() : "미정");
+        if (session != null) {
+            if (session.getStartTime() != null && session.getEndTime() != null) {
+                dateRange = session.getStartTime().format(FMT) + " ~ " + session.getEndTime().format(FMT);
+            }
+            loc = session.isOnline() ? "온라인" : (session.getLocation() != null ? session.getLocation() : "미정");
+        }
 
         String statusLabel = mapStatus(order.getStatus().name(), event.getStatus().name());
 
@@ -45,7 +48,7 @@ public record MyOrderResponse(
                 event.getCreator().getNickname(),
                 dateRange,
                 loc,
-                event.getPrice(),
+                0, // price는 Phase 3에서 Ticket 기반으로 변경
                 event.getId()
         );
     }
