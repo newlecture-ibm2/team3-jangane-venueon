@@ -6,11 +6,14 @@ import styles from './checkout.module.css';
 import { Button } from '@/components/ui';
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk';
 
-// 백엔드 POST /orders 응답 타입
+/**
+ * 백엔드 POST /orders 통합 응답 타입
+ * v6: 단건/다건 통합 → orderIds[], totalAmount
+ */
 interface CreateOrderData {
-  orderId: number;
+  orderIds: number[];
   tossOrderId: string;
-  amount: number;
+  totalAmount: number;
   orderName: string;
   customerName: string;
   customerEmail: string;
@@ -33,9 +36,9 @@ function CheckoutContent() {
   const [error, setError] = useState<string | null>(null);
   const orderCreated = useRef(false); // 중복 주문 생성 방지 플래그
 
-  // 1단계: 백엔드에 주문 생성 요청 (한  번만 실행)
+  // 1단계: 백엔드에 통합 주문 생성 요청 (한 번만 실행)
   useEffect(() => {
-    if (orderCreated.current) return; // 이미 주문 생성 요청한 경우 스킵
+    if (orderCreated.current) return;
     orderCreated.current = true;
 
     const createOrder = async () => {
@@ -43,41 +46,31 @@ function CheckoutContent() {
         setLoading(true);
         setError(null);
 
-        const cartIds = searchParams.get('cartIds');
-        const eventId = searchParams.get('eventId');
+        // v6: 장바구니/이벤트 상세 모두 items[] 형태로 통합
+        const itemsParam = searchParams.get('items');
+        const ticketId = searchParams.get('ticketId');
+        const quantity = searchParams.get('quantity') || '1';
 
-        let res: Response;
+        let items: { ticketId: number; quantity: number }[];
 
-        if (cartIds) {
-          // 일괄 주문 모드 (장바구니에서 진입)
-          res = await fetch('/api/orders/batch', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              cartIds: cartIds.split(',').map(Number),
-              paymentMethod: 'CARD',
-            }),
-          });
+        if (itemsParam) {
+          // 장바구니에서 진입: URL 파라미터에 items JSON
+          items = JSON.parse(itemsParam);
+        } else if (ticketId) {
+          // 이벤트 상세에서 단건 진입: ticketId + quantity
+          items = [{ ticketId: Number(ticketId), quantity: Number(quantity) }];
         } else {
-          // 단건 주문 모드 (기존 이벤트 상세에서 진입)
-          const quantity = searchParams.get('quantity') || '1';
-          const sessionId = searchParams.get('sessionId');
-
-          const requestBody: any = {
-            eventId: Number(eventId || '1'),
-            quantity: Number(quantity),
-            paymentMethod: 'CARD',
-          };
-          if (sessionId) {
-            requestBody.sessionId = Number(sessionId);
-          }
-
-          res = await fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody),
-          });
+          throw new Error('주문 정보가 올바르지 않습니다.');
         }
+
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items,
+            paymentMethod: 'CARD',
+          }),
+        });
 
         if (!res.ok) {
           if (res.status === 401) {
@@ -88,18 +81,12 @@ function CheckoutContent() {
         }
 
         const json = await res.json();
-        // 단건과 일괄 응답 모두 동일한 형식으로 매핑
         const data = json.data;
 
-        // 일괄 주문인 경우 success 페이지에서 조회용으로 사용할 대표 orderId를 localStorage에 임시 저장
-        if (data.orderIds && data.orderIds.length > 0) {
-          localStorage.setItem('batchOrderId', data.orderIds[0].toString());
-        }
-
         setOrderData({
-          orderId: data.orderId || (data.orderIds ? data.orderIds[0] : 0),
+          orderIds: data.orderIds || [data.orderId],
           tossOrderId: data.tossOrderId,
-          amount: data.amount ?? data.totalAmount,
+          totalAmount: data.totalAmount ?? data.amount ?? 0,
           orderName: data.orderName,
           customerName: data.customerName,
           customerEmail: data.customerEmail,
@@ -122,7 +109,7 @@ function CheckoutContent() {
 
     (async () => {
       try {
-        const customerKey = 'customer_' + orderData.orderId;
+        const customerKey = 'customer_' + orderData.orderIds[0];
         const tossPayments = await loadTossPayments(orderData.tossClientKey);
         const generatedWidgets = tossPayments.widgets({ customerKey });
         setWidgets(generatedWidgets);
@@ -138,7 +125,7 @@ function CheckoutContent() {
     if (!widgets || !orderData) return;
 
     (async () => {
-      await widgets.setAmount({ currency: 'KRW', value: orderData.amount });
+      await widgets.setAmount({ currency: 'KRW', value: orderData.totalAmount });
 
       await Promise.all([
         widgets.renderPaymentMethods({
@@ -163,7 +150,7 @@ function CheckoutContent() {
         orderName: orderData.orderName,
         customerName: orderData.customerName,
         customerEmail: orderData.customerEmail,
-        successUrl: `${window.location.origin}/orders/checkout/success?backendOrderId=${orderData.orderId}`,
+        successUrl: `${window.location.origin}/orders/checkout/success?backendOrderId=${orderData.orderIds[0]}`,
         failUrl: `${window.location.origin}/orders/checkout/fail`,
       });
     } catch (err) {
@@ -215,7 +202,7 @@ function CheckoutContent() {
         <section className={styles.section}>
           <div className={styles.orderItem}>
             <span className={styles.itemTitle}>{orderData.orderName}</span>
-            <span className={styles.itemPrice}>{formatPrice(orderData.amount)}</span>
+            <span className={styles.itemPrice}>{formatPrice(orderData.totalAmount)}</span>
           </div>
         </section>
 
@@ -223,7 +210,7 @@ function CheckoutContent() {
         <section className={styles.summarySection}>
           <div className={styles.summaryRow}>
             <span>총 선택상품금액</span>
-            <span>{formatPrice(orderData.amount)}</span>
+            <span>{formatPrice(orderData.totalAmount)}</span>
           </div>
           <div className={styles.summaryRow}>
             <span>즉시할인예상금액</span>
@@ -240,7 +227,7 @@ function CheckoutContent() {
         {/* Total Amount */}
         <section className={styles.totalSection}>
           <span className={styles.totalLabel}>총 주문 예상 금액</span>
-          <span className={styles.totalAmount}>₩{new Intl.NumberFormat('ko-KR').format(orderData.amount)}</span>
+          <span className={styles.totalAmount}>₩{new Intl.NumberFormat('ko-KR').format(orderData.totalAmount)}</span>
         </section>
 
         {/* Toss Payment Widget Area */}
@@ -262,7 +249,7 @@ function CheckoutContent() {
           size="large"
           variant="primary"
         >
-          {formatPrice(orderData.amount)} 결제하기
+          {formatPrice(orderData.totalAmount)} 결제하기
         </Button>
 
         {/* Dummy Submit */}
@@ -270,13 +257,13 @@ function CheckoutContent() {
           className={styles.submitBtn}
           onClick={() => {
             if (!orderData) return;
-            window.location.href = `/orders/checkout/success?paymentKey=dummy_key&orderId=${orderData.tossOrderId}&amount=${orderData.amount}&backendOrderId=${orderData.orderId}`;
+            window.location.href = `/orders/checkout/success?paymentKey=dummy_key&orderId=${orderData.tossOrderId}&amount=${orderData.totalAmount}&backendOrderId=${orderData.orderIds[0]}`;
           }}
           type="button"
           size="large"
           style={{ marginTop: '12px', background: 'var(--color-text-gray-300)', color: 'var(--color-text-gray-900)' }}
         >
-          {formatPrice(orderData.amount)} 더미결제하기 (테스트용)
+          {formatPrice(orderData.totalAmount)} 더미결제하기 (테스트용)
         </Button>
       </div>
     </div>

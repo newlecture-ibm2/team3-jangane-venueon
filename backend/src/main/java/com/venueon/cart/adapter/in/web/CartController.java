@@ -18,6 +18,8 @@ import java.util.List;
  * Cart REST API Controller
  * Hexagonal Architecture: Adapter Layer (In/Web)
  * Base Path: /cart
+ *
+ * v6: eventId 기반 → ticketId 기반으로 전환
  */
 @RestController
 @RequestMapping("/cart")
@@ -58,19 +60,20 @@ public class CartController {
     }
 
     /**
-     * 장바구니에 이벤트 추가
+     * 장바구니에 티켓 추가
      * POST /cart
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<List<CartResponse>>> addToCart(
+    public ResponseEntity<ApiResponse<CartResponse>> addToCart(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody AddToCartRequest request) {
 
         String userEmail = userDetails.getUsername();
-        List<CartResponse> cartItems = addToCartUseCase.addToCart(userEmail, request.eventId());
+        int qty = request.quantity() > 0 ? request.quantity() : 1;
+        CartResponse cartItem = addToCartUseCase.addToCart(userEmail, request.ticketId(), qty);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(cartItems));
+                .body(ApiResponse.success(cartItem));
     }
 
     /**
@@ -120,7 +123,7 @@ public class CartController {
 
     // --- Request Records ---
 
-    public record AddToCartRequest(Long eventId) {}
+    public record AddToCartRequest(Long ticketId, int quantity) {}
 
     public record UpdateQuantityRequest(int quantity) {}
 }

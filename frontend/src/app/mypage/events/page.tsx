@@ -53,12 +53,12 @@ export default function MyPage() {
         const validLectures = (data.content || []).filter(
           (item: any) => item.status === 'PAID' || item.status === 'REGISTERED' || item.status === 'PENDING'
         );
-          const mappedLectures: LectureItem[] = validLectures.map((item: any) => ({
-            orderId: item.orderId,
-            eventId: item.eventId,
-            title: item.eventTitle,
-            status: item.eventStatus || item.status, // 주문 상태 대신 세션(세션) 상태를 카드에 매핑
-            organizer: item.organizer || "알 수 없는 호스트",
+        const mappedLectures: LectureItem[] = validLectures.map((item: any) => ({
+          orderId: item.orderId,
+          eventId: item.eventId,
+          title: item.eventTitle,
+          status: item.eventStatus || item.status, // 주문 상태 대신 세션(세션) 상태를 카드에 매핑
+          organizer: item.organizer || "알 수 없는 호스트",
           dateTime: item.eventStartDate ? new Date(item.eventStartDate).toLocaleString('ko-KR', {
             year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
           }) : "-",
@@ -145,8 +145,8 @@ export default function MyPage() {
                   price={lecture.price}
                   actionButtonText={
                     activeTab === 'completed' ? '리뷰 작성하기' :
-                    activeTab === 'enrolled' ? '입장하기' :
-                    '상세 보기'
+                      activeTab === 'enrolled' ? '입장하기' :
+                        '상세 보기'
                   }
                   onActionClick={() => {
                     if (activeTab === 'completed') {

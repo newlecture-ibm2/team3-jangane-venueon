@@ -8,7 +8,7 @@ import com.venueon.host.dto.HostRecentOrderResponse;
 import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
 import com.venueon.order.adapter.out.persistence.repository.OrderJpaRepository;
 import com.venueon.order.domain.model.OrderStatus;
-import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -92,7 +92,7 @@ public class HostOrderService implements GetHostRecentOrdersUseCase {
             throw new SecurityException("해당 주문에 대한 접근 권한이 없습니다.");
         }
 
-        SessionJpaEntity session = order.getSession();
+        TicketJpaEntity ticket = order.getTicket();
 
         return new HostOrderDetailResponse(
                 order.getId(),
@@ -108,9 +108,9 @@ public class HostOrderService implements GetHostRecentOrdersUseCase {
                 order.getEvent().getId(),
                 order.getEvent().getTitle(),
                 order.getEvent().getThumbnailUrl(),
-                session != null ? session.getTitle() : null,
-                session != null ? session.getStartTime() : null,
-                session != null ? session.getEndTime() : null
+                ticket != null ? ticket.getName() : null,
+                null, // sessionStartTime — ticket에서는 직접 관리하지 않음
+                null  // sessionEndTime — ticket에서는 직접 관리하지 않음
         );
     }
 }

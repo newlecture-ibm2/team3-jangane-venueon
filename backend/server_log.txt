@@ -1,0 +1,304 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :resolveMainClassName UP-TO-DATE
+
+> Task :bootRun
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.1)
+
+2026-04-13T11:34:45.206+09:00  INFO 87506 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : Starting VenueOnApplication using Java 21.0.10 with PID 87506 (/home/mochijj/project/team3-jangane-venueon/backend/build/classes/java/main started by mochijj in /home/mochijj/project/team3-jangane-venueon/backend)
+2026-04-13T11:34:45.212+09:00 DEBUG 87506 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-04-13T11:34:45.214+09:00  INFO 87506 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : The following 1 profile is active: "dev"
+2026-04-13T11:34:47.295+09:00  INFO 87506 --- [venueon-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-13T11:34:47.490+09:00  INFO 87506 --- [venueon-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 182 ms. Found 20 JPA repository interfaces.
+2026-04-13T11:34:48.579+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-04-13T11:34:48.601+09:00  INFO 87506 --- [venueon-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-13T11:34:48.602+09:00  INFO 87506 --- [venueon-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-04-13T11:34:48.681+09:00  INFO 87506 --- [venueon-backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3375 ms
+2026-04-13T11:34:46.460+09:00  INFO 87506 --- [venueon-backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-13T11:34:46.538+09:00  INFO 87506 --- [venueon-backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-04-13T11:34:47.268+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-13T11:34:47.319+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-13T11:34:47.526+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@42805abe
+2026-04-13T11:34:47.528+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-13T11:34:47.572+09:00  WARN 87506 --- [venueon-backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-13T11:34:47.603+09:00  INFO 87506 --- [venueon-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/venueon_dev]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 15.17
+	Default catalog/schema: venueon_dev/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-13T11:34:50.017+09:00  INFO 87506 --- [venueon-backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-13T11:34:50.205+09:00  INFO 87506 --- [venueon-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-13T11:34:50.302+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-13T11:34:51.945+09:00 DEBUG 87506 --- [venueon-backend] [           main] c.v.u.a.i.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2026-04-13T11:34:54.371+09:00  INFO 87506 --- [venueon-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-04-13T11:34:55.468+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-04-13T11:34:55.682+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-04-13T11:34:55.698+09:00  INFO 87506 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : Started VenueOnApplication in 11.361 seconds (process running for 14.665)
+2026-04-13T11:34:55.911+09:00 DEBUG 87506 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        users uje1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        users uje1_0
+2026-04-13T11:34:55.935+09:00  INFO 87506 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 데이터가 이미 존재합니다. 장바구니 데이터를 ID 1번 사용자용으로 재구성합니다.
+2026-04-13T11:34:55.945+09:00  INFO 87506 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 장바구니 테이블 구조 정리를 완료했습니다 (event_id 컬럼 제거).
+2026-04-13T11:34:55.955+09:00  INFO 87506 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 관리자 계정(admin@venueon.com)용 장바구니 임시 데이터 10개 생성을 시작합니다.
+2026-04-13T11:34:56.053+09:00 DEBUG 87506 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        uje1_0.id,
+        c1_0.user_id,
+        c1_1.id,
+        c1_1.description,
+        c1_1.name,
+        c1_1.sort_order,
+        uje1_0.created_at,
+        uje1_0.email,
+        uje1_0.is_active,
+        uje1_0.is_badge_visible,
+        uje1_0.nickname,
+        uje1_0.password,
+        uje1_0.phone,
+        uje1_0.profile_img,
+        uje1_0.provider,
+        uje1_0.role,
+        uje1_0.updated_at 
+    from
+        users uje1_0 
+    left join
+        user_categories c1_0 
+            on uje1_0.id=c1_0.user_id 
+    left join
+        categories c1_1 
+            on c1_1.id=c1_0.category_id 
+    where
+        uje1_0.email=?
+Hibernate: 
+    select
+        uje1_0.id,
+        c1_0.user_id,
+        c1_1.id,
+        c1_1.description,
+        c1_1.name,
+        c1_1.sort_order,
+        uje1_0.created_at,
+        uje1_0.email,
+        uje1_0.is_active,
+        uje1_0.is_badge_visible,
+        uje1_0.nickname,
+        uje1_0.password,
+        uje1_0.phone,
+        uje1_0.profile_img,
+        uje1_0.provider,
+        uje1_0.role,
+        uje1_0.updated_at 
+    from
+        users uje1_0 
+    left join
+        user_categories c1_0 
+            on uje1_0.id=c1_0.user_id 
+    left join
+        categories c1_1 
+            on c1_1.id=c1_0.category_id 
+    where
+        uje1_0.email=?
+2026-04-13T11:34:56.126+09:00 DEBUG 87506 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        sje1_0.id,
+        sje1_0.address_detail,
+        sje1_0.address_road,
+        sje1_0.created_at,
+        sje1_0.current_attendees,
+        sje1_0.description,
+        sje1_0.end_time,
+        sje1_0.event_id,
+        sje1_0.forced_recruitment_status,
+        sje1_0.forced_session_status,
+        sje1_0.is_default,
+        sje1_0.is_online,
+        sje1_0.is_recruitment_closed,
+        sje1_0.location,
+        sje1_0.max_attendees,
+        sje1_0.online_link,
+        sje1_0.recruit_end_date,
+        sje1_0.recruit_start_date,
+        sje1_0.region_sido,
+        sje1_0.region_sigungu,
+        sje1_0.sort_order,
+        sje1_0.start_time,
+        sje1_0.title,
+        sje1_0.updated_at 
+    from
+        event_sessions sje1_0
+Hibernate: 
+    select
+        sje1_0.id,
+        sje1_0.address_detail,
+        sje1_0.address_road,
+        sje1_0.created_at,
+        sje1_0.current_attendees,
+        sje1_0.description,
+        sje1_0.end_time,
+        sje1_0.event_id,
+        sje1_0.forced_recruitment_status,
+        sje1_0.forced_session_status,
+        sje1_0.is_default,
+        sje1_0.is_online,
+        sje1_0.is_recruitment_closed,
+        sje1_0.location,
+        sje1_0.max_attendees,
+        sje1_0.online_link,
+        sje1_0.recruit_end_date,
+        sje1_0.recruit_start_date,
+        sje1_0.region_sido,
+        sje1_0.region_sigungu,
+        sje1_0.sort_order,
+        sje1_0.start_time,
+        sje1_0.title,
+        sje1_0.updated_at 
+    from
+        event_sessions sje1_0
+2026-04-13T11:34:56.158+09:00  INFO 87506 --- [venueon-backend] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-04-13T11:34:56.178+09:00 ERROR 87506 --- [venueon-backend] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.orm.jpa.JpaSystemException: Null value was assigned to a property [class com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed] of primitive type: 'com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed' (setter)
+	at org.springframework.orm.jpa.hibernate.HibernateExceptionTranslator.convertHibernateAccessException(HibernateExceptionTranslator.java:223) ~[spring-orm-7.0.2.jar:7.0.2]
+	at org.springframework.orm.jpa.hibernate.HibernateExceptionTranslator.convertHibernateAccessException(HibernateExceptionTranslator.java:131) ~[spring-orm-7.0.2.jar:7.0.2]
+	at org.springframework.orm.jpa.hibernate.HibernateExceptionTranslator.translateExceptionIfPossible(HibernateExceptionTranslator.java:105) ~[spring-orm-7.0.2.jar:7.0.2]
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.translateExceptionIfPossible(HibernateJpaDialect.java:199) ~[spring-orm-7.0.2.jar:7.0.2]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.translateExceptionIfPossible(AbstractEntityManagerFactoryBean.java:556) ~[spring-orm-7.0.2.jar:7.0.2]
+	at org.springframework.dao.support.ChainedPersistenceExceptionTranslator.translateExceptionIfPossible(ChainedPersistenceExceptionTranslator.java:61) ~[spring-tx-7.0.2.jar:7.0.2]
+	at org.springframework.dao.support.DataAccessUtils.translateIfNecessary(DataAccessUtils.java:346) ~[spring-tx-7.0.2.jar:7.0.2]
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:157) ~[spring-tx-7.0.2.jar:7.0.2]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:166) ~[spring-data-jpa-4.0.1.jar:4.0.1]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:222) ~[spring-aop-7.0.2.jar:7.0.2]
+	at jdk.proxy2/jdk.proxy2.$Proxy177.findAll(Unknown Source) ~[na:na]
+	at com.venueon.common.config.DataInitializer.createInitialCartItems(DataInitializer.java:675) ~[main/:na]
+	at com.venueon.common.config.DataInitializer.run(DataInitializer.java:73) ~[main/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:370) ~[spring-tx-7.0.2.jar:7.0.2]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:118) ~[spring-tx-7.0.2.jar:7.0.2]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719) ~[spring-aop-7.0.2.jar:7.0.2]
+	at com.venueon.common.config.DataInitializer$$SpringCGLIB$$0.run(<generated>) ~[main/:na]
+	at org.springframework.boot.SpringApplication.lambda$callRunner$0(SpringApplication.java:788) ~[spring-boot-4.0.1.jar:4.0.1]
+	at org.springframework.util.function.ThrowingConsumer$1.acceptWithException(ThrowingConsumer.java:82) ~[spring-core-7.0.2.jar:7.0.2]
+	at org.springframework.util.function.ThrowingConsumer.accept(ThrowingConsumer.java:60) ~[spring-core-7.0.2.jar:7.0.2]
+	at org.springframework.util.function.ThrowingConsumer$1.accept(ThrowingConsumer.java:86) ~[spring-core-7.0.2.jar:7.0.2]
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:800) ~[spring-boot-4.0.1.jar:4.0.1]
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:788) ~[spring-boot-4.0.1.jar:4.0.1]
+	at org.springframework.boot.SpringApplication.lambda$callRunners$0(SpringApplication.java:776) ~[spring-boot-4.0.1.jar:4.0.1]
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184) ~[na:na]
+	at java.base/java.util.stream.SortedOps$SizedRefSortingSink.end(SortedOps.java:357) ~[na:na]
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:510) ~[na:na]
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499) ~[na:na]
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151) ~[na:na]
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174) ~[na:na]
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234) ~[na:na]
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596) ~[na:na]
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:776) ~[spring-boot-4.0.1.jar:4.0.1]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:328) ~[spring-boot-4.0.1.jar:4.0.1]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1365) ~[spring-boot-4.0.1.jar:4.0.1]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354) ~[spring-boot-4.0.1.jar:4.0.1]
+	at com.venueon.VenueOnApplication.main(VenueOnApplication.java:10) ~[main/:na]
+Caused by: org.hibernate.PropertyAccessException: Null value was assigned to a property [class com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed] of primitive type: 'com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed' (setter)
+	at org.hibernate.property.access.spi.SetterFieldImpl.set(SetterFieldImpl.java:62) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.persister.entity.AbstractEntityPersister.setPropertyValues(AbstractEntityPersister.java:4137) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.persister.entity.EntityPersister.setValues(EntityPersister.java:1153) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.results.graph.entity.internal.EntityInitializerImpl.initializeEntityInstance(EntityInitializerImpl.java:1589) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.results.graph.entity.internal.EntityInitializerImpl.initializeInstance(EntityInitializerImpl.java:1501) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.results.graph.entity.internal.EntityInitializerImpl.initializeInstance(EntityInitializerImpl.java:80) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.results.internal.StandardRowReader.coordinateInitializers(StandardRowReader.java:239) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.results.internal.StandardRowReader.readRow(StandardRowReader.java:137) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.results.spi.ListResultsConsumer.read(ListResultsConsumer.java:243) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.results.spi.ListResultsConsumer.readRows(ListResultsConsumer.java:233) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.results.spi.ListResultsConsumer.consume(ListResultsConsumer.java:164) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.results.spi.ListResultsConsumer.consume(ListResultsConsumer.java:31) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.doExecuteQuery(JdbcSelectExecutorStandardImpl.java:211) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.executeQuery(JdbcSelectExecutorStandardImpl.java:100) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.exec.spi.JdbcSelectExecutor.executeQuery(JdbcSelectExecutor.java:63) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.sql.exec.spi.JdbcSelectExecutor.list(JdbcSelectExecutor.java:137) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.lambda$new$1(ConcreteSqmSelectQueryPlan.java:128) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.withCacheableSqmInterpretation(ConcreteSqmSelectQueryPlan.java:427) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.performList(ConcreteSqmSelectQueryPlan.java:355) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.query.sqm.internal.SqmQueryImpl.doList(SqmQueryImpl.java:374) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.query.spi.AbstractSelectionQuery.list(AbstractSelectionQuery.java:153) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.hibernate.query.Query.getResultList(Query.java:121) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	at org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll(SimpleJpaRepository.java:414) ~[spring-data-jpa-4.0.1.jar:4.0.1]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.data.repository.core.support.RepositoryMethodInvoker$RepositoryFragmentMethodInvoker.lambda$new$0(RepositoryMethodInvoker.java:278) ~[spring-data-commons-4.0.1.jar:4.0.1]
+	at org.springframework.data.repository.core.support.RepositoryMethodInvoker.doInvoke(RepositoryMethodInvoker.java:169) ~[spring-data-commons-4.0.1.jar:4.0.1]
+	at org.springframework.data.repository.core.support.RepositoryMethodInvoker.invoke(RepositoryMethodInvoker.java:158) ~[spring-data-commons-4.0.1.jar:4.0.1]
+	at org.springframework.data.repository.core.support.RepositoryComposition$RepositoryFragments.invoke(RepositoryComposition.java:545) ~[spring-data-commons-4.0.1.jar:4.0.1]
+	at org.springframework.data.repository.core.support.RepositoryComposition.invoke(RepositoryComposition.java:290) ~[spring-data-commons-4.0.1.jar:4.0.1]
+	at org.springframework.data.repository.core.support.RepositoryFactorySupport$ImplementationMethodExecutionInterceptor.invoke(RepositoryFactorySupport.java:690) ~[spring-data-commons-4.0.1.jar:4.0.1]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.doInvoke(QueryExecutorMethodInterceptor.java:171) ~[spring-data-commons-4.0.1.jar:4.0.1]
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.invoke(QueryExecutorMethodInterceptor.java:146) ~[spring-data-commons-4.0.1.jar:4.0.1]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.data.projection.DefaultMethodInvokingMethodInterceptor.invoke(DefaultMethodInvokingMethodInterceptor.java:69) ~[spring-data-commons-4.0.1.jar:4.0.1]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:370) ~[spring-tx-7.0.2.jar:7.0.2]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:118) ~[spring-tx-7.0.2.jar:7.0.2]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:135) ~[spring-tx-7.0.2.jar:7.0.2]
+	... 37 common frames omitted
+Caused by: java.lang.IllegalArgumentException: Can not set boolean field com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed to null value
+	at java.base/jdk.internal.reflect.FieldAccessorImpl.throwSetIllegalArgumentException(FieldAccessorImpl.java:228) ~[na:na]
+	at java.base/jdk.internal.reflect.FieldAccessorImpl.throwSetIllegalArgumentException(FieldAccessorImpl.java:232) ~[na:na]
+	at java.base/jdk.internal.reflect.MethodHandleBooleanFieldAccessorImpl.set(MethodHandleBooleanFieldAccessorImpl.java:111) ~[na:na]
+	at java.base/java.lang.reflect.Field.set(Field.java:836) ~[na:na]
+	at org.hibernate.property.access.spi.SetterFieldImpl.set(SetterFieldImpl.java:56) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
+	... 78 common frames omitted
+
+2026-04-13T11:34:56.190+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-04-13T11:34:56.195+09:00  INFO 87506 --- [venueon-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-04-13T11:34:56.209+09:00  INFO 87506 --- [venueon-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-13T11:34:56.212+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-13T11:34:56.220+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+> Task :bootRun FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':bootRun'.
+> Process 'command '/usr/lib/jvm/java-21-openjdk-amd64/bin/java'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 16s
+4 actionable tasks: 1 executed, 3 up-to-date

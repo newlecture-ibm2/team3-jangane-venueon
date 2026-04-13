@@ -50,14 +50,4 @@ public class HostEventService implements GetHostEventsUseCase {
 
         return page.map(hostEventMapper::toResponse);
     }
-
-    @Override
-    public HostEventResponse getHostEvent(Long hostId, Long eventId) {
-        log.debug("호스트 이벤트 상세 조회: hostId={}, eventId={}", hostId, eventId);
-
-        EventJpaEntity entity = hostEventJpaRepository.findByIdAndCreatorId(eventId, hostId)
-                .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없거나 접근 권한이 없습니다."));
-
-        return hostEventMapper.toResponse(entity);
-    }
 }

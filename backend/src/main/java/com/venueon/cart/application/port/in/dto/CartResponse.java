@@ -6,18 +6,20 @@ import java.time.LocalDateTime;
 
 /**
  * 장바구니 항목 응답 DTO
+ *
+ * v6: session 기반 → ticket 기반으로 전환
  */
 public record CartResponse(
         Long cartId,
         Long eventId,
         String eventTitle,
-        Long sessionId,
-        String sessionTitle,
-        int price,
-        int discountedPrice,
+        Long ticketId,
+        String ticketName,
+        int ticketPrice,
+        int ticketOriginalPrice,
+        int discountRate,
         int quantity,
         int subtotal,
-        LocalDateTime startDate,
         LocalDateTime createdAt
 ) {
     public static CartResponse from(Cart cart) {
@@ -25,13 +27,13 @@ public record CartResponse(
                 cart.getId(),
                 cart.getEventId(),
                 cart.getEventTitle(),
-                cart.getSessionId(),
-                cart.getSessionTitle(),
-                cart.getPrice(),
-                cart.getDiscountedPrice(),
+                cart.getTicketId(),
+                cart.getTicketName(),
+                cart.getTicketPrice(),
+                cart.getTicketOriginalPrice(),
+                cart.getDiscountRate(),
                 cart.getQuantity(),
                 cart.getSubtotal(),
-                cart.getStartDate(),
                 cart.getCreatedAt()
         );
     }

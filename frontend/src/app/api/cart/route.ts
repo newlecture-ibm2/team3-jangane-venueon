@@ -61,7 +61,9 @@ export async function POST(req: NextRequest) {
     });
 
     if (!res.ok) {
-      return NextResponse.json({ error: "Failed to add to cart" }, { status: res.status });
+      const errorBody = await res.json().catch(() => null);
+      const errorMessage = errorBody?.message || "Failed to add to cart";
+      return NextResponse.json({ error: errorMessage }, { status: res.status });
     }
 
     const wrapper = await res.json();

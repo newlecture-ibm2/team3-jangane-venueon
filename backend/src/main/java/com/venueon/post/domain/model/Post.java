@@ -24,6 +24,7 @@ public class Post {
     private int likeCount;
     private boolean isPinned;
     private boolean isNotice;
+    private boolean isHidden;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -73,5 +74,9 @@ public class Post {
         } else {
             this.isPinned = false; // 공지 해제 시 고정도 함께 해제
         }
+    }
+
+    public void hide() {
+        this.isHidden = true;
     }
 }

@@ -202,11 +202,11 @@ export default function HostDashboardPage() {
                 }}>
                   내 강의 목록 관리
                 </Link>
-                <Link href="/host/requests" className="button" style={{
+                <Link href="/host/contact" className="button" style={{
                   background: '#f1f5f9', color: '#1e293b', padding: '16px', borderRadius: '8px',
                   textAlign: 'center', textDecoration: 'none', fontWeight: '600'
                 }}>
-                  운영팀에 요청하기
+                  1:1 문의하기
                 </Link>
               </div>
             </section>
