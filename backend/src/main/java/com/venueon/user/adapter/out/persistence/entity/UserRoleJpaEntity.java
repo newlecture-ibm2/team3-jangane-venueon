@@ -18,7 +18,6 @@ import lombok.*;
 public class UserRoleJpaEntity {
 
     @Id
-    @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "code", nullable = false, unique = true, length = 50)

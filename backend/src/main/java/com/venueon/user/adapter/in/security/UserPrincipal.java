@@ -24,10 +24,10 @@ public class UserPrincipal extends User {
     }
 
     public boolean isAdmin() {
-        return role == "ADMIN";
+        return "ADMIN".equals(role);
     }
 
     public boolean isHost() {
-        return role == "HOST";
+        return "HOST".equals(role);
     }
 }

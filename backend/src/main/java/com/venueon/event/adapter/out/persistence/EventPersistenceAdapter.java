@@ -68,8 +68,8 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
             // 숨김 처리된 이벤트 제외
             predicates.add(cb.isFalse(root.get("isHidden")));
 
-            // PUBLISHED 상태만 공개 목록에 표시
-            predicates.add(cb.equal(root.get("status").get("code"), "PUBLISHED"));
+            // PUBLISHED 상태만 공개 목록에 표시 (ID 기반)
+            predicates.add(cb.equal(root.get("status").get("id"), com.venueon.common.model.CodeConstants.EVENT_STATUS_PUBLISHED_ID));
 
             // 키워드 검색 (제목)
             if (condition.keyword() != null && !condition.keyword().isBlank()) {
@@ -86,7 +86,13 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
 
             // 이벤트 타입 필터
             if (condition.type() != null) {
-                predicates.add(cb.equal(root.get("type").get("code"), condition.type()));
+                try {
+                    Long typeId = Long.parseLong(condition.type());
+                    predicates.add(cb.equal(root.get("type").get("id"), typeId));
+                } catch (NumberFormatException e) {
+                    // 문자열 code로 들어온 경우 호환성 유지
+                    predicates.add(cb.equal(root.get("type").get("code"), condition.type()));
+                }
             }
 
             // TODO: isOnline 필터 — 세션 JOIN 기반으로 재구현 예정 (EventJpaEntity에 sessions 관계 매핑 추가 후)

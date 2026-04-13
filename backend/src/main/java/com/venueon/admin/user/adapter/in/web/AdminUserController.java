@@ -54,8 +54,8 @@ public class AdminUserController {
 
         log.debug("회원 목록 조회: keyword={}, roleId={}, active={}, page={}", keyword, roleId, active, pageable.getPageNumber());
 
-        // 역할 필터 시 문자열 대신 roleId 처리 로직 필요 (현재 GetAdminUserListUseCase가 String 처리라고 가정하면 향후 수정해야 하나, 여기선 일단 패스하거나 String.valueOf 처리 가능. 잠시 roleId null 여부만 확인)
-        String userRole = roleId != null ? roleId.toString() : null; // 임시: DB 조회 방식 변경 필요
+        // roleId를 문자열로 변환하여 UseCase 인터페이스 호환 (Adapter에서 Long으로 파싱)
+        String userRole = roleId != null ? roleId.toString() : null;
         Page<User> users = getAdminUserListUseCase.getUsers(keyword, userRole, active, pageable);
         Page<AdminUserListResponse> response = users.map(AdminUserListResponse::from);
 

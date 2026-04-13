@@ -31,12 +31,20 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
         String safeKeyword = hasKeyword ? keyword.toLowerCase() : "";
 
         boolean hasRole = role != null;
-        String safeRole = hasRole ? role : "USER";
+        Long safeRoleId = null;
+        if (hasRole) {
+            try {
+                safeRoleId = Long.parseLong(role);
+            } catch (NumberFormatException e) {
+                // role이 문자열("ADMIN" 등)으로 들어온 경우 무시 (필터 미적용)
+                hasRole = false;
+            }
+        }
 
         boolean hasActive = active != null;
         Boolean safeActive = hasActive ? active : false;
 
-        return userJpaRepository.findUsersDynamically(safeKeyword, hasKeyword, safeRole, hasRole, safeActive, hasActive, pageable)
+        return userJpaRepository.findUsersDynamically(safeKeyword, hasKeyword, safeRoleId, hasRole, safeActive, hasActive, pageable)
                 .map(userMapper::toDomain);
     }
 

@@ -133,30 +133,30 @@ public class DataInitializer implements ApplicationRunner {
     
     private void createDomainStatuses() {
         userRoleRepository.saveAll(List.of(
-                UserRoleJpaEntity.builder().code("ADMIN").name("관리자").build(),
-                UserRoleJpaEntity.builder().code("USER").name("일반사용자").build(),
-                UserRoleJpaEntity.builder().code("HOST").name("호스트").build()
+                UserRoleJpaEntity.builder().id(1L).code("ADMIN").name("관리자").build(),
+                UserRoleJpaEntity.builder().id(2L).code("USER").name("일반사용자").build(),
+                UserRoleJpaEntity.builder().id(3L).code("HOST").name("호스트").build()
         ));
         eventStatusRepository.saveAll(List.of(
-                EventStatusJpaEntity.builder().code("DRAFT").label("임시저장").build(),
-                EventStatusJpaEntity.builder().code("PUBLISHED").label("발행됨").build(),
-                EventStatusJpaEntity.builder().code("ONGOING").label("진행중").build(),
-                EventStatusJpaEntity.builder().code("ENDED").label("종료됨").build(),
-                EventStatusJpaEntity.builder().code("CANCELLED").label("취소됨").build()
+                EventStatusJpaEntity.builder().id(1L).code("DRAFT").label("임시저장").build(),
+                EventStatusJpaEntity.builder().id(2L).code("PUBLISHED").label("발행됨").build(),
+                EventStatusJpaEntity.builder().id(3L).code("ONGOING").label("진행중").build(),
+                EventStatusJpaEntity.builder().id(4L).code("ENDED").label("종료됨").build(),
+                EventStatusJpaEntity.builder().id(5L).code("CANCELLED").label("취소됨").build()
         ));
         eventTypeRepository.saveAll(List.of(
-                EventTypeJpaEntity.builder().code("CONFERENCE").name("컨퍼런스").build(),
-                EventTypeJpaEntity.builder().code("CLASS").name("클래스").build(),
-                EventTypeJpaEntity.builder().code("MEETING").name("모임").build(),
-                EventTypeJpaEntity.builder().code("SEMINAR").name("세미나").build(),
-                EventTypeJpaEntity.builder().code("FESTIVAL").name("페스티벌").build(),
-                EventTypeJpaEntity.builder().code("EXHIBITION").name("전시회").build(),
-                EventTypeJpaEntity.builder().code("ETC").name("기타").build()
+                EventTypeJpaEntity.builder().id(1L).code("CONFERENCE").name("컨퍼런스").build(),
+                EventTypeJpaEntity.builder().id(2L).code("CLASS").name("클래스").build(),
+                EventTypeJpaEntity.builder().id(3L).code("MEETING").name("모임").build(),
+                EventTypeJpaEntity.builder().id(4L).code("SEMINAR").name("세미나").build(),
+                EventTypeJpaEntity.builder().id(5L).code("FESTIVAL").name("페스티벌").build(),
+                EventTypeJpaEntity.builder().id(6L).code("EXHIBITION").name("전시회").build(),
+                EventTypeJpaEntity.builder().id(7L).code("ETC").name("기타").build()
         ));
         recruitmentStatusRepository.saveAll(List.of(
-                RecruitmentStatusJpaEntity.builder().code("PENDING").label("모집예정").build(),
-                RecruitmentStatusJpaEntity.builder().code("OPEN").label("모집중").build(),
-                RecruitmentStatusJpaEntity.builder().code("CLOSED").label("모집마감").build()
+                RecruitmentStatusJpaEntity.builder().id(1L).code("PENDING").label("모집예정").build(),
+                RecruitmentStatusJpaEntity.builder().id(2L).code("OPEN").label("모집중").build(),
+                RecruitmentStatusJpaEntity.builder().id(3L).code("CLOSED").label("모집마감").build()
         ));
     }
 

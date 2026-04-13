@@ -135,8 +135,9 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        // JWT 토큰 생성
-        String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().id().toString());
+        // JWT 토큰 생성 (Security 계층과 일관되게 code 문자열 사용)
+        String roleCode = resolveRoleCode(user.getRole().id());
+        String token = jwtTokenProvider.generateToken(user.getEmail(), roleCode);
 
         log.info("로그인 성공: email={}", email);
         return new LoginResult(token, user.getEmail(), user.getNickname(), com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()));
@@ -180,7 +181,8 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         }
 
         // 3. JWT 발급
-        String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().id().toString());
+        String roleCode = resolveRoleCode(user.getRole().id());
+        String token = jwtTokenProvider.generateToken(user.getEmail(), roleCode);
 
         return new LoginResult(token, user.getEmail(), user.getNickname(), com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()));
     }
@@ -260,5 +262,16 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
             log.error("구글 토큰 검증 실패", e);
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "구글 토큰 검증에 실패했습니다.");
         }
+    }
+
+    /**
+     * Role ID → code 문자열 변환 (JWT/Security 계층 호환용)
+     * CustomUserDetailsService가 DB의 code를 사용하므로 JWT에도 동일한 code를 저장
+     */
+    private String resolveRoleCode(Long roleId) {
+        if (roleId == null) return "USER";
+        if (roleId.equals(com.venueon.common.model.CodeConstants.ROLE_ADMIN_ID)) return "ADMIN";
+        if (roleId.equals(com.venueon.common.model.CodeConstants.ROLE_HOST_ID)) return "HOST";
+        return "USER";
     }
 }

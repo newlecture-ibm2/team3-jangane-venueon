@@ -29,11 +29,11 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
      */
     @Query("SELECT u FROM UserJpaEntity u WHERE " +
            "(:hasKeyword = false OR LOWER(u.email) LIKE CONCAT('%', :keyword, '%') OR LOWER(u.nickname) LIKE CONCAT('%', :keyword, '%')) " +
-           "AND (:hasRole = false OR u.role = :role) " +
+           "AND (:hasRole = false OR u.role.id = :roleId) " +
            "AND (:hasActive = false OR u.isActive = :active)")
     Page<UserJpaEntity> findUsersDynamically(@Param("keyword") String keyword,
                                              @Param("hasKeyword") boolean hasKeyword,
-                                             @Param("role") String role,
+                                             @Param("roleId") Long roleId,
                                              @Param("hasRole") boolean hasRole,
                                              @Param("active") Boolean active,
                                              @Param("hasActive") boolean hasActive,
