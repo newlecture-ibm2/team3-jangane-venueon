@@ -1,8 +1,8 @@
-package com.venueon.category.adapter.in.web;
+package com.venueon.admin.category.adapter.in.web;
 
-import com.venueon.category.adapter.in.web.dto.CategoryRequest;
-import com.venueon.category.adapter.in.web.dto.CategoryResponse;
-import com.venueon.category.adapter.in.web.dto.UpdateOrderRequest;
+import com.venueon.admin.category.adapter.in.web.dto.CategoryRequest;
+import com.venueon.admin.category.adapter.in.web.dto.CategoryResponse;
+import com.venueon.admin.category.adapter.in.web.dto.UpdateOrderRequest;
 import com.venueon.category.application.port.in.CategoryUseCase;
 import com.venueon.category.domain.model.Category;
 import com.venueon.common.dto.ApiResponse;

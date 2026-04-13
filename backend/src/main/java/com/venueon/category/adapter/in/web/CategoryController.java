@@ -1,6 +1,6 @@
 package com.venueon.category.adapter.in.web;
 
-import com.venueon.category.adapter.in.web.dto.CategoryResponse;
+import com.venueon.admin.category.adapter.in.web.dto.CategoryResponse;
 import com.venueon.category.application.port.in.CategoryUseCase;
 import com.venueon.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;

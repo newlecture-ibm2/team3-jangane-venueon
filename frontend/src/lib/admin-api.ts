@@ -35,7 +35,7 @@ export interface PageResponse<T> {
 }
 
 export interface ApiResponse<T> {
-  status: string;
+  success: boolean;
   data: T;
   message?: string;
 }
@@ -44,6 +44,20 @@ export interface AdminUpdateUserRequest {
   nickname?: string;
   role?: string;
   phone?: string;
+}
+
+export interface AdminReportListItem {
+  id: number;
+  reporterId: number;
+  reporterNickname: string;
+  targetType: 'EVENT' | 'POST' | 'COMMENT' | 'USER';
+  targetId: number;
+  reason: string;
+  detail: string;
+  status: 'PENDING' | 'RESOLVED' | 'REJECTED';
+  adminAction: string | null;
+  createdAt: string;
+  resolvedAt: string | null;
 }
 
 // ── API 함수 ──
@@ -116,4 +130,25 @@ export const adminCategoryAPI = {
   /** 순서 변경 (PATCH) */
   updateOrder: (id: number, newOrder: number) =>
     api.patch<ApiResponse<void>>(`/admin/categories/${id}/order`, { sortOrder: newOrder }),
+};
+
+export const adminReportAPI = {
+  /** 신고 목록 조회 */
+  getReports: (params: {
+    status?: string;
+    targetType?: string;
+    keyword?: string;
+    page?: number;
+    size?: number;
+  }) => {
+    const cleanParams: Record<string, string> = {};
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') cleanParams[key] = String(value);
+    });
+    return api.get<ApiResponse<PageResponse<AdminReportListItem>>>('/admin/reports', { params: cleanParams });
+  },
+
+  /** 신고 처리 */
+  processReport: (id: number, action: string, status: string) =>
+    api.patch<ApiResponse<void>>(`/admin/reports/${id}`, { action, status }),
 };

@@ -20,9 +20,13 @@ public class Comment {
     private Long parentId;  // 대댓글 시 부모 댓글 ID
     private String content;
     private int likeCount;
+    private boolean isHidden;
     private LocalDateTime createdAt;
 
     // --- 비즈니스 행위 ---
+    public void hide() {
+        this.isHidden = true;
+    }
     public boolean isReply() {
         return this.parentId != null;
     }
