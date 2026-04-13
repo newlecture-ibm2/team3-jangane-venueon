@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, PostBookmarkUseCase, PostAdminUseCase, UpdatePostUseCase, DeletePostUseCase {
+public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, PostBookmarkUseCase, PostAdminUseCase,
+                UpdatePostUseCase, DeletePostUseCase {
 
         private final PostRepositoryPort postRepositoryPort;
         private final UserRepositoryPort userRepositoryPort;
@@ -85,7 +86,8 @@ public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, P
                 // 비로그인 사용자 대응 (익명 계정)
                 String targetEmail = (email == null || email.isEmpty()) ? "admin@venueon.com" : email;
                 User user = userRepositoryPort.findByEmail(targetEmail)
-                                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + targetEmail));
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "User not found with email: " + targetEmail));
 
                 postRepositoryPort.findById(postId)
                                 .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
@@ -123,11 +125,4 @@ public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, P
                 postRepositoryPort.save(post);
         }
 
-        @Override
-        public void deletePost(Long postId) {
-                if (!postRepositoryPort.existsById(postId)) {
-                        throw new IllegalArgumentException("Post not found: " + postId);
-                }
-                postRepositoryPort.deleteById(postId);
-        }
 }
