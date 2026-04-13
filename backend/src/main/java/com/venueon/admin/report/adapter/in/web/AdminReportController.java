@@ -1,9 +1,9 @@
-package com.venueon.report.adapter.in.web;
+package com.venueon.admin.report.adapter.in.web;
 
 import com.venueon.common.dto.ApiResponse;
-import com.venueon.report.adapter.in.web.dto.ReportActionRequest;
-import com.venueon.report.adapter.in.web.dto.ReportResponse;
-import com.venueon.report.application.port.in.AdminReportUseCase;
+import com.venueon.admin.report.adapter.in.web.dto.ReportActionRequest;
+import com.venueon.admin.report.adapter.in.web.dto.ReportResponse;
+import com.venueon.admin.report.application.port.in.AdminReportUseCase;
 import com.venueon.report.domain.model.ReportStatus;
 import com.venueon.report.domain.model.ReportTargetType;
 import jakarta.validation.Valid;

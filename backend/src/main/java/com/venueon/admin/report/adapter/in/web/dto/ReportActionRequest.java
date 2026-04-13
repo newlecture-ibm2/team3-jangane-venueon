@@ -1,4 +1,4 @@
-package com.venueon.report.adapter.in.web.dto;
+package com.venueon.admin.report.adapter.in.web.dto;
 
 import com.venueon.report.domain.model.AdminAction;
 import com.venueon.report.domain.model.ReportStatus;

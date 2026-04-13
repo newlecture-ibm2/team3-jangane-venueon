@@ -1,6 +1,6 @@
-package com.venueon.report.application.port.in;
+package com.venueon.admin.report.application.port.in;
 
-import com.venueon.report.adapter.in.web.dto.ReportResponse;
+import com.venueon.admin.report.adapter.in.web.dto.ReportResponse;
 import com.venueon.report.domain.model.AdminAction;
 import com.venueon.report.domain.model.ReportStatus;
 import com.venueon.report.domain.model.ReportTargetType;

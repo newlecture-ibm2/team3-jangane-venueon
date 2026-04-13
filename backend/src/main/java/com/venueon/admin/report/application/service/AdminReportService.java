@@ -1,4 +1,4 @@
-package com.venueon.report.application.service;
+package com.venueon.admin.report.application.service;
 
 import com.venueon.common.exception.BusinessException;
 import com.venueon.common.exception.ErrorCode;
@@ -7,10 +7,10 @@ import com.venueon.admin.user.application.port.in.DeleteAdminUserUseCase;
 import com.venueon.comment.application.port.in.CommentAdminUseCase;
 import com.venueon.event.application.port.in.DeleteEventUseCase;
 import com.venueon.post.application.port.in.PostAdminUseCase;
-import com.venueon.report.adapter.in.web.dto.ReportResponse;
+import com.venueon.admin.report.adapter.in.web.dto.ReportResponse;
 import com.venueon.report.adapter.out.persistence.entity.ReportJpaEntity;
 import com.venueon.report.adapter.out.persistence.repository.ReportJpaRepository;
-import com.venueon.report.application.port.in.AdminReportUseCase;
+import com.venueon.admin.report.application.port.in.AdminReportUseCase;
 import com.venueon.report.domain.model.AdminAction;
 import com.venueon.report.domain.model.ReportStatus;
 import com.venueon.report.domain.model.ReportTargetType;
