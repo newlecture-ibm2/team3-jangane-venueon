@@ -127,7 +127,7 @@ export default function HostEventDetailPage() {
   if (loading) return (
     <div className="container-sidebar">
       <Sidebar role="host" />
-      <div className="main-content">
+      <div className="sidebar-content" style={{ scrollbarGutter: 'stable' }}>
         <div className={styles.loading}>페이지를 불러오는 중...</div>
       </div>
     </div>
@@ -136,7 +136,7 @@ export default function HostEventDetailPage() {
   if (error || !event) return (
     <div className="container-sidebar">
       <Sidebar role="host" />
-      <div className="main-content">
+      <div className="sidebar-content" style={{ scrollbarGutter: 'stable' }}>
         <div className={styles.container}>
           <p style={{ color: '#ef4444' }}>{error || '이벤트를 찾을 수 없습니다.'}</p>
           <Link href="/host/events" className={styles.backLink}>← 세션 목록 보기</Link>
@@ -148,7 +148,7 @@ export default function HostEventDetailPage() {
   return (
     <div className="container-sidebar">
       <Sidebar role="host" />
-      <div className="main-content">
+      <div className="sidebar-content" style={{ scrollbarGutter: 'stable' }}>
         <div className={styles.container}>
         <div className={styles.topBar}>
           <Link href="/host/events" className={styles.backLink}>
@@ -163,21 +163,21 @@ export default function HostEventDetailPage() {
         <h1 className={styles.title}>{event.title}</h1>
 
         {/* 탭 네비게이션 */}
-        <nav className={styles.tabs}>
+        <nav className={styles.tabNav}>
           <button 
-            className={`${styles.tab} ${activeTab === 'info' ? styles.activeTab : ''}`}
+            className={`${styles.tabButton} ${activeTab === 'info' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('info')}
           >
             기본 정보
           </button>
           <button 
-            className={`${styles.tab} ${activeTab === 'attendees' ? styles.activeTab : ''}`}
+            className={`${styles.tabButton} ${activeTab === 'attendees' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('attendees')}
           >
             수강생 관리
           </button>
           <button 
-            className={`${styles.tab} ${activeTab === 'rooms' ? styles.activeTab : ''}`}
+            className={`${styles.tabButton} ${activeTab === 'rooms' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('rooms')}
           >
             스터디룸 관리
@@ -185,99 +185,111 @@ export default function HostEventDetailPage() {
         </nav>
 
         {/* 탭 성격에 따른 컨텐츠 렌더링 */}
-        {activeTab === 'info' && (
-          <div>
-            <div className={styles.thumbnailWrapper}>
-              <img 
-                src={event.thumbnailUrl || '/api/placeholder/800/450'} 
-                alt={event.title} 
-                className={styles.thumbnail}
-              />
-            </div>
+        <div className={styles.tabContent}>
+          {activeTab === 'info' && (
+            <div>
+              <div className={styles.thumbnailWrapper}>
+                <img 
+                  src={event.thumbnailUrl || '/api/placeholder/800/450'} 
+                  alt={event.title} 
+                  className={styles.thumbnail}
+                />
+              </div>
 
-            <section>
-              <h2 className={styles.sectionHeader}>세션 정보</h2>
-              <p className={styles.description}>
-                {event.description || '이 이벤트에 대한 상세 설명이 아직 등록되지 않았습니다.'}
-              </p>
-            </section>
+              <section>
+                <h2 className={styles.sectionHeader}>세션 정보</h2>
+                <p className={styles.description}>
+                  {event.description || '이 이벤트에 대한 상세 설명이 아직 등록되지 않았습니다.'}
+                </p>
+              </section>
 
-            <div className={styles.summaryGrid}>
-              <div className={styles.summaryItem}>
-                <label>총 가격</label>
-                <div className="value">
-                  {event.price === 0 ? '무료' : `₩${event.price.toLocaleString()}`}
+              <div className={styles.summaryGrid}>
+                <div className={styles.summaryItem}>
+                  <label>총 가격</label>
+                  <div className="value">
+                    {event.price === 0 ? '무료' : `₩${event.price.toLocaleString()}`}
+                  </div>
+                </div>
+                <div className={styles.summaryItem}>
+                  <label>날짜</label>
+                  <div className="value">
+                    {new Date(event.startDate).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className={styles.summaryItem}>
+                   <label>장소</label>
+                   <div className="value">
+                     {event.isOnline ? '온라인' : event.location}
+                   </div>
                 </div>
               </div>
-              <div className={styles.summaryItem}>
-                <label>날짜</label>
-                <div className="value">
-                  {new Date(event.startDate).toLocaleDateString()}
-                </div>
-              </div>
-              <div className={styles.summaryItem}>
-                 <label>장소</label>
-                 <div className="value">
-                   {event.isOnline ? '온라인' : event.location}
-                 </div>
-              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {activeTab === 'attendees' && (
-          <div>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 className={styles.sectionHeader} style={{ marginBottom: 0 }}>신청자 목록 ({attendees.length})</h2>
-            </header>
+          {activeTab === 'attendees' && (
+            <div>
+              <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h2 className={styles.sectionHeader} style={{ marginBottom: 0 }}>신청자 목록 ({attendees.length})</h2>
+              </header>
 
-            {attendeeLoading ? (
-              <div className={styles.contentCard}>목록을 불러오는 중...</div>
-            ) : attendees.length > 0 ? (
-              <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>수강생명</th>
-                      <th>이메일</th>
-                      <th>신청일</th>
-                      <th>상태</th>
-                      <th>관리</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {attendees.map((attendee) => (
-                      <tr key={attendee.orderId}>
-                        <td style={{ fontWeight: 600 }}>{attendee.userName}</td>
-                        <td>{attendee.userEmail}</td>
-                        <td>{new Date(attendee.orderedAt).toLocaleDateString()}</td>
-                        <td>
-                          <span className={`${styles.statusBadge} ${styles[`status${attendee.status}`]}`}>
-                            {getOrderStatusLabel(attendee.status)}
-                          </span>
-                        </td>
-                        <td>
-                          <Link href={`/host/payments/${attendee.orderId}`} style={{ color: '#2563eb', fontSize: '0.875rem' }}>상세보기</Link>
-                        </td>
+              {attendeeLoading ? (
+                <div>목록을 불러오는 중...</div>
+              ) : attendees.length > 0 ? (
+                <div className={styles.tableWrapper}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>수강생명</th>
+                        <th>이메일</th>
+                        <th>신청일</th>
+                        <th>상태</th>
+                        <th>주문서</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className={styles.contentCard}>
-                <p>이 강의에 대한 신청 내역이 없습니다.</p>
-              </div>
-            )}
-          </div>
-        )}
+                    </thead>
+                    <tbody>
+                      {attendees.map((attendee) => (
+                        <tr key={attendee.orderId}>
+                          <td>{attendee.userName}</td>
+                          <td>{attendee.userEmail}</td>
+                          <td>{new Date(attendee.orderedAt).toLocaleDateString()}</td>
+                          <td>
+                            <span className={`${styles.statusBadge} ${styles['status' + attendee.status]}`}>
+                              {getOrderStatusLabel(attendee.status)}
+                            </span>
+                          </td>
+                          <td>
+                            <div className={styles.actionGroup}>
+                              <Link href={`/host/payments/${attendee.orderId}`} className={styles.detailLink}>
+                                주문 상세
+                              </Link>
+                              <button 
+                                className={styles.refundButton}
+                                onClick={() => alert('환불 기능은 준비 중입니다.')}
+                              >
+                                환불
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className={styles.contentCard}>
+                  <p>이 강의에 대한 신청 내역이 없습니다.</p>
+                </div>
+              )}
+            </div>
+          )}
 
-        {activeTab === 'rooms' && (
-          <div className={styles.contentCard}>
-            <h2 className={styles.sectionHeader} style={{ color: '#0f172a' }}>스터디룸 관리</h2>
-            <p>세션별 스터디룸 및 화상 회의 링크 관리 기능을 준비 중입니다.</p>
-          </div>
-        )}
+          {activeTab === 'rooms' && (
+            <div className={styles.contentCard}>
+              <h2 className={styles.sectionHeader} style={{ color: '#0f172a' }}>스터디룸 관리</h2>
+              <p>세션별 스터디룸 및 화상 회의 링크 관리 기능을 준비 중입니다.</p>
+            </div>
+          )}
+        </div>
 
         {/* 하단 바: 관리 버튼 그룹 */}
         <div className={styles.bottomBar}>
