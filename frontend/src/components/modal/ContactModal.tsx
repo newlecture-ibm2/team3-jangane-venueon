@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import styles from './InquiryModal.module.css';
+import styles from './ContactModal.module.css';
 import ModalOverlay from './ModalOverlay';
 import ModalCard from './ModalCard';
 import { CancelIcon } from '@/components/icons';
@@ -23,7 +23,7 @@ const HOST_CATEGORIES = [
   { value: 'etc', label: '기타' },
 ];
 
-export interface InquiryModalProps {
+export interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
   role?: 'user' | 'host';
@@ -35,12 +35,12 @@ export interface InquiryModalProps {
   }) => void;
 }
 
-export default function InquiryModal({
+export default function ContactModal({
   isOpen,
   onClose,
   role = 'user',
   onSubmit,
-}: InquiryModalProps) {
+}: ContactModalProps) {
   const categories = role === 'host' ? HOST_CATEGORIES : USER_CATEGORIES;
 
   const [activeCategory, setActiveCategory] = useState(categories[0].value);
