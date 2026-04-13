@@ -10,7 +10,7 @@ export interface SessionData {
   email?: string;
   nickname?: string;
   profileImg?: string;
-  role?: "ADMIN" | "HOST" | "USER";
+  role?: { id: number; label: string };
   isLoggedIn: boolean;
 }
 

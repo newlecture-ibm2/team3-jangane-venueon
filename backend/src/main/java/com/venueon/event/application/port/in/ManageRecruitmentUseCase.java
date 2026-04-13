@@ -20,7 +20,7 @@ public interface ManageRecruitmentUseCase {
         Long eventId,
         Long requesterId,
         String requesterRole,
-        String forcedStatus // "PENDING", "OPEN", "CLOSED", or "AUTO"
+        Long forcedStatusId // null means "AUTO"
     ) {}
 
     /**
@@ -35,6 +35,6 @@ public interface ManageRecruitmentUseCase {
         Long eventId,
         Long requesterId,
         String requesterRole,
-        String forcedStatus // "PUBLISHED", "ONGOING", "ENDED", "CANCELLED", or "AUTO"
+        Long forcedStatusId // null means "AUTO"
     ) {}
 }

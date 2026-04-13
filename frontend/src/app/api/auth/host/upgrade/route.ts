@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     }
 
     // 세션 정보 업데이트 (USER -> HOST)
-    session.role = "HOST";
+    session.role = { id: 3, label: "주최자" };
     await session.save();
 
     return NextResponse.json(data);

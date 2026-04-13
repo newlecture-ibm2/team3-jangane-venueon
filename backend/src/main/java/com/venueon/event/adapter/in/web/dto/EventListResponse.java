@@ -1,9 +1,6 @@
 package com.venueon.event.adapter.in.web.dto;
 
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventStatus;
-import com.venueon.event.domain.model.EventType;
-import com.venueon.event.domain.model.RecruitmentStatus;
 import com.venueon.event.domain.model.Session;
 import com.venueon.ticket.domain.model.Ticket;
 
@@ -18,9 +15,9 @@ public record EventListResponse(
         Long id,
         String title,
         String thumbnailUrl,
-        EventType type,
-        EventStatus status,
-        RecruitmentStatus recruitmentStatus,   // 모집상태 (세션 종합)
+        com.venueon.common.dto.CodeDto type,
+        com.venueon.common.dto.CodeDto status,
+        com.venueon.common.dto.CodeDto recruitmentStatus,   // 모집상태 (세션 종합)
         Long categoryId,
         Long creatorId,
         LocalDateTime createdAt,
@@ -54,8 +51,8 @@ public record EventListResponse(
     public static EventListResponse from(Event event, List<Session> sessions, List<Ticket> tickets) {
         LocalDateTime startDate = null;
         LocalDateTime endDate = null;
-        EventStatus effectiveStatus = event.getStatus();
-        RecruitmentStatus recruitmentStatus = RecruitmentStatus.CLOSED;
+        com.venueon.common.model.DomainCode effectiveStatus = event.getStatus();
+        com.venueon.common.model.DomainCode recruitmentStatus = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_CLOSED_ID, "모집마감");
         String primaryLocation = null;
         boolean isOnline = false;
 
@@ -72,25 +69,10 @@ public record EventListResponse(
                     .orElse(null);
 
             // 모집 상태 OR 종합
-            boolean anyOpen = sessions.stream()
-                    .anyMatch(s -> s.getRecruitmentStatus() == RecruitmentStatus.OPEN);
-            if (anyOpen) {
-                recruitmentStatus = RecruitmentStatus.OPEN;
-            } else {
-                boolean allPending = sessions.stream()
-                        .allMatch(s -> s.getRecruitmentStatus() == RecruitmentStatus.PENDING);
-                recruitmentStatus = allPending ? RecruitmentStatus.PENDING : RecruitmentStatus.CLOSED;
-            }
+            recruitmentStatus = event.getRecruitmentStatus(sessions);
 
             // Effective status (ONGOING / ENDED)
-            if (effectiveStatus == EventStatus.PUBLISHED) {
-                boolean anyOngoing = sessions.stream()
-                        .anyMatch(s -> s.getSessionStatus() == EventStatus.ONGOING);
-                if (anyOngoing) effectiveStatus = EventStatus.ONGOING;
-                boolean allEnded = sessions.stream()
-                        .allMatch(s -> s.getSessionStatus() == EventStatus.ENDED);
-                if (allEnded) effectiveStatus = EventStatus.ENDED;
-            }
+            effectiveStatus = event.getEffectiveStatus(sessions);
 
             // 대표 장소 (첫 번째 오프라인 세션 기준)
             primaryLocation = sessions.stream()
@@ -135,9 +117,9 @@ public record EventListResponse(
                 event.getId(),
                 event.getTitle(),
                 event.getThumbnailUrl(),
-                event.getType(),
-                effectiveStatus,
-                recruitmentStatus,
+                event.getType() != null ? com.venueon.common.dto.CodeDto.of(event.getType().id(), event.getType().label()) : null,
+                effectiveStatus != null ? com.venueon.common.dto.CodeDto.of(effectiveStatus.id(), effectiveStatus.label()) : null,
+                recruitmentStatus != null ? com.venueon.common.dto.CodeDto.of(recruitmentStatus.id(), recruitmentStatus.label()) : null,
                 event.getCategoryId(),
                 event.getCreatorId(),
                 event.getCreatedAt(),

@@ -20,13 +20,18 @@ export async function PATCH(
     const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
     const userId = String(session.userId || 5);
 
+    // role 객체에서 id 확인 후 X-User-Role 설정 (1: ADMIN, 3: HOST, 그 외 사용자)
+    let userRoleStr = "HOST";
+    if (session.role?.id === 1) userRoleStr = "ADMIN";
+    else if (session.role?.id === 2) userRoleStr = "USER";
+
     const response = await fetch(
       `${API_BASE_URL}/host/events/${id}/status?status=${status}`,
       {
         method: "PATCH",
         headers: {
           "X-User-Id": userId,
-          "X-User-Role": session.role || "HOST",
+          "X-User-Role": userRoleStr,
         },
       }
     );

@@ -34,7 +34,7 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
     try {
       const res = await adminUserAPI.getUser(id);
       setUser(res.data);
-      setSelectedRole(res.data.role || 'USER');
+      setSelectedRole(res.data.role?.id === 1 ? 'ADMIN' : res.data.role?.id === 3 ? 'HOST' : 'USER');
     } catch (err) {
       console.error('회원 조회 실패:', err);
     } finally {
@@ -104,7 +104,7 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
               </div>
 
               {/* 기본 데이터 렌더링은 user.role 기준이거나 selectedRole 기준일 수 있습니다. (여기선 기존 Role 유지) */}
-              {user.role === 'HOST' ? (
+              {user.role?.id === 3 ? (
                 <>
                   <div className={styles.fieldBlock}>
                     <span className={styles.fieldLabel}>기관명</span>
@@ -156,7 +156,7 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
                     style={{ flex: 1, padding: 0 }} 
                     onClick={() => {
                       setIsEditing(false);
-                      setSelectedRole(user.role || 'USER'); // 취소 시 롤백
+                      setSelectedRole(user.role?.id === 1 ? 'ADMIN' : user.role?.id === 3 ? 'HOST' : 'USER'); // 취소 시 롤백
                     }}
                   >
                     수정 취소
@@ -172,7 +172,7 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
               ) : (
                 <>
                   <div className={styles.buttonRow}>
-                    {user.role === 'HOST' && (
+                    {user.role?.id === 3 && (
                       <Button 
                         variant="danger" 
                         style={{ flex: 1, padding: 0 }}

@@ -1,7 +1,6 @@
 package com.venueon.event.adapter.in.web.dto;
 
 import com.venueon.event.application.port.in.CreateEventUseCase.CreateEventCommand;
-import com.venueon.event.domain.model.EventType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -19,8 +18,7 @@ public record EventCreateRequest(
 
         String description,
 
-        @NotNull(message = "이벤트 유형은 필수입니다.")
-        EventType type,
+        Long typeId,
 
         String thumbnailUrl,
 
@@ -36,7 +34,7 @@ public record EventCreateRequest(
                 categoryId,
                 title,
                 description,
-                type,
+                typeId,
                 thumbnailUrl,
                 hasSession,
                 sessions

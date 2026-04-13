@@ -1,7 +1,6 @@
 package com.venueon.user.adapter.out.persistence.entity;
 
 import com.venueon.user.domain.model.AuthProvider;
-import com.venueon.user.domain.model.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,9 +29,9 @@ public class UserJpaEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private UserRoleJpaEntity role;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

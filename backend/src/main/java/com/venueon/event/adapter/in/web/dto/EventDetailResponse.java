@@ -2,9 +2,6 @@ package com.venueon.event.adapter.in.web.dto;
 
 import com.venueon.event.application.port.out.LoadHostInfoPort.HostInfo;
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventStatus;
-import com.venueon.event.domain.model.EventType;
-import com.venueon.event.domain.model.RecruitmentStatus;
 import com.venueon.event.domain.model.Session;
 
 import java.time.LocalDateTime;
@@ -19,9 +16,9 @@ public record EventDetailResponse(
         String title,
         String description,
         String thumbnailUrl,
-        EventType type,
-        EventStatus status,
-        RecruitmentStatus recruitmentStatus,
+        com.venueon.common.dto.CodeDto type,
+        com.venueon.common.dto.CodeDto status,
+        com.venueon.common.dto.CodeDto recruitmentStatus,
         Long categoryId,
         Long creatorId,
         LocalDateTime createdAt,
@@ -65,8 +62,8 @@ public record EventDetailResponse(
         List<Session> domainSessions = null; // detail에서는 SessionResponse만 사용
         LocalDateTime startDate = null;
         LocalDateTime endDate = null;
-        EventStatus effectiveStatus = event.getStatus();
-        RecruitmentStatus recruitmentStatus = RecruitmentStatus.CLOSED;
+        com.venueon.common.model.DomainCode effectiveStatus = event.getStatus();
+        com.venueon.common.model.DomainCode recruitmentStatus = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_CLOSED_ID, "모집마감");
 
         // sessions가 있으면 startDate/endDate 도출 (SessionResponse에서 추출)
         if (sessions != null && !sessions.isEmpty()) {
@@ -81,25 +78,25 @@ public record EventDetailResponse(
                     .max(LocalDateTime::compareTo)
                     .orElse(null);
 
-            // 모집 상태 OR 종합
+            // 모집 상태 OR 종합 (DomainCode 사용)
             boolean anyOpen = sessions.stream()
-                    .anyMatch(s -> s.recruitmentStatus() == RecruitmentStatus.OPEN);
+                    .anyMatch(s -> s.recruitmentStatus() != null && s.recruitmentStatus().id().equals(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_OPEN_ID));
             if (anyOpen) {
-                recruitmentStatus = RecruitmentStatus.OPEN;
+                recruitmentStatus = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_OPEN_ID, "모집중");
             } else {
                 boolean allPending = sessions.stream()
-                        .allMatch(s -> s.recruitmentStatus() == RecruitmentStatus.PENDING);
-                recruitmentStatus = allPending ? RecruitmentStatus.PENDING : RecruitmentStatus.CLOSED;
+                        .allMatch(s -> s.recruitmentStatus() != null && s.recruitmentStatus().id().equals(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_PENDING_ID));
+                recruitmentStatus = allPending ? com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_PENDING_ID, "모집예정") : com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_CLOSED_ID, "모집마감");
             }
 
             // Effective status (ONGOING check)
-            if (effectiveStatus == EventStatus.PUBLISHED) {
+            if (effectiveStatus != null && effectiveStatus.id().equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_PUBLISHED_ID)) {
                 boolean anyOngoing = sessions.stream()
-                        .anyMatch(s -> s.sessionStatus() == EventStatus.ONGOING);
-                if (anyOngoing) effectiveStatus = EventStatus.ONGOING;
+                        .anyMatch(s -> s.sessionStatus() != null && s.sessionStatus().id().equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_ONGOING_ID));
+                if (anyOngoing) effectiveStatus = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_ONGOING_ID, "진행중");
                 boolean allEnded = sessions.stream()
-                        .allMatch(s -> s.sessionStatus() == EventStatus.ENDED);
-                if (allEnded) effectiveStatus = EventStatus.ENDED;
+                        .allMatch(s -> s.sessionStatus() != null && s.sessionStatus().id().equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_ENDED_ID));
+                if (allEnded) effectiveStatus = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_ENDED_ID, "종료됨");
             }
         }
 
@@ -108,9 +105,9 @@ public record EventDetailResponse(
                 event.getTitle(),
                 event.getDescription(),
                 event.getThumbnailUrl(),
-                event.getType(),
-                effectiveStatus,
-                recruitmentStatus,
+                event.getType() != null ? com.venueon.common.dto.CodeDto.of(event.getType().id(), event.getType().label()) : null,
+                effectiveStatus != null ? com.venueon.common.dto.CodeDto.of(effectiveStatus.id(), effectiveStatus.label()) : null,
+                recruitmentStatus != null ? com.venueon.common.dto.CodeDto.of(recruitmentStatus.id(), recruitmentStatus.label()) : null,
                 event.getCategoryId(),
                 event.getCreatorId(),
                 event.getCreatedAt(),

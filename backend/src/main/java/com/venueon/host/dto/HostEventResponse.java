@@ -9,8 +9,8 @@ public record HostEventResponse(
         Long id,
         String title,
         String thumbnailUrl,
-        String type,
-        String status,
+        com.venueon.common.dto.CodeDto type,
+        com.venueon.common.dto.CodeDto status,
         boolean hasSession,
         String description,
         LocalDateTime createdAt

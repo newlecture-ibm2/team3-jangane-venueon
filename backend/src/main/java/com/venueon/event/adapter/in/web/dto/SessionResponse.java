@@ -1,7 +1,5 @@
 package com.venueon.event.adapter.in.web.dto;
 
-import com.venueon.event.domain.model.EventStatus;
-import com.venueon.event.domain.model.RecruitmentStatus;
 import com.venueon.event.domain.model.Session;
 import java.time.LocalDateTime;
 
@@ -28,14 +26,14 @@ public record SessionResponse(
     int maxAttendees,
     int currentAttendees,
     boolean isDefault,
-    RecruitmentStatus recruitmentStatus,
-    EventStatus sessionStatus,
+    com.venueon.common.dto.CodeDto recruitmentStatus,
+    com.venueon.common.dto.CodeDto sessionStatus,
     LocalDateTime recruitStartDate,
     LocalDateTime recruitEndDate,
     boolean isRecruitmentClosed,
     int remainingCapacity,          // Computed: maxAttendees - currentAttendees (0이면 무제한)
-    String forcedRecruitmentStatus,
-    String forcedSessionStatus
+    com.venueon.common.dto.CodeDto forcedRecruitmentStatus,
+    com.venueon.common.dto.CodeDto forcedSessionStatus
 ) {
     public static SessionResponse from(Session session) {
         return new SessionResponse(
@@ -56,14 +54,14 @@ public record SessionResponse(
             session.getMaxAttendees(),
             session.getCurrentAttendees(),
             session.getIsDefault(),
-            session.getRecruitmentStatus(),
-            session.getSessionStatus(),
+            session.getRecruitmentStatus() != null ? com.venueon.common.dto.CodeDto.of(session.getRecruitmentStatus().id(), session.getRecruitmentStatus().label()) : null,
+            session.getSessionStatus() != null ? com.venueon.common.dto.CodeDto.of(session.getSessionStatus().id(), session.getSessionStatus().label()) : null,
             session.getRecruitStartDate(),
             session.getRecruitEndDate(),
             session.getIsRecruitmentClosed(),
             session.getRemainingCapacity(),
-            session.getForcedRecruitmentStatus() != null ? session.getForcedRecruitmentStatus().name() : null,
-            session.getForcedSessionStatus() != null ? session.getForcedSessionStatus().name() : null
+            session.getForcedRecruitmentStatus() != null ? com.venueon.common.dto.CodeDto.of(session.getForcedRecruitmentStatus().id(), session.getForcedRecruitmentStatus().label()) : null,
+            session.getForcedSessionStatus() != null ? com.venueon.common.dto.CodeDto.of(session.getForcedSessionStatus().id(), session.getForcedSessionStatus().label()) : null
         );
     }
 }

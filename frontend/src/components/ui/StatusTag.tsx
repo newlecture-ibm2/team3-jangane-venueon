@@ -5,7 +5,7 @@ export type TagDomain = 'report' | 'course' | 'payment' | 'recruitment';
 
 interface StatusTagProps {
   domain: TagDomain;
-  status: string; // Backend enum value or Frontend string
+  status: any; // Can be string (code/label) or object {id, label}
   className?: string;
 }
 
@@ -79,8 +79,11 @@ export default function StatusTag({ domain, status, className }: StatusTagProps)
   else if (domain === 'recruitment') map = RECRUITMENT_MAP;
   else map = COURSE_MAP; // 기본 폴백
 
+  // status가 객체인 경우 label을 추출하고, 없으면 코드로 취급
+  const statusStr = (status && typeof status === 'object') ? (status.label || status.code || '') : String(status || '');
+  
   // 매핑 테이블에 없는 status가 들어오면 텍스트 그대로 Gray 태그로 노출
-  const config = map[status] || { variant: 'gray', label: status };
+  const config = map[statusStr] || { variant: 'gray', label: statusStr };
 
   return (
     <Tag variant={config.variant} className={className}>

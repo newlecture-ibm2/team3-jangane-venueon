@@ -36,7 +36,11 @@ export default function ProfileSettingsPage() {
   const [baseBadge, setBaseBadge] = useState<boolean>(true);
   const [showBadge, setShowBadge] = useState<boolean>(true);
 
-  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  interface Category {
+    id: number;
+    name: string;
+  }
+  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
 
   // 초기 프로필 및 메타데이터 로드
   useEffect(() => {
@@ -259,18 +263,18 @@ export default function ProfileSettingsPage() {
             <div className={styles.categoryPills}>
               {availableCategories.map(cat => (
                 <button
-                  key={cat}
+                  key={cat.id}
                   type="button"
-                  className={`${tabsStyles.tabButton} ${tabsStyles.pillTab} ${categories.includes(cat) ? tabsStyles.pillTabActive : ''}`}
+                  className={`${tabsStyles.tabButton} ${tabsStyles.pillTab} ${categories.includes(cat.name) ? tabsStyles.pillTabActive : ''}`}
                   onClick={() => {
-                    if (categories.includes(cat)) {
-                      setCategories(categories.filter(c => c !== cat));
+                    if (categories.includes(cat.name)) {
+                      setCategories(categories.filter(c => c !== cat.name));
                     } else {
-                      setCategories([...categories, cat]);
+                      setCategories([...categories, cat.name]);
                     }
                   }}
                 >
-                  {cat}
+                  {cat.name}
                 </button>
               ))}
             </div>

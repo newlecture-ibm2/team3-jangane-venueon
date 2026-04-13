@@ -126,7 +126,7 @@ public class HostSessionController {
             @RequestBody RecruitmentStatusRequest request) {
 
         var command = new ManageRecruitmentUseCase.ChangeRecruitmentStatusCommand(
-                sessionId, eventId, hostId, userRole, request.status()
+                sessionId, eventId, hostId, userRole, request.statusId()
         );
         var session = manageRecruitmentUseCase.changeRecruitmentStatus(command);
         return ApiResponse.success(SessionResponse.from(session));
@@ -146,7 +146,7 @@ public class HostSessionController {
             @RequestBody SessionStatusRequest request) {
 
         var command = new ManageRecruitmentUseCase.ChangeSessionStatusCommand(
-                sessionId, eventId, hostId, userRole, request.status()
+                sessionId, eventId, hostId, userRole, request.statusId()
         );
         var session = manageRecruitmentUseCase.changeSessionStatus(command);
         return ApiResponse.success(SessionResponse.from(session));
@@ -155,10 +155,10 @@ public class HostSessionController {
     /**
      * 모집 상태 변경 요청 DTO
      */
-    public record RecruitmentStatusRequest(String status) {}
+    public record RecruitmentStatusRequest(Long statusId) {}
 
     /**
      * 진행 상태 변경 요청 DTO
      */
-    public record SessionStatusRequest(String status) {}
+    public record SessionStatusRequest(Long statusId) {}
 }

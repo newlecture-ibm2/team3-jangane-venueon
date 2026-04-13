@@ -37,8 +37,8 @@ public class Session {
     private LocalDateTime recruitStartDate;
     private LocalDateTime recruitEndDate;
     private boolean isRecruitmentClosed;
-    private RecruitmentStatus forcedRecruitmentStatus; // null means AUTO
-    private EventStatus forcedSessionStatus; // null means AUTO
+    private com.venueon.common.model.DomainCode forcedRecruitmentStatus; // null means AUTO
+    private com.venueon.common.model.DomainCode forcedSessionStatus; // null means AUTO
 
     // 시스템 관리
     private boolean isDefault;
@@ -55,8 +55,8 @@ public class Session {
                    boolean isOnline, String onlineLink,
                    int maxAttendees, int currentAttendees,
                    LocalDateTime recruitStartDate, LocalDateTime recruitEndDate,
-                   boolean isRecruitmentClosed, RecruitmentStatus forcedRecruitmentStatus,
-                   EventStatus forcedSessionStatus,
+                   boolean isRecruitmentClosed, com.venueon.common.model.DomainCode forcedRecruitmentStatus,
+                   com.venueon.common.model.DomainCode forcedSessionStatus,
                    boolean isDefault,
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -176,32 +176,25 @@ public class Session {
         this.updatedAt = LocalDateTime.now();
     }
 
-    /**
-     * 이 세션의 모집 상태 계산
-     * 우선순위: 강제 상태 > 정원 초과 > 날짜 기반 > 기본(OPEN)
-     */
-    public RecruitmentStatus getRecruitmentStatus() {
+    public com.venueon.common.model.DomainCode getRecruitmentStatus() {
         if (forcedRecruitmentStatus != null) return forcedRecruitmentStatus;
-        if (isRecruitmentClosed) return RecruitmentStatus.CLOSED; // legacy
-        if (maxAttendees > 0 && currentAttendees >= maxAttendees) return RecruitmentStatus.CLOSED;
+        if (isRecruitmentClosed) return com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_CLOSED_ID, "모집마감"); // legacy
+        if (maxAttendees > 0 && currentAttendees >= maxAttendees) return com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_CLOSED_ID, "모집마감");
         LocalDateTime now = LocalDateTime.now();
-        if (recruitStartDate != null && now.isBefore(recruitStartDate)) return RecruitmentStatus.PENDING;
-        if (recruitEndDate != null && now.isAfter(recruitEndDate)) return RecruitmentStatus.CLOSED;
-        return RecruitmentStatus.OPEN;
+        if (recruitStartDate != null && now.isBefore(recruitStartDate)) return com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_PENDING_ID, "모집예정");
+        if (recruitEndDate != null && now.isAfter(recruitEndDate)) return com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_CLOSED_ID, "모집마감");
+        return com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_OPEN_ID, "모집중");
     }
 
-    /**
-     * 이 세션의 진행 상태 계산
-     */
-    public EventStatus getSessionStatus() {
+    public com.venueon.common.model.DomainCode getSessionStatus() {
         if (forcedSessionStatus != null) return forcedSessionStatus;
         LocalDateTime now = LocalDateTime.now();
         if (startTime != null && endTime != null) {
-            if (now.isBefore(startTime)) return EventStatus.PUBLISHED;
-            if (now.isAfter(endTime)) return EventStatus.ENDED;
-            return EventStatus.ONGOING;
+            if (now.isBefore(startTime)) return com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_PUBLISHED_ID, "발행됨");
+            if (now.isAfter(endTime)) return com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_ENDED_ID, "종료됨");
+            return com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_ONGOING_ID, "진행중");
         }
-        return EventStatus.PUBLISHED;
+        return com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_PUBLISHED_ID, "발행됨");
     }
 
     /** 수동 마감 */
@@ -217,13 +210,13 @@ public class Session {
     }
 
     /** 강제 모집 상태 설정 */
-    public void setForcedRecruitmentStatus(RecruitmentStatus status) {
+    public void setForcedRecruitmentStatus(com.venueon.common.model.DomainCode status) {
         this.forcedRecruitmentStatus = status;
         this.updatedAt = LocalDateTime.now();
     }
 
     /** 강제 진행 상태 설정 */
-    public void setForcedSessionStatus(EventStatus status) {
+    public void setForcedSessionStatus(com.venueon.common.model.DomainCode status) {
         this.forcedSessionStatus = status;
         this.updatedAt = LocalDateTime.now();
     }
@@ -249,8 +242,8 @@ public class Session {
     public LocalDateTime getRecruitStartDate() { return recruitStartDate; }
     public LocalDateTime getRecruitEndDate() { return recruitEndDate; }
     public boolean getIsRecruitmentClosed() { return isRecruitmentClosed; }
-    public RecruitmentStatus getForcedRecruitmentStatus() { return forcedRecruitmentStatus; }
-    public EventStatus getForcedSessionStatus() { return forcedSessionStatus; }
+    public com.venueon.common.model.DomainCode getForcedRecruitmentStatus() { return forcedRecruitmentStatus; }
+    public com.venueon.common.model.DomainCode getForcedSessionStatus() { return forcedSessionStatus; }
     public boolean getIsDefault() { return isDefault; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

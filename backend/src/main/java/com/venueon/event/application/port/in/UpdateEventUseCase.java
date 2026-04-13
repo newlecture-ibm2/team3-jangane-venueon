@@ -1,7 +1,6 @@
 package com.venueon.event.application.port.in;
 
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventType;
 
 /**
  * 이벤트 수정 유스케이스
@@ -17,7 +16,7 @@ public interface UpdateEventUseCase {
             Long categoryId,
             String title,
             String description,
-            EventType type,
+            Long typeId,
             String thumbnailUrl,
             boolean hasSession
     ) {

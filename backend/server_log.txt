@@ -1,7 +1,7 @@
 > Task :compileJava UP-TO-DATE
-> Task :processResources UP-TO-DATE
-> Task :classes UP-TO-DATE
-> Task :resolveMainClassName UP-TO-DATE
+> Task :processResources
+> Task :classes
+> Task :resolveMainClassName
 
 > Task :bootRun
 
@@ -14,23 +14,23 @@
 
  :: Spring Boot ::                (v4.0.1)
 
-2026-04-13T11:34:45.206+09:00  INFO 87506 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : Starting VenueOnApplication using Java 21.0.10 with PID 87506 (/home/mochijj/project/team3-jangane-venueon/backend/build/classes/java/main started by mochijj in /home/mochijj/project/team3-jangane-venueon/backend)
-2026-04-13T11:34:45.212+09:00 DEBUG 87506 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : Running with Spring Boot v4.0.1, Spring v7.0.2
-2026-04-13T11:34:45.214+09:00  INFO 87506 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : The following 1 profile is active: "dev"
-2026-04-13T11:34:47.295+09:00  INFO 87506 --- [venueon-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-04-13T11:34:47.490+09:00  INFO 87506 --- [venueon-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 182 ms. Found 20 JPA repository interfaces.
-2026-04-13T11:34:48.579+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-04-13T11:34:48.601+09:00  INFO 87506 --- [venueon-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-04-13T11:34:48.602+09:00  INFO 87506 --- [venueon-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
-2026-04-13T11:34:48.681+09:00  INFO 87506 --- [venueon-backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3375 ms
-2026-04-13T11:34:46.460+09:00  INFO 87506 --- [venueon-backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
-2026-04-13T11:34:46.538+09:00  INFO 87506 --- [venueon-backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
-2026-04-13T11:34:47.268+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-04-13T11:34:47.319+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-04-13T11:34:47.526+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@42805abe
-2026-04-13T11:34:47.528+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-04-13T11:34:47.572+09:00  WARN 87506 --- [venueon-backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-04-13T11:34:47.603+09:00  INFO 87506 --- [venueon-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-04-13T18:13:31.741+09:00  INFO 274150 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : Starting VenueOnApplication using Java 21.0.10 with PID 274150 (/home/young/workspace/team3-jangane-venueon/backend/build/classes/java/main started by young in /home/young/workspace/team3-jangane-venueon/backend)
+2026-04-13T18:13:31.752+09:00 DEBUG 274150 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-04-13T18:13:31.755+09:00  INFO 274150 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : The following 1 profile is active: "dev"
+2026-04-13T18:13:34.834+09:00  INFO 274150 --- [venueon-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-13T18:13:35.104+09:00  INFO 274150 --- [venueon-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 248 ms. Found 26 JPA repository interfaces.
+2026-04-13T18:13:36.284+09:00  INFO 274150 --- [venueon-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-04-13T18:13:36.333+09:00  INFO 274150 --- [venueon-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-13T18:13:36.334+09:00  INFO 274150 --- [venueon-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-04-13T18:13:36.520+09:00  INFO 274150 --- [venueon-backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 4624 ms
+2026-04-13T18:13:37.383+09:00  INFO 274150 --- [venueon-backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-13T18:13:37.581+09:00  INFO 274150 --- [venueon-backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-04-13T18:13:40.444+09:00  INFO 274150 --- [venueon-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-13T18:13:40.516+09:00  INFO 274150 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-13T18:13:40.853+09:00  INFO 274150 --- [venueon-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@612bb755
+2026-04-13T18:13:40.857+09:00  INFO 274150 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-13T18:13:40.928+09:00  WARN 274150 --- [venueon-backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-13T18:13:40.995+09:00  INFO 274150 --- [venueon-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [jdbc:postgresql://localhost:5432/venueon_dev]
 	Database driver: PostgreSQL JDBC Driver
 	Database dialect: PostgreSQLDialect
@@ -42,15 +42,1331 @@
 	Pool: DataSourceConnectionProvider
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-04-13T11:34:50.017+09:00  INFO 87506 --- [venueon-backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-04-13T11:34:50.205+09:00  INFO 87506 --- [venueon-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-04-13T11:34:50.302+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-04-13T11:34:51.945+09:00 DEBUG 87506 --- [venueon-backend] [           main] c.v.u.a.i.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
-2026-04-13T11:34:54.371+09:00  INFO 87506 --- [venueon-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
-2026-04-13T11:34:55.468+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-2026-04-13T11:34:55.682+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
-2026-04-13T11:34:55.698+09:00  INFO 87506 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : Started VenueOnApplication in 11.361 seconds (process running for 14.665)
-2026-04-13T11:34:55.911+09:00 DEBUG 87506 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+2026-04-13T18:13:45.120+09:00  INFO 274150 --- [venueon-backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-13T18:13:45.190+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    set client_min_messages = WARNING
+Hibernate: 
+    set client_min_messages = WARNING
+2026-04-13T18:13:45.199+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists cart 
+       drop constraint if exists FKrwd5y8xvjmn5voi1dsu0c4b4e
+Hibernate: 
+    alter table if exists cart 
+       drop constraint if exists FKrwd5y8xvjmn5voi1dsu0c4b4e
+2026-04-13T18:13:45.228+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists cart 
+       drop constraint if exists FKg5uhi8vpsuy0lgloxk2h4w5o6
+Hibernate: 
+    alter table if exists cart 
+       drop constraint if exists FKg5uhi8vpsuy0lgloxk2h4w5o6
+2026-04-13T18:13:45.241+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comment_likes 
+       drop constraint if exists FK3wa5u7bs1p1o9hmavtgdgk1go
+Hibernate: 
+    alter table if exists comment_likes 
+       drop constraint if exists FK3wa5u7bs1p1o9hmavtgdgk1go
+2026-04-13T18:13:45.251+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comment_likes 
+       drop constraint if exists FK6h3lbneryl5pyb9ykaju7werx
+Hibernate: 
+    alter table if exists comment_likes 
+       drop constraint if exists FK6h3lbneryl5pyb9ykaju7werx
+2026-04-13T18:13:45.262+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       drop constraint if exists FKn2na60ukhs76ibtpt9burkm27
+Hibernate: 
+    alter table if exists comments 
+       drop constraint if exists FKn2na60ukhs76ibtpt9burkm27
+2026-04-13T18:13:45.274+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       drop constraint if exists FKlri30okf66phtcgbe5pok7cc0
+Hibernate: 
+    alter table if exists comments 
+       drop constraint if exists FKlri30okf66phtcgbe5pok7cc0
+2026-04-13T18:13:45.284+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       drop constraint if exists FKh4c7lvsc298whoyd4w9ta25cr
+Hibernate: 
+    alter table if exists comments 
+       drop constraint if exists FKh4c7lvsc298whoyd4w9ta25cr
+2026-04-13T18:13:45.324+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       drop constraint if exists FKehds1lhi1y9a8rweslp1esncn
+Hibernate: 
+    alter table if exists communities 
+       drop constraint if exists FKehds1lhi1y9a8rweslp1esncn
+2026-04-13T18:13:45.337+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       drop constraint if exists FKhi7jr3il90nrhisu3htfl4ks
+Hibernate: 
+    alter table if exists communities 
+       drop constraint if exists FKhi7jr3il90nrhisu3htfl4ks
+2026-04-13T18:13:45.356+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       drop constraint if exists FKqn9g17tqcwnoy41o2am9fnlep
+Hibernate: 
+    alter table if exists community_members 
+       drop constraint if exists FKqn9g17tqcwnoy41o2am9fnlep
+2026-04-13T18:13:45.371+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       drop constraint if exists FKme7k1stbnwi6cpmm8a6sgcikn
+Hibernate: 
+    alter table if exists community_members 
+       drop constraint if exists FKme7k1stbnwi6cpmm8a6sgcikn
+2026-04-13T18:13:45.384+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists event_sessions 
+       drop constraint if exists FK4j89lx7pd3n6ugkg9bcmgpu5j
+Hibernate: 
+    alter table if exists event_sessions 
+       drop constraint if exists FK4j89lx7pd3n6ugkg9bcmgpu5j
+2026-04-13T18:13:45.395+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists event_sessions 
+       drop constraint if exists FKa4rq1lyh9428d6ld5q7xqqo1f
+Hibernate: 
+    alter table if exists event_sessions 
+       drop constraint if exists FKa4rq1lyh9428d6ld5q7xqqo1f
+2026-04-13T18:13:45.406+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists event_sessions 
+       drop constraint if exists FKc8ubkmxunup0ssp2aknodt4u6
+Hibernate: 
+    alter table if exists event_sessions 
+       drop constraint if exists FKc8ubkmxunup0ssp2aknodt4u6
+2026-04-13T18:13:45.419+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       drop constraint if exists FKo6mla8j1p5bokt4dxrlmgwc28
+Hibernate: 
+    alter table if exists events 
+       drop constraint if exists FKo6mla8j1p5bokt4dxrlmgwc28
+2026-04-13T18:13:45.432+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       drop constraint if exists FK7ljm71n1057envlomdxcni5hs
+Hibernate: 
+    alter table if exists events 
+       drop constraint if exists FK7ljm71n1057envlomdxcni5hs
+2026-04-13T18:13:45.444+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       drop constraint if exists FKl6uww1jkfgtjulp4ba8ufs72k
+Hibernate: 
+    alter table if exists events 
+       drop constraint if exists FKl6uww1jkfgtjulp4ba8ufs72k
+2026-04-13T18:13:45.453+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       drop constraint if exists FKd763rut6n30daje57kwdjb9n1
+Hibernate: 
+    alter table if exists events 
+       drop constraint if exists FKd763rut6n30daje57kwdjb9n1
+2026-04-13T18:13:45.464+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists host_profiles 
+       drop constraint if exists FKmoas5i4ry1m9mwgbgb1jdrhli
+Hibernate: 
+    alter table if exists host_profiles 
+       drop constraint if exists FKmoas5i4ry1m9mwgbgb1jdrhli
+2026-04-13T18:13:45.477+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       drop constraint if exists FK43g2yroy6l7lfomw37wajkqrn
+Hibernate: 
+    alter table if exists orders 
+       drop constraint if exists FK43g2yroy6l7lfomw37wajkqrn
+2026-04-13T18:13:45.488+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       drop constraint if exists FK56s83c9boy7i8d9v4kf9a9979
+Hibernate: 
+    alter table if exists orders 
+       drop constraint if exists FK56s83c9boy7i8d9v4kf9a9979
+2026-04-13T18:13:45.500+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       drop constraint if exists FK32ql8ubntj5uh44ph9659tiih
+Hibernate: 
+    alter table if exists orders 
+       drop constraint if exists FK32ql8ubntj5uh44ph9659tiih
+2026-04-13T18:13:45.513+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists post_bookmarks 
+       drop constraint if exists FKclpw1l6wrci96rfj0dtt3bfah
+Hibernate: 
+    alter table if exists post_bookmarks 
+       drop constraint if exists FKclpw1l6wrci96rfj0dtt3bfah
+2026-04-13T18:13:45.527+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists post_bookmarks 
+       drop constraint if exists FK9b5c09u5arho7ei76d78bn7ww
+Hibernate: 
+    alter table if exists post_bookmarks 
+       drop constraint if exists FK9b5c09u5arho7ei76d78bn7ww
+2026-04-13T18:13:45.541+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists post_likes 
+       drop constraint if exists FKa5wxsgl4doibhbed9gm7ikie2
+Hibernate: 
+    alter table if exists post_likes 
+       drop constraint if exists FKa5wxsgl4doibhbed9gm7ikie2
+2026-04-13T18:13:45.555+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists post_likes 
+       drop constraint if exists FKkgau5n0nlewg6o9lr4yibqgxj
+Hibernate: 
+    alter table if exists post_likes 
+       drop constraint if exists FKkgau5n0nlewg6o9lr4yibqgxj
+2026-04-13T18:13:45.568+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       drop constraint if exists FK6xvn0811tkyo3nfjk2xvqx6ns
+Hibernate: 
+    alter table if exists posts 
+       drop constraint if exists FK6xvn0811tkyo3nfjk2xvqx6ns
+2026-04-13T18:13:45.581+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       drop constraint if exists FK7rk45ficmsfhe8n1dojvqt6ui
+Hibernate: 
+    alter table if exists posts 
+       drop constraint if exists FK7rk45ficmsfhe8n1dojvqt6ui
+2026-04-13T18:13:45.594+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       drop constraint if exists FKsk9rqm7f6y8b1g0qob018hdm7
+Hibernate: 
+    alter table if exists refunds 
+       drop constraint if exists FKsk9rqm7f6y8b1g0qob018hdm7
+2026-04-13T18:13:45.606+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       drop constraint if exists FKrtxief4co3k1lfklj7n05m8mo
+Hibernate: 
+    alter table if exists refunds 
+       drop constraint if exists FKrtxief4co3k1lfklj7n05m8mo
+2026-04-13T18:13:45.619+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists reports 
+       drop constraint if exists FKd3qiw2om5d2oh5xb7fbdcq225
+Hibernate: 
+    alter table if exists reports 
+       drop constraint if exists FKd3qiw2om5d2oh5xb7fbdcq225
+2026-04-13T18:13:45.633+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists ticket_sessions 
+       drop constraint if exists FKivlxu4jnke4i9nivp0trluh3x
+Hibernate: 
+    alter table if exists ticket_sessions 
+       drop constraint if exists FKivlxu4jnke4i9nivp0trluh3x
+2026-04-13T18:13:45.645+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists ticket_sessions 
+       drop constraint if exists FK3p922c9cpc1uqp9we3ej0l241
+Hibernate: 
+    alter table if exists ticket_sessions 
+       drop constraint if exists FK3p922c9cpc1uqp9we3ej0l241
+2026-04-13T18:13:45.656+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists tickets 
+       drop constraint if exists FK3utafe14rupaypjocldjaj4ol
+Hibernate: 
+    alter table if exists tickets 
+       drop constraint if exists FK3utafe14rupaypjocldjaj4ol
+2026-04-13T18:13:45.671+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists user_categories 
+       drop constraint if exists FK6r91537otve5embvcuv40is3j
+Hibernate: 
+    alter table if exists user_categories 
+       drop constraint if exists FK6r91537otve5embvcuv40is3j
+2026-04-13T18:13:45.685+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists user_categories 
+       drop constraint if exists FKdqpxght56isds8smi1frxg0xo
+Hibernate: 
+    alter table if exists user_categories 
+       drop constraint if exists FKdqpxght56isds8smi1frxg0xo
+2026-04-13T18:13:45.699+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists users 
+       drop constraint if exists FK29pjurc1jkr6vh9tisedt2s5
+Hibernate: 
+    alter table if exists users 
+       drop constraint if exists FK29pjurc1jkr6vh9tisedt2s5
+2026-04-13T18:13:45.713+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists admin_requests cascade
+Hibernate: 
+    drop table if exists admin_requests cascade
+2026-04-13T18:13:45.745+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists cart cascade
+Hibernate: 
+    drop table if exists cart cascade
+2026-04-13T18:13:45.764+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists categories cascade
+Hibernate: 
+    drop table if exists categories cascade
+2026-04-13T18:13:45.786+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists comment_likes cascade
+Hibernate: 
+    drop table if exists comment_likes cascade
+2026-04-13T18:13:45.805+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists comments cascade
+Hibernate: 
+    drop table if exists comments cascade
+2026-04-13T18:13:45.822+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists communities cascade
+Hibernate: 
+    drop table if exists communities cascade
+2026-04-13T18:13:45.841+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists community_members cascade
+Hibernate: 
+    drop table if exists community_members cascade
+2026-04-13T18:13:45.858+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists event_sessions cascade
+Hibernate: 
+    drop table if exists event_sessions cascade
+2026-04-13T18:13:45.876+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists event_statuses cascade
+Hibernate: 
+    drop table if exists event_statuses cascade
+2026-04-13T18:13:45.887+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists event_types cascade
+Hibernate: 
+    drop table if exists event_types cascade
+2026-04-13T18:13:45.901+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists events cascade
+Hibernate: 
+    drop table if exists events cascade
+2026-04-13T18:13:45.917+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists host_profiles cascade
+Hibernate: 
+    drop table if exists host_profiles cascade
+2026-04-13T18:13:45.936+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists orders cascade
+Hibernate: 
+    drop table if exists orders cascade
+2026-04-13T18:13:45.955+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists post_bookmarks cascade
+Hibernate: 
+    drop table if exists post_bookmarks cascade
+2026-04-13T18:13:45.968+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists post_likes cascade
+Hibernate: 
+    drop table if exists post_likes cascade
+2026-04-13T18:13:45.984+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists posts cascade
+Hibernate: 
+    drop table if exists posts cascade
+2026-04-13T18:13:46.002+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists recruitment_statuses cascade
+Hibernate: 
+    drop table if exists recruitment_statuses cascade
+2026-04-13T18:13:46.014+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists refunds cascade
+Hibernate: 
+    drop table if exists refunds cascade
+2026-04-13T18:13:46.032+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists reports cascade
+Hibernate: 
+    drop table if exists reports cascade
+2026-04-13T18:13:46.051+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists reviews cascade
+Hibernate: 
+    drop table if exists reviews cascade
+2026-04-13T18:13:46.069+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists ticket_sessions cascade
+Hibernate: 
+    drop table if exists ticket_sessions cascade
+2026-04-13T18:13:46.080+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists tickets cascade
+Hibernate: 
+    drop table if exists tickets cascade
+2026-04-13T18:13:46.094+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists user_categories cascade
+Hibernate: 
+    drop table if exists user_categories cascade
+2026-04-13T18:13:46.103+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists user_roles cascade
+Hibernate: 
+    drop table if exists user_roles cascade
+2026-04-13T18:13:46.113+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists users cascade
+Hibernate: 
+    drop table if exists users cascade
+2026-04-13T18:13:46.125+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    drop table if exists wishlist cascade
+Hibernate: 
+    drop table if exists wishlist cascade
+2026-04-13T18:13:46.150+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table admin_requests (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        processed_at timestamp(6),
+        processed_by bigint,
+        requester_id bigint not null,
+        status varchar(20) not null check ((status in ('PENDING','REVIEWING','COMPLETED','REJECTED','CANCELLED'))),
+        category varchar(30) not null check ((category in ('BUSINESS_LICENSE','HOST_INQUIRY','USER_INQUIRY','OTHER'))),
+        title varchar(200) not null,
+        attachment_url varchar(500),
+        admin_comment TEXT,
+        content TEXT not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table admin_requests (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        processed_at timestamp(6),
+        processed_by bigint,
+        requester_id bigint not null,
+        status varchar(20) not null check ((status in ('PENDING','REVIEWING','COMPLETED','REJECTED','CANCELLED'))),
+        category varchar(30) not null check ((category in ('BUSINESS_LICENSE','HOST_INQUIRY','USER_INQUIRY','OTHER'))),
+        title varchar(200) not null,
+        attachment_url varchar(500),
+        admin_comment TEXT,
+        content TEXT not null,
+        primary key (id)
+    )
+2026-04-13T18:13:46.207+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table cart (
+        quantity integer not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        ticket_id bigint not null,
+        user_id bigint not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table cart (
+        quantity integer not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        ticket_id bigint not null,
+        user_id bigint not null,
+        primary key (id)
+    )
+2026-04-13T18:13:46.235+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table categories (
+        sort_order integer,
+        id bigint generated by default as identity,
+        description varchar(255),
+        name varchar(255) not null unique,
+        primary key (id)
+    )
+Hibernate: 
+    create table categories (
+        sort_order integer,
+        id bigint generated by default as identity,
+        description varchar(255),
+        name varchar(255) not null unique,
+        primary key (id)
+    )
+2026-04-13T18:13:53.737+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table comment_likes (
+        comment_id bigint not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        user_id bigint not null,
+        primary key (id),
+        unique (comment_id, user_id)
+    )
+Hibernate: 
+    create table comment_likes (
+        comment_id bigint not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        user_id bigint not null,
+        primary key (id),
+        unique (comment_id, user_id)
+    )
+2026-04-13T18:13:53.788+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table comments (
+        is_hidden boolean not null,
+        like_count integer,
+        author_id bigint not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        parent_id bigint,
+        post_id bigint not null,
+        content TEXT not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table comments (
+        is_hidden boolean not null,
+        like_count integer,
+        author_id bigint not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        parent_id bigint,
+        post_id bigint not null,
+        content TEXT not null,
+        primary key (id)
+    )
+2026-04-13T18:13:53.838+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table communities (
+        is_public boolean,
+        member_count integer,
+        created_at timestamp(6) not null,
+        creator_id bigint not null,
+        event_id bigint,
+        id bigint generated by default as identity,
+        description TEXT,
+        name varchar(255) not null,
+        thumbnail_url varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table communities (
+        is_public boolean,
+        member_count integer,
+        created_at timestamp(6) not null,
+        creator_id bigint not null,
+        event_id bigint,
+        id bigint generated by default as identity,
+        description TEXT,
+        name varchar(255) not null,
+        thumbnail_url varchar(255),
+        primary key (id)
+    )
+2026-04-13T18:13:53.884+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table community_members (
+        community_id bigint not null,
+        id bigint generated by default as identity,
+        joined_at timestamp(6) not null,
+        user_id bigint not null,
+        role varchar(255) not null check ((role in ('ADMIN','MEMBER'))),
+        primary key (id),
+        unique (community_id, user_id)
+    )
+Hibernate: 
+    create table community_members (
+        community_id bigint not null,
+        id bigint generated by default as identity,
+        joined_at timestamp(6) not null,
+        user_id bigint not null,
+        role varchar(255) not null check ((role in ('ADMIN','MEMBER'))),
+        primary key (id),
+        unique (community_id, user_id)
+    )
+2026-04-13T18:13:53.926+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table event_sessions (
+        current_attendees integer,
+        is_default boolean,
+        is_online boolean,
+        is_recruitment_closed boolean,
+        max_attendees integer,
+        sort_order integer,
+        created_at timestamp(6) not null,
+        end_time timestamp(6),
+        event_id bigint not null,
+        id bigint generated by default as identity,
+        recruit_end_date timestamp(6),
+        recruit_start_date timestamp(6),
+        start_time timestamp(6),
+        updated_at timestamp(6),
+        forced_recruitment_status_name varchar(50),
+        forced_session_status_name varchar(50),
+        address_detail varchar(100),
+        address_road varchar(200),
+        description TEXT,
+        location varchar(255),
+        online_link varchar(255),
+        region_sido varchar(255),
+        region_sigungu varchar(255),
+        title varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table event_sessions (
+        current_attendees integer,
+        is_default boolean,
+        is_online boolean,
+        is_recruitment_closed boolean,
+        max_attendees integer,
+        sort_order integer,
+        created_at timestamp(6) not null,
+        end_time timestamp(6),
+        event_id bigint not null,
+        id bigint generated by default as identity,
+        recruit_end_date timestamp(6),
+        recruit_start_date timestamp(6),
+        start_time timestamp(6),
+        updated_at timestamp(6),
+        forced_recruitment_status_name varchar(50),
+        forced_session_status_name varchar(50),
+        address_detail varchar(100),
+        address_road varchar(200),
+        description TEXT,
+        location varchar(255),
+        online_link varchar(255),
+        region_sido varchar(255),
+        region_sigungu varchar(255),
+        title varchar(255) not null,
+        primary key (id)
+    )
+2026-04-13T18:13:53.966+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table event_statuses (
+        status_name varchar(50) not null,
+        label varchar(100) not null,
+        description varchar(255),
+        primary key (status_name)
+    )
+Hibernate: 
+    create table event_statuses (
+        status_name varchar(50) not null,
+        label varchar(100) not null,
+        description varchar(255),
+        primary key (status_name)
+    )
+2026-04-13T18:13:53.990+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table event_types (
+        type_name varchar(50) not null,
+        label varchar(100) not null,
+        description varchar(255),
+        primary key (type_name)
+    )
+Hibernate: 
+    create table event_types (
+        type_name varchar(50) not null,
+        label varchar(100) not null,
+        description varchar(255),
+        primary key (type_name)
+    )
+2026-04-13T18:13:46.083+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table events (
+        has_session boolean,
+        is_hidden boolean not null,
+        category_id bigint,
+        created_at timestamp(6) not null,
+        creator_id bigint not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        status_name varchar(50) not null,
+        type_name varchar(50) not null,
+        description TEXT,
+        thumbnail_url varchar(255),
+        title varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table events (
+        has_session boolean,
+        is_hidden boolean not null,
+        category_id bigint,
+        created_at timestamp(6) not null,
+        creator_id bigint not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        status_name varchar(50) not null,
+        type_name varchar(50) not null,
+        description TEXT,
+        thumbnail_url varchar(255),
+        title varchar(255) not null,
+        primary key (id)
+    )
+2026-04-13T18:13:46.141+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table host_profiles (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        user_id bigint not null unique,
+        org_description varchar(1000),
+        manager_name varchar(255),
+        org_name varchar(255) not null,
+        org_number varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table host_profiles (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        user_id bigint not null unique,
+        org_description varchar(1000),
+        manager_name varchar(255),
+        org_name varchar(255) not null,
+        org_number varchar(255) not null,
+        primary key (id)
+    )
+2026-04-13T18:13:46.174+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table orders (
+        amount integer not null,
+        quantity integer not null,
+        display_ordered_at timestamp(6),
+        event_id bigint not null,
+        id bigint generated by default as identity,
+        ordered_at timestamp(6) not null,
+        paid_at timestamp(6),
+        ticket_id bigint,
+        user_id bigint not null,
+        payment_method varchar(255),
+        status varchar(255) not null check ((status in ('PENDING','PAID','CANCELLED','REFUNDED','REGISTERED','REFUND_REQUESTED'))),
+        toss_order_id varchar(255),
+        toss_payment_key varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table orders (
+        amount integer not null,
+        quantity integer not null,
+        display_ordered_at timestamp(6),
+        event_id bigint not null,
+        id bigint generated by default as identity,
+        ordered_at timestamp(6) not null,
+        paid_at timestamp(6),
+        ticket_id bigint,
+        user_id bigint not null,
+        payment_method varchar(255),
+        status varchar(255) not null check ((status in ('PENDING','PAID','CANCELLED','REFUNDED','REGISTERED','REFUND_REQUESTED'))),
+        toss_order_id varchar(255),
+        toss_payment_key varchar(255),
+        primary key (id)
+    )
+2026-04-13T18:13:46.196+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table post_bookmarks (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        post_id bigint not null,
+        user_id bigint not null,
+        primary key (id),
+        unique (post_id, user_id)
+    )
+Hibernate: 
+    create table post_bookmarks (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        post_id bigint not null,
+        user_id bigint not null,
+        primary key (id),
+        unique (post_id, user_id)
+    )
+2026-04-13T18:13:46.228+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table post_likes (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        post_id bigint not null,
+        user_id bigint not null,
+        primary key (id),
+        unique (post_id, user_id)
+    )
+Hibernate: 
+    create table post_likes (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        post_id bigint not null,
+        user_id bigint not null,
+        primary key (id),
+        unique (post_id, user_id)
+    )
+2026-04-13T18:13:46.252+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table posts (
+        comment_count integer,
+        is_hidden boolean not null,
+        is_notice boolean not null,
+        is_pinned boolean not null,
+        like_count integer,
+        view_count integer,
+        author_id bigint not null,
+        community_id bigint not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        content TEXT not null,
+        title varchar(255) not null,
+        type varchar(255) not null check ((type in ('GENERAL','REVIEW','QUESTION','NOTICE'))),
+        primary key (id)
+    )
+Hibernate: 
+    create table posts (
+        comment_count integer,
+        is_hidden boolean not null,
+        is_notice boolean not null,
+        is_pinned boolean not null,
+        like_count integer,
+        view_count integer,
+        author_id bigint not null,
+        community_id bigint not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        content TEXT not null,
+        title varchar(255) not null,
+        type varchar(255) not null check ((type in ('GENERAL','REVIEW','QUESTION','NOTICE'))),
+        primary key (id)
+    )
+2026-04-13T18:13:46.277+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table recruitment_statuses (
+        status_name varchar(50) not null,
+        label varchar(100) not null,
+        description varchar(255),
+        primary key (status_name)
+    )
+Hibernate: 
+    create table recruitment_statuses (
+        status_name varchar(50) not null,
+        label varchar(100) not null,
+        description varchar(255),
+        primary key (status_name)
+    )
+2026-04-13T18:13:46.289+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table refunds (
+        amount integer not null,
+        id bigint generated by default as identity,
+        order_id bigint not null,
+        processed_at timestamp(6),
+        requested_at timestamp(6) not null,
+        user_id bigint not null,
+        reason varchar(255),
+        status varchar(255) not null check ((status in ('PENDING','APPROVED','REJECTED'))),
+        primary key (id)
+    )
+Hibernate: 
+    create table refunds (
+        amount integer not null,
+        id bigint generated by default as identity,
+        order_id bigint not null,
+        processed_at timestamp(6),
+        requested_at timestamp(6) not null,
+        user_id bigint not null,
+        reason varchar(255),
+        status varchar(255) not null check ((status in ('PENDING','APPROVED','REJECTED'))),
+        primary key (id)
+    )
+2026-04-13T18:13:46.317+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table reports (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        reporter_id bigint not null,
+        resolved_at timestamp(6),
+        target_id bigint not null,
+        detail TEXT,
+        admin_action varchar(255) check ((admin_action in ('DELETE','HIDE','WARN','DISMISS'))),
+        reason varchar(255) not null,
+        status varchar(255) not null check ((status in ('PENDING','RESOLVED','REJECTED'))),
+        target_type varchar(255) not null check ((target_type in ('EVENT','POST','COMMENT','USER'))),
+        primary key (id)
+    )
+Hibernate: 
+    create table reports (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        reporter_id bigint not null,
+        resolved_at timestamp(6),
+        target_id bigint not null,
+        detail TEXT,
+        admin_action varchar(255) check ((admin_action in ('DELETE','HIDE','WARN','DISMISS'))),
+        reason varchar(255) not null,
+        status varchar(255) not null check ((status in ('PENDING','RESOLVED','REJECTED'))),
+        target_type varchar(255) not null check ((target_type in ('EVENT','POST','COMMENT','USER'))),
+        primary key (id)
+    )
+2026-04-13T18:13:46.352+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table reviews (
+        rating integer not null,
+        created_at timestamp(6),
+        event_id bigint,
+        id bigint generated by default as identity,
+        reviewer_id bigint,
+        content TEXT,
+        images varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table reviews (
+        rating integer not null,
+        created_at timestamp(6),
+        event_id bigint,
+        id bigint generated by default as identity,
+        reviewer_id bigint,
+        content TEXT,
+        images varchar(255),
+        primary key (id)
+    )
+2026-04-13T18:13:46.381+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table ticket_sessions (
+        session_id bigint not null,
+        ticket_id bigint not null,
+        primary key (session_id, ticket_id)
+    )
+Hibernate: 
+    create table ticket_sessions (
+        session_id bigint not null,
+        ticket_id bigint not null,
+        primary key (session_id, ticket_id)
+    )
+2026-04-13T18:13:46.395+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table tickets (
+        is_active boolean not null,
+        is_all_sessions boolean not null,
+        max_quantity integer,
+        original_price integer not null,
+        price integer not null,
+        sold_count integer not null,
+        sort_order integer not null,
+        created_at timestamp(6) not null,
+        event_id bigint not null,
+        id bigint generated by default as identity,
+        sales_end timestamp(6),
+        sales_start timestamp(6),
+        updated_at timestamp(6),
+        name varchar(100) not null,
+        description TEXT,
+        primary key (id)
+    )
+Hibernate: 
+    create table tickets (
+        is_active boolean not null,
+        is_all_sessions boolean not null,
+        max_quantity integer,
+        original_price integer not null,
+        price integer not null,
+        sold_count integer not null,
+        sort_order integer not null,
+        created_at timestamp(6) not null,
+        event_id bigint not null,
+        id bigint generated by default as identity,
+        sales_end timestamp(6),
+        sales_start timestamp(6),
+        updated_at timestamp(6),
+        name varchar(100) not null,
+        description TEXT,
+        primary key (id)
+    )
+2026-04-13T18:13:46.422+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table user_categories (
+        category_id bigint not null,
+        user_id bigint not null
+    )
+Hibernate: 
+    create table user_categories (
+        category_id bigint not null,
+        user_id bigint not null
+    )
+2026-04-13T18:13:46.430+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table user_roles (
+        role_name varchar(50) not null,
+        label varchar(100) not null,
+        description varchar(255),
+        primary key (role_name)
+    )
+Hibernate: 
+    create table user_roles (
+        role_name varchar(50) not null,
+        label varchar(100) not null,
+        description varchar(255),
+        primary key (role_name)
+    )
+2026-04-13T18:13:46.448+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table users (
+        is_active boolean not null,
+        is_badge_visible boolean not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        role_name varchar(50) not null,
+        email varchar(255) not null unique,
+        nickname varchar(255) not null,
+        password varchar(255) not null,
+        phone varchar(255),
+        profile_img varchar(255),
+        provider varchar(255) not null check ((provider in ('LOCAL','GOOGLE'))),
+        primary key (id)
+    )
+Hibernate: 
+    create table users (
+        is_active boolean not null,
+        is_badge_visible boolean not null,
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        updated_at timestamp(6),
+        role_name varchar(50) not null,
+        email varchar(255) not null unique,
+        nickname varchar(255) not null,
+        password varchar(255) not null,
+        phone varchar(255),
+        profile_img varchar(255),
+        provider varchar(255) not null check ((provider in ('LOCAL','GOOGLE'))),
+        primary key (id)
+    )
+2026-04-13T18:13:46.492+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    create table wishlist (
+        created_at timestamp(6),
+        event_id bigint not null,
+        id bigint generated by default as identity,
+        user_id bigint not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table wishlist (
+        created_at timestamp(6),
+        event_id bigint not null,
+        id bigint generated by default as identity,
+        user_id bigint not null,
+        primary key (id)
+    )
+2026-04-13T18:13:46.512+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists cart 
+       add constraint FKrwd5y8xvjmn5voi1dsu0c4b4e 
+       foreign key (ticket_id) 
+       references tickets
+Hibernate: 
+    alter table if exists cart 
+       add constraint FKrwd5y8xvjmn5voi1dsu0c4b4e 
+       foreign key (ticket_id) 
+       references tickets
+2026-04-13T18:13:46.531+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists cart 
+       add constraint FKg5uhi8vpsuy0lgloxk2h4w5o6 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists cart 
+       add constraint FKg5uhi8vpsuy0lgloxk2h4w5o6 
+       foreign key (user_id) 
+       references users
+2026-04-13T18:13:46.544+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comment_likes 
+       add constraint FK3wa5u7bs1p1o9hmavtgdgk1go 
+       foreign key (comment_id) 
+       references comments 
+       on delete cascade
+Hibernate: 
+    alter table if exists comment_likes 
+       add constraint FK3wa5u7bs1p1o9hmavtgdgk1go 
+       foreign key (comment_id) 
+       references comments 
+       on delete cascade
+2026-04-13T18:13:46.563+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comment_likes 
+       add constraint FK6h3lbneryl5pyb9ykaju7werx 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists comment_likes 
+       add constraint FK6h3lbneryl5pyb9ykaju7werx 
+       foreign key (user_id) 
+       references users
+2026-04-13T18:13:46.575+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       add constraint FKn2na60ukhs76ibtpt9burkm27 
+       foreign key (author_id) 
+       references users
+Hibernate: 
+    alter table if exists comments 
+       add constraint FKn2na60ukhs76ibtpt9burkm27 
+       foreign key (author_id) 
+       references users
+2026-04-13T18:13:46.590+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       add constraint FKlri30okf66phtcgbe5pok7cc0 
+       foreign key (parent_id) 
+       references comments
+Hibernate: 
+    alter table if exists comments 
+       add constraint FKlri30okf66phtcgbe5pok7cc0 
+       foreign key (parent_id) 
+       references comments
+2026-04-13T18:13:46.600+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists comments 
+       add constraint FKh4c7lvsc298whoyd4w9ta25cr 
+       foreign key (post_id) 
+       references posts 
+       on delete cascade
+Hibernate: 
+    alter table if exists comments 
+       add constraint FKh4c7lvsc298whoyd4w9ta25cr 
+       foreign key (post_id) 
+       references posts 
+       on delete cascade
+2026-04-13T18:13:46.611+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       add constraint FKehds1lhi1y9a8rweslp1esncn 
+       foreign key (creator_id) 
+       references users
+Hibernate: 
+    alter table if exists communities 
+       add constraint FKehds1lhi1y9a8rweslp1esncn 
+       foreign key (creator_id) 
+       references users
+2026-04-13T18:13:46.621+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists communities 
+       add constraint FKhi7jr3il90nrhisu3htfl4ks 
+       foreign key (event_id) 
+       references events
+Hibernate: 
+    alter table if exists communities 
+       add constraint FKhi7jr3il90nrhisu3htfl4ks 
+       foreign key (event_id) 
+       references events
+2026-04-13T18:13:46.631+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       add constraint FKqn9g17tqcwnoy41o2am9fnlep 
+       foreign key (community_id) 
+       references communities
+Hibernate: 
+    alter table if exists community_members 
+       add constraint FKqn9g17tqcwnoy41o2am9fnlep 
+       foreign key (community_id) 
+       references communities
+2026-04-13T18:13:46.643+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists community_members 
+       add constraint FKme7k1stbnwi6cpmm8a6sgcikn 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists community_members 
+       add constraint FKme7k1stbnwi6cpmm8a6sgcikn 
+       foreign key (user_id) 
+       references users
+2026-04-13T18:13:46.654+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists event_sessions 
+       add constraint FK4j89lx7pd3n6ugkg9bcmgpu5j 
+       foreign key (event_id) 
+       references events
+Hibernate: 
+    alter table if exists event_sessions 
+       add constraint FK4j89lx7pd3n6ugkg9bcmgpu5j 
+       foreign key (event_id) 
+       references events
+2026-04-13T18:13:46.666+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists event_sessions 
+       add constraint FKa4rq1lyh9428d6ld5q7xqqo1f 
+       foreign key (forced_recruitment_status_name) 
+       references recruitment_statuses
+Hibernate: 
+    alter table if exists event_sessions 
+       add constraint FKa4rq1lyh9428d6ld5q7xqqo1f 
+       foreign key (forced_recruitment_status_name) 
+       references recruitment_statuses
+2026-04-13T18:13:46.677+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists event_sessions 
+       add constraint FKc8ubkmxunup0ssp2aknodt4u6 
+       foreign key (forced_session_status_name) 
+       references event_statuses
+Hibernate: 
+    alter table if exists event_sessions 
+       add constraint FKc8ubkmxunup0ssp2aknodt4u6 
+       foreign key (forced_session_status_name) 
+       references event_statuses
+2026-04-13T18:13:46.687+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       add constraint FKo6mla8j1p5bokt4dxrlmgwc28 
+       foreign key (category_id) 
+       references categories
+Hibernate: 
+    alter table if exists events 
+       add constraint FKo6mla8j1p5bokt4dxrlmgwc28 
+       foreign key (category_id) 
+       references categories
+2026-04-13T18:13:46.697+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       add constraint FK7ljm71n1057envlomdxcni5hs 
+       foreign key (creator_id) 
+       references users
+Hibernate: 
+    alter table if exists events 
+       add constraint FK7ljm71n1057envlomdxcni5hs 
+       foreign key (creator_id) 
+       references users
+2026-04-13T18:13:46.706+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       add constraint FKl6uww1jkfgtjulp4ba8ufs72k 
+       foreign key (status_name) 
+       references event_statuses
+Hibernate: 
+    alter table if exists events 
+       add constraint FKl6uww1jkfgtjulp4ba8ufs72k 
+       foreign key (status_name) 
+       references event_statuses
+2026-04-13T18:13:46.716+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists events 
+       add constraint FKd763rut6n30daje57kwdjb9n1 
+       foreign key (type_name) 
+       references event_types
+Hibernate: 
+    alter table if exists events 
+       add constraint FKd763rut6n30daje57kwdjb9n1 
+       foreign key (type_name) 
+       references event_types
+2026-04-13T18:13:46.724+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists host_profiles 
+       add constraint FKmoas5i4ry1m9mwgbgb1jdrhli 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists host_profiles 
+       add constraint FKmoas5i4ry1m9mwgbgb1jdrhli 
+       foreign key (user_id) 
+       references users
+2026-04-13T18:13:46.734+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       add constraint FK43g2yroy6l7lfomw37wajkqrn 
+       foreign key (event_id) 
+       references events
+Hibernate: 
+    alter table if exists orders 
+       add constraint FK43g2yroy6l7lfomw37wajkqrn 
+       foreign key (event_id) 
+       references events
+2026-04-13T18:13:46.744+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       add constraint FK56s83c9boy7i8d9v4kf9a9979 
+       foreign key (ticket_id) 
+       references tickets
+Hibernate: 
+    alter table if exists orders 
+       add constraint FK56s83c9boy7i8d9v4kf9a9979 
+       foreign key (ticket_id) 
+       references tickets
+2026-04-13T18:13:46.754+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists orders 
+       add constraint FK32ql8ubntj5uh44ph9659tiih 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists orders 
+       add constraint FK32ql8ubntj5uh44ph9659tiih 
+       foreign key (user_id) 
+       references users
+2026-04-13T18:13:46.767+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists post_bookmarks 
+       add constraint FKclpw1l6wrci96rfj0dtt3bfah 
+       foreign key (post_id) 
+       references posts 
+       on delete cascade
+Hibernate: 
+    alter table if exists post_bookmarks 
+       add constraint FKclpw1l6wrci96rfj0dtt3bfah 
+       foreign key (post_id) 
+       references posts 
+       on delete cascade
+2026-04-13T18:13:46.778+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists post_bookmarks 
+       add constraint FK9b5c09u5arho7ei76d78bn7ww 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists post_bookmarks 
+       add constraint FK9b5c09u5arho7ei76d78bn7ww 
+       foreign key (user_id) 
+       references users
+2026-04-13T18:13:46.787+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists post_likes 
+       add constraint FKa5wxsgl4doibhbed9gm7ikie2 
+       foreign key (post_id) 
+       references posts 
+       on delete cascade
+Hibernate: 
+    alter table if exists post_likes 
+       add constraint FKa5wxsgl4doibhbed9gm7ikie2 
+       foreign key (post_id) 
+       references posts 
+       on delete cascade
+2026-04-13T18:13:46.795+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists post_likes 
+       add constraint FKkgau5n0nlewg6o9lr4yibqgxj 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists post_likes 
+       add constraint FKkgau5n0nlewg6o9lr4yibqgxj 
+       foreign key (user_id) 
+       references users
+2026-04-13T18:13:46.803+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       add constraint FK6xvn0811tkyo3nfjk2xvqx6ns 
+       foreign key (author_id) 
+       references users
+Hibernate: 
+    alter table if exists posts 
+       add constraint FK6xvn0811tkyo3nfjk2xvqx6ns 
+       foreign key (author_id) 
+       references users
+2026-04-13T18:13:46.813+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists posts 
+       add constraint FK7rk45ficmsfhe8n1dojvqt6ui 
+       foreign key (community_id) 
+       references communities
+Hibernate: 
+    alter table if exists posts 
+       add constraint FK7rk45ficmsfhe8n1dojvqt6ui 
+       foreign key (community_id) 
+       references communities
+2026-04-13T18:13:46.820+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       add constraint FKsk9rqm7f6y8b1g0qob018hdm7 
+       foreign key (order_id) 
+       references orders
+Hibernate: 
+    alter table if exists refunds 
+       add constraint FKsk9rqm7f6y8b1g0qob018hdm7 
+       foreign key (order_id) 
+       references orders
+2026-04-13T18:13:46.828+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists refunds 
+       add constraint FKrtxief4co3k1lfklj7n05m8mo 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists refunds 
+       add constraint FKrtxief4co3k1lfklj7n05m8mo 
+       foreign key (user_id) 
+       references users
+2026-04-13T18:13:46.839+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists reports 
+       add constraint FKd3qiw2om5d2oh5xb7fbdcq225 
+       foreign key (reporter_id) 
+       references users
+Hibernate: 
+    alter table if exists reports 
+       add constraint FKd3qiw2om5d2oh5xb7fbdcq225 
+       foreign key (reporter_id) 
+       references users
+2026-04-13T18:13:46.849+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists ticket_sessions 
+       add constraint FKivlxu4jnke4i9nivp0trluh3x 
+       foreign key (session_id) 
+       references event_sessions
+Hibernate: 
+    alter table if exists ticket_sessions 
+       add constraint FKivlxu4jnke4i9nivp0trluh3x 
+       foreign key (session_id) 
+       references event_sessions
+2026-04-13T18:13:46.859+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists ticket_sessions 
+       add constraint FK3p922c9cpc1uqp9we3ej0l241 
+       foreign key (ticket_id) 
+       references tickets
+Hibernate: 
+    alter table if exists ticket_sessions 
+       add constraint FK3p922c9cpc1uqp9we3ej0l241 
+       foreign key (ticket_id) 
+       references tickets
+2026-04-13T18:13:46.869+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists tickets 
+       add constraint FK3utafe14rupaypjocldjaj4ol 
+       foreign key (event_id) 
+       references events
+Hibernate: 
+    alter table if exists tickets 
+       add constraint FK3utafe14rupaypjocldjaj4ol 
+       foreign key (event_id) 
+       references events
+2026-04-13T18:13:46.879+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists user_categories 
+       add constraint FK6r91537otve5embvcuv40is3j 
+       foreign key (category_id) 
+       references categories
+Hibernate: 
+    alter table if exists user_categories 
+       add constraint FK6r91537otve5embvcuv40is3j 
+       foreign key (category_id) 
+       references categories
+2026-04-13T18:13:46.891+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists user_categories 
+       add constraint FKdqpxght56isds8smi1frxg0xo 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists user_categories 
+       add constraint FKdqpxght56isds8smi1frxg0xo 
+       foreign key (user_id) 
+       references users
+2026-04-13T18:13:46.900+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    alter table if exists users 
+       add constraint FK29pjurc1jkr6vh9tisedt2s5 
+       foreign key (role_name) 
+       references user_roles
+Hibernate: 
+    alter table if exists users 
+       add constraint FK29pjurc1jkr6vh9tisedt2s5 
+       foreign key (role_name) 
+       references user_roles
+2026-04-13T18:13:46.914+09:00  INFO 274150 --- [venueon-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-13T18:13:47.106+09:00  INFO 274150 --- [venueon-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-13T18:13:50.125+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.v.u.a.i.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2026-04-13T18:13:54.595+09:00  INFO 274150 --- [venueon-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-04-13T18:14:03.837+09:00  INFO 274150 --- [venueon-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-04-13T18:13:56.097+09:00  INFO 274150 --- [venueon-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-04-13T18:13:56.121+09:00  INFO 274150 --- [venueon-backend] [           main] com.venueon.VenueOnApplication           : Started VenueOnApplication in 25.276 seconds (process running for 29.92)
+2026-04-13T18:13:56.500+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -60,10 +1376,2250 @@ Hibernate:
         count(*) 
     from
         users uje1_0
-2026-04-13T11:34:55.935+09:00  INFO 87506 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 데이터가 이미 존재합니다. 장바구니 데이터를 ID 1번 사용자용으로 재구성합니다.
-2026-04-13T11:34:55.945+09:00  INFO 87506 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 장바구니 테이블 구조 정리를 완료했습니다 (event_id 컬럼 제거).
-2026-04-13T11:34:55.955+09:00  INFO 87506 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 관리자 계정(admin@venueon.com)용 장바구니 임시 데이터 10개 생성을 시작합니다.
-2026-04-13T11:34:56.053+09:00 DEBUG 87506 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+2026-04-13T18:13:56.552+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : === 개발용 초기 데이터 생성 시작 ===
+2026-04-13T18:13:56.560+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 장바구니 테이블 구조 정리를 완료했습니다 (event_id 컬럼 제거).
+2026-04-13T18:13:56.593+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        urje1_0.role_name,
+        urje1_0.description,
+        urje1_0.label 
+    from
+        user_roles urje1_0 
+    where
+        urje1_0.role_name=?
+Hibernate: 
+    select
+        urje1_0.role_name,
+        urje1_0.description,
+        urje1_0.label 
+    from
+        user_roles urje1_0 
+    where
+        urje1_0.role_name=?
+2026-04-13T18:13:56.655+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        urje1_0.role_name,
+        urje1_0.description,
+        urje1_0.label 
+    from
+        user_roles urje1_0 
+    where
+        urje1_0.role_name=?
+Hibernate: 
+    select
+        urje1_0.role_name,
+        urje1_0.description,
+        urje1_0.label 
+    from
+        user_roles urje1_0 
+    where
+        urje1_0.role_name=?
+2026-04-13T18:13:56.657+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        urje1_0.role_name,
+        urje1_0.description,
+        urje1_0.label 
+    from
+        user_roles urje1_0 
+    where
+        urje1_0.role_name=?
+Hibernate: 
+    select
+        urje1_0.role_name,
+        urje1_0.description,
+        urje1_0.label 
+    from
+        user_roles urje1_0 
+    where
+        urje1_0.role_name=?
+2026-04-13T18:13:56.662+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+Hibernate: 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+2026-04-13T18:13:56.665+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+Hibernate: 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+2026-04-13T18:13:56.668+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+Hibernate: 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+2026-04-13T18:13:56.670+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+Hibernate: 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+2026-04-13T18:13:56.673+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+Hibernate: 
+    select
+        esje1_0.status_name,
+        esje1_0.description,
+        esje1_0.label 
+    from
+        event_statuses esje1_0 
+    where
+        esje1_0.status_name=?
+2026-04-13T18:13:56.678+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+Hibernate: 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+2026-04-13T18:13:56.681+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+Hibernate: 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+2026-04-13T18:13:56.685+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+Hibernate: 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+2026-04-13T18:13:56.688+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+Hibernate: 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+2026-04-13T18:13:56.690+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+Hibernate: 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+2026-04-13T18:13:56.694+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+Hibernate: 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+2026-04-13T18:13:56.697+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+Hibernate: 
+    select
+        etje1_0.type_name,
+        etje1_0.description,
+        etje1_0.label 
+    from
+        event_types etje1_0 
+    where
+        etje1_0.type_name=?
+2026-04-13T18:13:56.703+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        rsje1_0.status_name,
+        rsje1_0.description,
+        rsje1_0.label 
+    from
+        recruitment_statuses rsje1_0 
+    where
+        rsje1_0.status_name=?
+Hibernate: 
+    select
+        rsje1_0.status_name,
+        rsje1_0.description,
+        rsje1_0.label 
+    from
+        recruitment_statuses rsje1_0 
+    where
+        rsje1_0.status_name=?
+2026-04-13T18:13:56.710+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        rsje1_0.status_name,
+        rsje1_0.description,
+        rsje1_0.label 
+    from
+        recruitment_statuses rsje1_0 
+    where
+        rsje1_0.status_name=?
+Hibernate: 
+    select
+        rsje1_0.status_name,
+        rsje1_0.description,
+        rsje1_0.label 
+    from
+        recruitment_statuses rsje1_0 
+    where
+        rsje1_0.status_name=?
+2026-04-13T18:13:56.714+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        rsje1_0.status_name,
+        rsje1_0.description,
+        rsje1_0.label 
+    from
+        recruitment_statuses rsje1_0 
+    where
+        rsje1_0.status_name=?
+Hibernate: 
+    select
+        rsje1_0.status_name,
+        rsje1_0.description,
+        rsje1_0.label 
+    from
+        recruitment_statuses rsje1_0 
+    where
+        rsje1_0.status_name=?
+2026-04-13T18:13:57.027+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        user_roles
+        (description, label, role_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        user_roles
+        (description, label, role_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.040+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        user_roles
+        (description, label, role_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        user_roles
+        (description, label, role_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.044+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        user_roles
+        (description, label, role_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        user_roles
+        (description, label, role_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.046+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.049+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.051+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.053+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.055+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.056+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.060+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.064+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.066+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.068+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.070+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.073+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_types
+        (description, label, type_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.075+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        recruitment_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        recruitment_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.078+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        recruitment_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        recruitment_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.081+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        recruitment_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        recruitment_statuses
+        (description, label, status_name) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:57.085+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.721+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.727+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.732+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.952+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.961+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.969+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.980+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.986+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.991+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:57.999+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.006+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.021+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.035+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, is_active, is_badge_visible, nickname, password, phone, profile_img, provider, role_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.044+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.057+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.063+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.073+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.082+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.090+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.098+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.119+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.131+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.138+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        host_profiles
+        (created_at, manager_name, org_description, org_name, org_number, updated_at, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.149+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.163+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.171+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.176+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.183+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.188+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.193+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.198+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.210+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.216+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        categories
+        (description, name, sort_order) 
+    values
+        (?, ?, ?)
+2026-04-13T18:13:58.274+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.284+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.294+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.303+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.310+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.321+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.328+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.339+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.346+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.357+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        events
+        (category_id, created_at, creator_id, description, has_session, is_hidden, status_name, thumbnail_url, title, type_name, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.370+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.384+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.398+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.408+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.422+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.429+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.438+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.447+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.456+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.464+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.473+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.480+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.485+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.492+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.499+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        event_sessions
+        (address_detail, address_road, created_at, current_attendees, description, end_time, event_id, forced_recruitment_status_name, forced_session_status_name, is_default, is_online, is_recruitment_closed, location, max_attendees, online_link, recruit_end_date, recruit_start_date, region_sido, region_sigungu, sort_order, start_time, title, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.503+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 세션 생성 완료: 기본 세션 10개, 추가 세션 5개
+2026-04-13T18:13:58.507+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.513+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 전체 패키지 (이벤트: AI & Cloud Bootcamp)
+2026-04-13T18:13:58.515+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.520+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 워크숍 참가권 (이벤트: UX Design Workshop)
+2026-04-13T18:13:58.522+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.528+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 무료 입장 (이벤트: Startup Demo Day)
+2026-04-13T18:13:58.530+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.534+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 요가 클래스 참가권 (이벤트: 마음챙김 요가 클래스)
+2026-04-13T18:13:58.536+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.542+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 워크숍 참가권 (이벤트: 현대미술 워크숍)
+2026-04-13T18:13:58.545+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.551+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 서밋 참가권 (이벤트: Business Growth Summit)
+2026-04-13T18:13:58.552+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.558+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 마스터클래스 참가권 (이벤트: 한식 마스터클래스)
+2026-04-13T18:13:58.559+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.566+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 세미나 참가권 (이벤트: Smart Investment Seminar 2026)
+2026-04-13T18:13:58.568+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.572+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 아카데미 참가권 (이벤트: Creator Academy: Video Editing)
+2026-04-13T18:13:58.574+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.579+09:00 DEBUG 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 기본 티켓 생성: 무료 입장 (이벤트: Future Science Conference)
+2026-04-13T18:13:58.702+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        sje1_0.id,
+        sje1_0.address_detail,
+        sje1_0.address_road,
+        sje1_0.created_at,
+        sje1_0.current_attendees,
+        sje1_0.description,
+        sje1_0.end_time,
+        sje1_0.event_id,
+        sje1_0.forced_recruitment_status_name,
+        sje1_0.forced_session_status_name,
+        sje1_0.is_default,
+        sje1_0.is_online,
+        sje1_0.is_recruitment_closed,
+        sje1_0.location,
+        sje1_0.max_attendees,
+        sje1_0.online_link,
+        sje1_0.recruit_end_date,
+        sje1_0.recruit_start_date,
+        sje1_0.region_sido,
+        sje1_0.region_sigungu,
+        sje1_0.sort_order,
+        sje1_0.start_time,
+        sje1_0.title,
+        sje1_0.updated_at 
+    from
+        event_sessions sje1_0 
+    where
+        sje1_0.event_id=? 
+    order by
+        sje1_0.sort_order
+Hibernate: 
+    select
+        sje1_0.id,
+        sje1_0.address_detail,
+        sje1_0.address_road,
+        sje1_0.created_at,
+        sje1_0.current_attendees,
+        sje1_0.description,
+        sje1_0.end_time,
+        sje1_0.event_id,
+        sje1_0.forced_recruitment_status_name,
+        sje1_0.forced_session_status_name,
+        sje1_0.is_default,
+        sje1_0.is_online,
+        sje1_0.is_recruitment_closed,
+        sje1_0.location,
+        sje1_0.max_attendees,
+        sje1_0.online_link,
+        sje1_0.recruit_end_date,
+        sje1_0.recruit_start_date,
+        sje1_0.region_sido,
+        sje1_0.region_sigungu,
+        sje1_0.sort_order,
+        sje1_0.start_time,
+        sje1_0.title,
+        sje1_0.updated_at 
+    from
+        event_sessions sje1_0 
+    where
+        sje1_0.event_id=? 
+    order by
+        sje1_0.sort_order
+2026-04-13T18:13:58.718+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.735+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+Hibernate: 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+2026-04-13T18:13:58.751+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+Hibernate: 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+2026-04-13T18:13:58.757+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.767+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+Hibernate: 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+2026-04-13T18:13:58.786+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        sje1_0.id,
+        sje1_0.address_detail,
+        sje1_0.address_road,
+        sje1_0.created_at,
+        sje1_0.current_attendees,
+        sje1_0.description,
+        sje1_0.end_time,
+        sje1_0.event_id,
+        sje1_0.forced_recruitment_status_name,
+        sje1_0.forced_session_status_name,
+        sje1_0.is_default,
+        sje1_0.is_online,
+        sje1_0.is_recruitment_closed,
+        sje1_0.location,
+        sje1_0.max_attendees,
+        sje1_0.online_link,
+        sje1_0.recruit_end_date,
+        sje1_0.recruit_start_date,
+        sje1_0.region_sido,
+        sje1_0.region_sigungu,
+        sje1_0.sort_order,
+        sje1_0.start_time,
+        sje1_0.title,
+        sje1_0.updated_at 
+    from
+        event_sessions sje1_0 
+    where
+        sje1_0.event_id=? 
+    order by
+        sje1_0.sort_order
+Hibernate: 
+    select
+        sje1_0.id,
+        sje1_0.address_detail,
+        sje1_0.address_road,
+        sje1_0.created_at,
+        sje1_0.current_attendees,
+        sje1_0.description,
+        sje1_0.end_time,
+        sje1_0.event_id,
+        sje1_0.forced_recruitment_status_name,
+        sje1_0.forced_session_status_name,
+        sje1_0.is_default,
+        sje1_0.is_online,
+        sje1_0.is_recruitment_closed,
+        sje1_0.location,
+        sje1_0.max_attendees,
+        sje1_0.online_link,
+        sje1_0.recruit_end_date,
+        sje1_0.recruit_start_date,
+        sje1_0.region_sido,
+        sje1_0.region_sigungu,
+        sje1_0.sort_order,
+        sje1_0.start_time,
+        sje1_0.title,
+        sje1_0.updated_at 
+    from
+        event_sessions sje1_0 
+    where
+        sje1_0.event_id=? 
+    order by
+        sje1_0.sort_order
+2026-04-13T18:13:58.792+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+Hibernate: 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+2026-04-13T18:13:58.795+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.803+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+Hibernate: 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+2026-04-13T18:13:58.808+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+Hibernate: 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+2026-04-13T18:13:58.813+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.818+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+Hibernate: 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+2026-04-13T18:13:58.826+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+Hibernate: 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+2026-04-13T18:13:58.829+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        tickets
+        (created_at, description, event_id, is_active, is_all_sessions, max_quantity, name, original_price, price, sales_end, sales_start, sold_count, sort_order, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.835+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+Hibernate: 
+    select
+        tsje1_0.session_id,
+        tsje1_0.ticket_id 
+    from
+        ticket_sessions tsje1_0 
+    where
+        (
+            tsje1_0.session_id, tsje1_0.ticket_id
+        ) in ((?, ?))
+2026-04-13T18:13:58.862+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        tickets tje1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        tickets tje1_0
+2026-04-13T18:13:58.866+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 티켓 생성 완료: 전체 15개
+2026-04-13T18:13:58.872+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+Hibernate: 
+    insert 
+    into
+        ticket_sessions
+        (session_id, ticket_id) 
+    values
+        (?, ?)
+2026-04-13T18:13:58.893+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        communities
+        (created_at, creator_id, description, event_id, is_public, member_count, name, thumbnail_url) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        communities
+        (created_at, creator_id, description, event_id, is_public, member_count, name, thumbnail_url) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.905+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        communities
+        (created_at, creator_id, description, event_id, is_public, member_count, name, thumbnail_url) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        communities
+        (created_at, creator_id, description, event_id, is_public, member_count, name, thumbnail_url) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.920+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        posts
+        (author_id, comment_count, community_id, content, created_at, is_hidden, is_notice, is_pinned, like_count, title, type, updated_at, view_count) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        posts
+        (author_id, comment_count, community_id, content, created_at, is_hidden, is_notice, is_pinned, like_count, title, type, updated_at, view_count) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.931+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        posts
+        (author_id, comment_count, community_id, content, created_at, is_hidden, is_notice, is_pinned, like_count, title, type, updated_at, view_count) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        posts
+        (author_id, comment_count, community_id, content, created_at, is_hidden, is_notice, is_pinned, like_count, title, type, updated_at, view_count) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.942+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        posts
+        (author_id, comment_count, community_id, content, created_at, is_hidden, is_notice, is_pinned, like_count, title, type, updated_at, view_count) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        posts
+        (author_id, comment_count, community_id, content, created_at, is_hidden, is_notice, is_pinned, like_count, title, type, updated_at, view_count) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.954+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.967+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.973+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.985+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:58.992+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.000+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.013+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.028+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.035+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.045+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (amount, display_ordered_at, event_id, ordered_at, paid_at, payment_method, quantity, status, ticket_id, toss_order_id, toss_payment_key, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.059+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.069+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.076+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.083+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.089+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reports
+        (admin_action, created_at, detail, reason, reporter_id, resolved_at, status, target_id, target_type) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.099+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        refunds
+        (amount, order_id, processed_at, reason, requested_at, status, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        refunds
+        (amount, order_id, processed_at, reason, requested_at, status, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.112+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        refunds
+        (amount, order_id, processed_at, reason, requested_at, status, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        refunds
+        (amount, order_id, processed_at, reason, requested_at, status, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+2026-04-13T18:13:59.120+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 관리자 계정(admin@venueon.com)용 장바구니 임시 데이터 생성을 시작합니다.
+2026-04-13T18:13:59.227+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
     select
         uje1_0.id,
         c1_0.user_id,
@@ -80,7 +3636,7 @@ Hibernate:
         uje1_0.phone,
         uje1_0.profile_img,
         uje1_0.provider,
-        uje1_0.role,
+        uje1_0.role_name,
         uje1_0.updated_at 
     from
         users uje1_0 
@@ -109,7 +3665,7 @@ Hibernate:
         uje1_0.phone,
         uje1_0.profile_img,
         uje1_0.provider,
-        uje1_0.role,
+        uje1_0.role_name,
         uje1_0.updated_at 
     from
         users uje1_0 
@@ -121,7 +3677,263 @@ Hibernate:
             on c1_1.id=c1_0.category_id 
     where
         uje1_0.email=?
-2026-04-13T11:34:56.126+09:00 DEBUG 87506 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+2026-04-13T18:13:59.283+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        tje1_0.id,
+        tje1_0.created_at,
+        tje1_0.description,
+        tje1_0.event_id,
+        tje1_0.is_active,
+        tje1_0.is_all_sessions,
+        tje1_0.max_quantity,
+        tje1_0.name,
+        tje1_0.original_price,
+        tje1_0.price,
+        tje1_0.sales_end,
+        tje1_0.sales_start,
+        tje1_0.sold_count,
+        tje1_0.sort_order,
+        tje1_0.updated_at 
+    from
+        tickets tje1_0
+Hibernate: 
+    select
+        tje1_0.id,
+        tje1_0.created_at,
+        tje1_0.description,
+        tje1_0.event_id,
+        tje1_0.is_active,
+        tje1_0.is_all_sessions,
+        tje1_0.max_quantity,
+        tje1_0.name,
+        tje1_0.original_price,
+        tje1_0.price,
+        tje1_0.sales_end,
+        tje1_0.sales_start,
+        tje1_0.sold_count,
+        tje1_0.sort_order,
+        tje1_0.updated_at 
+    from
+        tickets tje1_0
+2026-04-13T18:13:59.293+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.300+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.305+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.310+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.320+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.326+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.333+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.337+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.347+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.354+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        cart
+        (created_at, quantity, ticket_id, user_id) 
+    values
+        (?, ?, ?, ?)
+2026-04-13T18:13:59.359+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : 관리자용 장바구니 임시 데이터 생성 완료.
+2026-04-13T18:13:59.359+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : === 개발용 초기 데이터 생성 완료 ===
+2026-04-13T18:13:59.359+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : Admin: 1명, User: 3명, Host: 10명
+2026-04-13T18:13:59.371+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        event_sessions sje1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        event_sessions sje1_0
+2026-04-13T18:13:59.380+09:00 DEBUG 274150 --- [venueon-backend] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        tickets tje1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        tickets tje1_0
+2026-04-13T18:13:59.382+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : Category: 10개, Event: 10개, Session: 15개, Ticket: 15개
+2026-04-13T18:13:59.383+09:00  INFO 274150 --- [venueon-backend] [           main] c.venueon.common.config.DataInitializer  : Order: 10개, Report: 5개, Refund: 2개
+2026-04-13T18:14:19.041+09:00  INFO 274150 --- [venueon-backend] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-13T18:14:19.041+09:00  INFO 274150 --- [venueon-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-13T18:14:19.050+09:00  INFO 274150 --- [venueon-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 7 ms
+2026-04-13T18:14:19.310+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        eje1_0.id,
+        eje1_0.category_id,
+        eje1_0.created_at,
+        eje1_0.creator_id,
+        eje1_0.description,
+        eje1_0.has_session,
+        eje1_0.is_hidden,
+        eje1_0.status_name,
+        eje1_0.thumbnail_url,
+        eje1_0.title,
+        eje1_0.type_name,
+        eje1_0.updated_at 
+    from
+        events eje1_0 
+    where
+        not(eje1_0.is_hidden) 
+        and eje1_0.status_name=? 
+    order by
+        eje1_0.created_at desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        eje1_0.id,
+        eje1_0.category_id,
+        eje1_0.created_at,
+        eje1_0.creator_id,
+        eje1_0.description,
+        eje1_0.has_session,
+        eje1_0.is_hidden,
+        eje1_0.status_name,
+        eje1_0.thumbnail_url,
+        eje1_0.title,
+        eje1_0.type_name,
+        eje1_0.updated_at 
+    from
+        events eje1_0 
+    where
+        not(eje1_0.is_hidden) 
+        and eje1_0.status_name=? 
+    order by
+        eje1_0.created_at desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+2026-04-13T18:14:19.376+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
     select
         sje1_0.id,
         sje1_0.address_detail,
@@ -131,8 +3943,8 @@ Hibernate:
         sje1_0.description,
         sje1_0.end_time,
         sje1_0.event_id,
-        sje1_0.forced_recruitment_status,
-        sje1_0.forced_session_status,
+        sje1_0.forced_recruitment_status_name,
+        sje1_0.forced_session_status_name,
         sje1_0.is_default,
         sje1_0.is_online,
         sje1_0.is_recruitment_closed,
@@ -148,7 +3960,12 @@ Hibernate:
         sje1_0.title,
         sje1_0.updated_at 
     from
-        event_sessions sje1_0
+        event_sessions sje1_0 
+    where
+        sje1_0.event_id in (?, ?, ?, ?, ?, ?, ?, ?, ?) 
+    order by
+        sje1_0.event_id,
+        sje1_0.sort_order
 Hibernate: 
     select
         sje1_0.id,
@@ -159,8 +3976,8 @@ Hibernate:
         sje1_0.description,
         sje1_0.end_time,
         sje1_0.event_id,
-        sje1_0.forced_recruitment_status,
-        sje1_0.forced_session_status,
+        sje1_0.forced_recruitment_status_name,
+        sje1_0.forced_session_status_name,
         sje1_0.is_default,
         sje1_0.is_online,
         sje1_0.is_recruitment_closed,
@@ -176,129 +3993,449 @@ Hibernate:
         sje1_0.title,
         sje1_0.updated_at 
     from
-        event_sessions sje1_0
-2026-04-13T11:34:56.158+09:00  INFO 87506 --- [venueon-backend] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+        event_sessions sje1_0 
+    where
+        sje1_0.event_id in (?, ?, ?, ?, ?, ?, ?, ?, ?) 
+    order by
+        sje1_0.event_id,
+        sje1_0.sort_order
+2026-04-13T18:14:19.409+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        tje1_0.id,
+        tje1_0.created_at,
+        tje1_0.description,
+        tje1_0.event_id,
+        tje1_0.is_active,
+        tje1_0.is_all_sessions,
+        tje1_0.max_quantity,
+        tje1_0.name,
+        tje1_0.original_price,
+        tje1_0.price,
+        tje1_0.sales_end,
+        tje1_0.sales_start,
+        tje1_0.sold_count,
+        tje1_0.sort_order,
+        tje1_0.updated_at 
+    from
+        tickets tje1_0 
+    where
+        tje1_0.event_id in (?, ?, ?, ?, ?, ?, ?, ?, ?) 
+    order by
+        tje1_0.event_id,
+        tje1_0.sort_order
+Hibernate: 
+    select
+        tje1_0.id,
+        tje1_0.created_at,
+        tje1_0.description,
+        tje1_0.event_id,
+        tje1_0.is_active,
+        tje1_0.is_all_sessions,
+        tje1_0.max_quantity,
+        tje1_0.name,
+        tje1_0.original_price,
+        tje1_0.price,
+        tje1_0.sales_end,
+        tje1_0.sales_start,
+        tje1_0.sold_count,
+        tje1_0.sort_order,
+        tje1_0.updated_at 
+    from
+        tickets tje1_0 
+    where
+        tje1_0.event_id in (?, ?, ?, ?, ?, ?, ?, ?, ?) 
+    order by
+        tje1_0.event_id,
+        tje1_0.sort_order
+2026-04-13T18:14:19.435+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.442+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.467+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.477+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.481+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.486+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.489+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.492+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.496+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.499+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.502+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.506+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.510+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.515+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+Hibernate: 
+    select
+        ts1_0.ticket_id,
+        ts1_0.session_id 
+    from
+        ticket_sessions ts1_0 
+    where
+        ts1_0.ticket_id=?
+2026-04-13T18:14:19.834+09:00  WARN 274150 --- [venueon-backend] [nio-8080-exec-1] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
 
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2026-04-13T11:34:56.178+09:00 ERROR 87506 --- [venueon-backend] [           main] o.s.boot.SpringApplication               : Application run failed
-
-org.springframework.orm.jpa.JpaSystemException: Null value was assigned to a property [class com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed] of primitive type: 'com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed' (setter)
-	at org.springframework.orm.jpa.hibernate.HibernateExceptionTranslator.convertHibernateAccessException(HibernateExceptionTranslator.java:223) ~[spring-orm-7.0.2.jar:7.0.2]
-	at org.springframework.orm.jpa.hibernate.HibernateExceptionTranslator.convertHibernateAccessException(HibernateExceptionTranslator.java:131) ~[spring-orm-7.0.2.jar:7.0.2]
-	at org.springframework.orm.jpa.hibernate.HibernateExceptionTranslator.translateExceptionIfPossible(HibernateExceptionTranslator.java:105) ~[spring-orm-7.0.2.jar:7.0.2]
-	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.translateExceptionIfPossible(HibernateJpaDialect.java:199) ~[spring-orm-7.0.2.jar:7.0.2]
-	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.translateExceptionIfPossible(AbstractEntityManagerFactoryBean.java:556) ~[spring-orm-7.0.2.jar:7.0.2]
-	at org.springframework.dao.support.ChainedPersistenceExceptionTranslator.translateExceptionIfPossible(ChainedPersistenceExceptionTranslator.java:61) ~[spring-tx-7.0.2.jar:7.0.2]
-	at org.springframework.dao.support.DataAccessUtils.translateIfNecessary(DataAccessUtils.java:346) ~[spring-tx-7.0.2.jar:7.0.2]
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:157) ~[spring-tx-7.0.2.jar:7.0.2]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:166) ~[spring-data-jpa-4.0.1.jar:4.0.1]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:222) ~[spring-aop-7.0.2.jar:7.0.2]
-	at jdk.proxy2/jdk.proxy2.$Proxy177.findAll(Unknown Source) ~[na:na]
-	at com.venueon.common.config.DataInitializer.createInitialCartItems(DataInitializer.java:675) ~[main/:na]
-	at com.venueon.common.config.DataInitializer.run(DataInitializer.java:73) ~[main/:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:370) ~[spring-tx-7.0.2.jar:7.0.2]
-	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:118) ~[spring-tx-7.0.2.jar:7.0.2]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719) ~[spring-aop-7.0.2.jar:7.0.2]
-	at com.venueon.common.config.DataInitializer$$SpringCGLIB$$0.run(<generated>) ~[main/:na]
-	at org.springframework.boot.SpringApplication.lambda$callRunner$0(SpringApplication.java:788) ~[spring-boot-4.0.1.jar:4.0.1]
-	at org.springframework.util.function.ThrowingConsumer$1.acceptWithException(ThrowingConsumer.java:82) ~[spring-core-7.0.2.jar:7.0.2]
-	at org.springframework.util.function.ThrowingConsumer.accept(ThrowingConsumer.java:60) ~[spring-core-7.0.2.jar:7.0.2]
-	at org.springframework.util.function.ThrowingConsumer$1.accept(ThrowingConsumer.java:86) ~[spring-core-7.0.2.jar:7.0.2]
-	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:800) ~[spring-boot-4.0.1.jar:4.0.1]
-	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:788) ~[spring-boot-4.0.1.jar:4.0.1]
-	at org.springframework.boot.SpringApplication.lambda$callRunners$0(SpringApplication.java:776) ~[spring-boot-4.0.1.jar:4.0.1]
-	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184) ~[na:na]
-	at java.base/java.util.stream.SortedOps$SizedRefSortingSink.end(SortedOps.java:357) ~[na:na]
-	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:510) ~[na:na]
-	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499) ~[na:na]
-	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151) ~[na:na]
-	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174) ~[na:na]
-	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234) ~[na:na]
-	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596) ~[na:na]
-	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:776) ~[spring-boot-4.0.1.jar:4.0.1]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:328) ~[spring-boot-4.0.1.jar:4.0.1]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1365) ~[spring-boot-4.0.1.jar:4.0.1]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354) ~[spring-boot-4.0.1.jar:4.0.1]
-	at com.venueon.VenueOnApplication.main(VenueOnApplication.java:10) ~[main/:na]
-Caused by: org.hibernate.PropertyAccessException: Null value was assigned to a property [class com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed] of primitive type: 'com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed' (setter)
-	at org.hibernate.property.access.spi.SetterFieldImpl.set(SetterFieldImpl.java:62) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.persister.entity.AbstractEntityPersister.setPropertyValues(AbstractEntityPersister.java:4137) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.persister.entity.EntityPersister.setValues(EntityPersister.java:1153) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.results.graph.entity.internal.EntityInitializerImpl.initializeEntityInstance(EntityInitializerImpl.java:1589) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.results.graph.entity.internal.EntityInitializerImpl.initializeInstance(EntityInitializerImpl.java:1501) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.results.graph.entity.internal.EntityInitializerImpl.initializeInstance(EntityInitializerImpl.java:80) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.results.internal.StandardRowReader.coordinateInitializers(StandardRowReader.java:239) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.results.internal.StandardRowReader.readRow(StandardRowReader.java:137) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.results.spi.ListResultsConsumer.read(ListResultsConsumer.java:243) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.results.spi.ListResultsConsumer.readRows(ListResultsConsumer.java:233) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.results.spi.ListResultsConsumer.consume(ListResultsConsumer.java:164) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.results.spi.ListResultsConsumer.consume(ListResultsConsumer.java:31) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.doExecuteQuery(JdbcSelectExecutorStandardImpl.java:211) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.executeQuery(JdbcSelectExecutorStandardImpl.java:100) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.exec.spi.JdbcSelectExecutor.executeQuery(JdbcSelectExecutor.java:63) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.sql.exec.spi.JdbcSelectExecutor.list(JdbcSelectExecutor.java:137) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.lambda$new$1(ConcreteSqmSelectQueryPlan.java:128) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.withCacheableSqmInterpretation(ConcreteSqmSelectQueryPlan.java:427) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.performList(ConcreteSqmSelectQueryPlan.java:355) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.query.sqm.internal.SqmQueryImpl.doList(SqmQueryImpl.java:374) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.query.spi.AbstractSelectionQuery.list(AbstractSelectionQuery.java:153) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.hibernate.query.Query.getResultList(Query.java:121) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	at org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll(SimpleJpaRepository.java:414) ~[spring-data-jpa-4.0.1.jar:4.0.1]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
-	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.data.repository.core.support.RepositoryMethodInvoker$RepositoryFragmentMethodInvoker.lambda$new$0(RepositoryMethodInvoker.java:278) ~[spring-data-commons-4.0.1.jar:4.0.1]
-	at org.springframework.data.repository.core.support.RepositoryMethodInvoker.doInvoke(RepositoryMethodInvoker.java:169) ~[spring-data-commons-4.0.1.jar:4.0.1]
-	at org.springframework.data.repository.core.support.RepositoryMethodInvoker.invoke(RepositoryMethodInvoker.java:158) ~[spring-data-commons-4.0.1.jar:4.0.1]
-	at org.springframework.data.repository.core.support.RepositoryComposition$RepositoryFragments.invoke(RepositoryComposition.java:545) ~[spring-data-commons-4.0.1.jar:4.0.1]
-	at org.springframework.data.repository.core.support.RepositoryComposition.invoke(RepositoryComposition.java:290) ~[spring-data-commons-4.0.1.jar:4.0.1]
-	at org.springframework.data.repository.core.support.RepositoryFactorySupport$ImplementationMethodExecutionInterceptor.invoke(RepositoryFactorySupport.java:690) ~[spring-data-commons-4.0.1.jar:4.0.1]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.doInvoke(QueryExecutorMethodInterceptor.java:171) ~[spring-data-commons-4.0.1.jar:4.0.1]
-	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.invoke(QueryExecutorMethodInterceptor.java:146) ~[spring-data-commons-4.0.1.jar:4.0.1]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.data.projection.DefaultMethodInvokingMethodInterceptor.invoke(DefaultMethodInvokingMethodInterceptor.java:69) ~[spring-data-commons-4.0.1.jar:4.0.1]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:370) ~[spring-tx-7.0.2.jar:7.0.2]
-	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:118) ~[spring-tx-7.0.2.jar:7.0.2]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.2.jar:7.0.2]
-	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:135) ~[spring-tx-7.0.2.jar:7.0.2]
-	... 37 common frames omitted
-Caused by: java.lang.IllegalArgumentException: Can not set boolean field com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity.isRecruitmentClosed to null value
-	at java.base/jdk.internal.reflect.FieldAccessorImpl.throwSetIllegalArgumentException(FieldAccessorImpl.java:228) ~[na:na]
-	at java.base/jdk.internal.reflect.FieldAccessorImpl.throwSetIllegalArgumentException(FieldAccessorImpl.java:232) ~[na:na]
-	at java.base/jdk.internal.reflect.MethodHandleBooleanFieldAccessorImpl.set(MethodHandleBooleanFieldAccessorImpl.java:111) ~[na:na]
-	at java.base/java.lang.reflect.Field.set(Field.java:836) ~[na:na]
-	at org.hibernate.property.access.spi.SetterFieldImpl.set(SetterFieldImpl.java:56) ~[hibernate-core-7.2.0.Final.jar:7.2.0.Final]
-	... 78 common frames omitted
-
-2026-04-13T11:34:56.190+09:00  INFO 87506 --- [venueon-backend] [           main] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
-2026-04-13T11:34:56.195+09:00  INFO 87506 --- [venueon-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
-2026-04-13T11:34:56.209+09:00  INFO 87506 --- [venueon-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2026-04-13T11:34:56.212+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-04-13T11:34:56.220+09:00  INFO 87506 --- [venueon-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
-
-> Task :bootRun FAILED
-
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-Execution failed for task ':bootRun'.
-> Process 'command '/usr/lib/jvm/java-21-openjdk-amd64/bin/java'' finished with non-zero exit value 1
-
-* Try:
-> Run with --stacktrace option to get the stack trace.
-> Run with --info or --debug option to get more log output.
-> Run with --scan to get full insights from a Build Scan (powered by Develocity).
-> Get more help at https://help.gradle.org.
-
-BUILD FAILED in 16s
-4 actionable tasks: 1 executed, 3 up-to-date
+2026-04-13T18:14:30.150+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        eje1_0.id,
+        eje1_0.category_id,
+        eje1_0.created_at,
+        eje1_0.creator_id,
+        eje1_0.description,
+        eje1_0.has_session,
+        eje1_0.is_hidden,
+        eje1_0.status_name,
+        eje1_0.thumbnail_url,
+        eje1_0.title,
+        eje1_0.type_name,
+        eje1_0.updated_at 
+    from
+        events eje1_0 
+    where
+        eje1_0.id=?
+Hibernate: 
+    select
+        eje1_0.id,
+        eje1_0.category_id,
+        eje1_0.created_at,
+        eje1_0.creator_id,
+        eje1_0.description,
+        eje1_0.has_session,
+        eje1_0.is_hidden,
+        eje1_0.status_name,
+        eje1_0.thumbnail_url,
+        eje1_0.title,
+        eje1_0.type_name,
+        eje1_0.updated_at 
+    from
+        events eje1_0 
+    where
+        eje1_0.id=?
+2026-04-13T18:14:30.163+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        uje1_0.id,
+        uje1_0.created_at,
+        uje1_0.email,
+        uje1_0.is_active,
+        uje1_0.is_badge_visible,
+        uje1_0.nickname,
+        uje1_0.password,
+        uje1_0.phone,
+        uje1_0.profile_img,
+        uje1_0.provider,
+        uje1_0.role_name,
+        uje1_0.updated_at 
+    from
+        users uje1_0 
+    where
+        uje1_0.id=?
+Hibernate: 
+    select
+        uje1_0.id,
+        uje1_0.created_at,
+        uje1_0.email,
+        uje1_0.is_active,
+        uje1_0.is_badge_visible,
+        uje1_0.nickname,
+        uje1_0.password,
+        uje1_0.phone,
+        uje1_0.profile_img,
+        uje1_0.provider,
+        uje1_0.role_name,
+        uje1_0.updated_at 
+    from
+        users uje1_0 
+    where
+        uje1_0.id=?
+2026-04-13T18:14:30.243+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        hpje1_0.id,
+        hpje1_0.created_at,
+        hpje1_0.manager_name,
+        hpje1_0.org_description,
+        hpje1_0.org_name,
+        hpje1_0.org_number,
+        hpje1_0.updated_at,
+        hpje1_0.user_id 
+    from
+        host_profiles hpje1_0 
+    where
+        hpje1_0.user_id=?
+Hibernate: 
+    select
+        hpje1_0.id,
+        hpje1_0.created_at,
+        hpje1_0.manager_name,
+        hpje1_0.org_description,
+        hpje1_0.org_name,
+        hpje1_0.org_number,
+        hpje1_0.updated_at,
+        hpje1_0.user_id 
+    from
+        host_profiles hpje1_0 
+    where
+        hpje1_0.user_id=?
+2026-04-13T18:14:30.251+09:00 DEBUG 274150 --- [venueon-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sje1_0.id,
+        sje1_0.address_detail,
+        sje1_0.address_road,
+        sje1_0.created_at,
+        sje1_0.current_attendees,
+        sje1_0.description,
+        sje1_0.end_time,
+        sje1_0.event_id,
+        sje1_0.forced_recruitment_status_name,
+        sje1_0.forced_session_status_name,
+        sje1_0.is_default,
+        sje1_0.is_online,
+        sje1_0.is_recruitment_closed,
+        sje1_0.location,
+        sje1_0.max_attendees,
+        sje1_0.online_link,
+        sje1_0.recruit_end_date,
+        sje1_0.recruit_start_date,
+        sje1_0.region_sido,
+        sje1_0.region_sigungu,
+        sje1_0.sort_order,
+        sje1_0.start_time,
+        sje1_0.title,
+        sje1_0.updated_at 
+    from
+        event_sessions sje1_0 
+    where
+        sje1_0.event_id=? 
+    order by
+        sje1_0.sort_order
+Hibernate: 
+    select
+        sje1_0.id,
+        sje1_0.address_detail,
+        sje1_0.address_road,
+        sje1_0.created_at,
+        sje1_0.current_attendees,
+        sje1_0.description,
+        sje1_0.end_time,
+        sje1_0.event_id,
+        sje1_0.forced_recruitment_status_name,
+        sje1_0.forced_session_status_name,
+        sje1_0.is_default,
+        sje1_0.is_online,
+        sje1_0.is_recruitment_closed,
+        sje1_0.location,
+        sje1_0.max_attendees,
+        sje1_0.online_link,
+        sje1_0.recruit_end_date,
+        sje1_0.recruit_start_date,
+        sje1_0.region_sido,
+        sje1_0.region_sigungu,
+        sje1_0.sort_order,
+        sje1_0.start_time,
+        sje1_0.title,
+        sje1_0.updated_at 
+    from
+        event_sessions sje1_0 
+    where
+        sje1_0.event_id=? 
+    order by
+        sje1_0.sort_order
