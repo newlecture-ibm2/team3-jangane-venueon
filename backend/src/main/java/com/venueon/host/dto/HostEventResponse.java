@@ -11,11 +11,7 @@ public record HostEventResponse(
         String thumbnailUrl,
         String type,
         String status,
-        int price,
-        LocalDateTime startDate,
-        LocalDateTime endDate,
-        int maxAttendees,
-        String location,
-        boolean isOnline,
+        boolean hasSession,
+        String description,
         LocalDateTime createdAt
 ) {}
