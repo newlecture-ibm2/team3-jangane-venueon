@@ -1,6 +1,7 @@
-package com.venueon.event.adapter.in.web.dto;
+package com.venueon.admin.event.adapter.in.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.venueon.event.adapter.in.web.dto.SessionResponse;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
 import com.venueon.event.domain.model.PurchaseType;

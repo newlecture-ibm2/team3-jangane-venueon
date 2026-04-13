@@ -1,14 +1,14 @@
-package com.venueon.event.application.service;
+package com.venueon.admin.event.application.service;
 
-import com.venueon.event.adapter.in.web.dto.EventAdminDetailResponse;
-import com.venueon.event.adapter.in.web.dto.EventAdminResponse;
+import com.venueon.admin.event.adapter.in.web.dto.EventAdminDetailResponse;
+import com.venueon.admin.event.adapter.in.web.dto.EventAdminResponse;
 import com.venueon.event.adapter.in.web.dto.SessionResponse;
 import com.venueon.event.adapter.out.persistence.EventSessionMapper;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
 import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
-import com.venueon.event.application.port.in.AdminEventUseCase;
+import com.venueon.admin.event.application.port.in.AdminEventUseCase;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.user.adapter.out.persistence.entity.HostProfileJpaEntity;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;

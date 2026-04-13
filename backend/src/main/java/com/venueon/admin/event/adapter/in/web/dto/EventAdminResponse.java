@@ -1,4 +1,4 @@
-package com.venueon.event.adapter.in.web.dto;
+package com.venueon.admin.event.adapter.in.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.venueon.event.domain.model.EventStatus;
