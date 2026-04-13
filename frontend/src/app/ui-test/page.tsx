@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput } from '@/components/ui';
+import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput, FilePreviewList } from '@/components/ui';
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import CommunityCard from '@/app/community/components/CommunityCard';
@@ -29,6 +29,13 @@ export default function UITestPage() {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isInquiryUserOpen, setIsInquiryUserOpen] = useState(false);
   const [isInquiryHostOpen, setIsInquiryHostOpen] = useState(false);
+  const [demoFiles, setDemoFiles] = useState([
+    { name: '스크린샷_오류화면.png', size: 834210 },
+    { name: '사업자등록증.pdf', size: 2148576 },
+    { name: '계약서_최종본.docx', size: 45200 },
+    { name: '첨부자료_모음.zip', size: 10485760 },
+    { name: '발표자료.pptx', size: 3200000 },
+  ]);
 
   // Tailwind CSS가 없는 환경이므로 순수 인라인 스타일로 깔끔한 테스트 레이아웃 구성
   const containerStyle: React.CSSProperties = {
@@ -430,6 +437,33 @@ export default function UITestPage() {
             accept="image/*,.pdf"
             onFileSelect={(file) => console.log('Selected file:', file.name)}
           />
+        </div>
+      </div>
+
+      {/* 14-1. FilePreviewList (업로드 파일 목록) */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>14-1. FilePreviewList (업로드 파일 목록)</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '500px' }}>
+
+          <div>
+            <p style={{ marginBottom: '12px', color: '#6B7280' }}>편집 모드 (삭제 가능)</p>
+            <FilePreviewList
+              files={demoFiles}
+              onRemove={(index) => setDemoFiles(prev => prev.filter((_, i) => i !== index))}
+              onClickFile={(file) => alert(`파일 클릭: ${file.name}`)}
+            />
+          </div>
+
+          <div>
+            <p style={{ marginBottom: '12px', color: '#6B7280' }}>읽기 전용 (어드민 확인용)</p>
+            <FilePreviewList
+              files={[
+                { name: '첨부_증빙자료.pdf', size: 1520000, url: '#' },
+              ]}
+              onClickFile={(file) => alert(`다운로드: ${file.name}`)}
+            />
+          </div>
+
         </div>
       </div>
 
