@@ -5,7 +5,7 @@ import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Lo
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import CommunityCard from '@/app/community/components/CommunityCard';
-import { ConfirmModal, InputModal, UploadModal, PaymentModal, InquiryModal } from '@/components/modal';
+import { ConfirmModal, InputModal, UploadModal, PaymentModal, InquiryModal, ReviewModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 
 export default function UITestPage() {
@@ -29,6 +29,7 @@ export default function UITestPage() {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isInquiryUserOpen, setIsInquiryUserOpen] = useState(false);
   const [isInquiryHostOpen, setIsInquiryHostOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [demoFiles, setDemoFiles] = useState([
     { name: '스크린샷_오류화면.png', size: 834210 },
     { name: '사업자등록증.pdf', size: 2148576 },
@@ -480,6 +481,7 @@ export default function UITestPage() {
           <Button variant="primary" onClick={() => setIsPaymentOpen(true)}>4. 결제 모달</Button>
           <Button variant="outlined" onClick={() => setIsInquiryUserOpen(true)}>5. 1:1 문의 (User)</Button>
           <Button variant="outlined" onClick={() => setIsInquiryHostOpen(true)}>5. 1:1 문의 (Host)</Button>
+          <Button variant="outlined" onClick={() => setIsReviewOpen(true)}>6. 리뷰 작성 모달</Button>
         </div>
       </div>
 
@@ -694,6 +696,18 @@ export default function UITestPage() {
         onSubmit={(data) => {
           console.log('Host Inquiry:', data);
           alert(`호스트 문의 전송!\n- 유형: ${data.category}\n- 제목: ${data.title}\n- 내용: ${data.content}\n- 첨부: ${data.attachment?.name || '없음'}`);
+        }}
+      />
+
+      {/* 6. ReviewModal */}
+      <ReviewModal
+        isOpen={isReviewOpen}
+        onClose={() => setIsReviewOpen(false)}
+        eventId={1}
+        eventTitle="TypeScript 심화반: 고급 타입 시스템과 제네릭 마스터하기"
+        onSubmitSuccess={() => {
+          alert('리뷰 등록 성공!');
+          setIsReviewOpen(false);
         }}
       />
 

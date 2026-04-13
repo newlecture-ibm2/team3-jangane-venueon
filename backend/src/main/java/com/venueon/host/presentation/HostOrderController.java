@@ -3,6 +3,7 @@ package com.venueon.host.presentation;
 import com.venueon.common.dto.ApiResponse;
 import com.venueon.host.application.port.in.GetHostRecentOrdersUseCase;
 import com.venueon.host.dto.HostAttendeeResponse;
+import com.venueon.host.dto.HostOrderDetailResponse;
 import com.venueon.host.dto.HostRecentOrderResponse;
 import com.venueon.host.dto.HostOrderSummaryResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,38 @@ public class HostOrderController {
         log.debug("GET /host/orders/recent — hostId={}, size={}", hostId, size);
 
         List<HostRecentOrderResponse> result = getHostRecentOrdersUseCase.getRecentOrders(hostId, size);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<HostRecentOrderResponse>>> getAllOrders(
+            Authentication authentication,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Long eventId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Long hostId = hostAuthSupport.extractUserId(authentication);
+        log.debug("GET /host/orders — hostId={}, status={}, eventId={}, page={}, size={}", hostId, status, eventId, page, size);
+
+        Page<HostRecentOrderResponse> result = getHostRecentOrdersUseCase.getAllOrders(
+                hostId,
+                status,
+                eventId,
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderedAt"))
+        );
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<HostOrderDetailResponse>> getOrderDetail(
+            Authentication authentication,
+            @PathVariable Long orderId
+    ) {
+        Long hostId = hostAuthSupport.extractUserId(authentication);
+        log.debug("GET /host/orders/{} — hostId={}", orderId, hostId);
+
+        HostOrderDetailResponse result = getHostRecentOrdersUseCase.getOrderDetail(hostId, orderId);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 

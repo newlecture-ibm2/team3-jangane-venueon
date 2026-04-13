@@ -8,15 +8,14 @@ import mypageStyles from '../page.module.css'; // 공통 컨텐츠 래퍼
 import styles from './page.module.css';
 import { useUIStore } from '@/store/useUIStore';
 
-// 백엔드 API 응답 타입 (OrderController.OrderDetailResponse)
-interface OrderDetailResponse {
+// 백엔드 API 응답 타입 (OrderCont// 백엔드 API 응답 타입 (OrderController.OrderSummaryResponse)
+interface OrderSummaryResponse {
   orderId: number;
-  eventId: number;
-  eventTitle: string;
+  tossOrderId: string;
+  orderName: string; // "이벤트 A 외 N건"
+  totalAmount: number;
+  totalQuantity: number;
   status: string; // PENDING, PAID, REGISTERED, CANCELLED, REFUNDED 등
-  quantity: number;
-  amount: number;
-  paymentMethod: string;
   orderedAt: string;
   paidAt: string | null;
 }
@@ -27,7 +26,7 @@ export default function OrdersPage() {
   const router = useRouter();
   const { showToast } = useUIStore();
   const [currentPage, setCurrentPage] = useState(1);
-  const [orders, setOrders] = useState<OrderDetailResponse[]>([]);
+  const [orders, setOrders] = useState<OrderSummaryResponse[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +34,6 @@ export default function OrdersPage() {
   const fetchOrders = useCallback(async (page: number) => {
     setLoading(true);
     try {
-      // TODO: 백엔드 컨트롤러가 JWT를 읽도록 수정되면 ?userId 파라미터 제외 가능
       const res = await fetch(`/api/orders/me?page=${page - 1}&size=${ITEMS_PER_PAGE}`);
       if (res.ok) {
         const json = await res.json();
@@ -79,9 +77,6 @@ export default function OrdersPage() {
     };
   };
 
-
-
-
   return (
     <div className="container-sidebar">
       <Sidebar role="user" />
@@ -95,7 +90,7 @@ export default function OrdersPage() {
             ) : (
               <Table columns="1fr 100px 140px 100px 100px">
                 <TableHeader>
-                  <TableCell header>세션명</TableCell>
+                  <TableCell header>상세 내역</TableCell>
                   <TableCell header>결제 일시</TableCell>
                   <TableCell header>결제 금액</TableCell>
                   <TableCell header>상태</TableCell>
@@ -106,7 +101,12 @@ export default function OrdersPage() {
                   return (
                     <TableRow key={order.orderId}>
                       <TableCell>
-                        {order.eventTitle}
+                        <div className={styles.orderNameInfo}>
+                          <span className={styles.orderName}>{order.orderName}</span>
+                          {order.totalQuantity > 1 && (
+                            <span className={styles.quantityInfo}>총 {order.totalQuantity}개 항목</span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -115,7 +115,7 @@ export default function OrdersPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {formatCurrency(order.amount)}
+                        {formatCurrency(order.totalAmount)}
                       </TableCell>
                       <TableCell>
                         <StatusTag domain="payment" status={order.status} />
