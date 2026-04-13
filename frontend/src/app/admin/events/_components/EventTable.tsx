@@ -180,7 +180,10 @@ export default function EventTable() {
           <Checkbox
             label="숨김 처리된 강의 보기"
             checked={showHiddenOnly}
-            onChange={(e) => setShowHiddenOnly(e.target.checked)}
+            onChange={(e) => {
+              setShowHiddenOnly(e.target.checked);
+              setCurrentPage(1);
+            }}
           />
         </div>
       </div>
@@ -238,10 +241,8 @@ export default function EventTable() {
             ) : events.length === 0 ? (
               <tr><td colSpan={6} className={styles.emptyTd}>데이터가 없습니다.</td></tr>
             ) : (
-              events
-                .filter(ev => !showHiddenOnly || ev.isHidden)
-                .map((event) => (
-                  <tr key={event.id}>
+              events.map((event) => (
+                <tr key={event.id}>
                     <td className={styles.colTitle}>
                       <Link href={`/admin/events/${event.id}`} className={styles.eventTitleLink}>
                         {event.title}
@@ -296,15 +297,13 @@ export default function EventTable() {
       </div>
 
       {/* 4) 페이지네이션 */}
-      {totalPages > 1 && (
-        <div className={styles.paginationArea}>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
+      <div className={styles.paginationArea}>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
 
       {/* 삭제 확인 모달 */}
       <ConfirmModal
