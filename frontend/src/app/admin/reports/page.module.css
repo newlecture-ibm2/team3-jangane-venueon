@@ -1,0 +1,10 @@
+.pageTitle {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+  margin-bottom: var(--space-4);
+}
+
+.tableSection {
+  margin-top: var(--space-24);
+  margin-bottom: var(--space-32);
+}

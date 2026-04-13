@@ -27,6 +27,11 @@ import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import com.venueon.cart.adapter.out.persistence.entity.CartJpaEntity;
 import com.venueon.cart.adapter.out.persistence.repository.CartJpaRepository;
 import com.venueon.user.domain.model.UserRole;
+import com.venueon.community.adapter.out.persistence.entity.CommunityJpaEntity;
+import com.venueon.community.adapter.out.persistence.repository.CommunityJpaRepository;
+import com.venueon.post.adapter.out.persistence.entity.PostJpaEntity;
+import com.venueon.post.adapter.out.persistence.repository.PostJpaRepository;
+import com.venueon.post.domain.model.PostType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -55,6 +60,8 @@ public class DataInitializer implements ApplicationRunner {
     private final ReportJpaRepository reportRepository;
     private final RefundJpaRepository refundRepository;
     private final CartJpaRepository cartRepository;
+    private final CommunityJpaRepository communityRepository;
+    private final PostJpaRepository postRepository;
     private final JdbcTemplate jdbcTemplate;
     private final PasswordEncoder passwordEncoder;
 
@@ -62,7 +69,19 @@ public class DataInitializer implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) {
         if (userRepository.count() > 0) {
-            log.info("데이터가 이미 존재합니다. 장바구니 데이터를 ID 1번 사용자용으로 재구성합니다.");
+            log.info("데이터가 이미 존재합니다. 장바구니 데이터를 ID 1번 사용자용으로 재구성하고, 누락된 신고 샘플이 있다면 생성합니다.");
+            
+            // 신고 데이터가 하나도 없다면 기존 데이터를 활용해 생성
+            if (reportRepository.count() == 0) {
+                List<UserJpaEntity> users = userRepository.findAll();
+                List<EventJpaEntity> events = eventRepository.findAll();
+                List<PostJpaEntity> posts = postRepository.findAll();
+                if (!users.isEmpty() && !events.isEmpty()) {
+                    createReports(users, events, posts);
+                    log.info("누락된 신고 샘플 데이터 생성 완료");
+                }
+            }
+
             cleanupCartTable();
             jdbcTemplate.execute("TRUNCATE TABLE cart CASCADE"); // 기존 장바구니 비우기
             createInitialCartItems();
@@ -78,8 +97,10 @@ public class DataInitializer implements ApplicationRunner {
         List<CategoryJpaEntity> categories = createCategories();
         List<EventJpaEntity> events = createEvents(hosts, categories);
         createSessions(events);
+        List<CommunityJpaEntity> communities = createCommunities();
+        List<PostJpaEntity> posts = createPosts(users, communities);
         List<OrderJpaEntity> orders = createOrders(users, events);
-        List<ReportJpaEntity> reports = createReports(users, events);
+        List<ReportJpaEntity> reports = createReports(users, events, posts);
         List<RefundJpaEntity> refunds = createRefunds(users, orders);
         createInitialCartItems();
 
@@ -483,7 +504,40 @@ public class DataInitializer implements ApplicationRunner {
     }
 
 
-    private List<ReportJpaEntity> createReports(List<UserJpaEntity> users, List<EventJpaEntity> events) {
+    private List<CommunityJpaEntity> createCommunities() {
+        return communityRepository.saveAll(List.of(
+                CommunityJpaEntity.builder().name("자유게시판").description("누구나 자유롭게 이야기하는 공간").build(),
+                CommunityJpaEntity.builder().name("질문답변").description("서로 돕고 배우는 공간").build()
+        ));
+    }
+
+    private List<PostJpaEntity> createPosts(List<UserJpaEntity> users, List<CommunityJpaEntity> communities) {
+        return postRepository.saveAll(List.of(
+                PostJpaEntity.builder()
+                        .community(communities.get(0))
+                        .author(users.get(0))
+                        .title("안녕하세요, 가입했습니다!")
+                        .content("반가워요. 잘 부탁드립니다.")
+                        .type(PostType.GENERAL)
+                        .build(),
+                PostJpaEntity.builder()
+                        .community(communities.get(0))
+                        .author(users.get(1))
+                        .title("오늘 날씨 좋네요")
+                        .content("산책하기 딱 좋은 날씨입니다.")
+                        .type(PostType.GENERAL)
+                        .build(),
+                PostJpaEntity.builder()
+                        .community(communities.get(1))
+                        .author(users.get(2))
+                        .title("AI 부트캠프 질문있습니다.")
+                        .content("비전공자도 따라갈 수 있을까요?")
+                        .type(PostType.GENERAL)
+                        .build()
+        ));
+    }
+
+    private List<ReportJpaEntity> createReports(List<UserJpaEntity> users, List<EventJpaEntity> events, List<PostJpaEntity> posts) {
         return reportRepository.saveAll(List.of(
                 // 신고 1: user1이 이벤트(AI & Cloud Bootcamp)를 허위 정보로 신고 — 대기중
                 ReportJpaEntity.builder()
@@ -503,7 +557,16 @@ public class DataInitializer implements ApplicationRunner {
                         .detail("커뮤니티에서 반복적으로 외부 사이트 링크를 게시하고 있습니다. 광고성 글을 지속적으로 작성합니다.")
                         .status(ReportStatus.PENDING)
                         .build(),
-                // 신고 3: user3이 이벤트(현대미술 워크숍)를 부적절한 콘텐츠로 신고 — 처리 완료
+                // 신고 3: user3이 게시글을 부적절한 언어로 신고 — 대기중
+                ReportJpaEntity.builder()
+                        .reporter(users.get(2))
+                        .targetType(ReportTargetType.POST)
+                        .targetId(posts.get(0).getId())
+                        .reason("부적절한 언어")
+                        .detail("게시글 내용에 욕설이 포함되어 있습니다.")
+                        .status(ReportStatus.PENDING)
+                        .build(),
+                // 신고 4: user3이 이벤트(현대미술 워크숍)를 부적절한 콘텐츠로 신고 — 처리 완료
                 ReportJpaEntity.builder()
                         .reporter(users.get(2))
                         .targetType(ReportTargetType.EVENT)
@@ -514,7 +577,7 @@ public class DataInitializer implements ApplicationRunner {
                         .adminAction(AdminAction.WARN)
                         .resolvedAt(LocalDateTime.now().minusDays(2))
                         .build(),
-                // 신고 4: user1이 이벤트(Business Growth Summit)를 저작권 침해로 신고 — 반려
+                // 신고 5: user1이 이벤트(Business Growth Summit)를 저작권 침해로 신고 — 반려
                 ReportJpaEntity.builder()
                         .reporter(users.get(0))
                         .targetType(ReportTargetType.EVENT)
