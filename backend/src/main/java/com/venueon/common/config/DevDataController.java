@@ -44,7 +44,7 @@ public class DevDataController {
                     map.put("id", u.getId());
                     map.put("email", u.getEmail());
                     map.put("nickname", u.getNickname());
-                    map.put("role", u.getRole().name());
+                    map.put("role", u.getRole());
                     return map;
                 }).collect(Collectors.toList());
 
@@ -64,8 +64,8 @@ public class DevDataController {
                     Map<String, Object> map = new HashMap<>();
                     map.put("id", e.getId());
                     map.put("title", e.getTitle());
-                    map.put("type", e.getType().name());
-                    map.put("status", e.getStatus().name());
+                    map.put("type", e.getType());
+                    map.put("status", e.getStatus());
                     map.put("price", 0); // TODO: Ticket (Phase 3)
                     map.put("creator", e.getCreator().getNickname());
                     map.put("category", e.getCategory().getName());

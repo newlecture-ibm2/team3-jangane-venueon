@@ -9,7 +9,6 @@ import com.venueon.event.application.port.in.DeleteEventUseCase;
 import com.venueon.event.application.port.in.UpdateEventStatusUseCase;
 import com.venueon.event.application.port.in.UpdateEventUseCase;
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,9 +54,9 @@ public class HostEventController {
             @PathVariable Long id,
             @RequestHeader("X-User-Id") Long requesterId,
             @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String requesterRole,
-            @RequestParam EventStatus status
+            @RequestParam("status") Long statusId
     ) {
-        Event updated = updateEventStatusUseCase.updateStatus(id, requesterId, requesterRole, status);
+        Event updated = updateEventStatusUseCase.updateStatus(id, requesterId, requesterRole, statusId);
         return ApiResponse.success(EventDetailResponse.from(updated));
     }
 

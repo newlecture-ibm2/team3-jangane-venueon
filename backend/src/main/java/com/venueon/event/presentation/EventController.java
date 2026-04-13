@@ -9,7 +9,6 @@ import com.venueon.event.application.port.out.LoadHostInfoPort.HostInfo;
 import com.venueon.event.application.service.EventQueryService;
 import com.venueon.event.adapter.in.web.dto.SessionResponse;
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventType;
 import com.venueon.event.domain.model.Session;
 import com.venueon.ticket.application.port.in.GetTicketUseCase;
 import com.venueon.ticket.domain.model.Ticket;
@@ -45,7 +44,7 @@ public class EventController {
     public ApiResponse<Page<EventListResponse>> getEventList(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) EventType type,
+            @RequestParam(required = false) String type,
             @RequestParam(required = false) Boolean isOnline,
             @RequestParam(required = false, defaultValue = "latest") String sort,
             @RequestParam(defaultValue = "0") int page,

@@ -1,6 +1,5 @@
 package com.venueon.admin.user.application.command;
 
-import com.venueon.user.domain.model.UserRole;
 
 /**
  * 회원 수정 커맨드 (Application 계층 입력 DTO)
@@ -8,7 +7,7 @@ import com.venueon.user.domain.model.UserRole;
  */
 public record UpdateUserCommand(
         String nickname,
-        UserRole role,
+        Long roleId,
         String phone
 ) {
 }

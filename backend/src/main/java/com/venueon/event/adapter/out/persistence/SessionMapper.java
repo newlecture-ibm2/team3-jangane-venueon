@@ -11,11 +11,16 @@ import org.springframework.stereotype.Component;
  * SessionJpaEntity ↔ Session 도메인 모델 변환
  * v6: EventSessionMapper → SessionMapper 리네이밍, price 제거, 모집 필드 추가
  */
+import com.venueon.event.adapter.out.persistence.repository.EventStatusJpaRepository;
+import com.venueon.ticket.adapter.out.persistence.repository.RecruitmentStatusJpaRepository;
+
 @Component
 @RequiredArgsConstructor
 public class SessionMapper {
 
     private final EntityManager entityManager;
+    private final EventStatusJpaRepository eventStatusJpaRepository;
+    private final RecruitmentStatusJpaRepository recruitmentStatusJpaRepository;
 
     /**
      * JPA Entity → 도메인 모델
@@ -41,8 +46,8 @@ public class SessionMapper {
                 entity.getRecruitStartDate(),
                 entity.getRecruitEndDate(),
                 entity.isRecruitmentClosed(),
-                entity.getForcedRecruitmentStatus(),
-                entity.getForcedSessionStatus(),
+                entity.getForcedRecruitmentStatus() != null ? com.venueon.common.model.DomainCode.of(entity.getForcedRecruitmentStatus().getId(), entity.getForcedRecruitmentStatus().getLabel()) : null,
+                entity.getForcedSessionStatus() != null ? com.venueon.common.model.DomainCode.of(entity.getForcedSessionStatus().getId(), entity.getForcedSessionStatus().getLabel()) : null,
                 entity.isDefault(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
@@ -52,7 +57,7 @@ public class SessionMapper {
     /**
      * 도메인 모델 → JPA Entity
      */
-    public SessionJpaEntity toJpaEntity(Session domain, EventJpaEntity eventEntity) {
+    public SessionJpaEntity toJpaEntity(Session domain, EventJpaEntity eventEntity, com.venueon.ticket.adapter.out.persistence.entity.RecruitmentStatusJpaEntity recruitEntity, com.venueon.event.adapter.out.persistence.entity.EventStatusJpaEntity statusEntity) {
         return SessionJpaEntity.builder()
                 .id(domain.getId())
                 .event(eventEntity)
@@ -73,8 +78,8 @@ public class SessionMapper {
                 .recruitStartDate(domain.getRecruitStartDate())
                 .recruitEndDate(domain.getRecruitEndDate())
                 .isRecruitmentClosed(domain.getIsRecruitmentClosed())
-                .forcedRecruitmentStatus(domain.getForcedRecruitmentStatus())
-                .forcedSessionStatus(domain.getForcedSessionStatus())
+                .forcedRecruitmentStatus(recruitEntity)
+                .forcedSessionStatus(statusEntity)
                 .isDefault(domain.getIsDefault())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
@@ -86,6 +91,14 @@ public class SessionMapper {
      */
     public SessionJpaEntity toJpaEntity(Session domain, Long eventId) {
         EventJpaEntity eventRef = entityManager.getReference(EventJpaEntity.class, eventId);
-        return toJpaEntity(domain, eventRef);
+        com.venueon.ticket.adapter.out.persistence.entity.RecruitmentStatusJpaEntity recruitEntity = null;
+        if (domain.getForcedRecruitmentStatus() != null) {
+            recruitEntity = recruitmentStatusJpaRepository.findById(domain.getForcedRecruitmentStatus().id()).orElse(null);
+        }
+        com.venueon.event.adapter.out.persistence.entity.EventStatusJpaEntity statusEntity = null;
+        if (domain.getForcedSessionStatus() != null) {
+            statusEntity = eventStatusJpaRepository.findById(domain.getForcedSessionStatus().id()).orElse(null);
+        }
+        return toJpaEntity(domain, eventRef, recruitEntity, statusEntity);
     }
 }

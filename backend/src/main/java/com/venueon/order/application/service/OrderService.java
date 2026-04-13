@@ -5,7 +5,6 @@ import com.venueon.common.exception.BusinessException;
 import com.venueon.common.exception.ErrorCode;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
-import com.venueon.event.domain.model.RecruitmentStatus;
 import com.venueon.order.adapter.out.payment.TossPaymentClient;
 import com.venueon.order.application.port.in.RequestRefundUseCase;
 import com.venueon.order.application.port.out.OrderRepositoryPort;
@@ -110,7 +109,7 @@ public class OrderService {
 
             // === Gate 3: 모집 상태 검증 ===
             for (Session session : linkedSessions) {
-                if (session.getRecruitmentStatus() != RecruitmentStatus.OPEN) {
+                if (session.getRecruitmentStatus() == null || !session.getRecruitmentStatus().id().equals(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_OPEN_ID)) {
                     throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
                 }
             }
@@ -497,7 +496,7 @@ public class OrderService {
                 .paidAt(order.getPaidAt())
                 .organizer(organizer)
                 .location(location)
-                .eventStatus(event != null ? event.getStatus().name() : "DRAFT")
+                .eventStatus(event != null && event.getStatus() != null ? com.venueon.common.dto.CodeDto.of(event.getStatus().getId(), event.getStatus().getLabel()) : com.venueon.common.dto.CodeDto.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID, "임시저장"))
                 .build();
     }
 

@@ -5,7 +5,6 @@ import com.venueon.user.adapter.out.persistence.UserMapper;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import com.venueon.user.domain.model.User;
-import com.venueon.user.domain.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +22,16 @@ import java.util.Optional;
 public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
 
     private final UserJpaRepository userJpaRepository;
+    private final com.venueon.user.adapter.out.persistence.repository.UserRoleJpaRepository userRoleJpaRepository;
     private final UserMapper userMapper;
 
     @Override
-    public Page<User> findUsers(String keyword, UserRole role, Boolean active, Pageable pageable) {
+    public Page<User> findUsers(String keyword, String role, Boolean active, Pageable pageable) {
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
         String safeKeyword = hasKeyword ? keyword.toLowerCase() : "";
 
         boolean hasRole = role != null;
-        UserRole safeRole = hasRole ? role : UserRole.USER;
+        String safeRole = hasRole ? role : "USER";
 
         boolean hasActive = active != null;
         Boolean safeActive = hasActive ? active : false;
@@ -48,7 +48,8 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
 
     @Override
     public User save(User user) {
-        UserJpaEntity entity = userMapper.toEntity(user);
+        com.venueon.user.adapter.out.persistence.entity.UserRoleJpaEntity roleEntity = user.getRole() != null ? userRoleJpaRepository.findById(user.getRole().id()).orElse(null) : null;
+        UserJpaEntity entity = userMapper.toEntity(user, roleEntity);
         UserJpaEntity saved = userJpaRepository.save(entity);
         return userMapper.toDomain(saved);
     }

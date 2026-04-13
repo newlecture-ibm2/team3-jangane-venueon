@@ -1,7 +1,6 @@
 package com.venueon.admin.user.application.port.out;
 
 import com.venueon.user.domain.model.User;
-import com.venueon.user.domain.model.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,7 +16,7 @@ public interface AdminUserRepositoryPort {
     /**
      * 회원 목록 동적 조회 (키워드, 역할, 상태 필터)
      */
-    Page<User> findUsers(String keyword, UserRole role, Boolean active, Pageable pageable);
+    Page<User> findUsers(String keyword, String role, Boolean active, Pageable pageable);
 
     /**
      * ID로 회원 조회

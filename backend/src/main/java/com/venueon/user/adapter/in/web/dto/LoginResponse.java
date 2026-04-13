@@ -7,5 +7,5 @@ public record LoginResponse(
         String token,
         String email,
         String nickname,
-        String role
+        com.venueon.common.dto.CodeDto role
 ) {}

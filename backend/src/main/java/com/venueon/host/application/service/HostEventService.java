@@ -2,7 +2,6 @@ package com.venueon.host.application.service;
 
 import com.venueon.common.annotation.UseCase;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.domain.model.EventStatus;
 import com.venueon.host.adapter.out.persistence.HostEventMapper;
 import com.venueon.host.adapter.out.persistence.repository.HostEventJpaRepository;
 import com.venueon.host.application.port.in.GetHostEventsUseCase;
@@ -33,7 +32,7 @@ public class HostEventService implements GetHostEventsUseCase {
         if (status == null || status.isBlank() || "ALL".equalsIgnoreCase(status)) {
             page = hostEventJpaRepository.findByCreatorId(hostId, pageable);
         } else {
-            EventStatus eventStatus = EventStatus.valueOf(status.toUpperCase());
+            String eventStatus = status.toUpperCase();
             page = hostEventJpaRepository.findByCreatorIdAndStatus(hostId, eventStatus, pageable);
         }
 
@@ -45,7 +44,7 @@ public class HostEventService implements GetHostEventsUseCase {
         log.debug("호스트 DRAFT 이벤트 목록 조회: hostId={}", hostId);
 
         Page<EventJpaEntity> page = hostEventJpaRepository.findByCreatorIdAndStatus(
-                hostId, EventStatus.DRAFT, pageable
+                hostId, "DRAFT", pageable
         );
 
         return page.map(hostEventMapper::toResponse);

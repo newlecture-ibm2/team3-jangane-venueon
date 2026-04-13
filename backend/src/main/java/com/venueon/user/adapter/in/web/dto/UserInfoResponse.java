@@ -7,7 +7,7 @@ public record UserInfoResponse(
         Long id,
         String email,
         String nickname,
-        String role,
+        com.venueon.common.dto.CodeDto role,
         String profileImg,
         java.util.List<String> categories,
         Boolean showBadge

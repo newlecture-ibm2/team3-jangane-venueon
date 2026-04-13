@@ -15,8 +15,8 @@ public class HostEventMapper {
                 entity.getId(),
                 entity.getTitle(),
                 entity.getThumbnailUrl(),
-                entity.getType().name(),
-                entity.getStatus().name(),
+                entity.getType() != null ? com.venueon.common.dto.CodeDto.of(entity.getType().getId(), entity.getType().getName()) : null,
+                entity.getStatus() != null ? com.venueon.common.dto.CodeDto.of(entity.getStatus().getId(), entity.getStatus().getLabel()) : null,
                 entity.isHasSession(),
                 entity.getDescription(),
                 entity.getCreatedAt()

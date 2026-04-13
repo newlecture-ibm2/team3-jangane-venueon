@@ -1,7 +1,6 @@
 package com.venueon.user.adapter.out.persistence.repository;
 
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
-import com.venueon.user.domain.model.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,7 +33,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
            "AND (:hasActive = false OR u.isActive = :active)")
     Page<UserJpaEntity> findUsersDynamically(@Param("keyword") String keyword,
                                              @Param("hasKeyword") boolean hasKeyword,
-                                             @Param("role") UserRole role,
+                                             @Param("role") String role,
                                              @Param("hasRole") boolean hasRole,
                                              @Param("active") Boolean active,
                                              @Param("hasActive") boolean hasActive,

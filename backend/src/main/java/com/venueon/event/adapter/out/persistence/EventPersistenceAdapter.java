@@ -5,7 +5,6 @@ import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
 import com.venueon.event.application.port.in.GetEventListUseCase.EventSearchCondition;
 import com.venueon.event.application.port.out.EventRepositoryPort;
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventStatus;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +24,8 @@ import java.util.Optional;
 public class EventPersistenceAdapter implements EventRepositoryPort {
 
     private final EventJpaRepository eventJpaRepository;
+    private final com.venueon.event.adapter.out.persistence.repository.EventTypeJpaRepository eventTypeJpaRepository;
+    private final com.venueon.event.adapter.out.persistence.repository.EventStatusJpaRepository eventStatusJpaRepository;
     private final EventMapper eventMapper;
 
     @Override
@@ -43,7 +44,10 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
 
     @Override
     public Event save(Event event) {
-        EventJpaEntity entity = eventMapper.toEntity(event);
+        com.venueon.event.adapter.out.persistence.entity.EventTypeJpaEntity typeEntity = event.getType() != null ? eventTypeJpaRepository.findById(event.getType().id()).orElse(null) : null;
+        com.venueon.event.adapter.out.persistence.entity.EventStatusJpaEntity statusEntity = event.getStatus() != null ? eventStatusJpaRepository.findById(event.getStatus().id()).orElse(null) : null;
+        
+        EventJpaEntity entity = eventMapper.toEntity(event, typeEntity, statusEntity);
         EventJpaEntity saved = eventJpaRepository.save(entity);
         return eventMapper.toDomain(saved);
     }
@@ -65,7 +69,7 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
             predicates.add(cb.isFalse(root.get("isHidden")));
 
             // PUBLISHED 상태만 공개 목록에 표시
-            predicates.add(cb.equal(root.get("status"), EventStatus.PUBLISHED));
+            predicates.add(cb.equal(root.get("status").get("code"), "PUBLISHED"));
 
             // 키워드 검색 (제목)
             if (condition.keyword() != null && !condition.keyword().isBlank()) {
@@ -82,7 +86,7 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
 
             // 이벤트 타입 필터
             if (condition.type() != null) {
-                predicates.add(cb.equal(root.get("type"), condition.type()));
+                predicates.add(cb.equal(root.get("type").get("code"), condition.type()));
             }
 
             // TODO: isOnline 필터 — 세션 JOIN 기반으로 재구현 예정 (EventJpaEntity에 sessions 관계 매핑 추가 후)

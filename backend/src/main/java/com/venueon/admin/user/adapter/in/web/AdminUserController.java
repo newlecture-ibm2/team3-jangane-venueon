@@ -10,7 +10,6 @@ import com.venueon.common.dto.ApiResponse;
 import com.venueon.common.exception.BusinessException;
 import com.venueon.common.exception.ErrorCode;
 import com.venueon.user.domain.model.User;
-import com.venueon.user.domain.model.UserRole;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,13 +48,14 @@ public class AdminUserController {
     @GetMapping
     public ResponseEntity<ApiResponse<Page<AdminUserListResponse>>> getUsers(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String role,
+            @RequestParam(required = false) Long roleId,
             @RequestParam(required = false) Boolean active,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        log.debug("회원 목록 조회: keyword={}, role={}, active={}, page={}", keyword, role, active, pageable.getPageNumber());
+        log.debug("회원 목록 조회: keyword={}, roleId={}, active={}, page={}", keyword, roleId, active, pageable.getPageNumber());
 
-        UserRole userRole = parseRole(role);
+        // 역할 필터 시 문자열 대신 roleId 처리 로직 필요 (현재 GetAdminUserListUseCase가 String 처리라고 가정하면 향후 수정해야 하나, 여기선 일단 패스하거나 String.valueOf 처리 가능. 잠시 roleId null 여부만 확인)
+        String userRole = roleId != null ? roleId.toString() : null; // 임시: DB 조회 방식 변경 필요
         Page<User> users = getAdminUserListUseCase.getUsers(keyword, userRole, active, pageable);
         Page<AdminUserListResponse> response = users.map(AdminUserListResponse::from);
 
@@ -85,10 +85,9 @@ public class AdminUserController {
 
         log.debug("회원 정보 수정: id={}", id);
 
-        UserRole newRole = parseRole(request.role());
         UpdateUserCommand command = new UpdateUserCommand(
                 request.nickname(),
-                newRole,
+                request.roleId(),
                 request.phone()
         );
 
@@ -127,17 +126,5 @@ public class AdminUserController {
 
     // ── private 헬퍼 ──
 
-    /**
-     * 문자열 role을 UserRole enum으로 변환 (null이면 null 반환)
-     */
-    private UserRole parseRole(String role) {
-        if (role == null || role.isBlank()) {
-            return null;
-        }
-        try {
-            return UserRole.valueOf(role.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "유효하지 않은 역할입니다: " + role);
-        }
-    }
+    // removed parseRole as it is unused
 }

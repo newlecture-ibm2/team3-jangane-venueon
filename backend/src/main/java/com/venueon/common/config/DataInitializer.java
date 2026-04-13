@@ -6,8 +6,6 @@ import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
 import com.venueon.event.adapter.out.persistence.repository.SessionJpaRepository;
-import com.venueon.event.domain.model.EventStatus;
-import com.venueon.event.domain.model.EventType;
 import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
 import com.venueon.ticket.adapter.out.persistence.entity.TicketSessionJpaEntity;
 import com.venueon.ticket.adapter.out.persistence.repository.TicketJpaRepository;
@@ -26,10 +24,17 @@ import com.venueon.report.domain.model.ReportTargetType;
 import com.venueon.user.adapter.out.persistence.entity.HostProfileJpaEntity;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository;
+import com.venueon.event.adapter.out.persistence.repository.EventStatusJpaRepository;
+import com.venueon.event.adapter.out.persistence.repository.EventTypeJpaRepository;
+import com.venueon.ticket.adapter.out.persistence.repository.RecruitmentStatusJpaRepository;
+import com.venueon.user.adapter.out.persistence.repository.UserRoleJpaRepository;
+import com.venueon.event.adapter.out.persistence.entity.EventStatusJpaEntity;
+import com.venueon.event.adapter.out.persistence.entity.EventTypeJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.entity.RecruitmentStatusJpaEntity;
+import com.venueon.user.adapter.out.persistence.entity.UserRoleJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import com.venueon.cart.adapter.out.persistence.entity.CartJpaEntity;
 import com.venueon.cart.adapter.out.persistence.repository.CartJpaRepository;
-import com.venueon.user.domain.model.UserRole;
 import com.venueon.community.adapter.out.persistence.entity.CommunityJpaEntity;
 import com.venueon.community.adapter.out.persistence.repository.CommunityJpaRepository;
 import com.venueon.post.adapter.out.persistence.entity.PostJpaEntity;
@@ -54,6 +59,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 
+        private final UserRoleJpaRepository userRoleRepository;
+    private final EventStatusJpaRepository eventStatusRepository;
+    private final EventTypeJpaRepository eventTypeRepository;
+    private final RecruitmentStatusJpaRepository recruitmentStatusRepository;
     private final UserJpaRepository userRepository;
     private final HostProfileJpaRepository hostProfileRepository;
     private final CategoryJpaRepository categoryRepository;
@@ -93,8 +102,12 @@ public class DataInitializer implements ApplicationRunner {
             return;
         }
 
+        
         log.info("=== 개발용 초기 데이터 생성 시작 ===");
         cleanupCartTable();
+
+        createDomainStatuses();
+
 
         UserJpaEntity admin = createAdmin();
         List<UserJpaEntity> users = createUsers();
@@ -117,12 +130,42 @@ public class DataInitializer implements ApplicationRunner {
         log.info("Order: {}개, Report: {}개, Refund: {}개", orders.size(), reports.size(), refunds.size());
     }
 
+    
+    private void createDomainStatuses() {
+        userRoleRepository.saveAll(List.of(
+                UserRoleJpaEntity.builder().code("ADMIN").name("관리자").build(),
+                UserRoleJpaEntity.builder().code("USER").name("일반사용자").build(),
+                UserRoleJpaEntity.builder().code("HOST").name("호스트").build()
+        ));
+        eventStatusRepository.saveAll(List.of(
+                EventStatusJpaEntity.builder().code("DRAFT").label("임시저장").build(),
+                EventStatusJpaEntity.builder().code("PUBLISHED").label("발행됨").build(),
+                EventStatusJpaEntity.builder().code("ONGOING").label("진행중").build(),
+                EventStatusJpaEntity.builder().code("ENDED").label("종료됨").build(),
+                EventStatusJpaEntity.builder().code("CANCELLED").label("취소됨").build()
+        ));
+        eventTypeRepository.saveAll(List.of(
+                EventTypeJpaEntity.builder().code("CONFERENCE").name("컨퍼런스").build(),
+                EventTypeJpaEntity.builder().code("CLASS").name("클래스").build(),
+                EventTypeJpaEntity.builder().code("MEETING").name("모임").build(),
+                EventTypeJpaEntity.builder().code("SEMINAR").name("세미나").build(),
+                EventTypeJpaEntity.builder().code("FESTIVAL").name("페스티벌").build(),
+                EventTypeJpaEntity.builder().code("EXHIBITION").name("전시회").build(),
+                EventTypeJpaEntity.builder().code("ETC").name("기타").build()
+        ));
+        recruitmentStatusRepository.saveAll(List.of(
+                RecruitmentStatusJpaEntity.builder().code("PENDING").label("모집예정").build(),
+                RecruitmentStatusJpaEntity.builder().code("OPEN").label("모집중").build(),
+                RecruitmentStatusJpaEntity.builder().code("CLOSED").label("모집마감").build()
+        ));
+    }
+
     private UserJpaEntity createAdmin() {
         return userRepository.save(UserJpaEntity.builder()
                 .email("admin@venueon.com")
                 .password(passwordEncoder.encode("Admin1234!"))
                 .nickname("VenueOn관리자")
-                .role(UserRole.ADMIN)
+                .role(userRoleRepository.findByCode("ADMIN").orElseThrow())
                 .build());
     }
 
@@ -132,19 +175,19 @@ public class DataInitializer implements ApplicationRunner {
                         .email("user1@example.com")
                         .password(passwordEncoder.encode("User1234!"))
                         .nickname("김참여")
-                        .role(UserRole.USER)
+                        .role(userRoleRepository.findByCode("USER").orElseThrow())
                         .build(),
                 UserJpaEntity.builder()
                         .email("user2@example.com")
                         .password(passwordEncoder.encode("User1234!"))
                         .nickname("이탐색")
-                        .role(UserRole.USER)
+                        .role(userRoleRepository.findByCode("USER").orElseThrow())
                         .build(),
                 UserJpaEntity.builder()
                         .email("user3@example.com")
                         .password(passwordEncoder.encode("User1234!"))
                         .nickname("박이벤트")
-                        .role(UserRole.USER)
+                        .role(userRoleRepository.findByCode("USER").orElseThrow())
                         .build()
         ));
     }
@@ -195,7 +238,7 @@ public class DataInitializer implements ApplicationRunner {
                         .email(d.email())
                         .password(encodedPassword)
                         .nickname(d.nickname())
-                        .role(UserRole.HOST)
+                        .role(userRoleRepository.findByCode("HOST").orElseThrow())
                         .profileImg(d.profileImg())
                         .phone(d.phone())
                         .build()
@@ -242,7 +285,7 @@ public class DataInitializer implements ApplicationRunner {
                         .creator(hosts.get(0)).category(categories.get(0))
                         .title("AI & Cloud Bootcamp")
                         .description("현직 개발자와 함께하는 2일 집중 부트캠프. AI 모델 배포부터 클라우드 인프라 설계까지, 실무에서 바로 쓸 수 있는 기술을 배웁니다.")
-                        .type(EventType.SEMINAR).status(EventStatus.PUBLISHED)
+                        .type(eventTypeRepository.findByCode("SEMINAR").orElseThrow()).status(eventStatusRepository.findByCode("PUBLISHED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/NC_thumbnail.jpg")
                         .hasSession(true)
                         .build(),
@@ -250,63 +293,63 @@ public class DataInitializer implements ApplicationRunner {
                         .creator(hosts.get(1)).category(categories.get(1))
                         .title("UX Design Workshop")
                         .description("사용자 리서치부터 프로토타이핑까지, UX 디자인의 전 과정을 실습합니다.")
-                        .type(EventType.CLASS).status(EventStatus.PUBLISHED)
+                        .type(eventTypeRepository.findByCode("CLASS").orElseThrow()).status(eventStatusRepository.findByCode("PUBLISHED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/DB_thumbnail.jpg")
                         .build(),
                 EventJpaEntity.builder()
                         .creator(hosts.get(2)).category(categories.get(2))
                         .title("Startup Demo Day")
                         .description("스파크벤처스 5기 배치 스타트업 10팀의 데모데이. 투자자, 멘토, 예비 창업자가 한자리에 모여 혁신적인 비즈니스 모델을 발표합니다.")
-                        .type(EventType.CONFERENCE).status(EventStatus.PUBLISHED)
+                        .type(eventTypeRepository.findByCode("CONFERENCE").orElseThrow()).status(eventStatusRepository.findByCode("PUBLISHED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/SV_thumbnail.jpg")
                         .build(),
                 EventJpaEntity.builder()
                         .creator(hosts.get(3)).category(categories.get(3))
                         .title("마음챙김 요가 클래스")
                         .description("바쁜 일상 속 나를 돌보는 시간. 호흡법과 명상을 결합한 빈야사 요가 클래스입니다.")
-                        .type(EventType.CLASS).status(EventStatus.ENDED)
+                        .type(eventTypeRepository.findByCode("CLASS").orElseThrow()).status(eventStatusRepository.findByCode("ENDED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/GLA_thumbnail.jpg")
                         .build(),
                 EventJpaEntity.builder()
                         .creator(hosts.get(4)).category(categories.get(4))
                         .title("현대미술 워크숍")
                         .description("추상표현주의부터 미디어아트까지, 현대미술의 주요 흐름을 이해하고 직접 작품을 제작합니다.")
-                        .type(EventType.CLASS).status(EventStatus.PUBLISHED)
+                        .type(eventTypeRepository.findByCode("CLASS").orElseThrow()).status(eventStatusRepository.findByCode("PUBLISHED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/AS_thumbnail.jpg")
                         .build(),
                 EventJpaEntity.builder()
                         .creator(hosts.get(5)).category(categories.get(5))
                         .title("Business Growth Summit")
                         .description("기업 성장의 핵심 전략을 다루는 비즈니스 서밋.")
-                        .type(EventType.CONFERENCE).status(EventStatus.PUBLISHED)
+                        .type(eventTypeRepository.findByCode("CONFERENCE").orElseThrow()).status(eventStatusRepository.findByCode("PUBLISHED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/BOC_thumbnail.jpg")
                         .build(),
                 EventJpaEntity.builder()
                         .creator(hosts.get(6)).category(categories.get(6))
                         .title("한식 마스터클래스")
                         .description("전통 한식의 맛과 멋을 배우는 쿠킹 클래스.")
-                        .type(EventType.CLASS).status(EventStatus.PUBLISHED)
+                        .type(eventTypeRepository.findByCode("CLASS").orElseThrow()).status(eventStatusRepository.findByCode("PUBLISHED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/FLS_thumbnail.jpg")
                         .build(),
                 EventJpaEntity.builder()
                         .creator(hosts.get(7)).category(categories.get(7))
                         .title("Smart Investment Seminar 2026")
                         .description("개인 투자자를 위한 스마트 투자 전략 세미나.")
-                        .type(EventType.SEMINAR).status(EventStatus.PUBLISHED)
+                        .type(eventTypeRepository.findByCode("SEMINAR").orElseThrow()).status(eventStatusRepository.findByCode("PUBLISHED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/MF_thumbnail.jpg")
                         .build(),
                 EventJpaEntity.builder()
                         .creator(hosts.get(8)).category(categories.get(8))
                         .title("Creator Academy: Video Editing")
                         .description("유튜브·숏폼 콘텐츠 제작을 위한 영상 편집 아카데미.")
-                        .type(EventType.CLASS).status(EventStatus.PUBLISHED)
+                        .type(eventTypeRepository.findByCode("CLASS").orElseThrow()).status(eventStatusRepository.findByCode("PUBLISHED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/CH_thumbnail.jpg")
                         .build(),
                 EventJpaEntity.builder()
                         .creator(hosts.get(9)).category(categories.get(9))
                         .title("Future Science Conference")
                         .description("미래 과학 기술의 최신 연구 성과를 공유하는 학술 컨퍼런스.")
-                        .type(EventType.CONFERENCE).status(EventStatus.PUBLISHED)
+                        .type(eventTypeRepository.findByCode("CONFERENCE").orElseThrow()).status(eventStatusRepository.findByCode("PUBLISHED").orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/SSF_thumbnail.jpg")
                         .hasSession(true)
                         .build()

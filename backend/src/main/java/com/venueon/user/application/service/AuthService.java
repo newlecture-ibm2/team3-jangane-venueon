@@ -15,7 +15,6 @@ import com.venueon.user.application.port.out.UserRepositoryPort;
 import com.venueon.user.domain.model.AuthProvider;
 import com.venueon.user.domain.model.HostProfile;
 import com.venueon.user.domain.model.User;
-import com.venueon.user.domain.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,19 +60,24 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         String encodedPassword = passwordEncoder.encode(password);
 
         // 역할 변환
-        UserRole userRole;
+        Long roleId;
+        String roleLabel;
         try {
-            userRole = UserRole.valueOf(role.toUpperCase());
+            if ("HOST".equalsIgnoreCase(role)) { roleId = com.venueon.common.model.CodeConstants.ROLE_HOST_ID; roleLabel = "호스트"; }
+            else if ("ADMIN".equalsIgnoreCase(role)) { roleId = com.venueon.common.model.CodeConstants.ROLE_ADMIN_ID; roleLabel = "관리자"; }
+            else { roleId = com.venueon.common.model.CodeConstants.ROLE_USER_ID; roleLabel = "일반회원"; }
         } catch (IllegalArgumentException e) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "유효하지 않은 역할입니다: " + role);
         }
+
+        com.venueon.common.model.DomainCode userRole = com.venueon.common.model.DomainCode.of(roleId, roleLabel);
 
         // 도메인 모델 생성 및 저장
         User user = new User(null, email, encodedPassword, nickname, userRole,
                 AuthProvider.LOCAL, null, null, true, null, null);
         User savedUser = userRepositoryPort.save(user);
 
-        log.info("회원가입 완료: email={}, role={}", email, userRole);
+        log.info("회원가입 완료: email={}, role={}", email, roleLabel);
         return savedUser;
     }
 
@@ -91,7 +95,8 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         String encodedPassword = passwordEncoder.encode(password);
 
         // User 저장 (role=HOST)
-        User user = new User(null, email, encodedPassword, managerName, UserRole.HOST,
+        com.venueon.common.model.DomainCode hostRole = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.ROLE_HOST_ID, "호스트");
+        User user = new User(null, email, encodedPassword, managerName, hostRole,
                 AuthProvider.LOCAL, null, null, true, null, null);
         User savedUser = userRepositoryPort.save(user);
 
@@ -131,10 +136,10 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         }
 
         // JWT 토큰 생성
-        String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().name());
+        String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().id().toString());
 
         log.info("로그인 성공: email={}", email);
-        return new LoginResult(token, user.getEmail(), user.getNickname(), user.getRole().name());
+        return new LoginResult(token, user.getEmail(), user.getNickname(), com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()));
     }
 
     @Override
@@ -166,7 +171,8 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
             String randomPassword = passwordEncoder.encode(UUID.randomUUID().toString());
             String nickname = (name != null && !name.isBlank()) ? name : email.split("@")[0];
 
-            user = new User(null, email, randomPassword, nickname, UserRole.USER,
+            com.venueon.common.model.DomainCode userRole = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.ROLE_USER_ID, "일반회원");
+            user = new User(null, email, randomPassword, nickname, userRole,
                     AuthProvider.GOOGLE, picture, null, true, null, null);
             user = userRepositoryPort.save(user);
 
@@ -174,9 +180,9 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         }
 
         // 3. JWT 발급
-        String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().name());
+        String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole().id().toString());
 
-        return new LoginResult(token, user.getEmail(), user.getNickname(), user.getRole().name());
+        return new LoginResult(token, user.getEmail(), user.getNickname(), com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()));
     }
 
     @Override
@@ -189,14 +195,15 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
 
         // 이미 HOST인 경우
-        if (user.getRole() == UserRole.HOST) {
+        if (user.getRole() != null && user.getRole().id().equals(com.venueon.common.model.CodeConstants.ROLE_HOST_ID)) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "이미 호스트로 등록된 계정입니다.");
         }
 
         // role 업그레이드: USER → HOST
+        com.venueon.common.model.DomainCode hostRole = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.ROLE_HOST_ID, "호스트");
         User upgradedUser = new User(
                 user.getId(), user.getEmail(), user.getPassword(), managerName,
-                UserRole.HOST, user.getProvider(),
+                hostRole, user.getProvider(),
                 user.getProfileImg(), user.getPhone(), user.isActive(), user.getCreatedAt(), user.getUpdatedAt());
         User savedUser = userRepositoryPort.save(upgradedUser);
 

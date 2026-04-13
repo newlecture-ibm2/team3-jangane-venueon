@@ -23,11 +23,11 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
     @Query("SELECT o FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
            "o.id IN (SELECT MIN(o2.id) FROM OrderJpaEntity o2 WHERE o2.user.id = :userId GROUP BY o2.tossOrderId) AND " +
            "(o.status != 'PENDING' OR (o.status = 'PENDING' AND o.paymentMethod = 'VIRTUAL_ACCOUNT')) AND " +
-           "(:hasStatuses = false OR o.event.status IN :statuses)")
+           "(:hasStatuses = false OR o.event.status.code IN :statuses)")
     Page<OrderJpaEntity> findValidOrdersByUserIdAndEventStatuses(
             @Param("userId") Long userId,
             @Param("hasStatuses") boolean hasStatuses,
-            @Param("statuses") List<com.venueon.event.domain.model.EventStatus> statuses,
+            @Param("statuses") List<String> statuses,
             Pageable pageable);
 
     List<OrderJpaEntity> findByEventId(Long eventId);
@@ -109,12 +109,12 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
 
     @Query("SELECT COUNT(o) FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
            "(o.status = 'PAID' OR o.status = 'REGISTERED') AND " +
-           "o.event.status = 'ONGOING'")
+           "o.event.status.code = 'ONGOING'")
     long countOngoingByUserId(@Param("userId") Long userId);
 
     @Query("SELECT COUNT(o) FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
            "(o.status = 'PAID' OR o.status = 'REGISTERED') AND " +
-           "o.event.status = 'ENDED'")
+           "o.event.status.code = 'ENDED'")
     long countCompletedByUserId(@Param("userId") Long userId);
 
     @Query("SELECT COUNT(o) FROM OrderJpaEntity o " +

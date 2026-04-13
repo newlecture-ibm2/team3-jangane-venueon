@@ -126,24 +126,24 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
 
     @Override
     public Page<Order> findValidOrdersByUserId(Long userId, String tab, Pageable pageable) {
-        List<com.venueon.event.domain.model.EventStatus> statuses = new ArrayList<>();
+        List<String> statuses = new ArrayList<>();
         boolean hasStatuses = false;
 
         if (tab != null && !tab.isEmpty()) {
             hasStatuses = true;
             if ("upcoming".equals(tab)) {
-                statuses.addAll(List.of(com.venueon.event.domain.model.EventStatus.DRAFT, com.venueon.event.domain.model.EventStatus.PUBLISHED));
+                statuses.addAll(List.of("DRAFT", "PUBLISHED"));
             } else if ("enrolled".equals(tab)) {
-                statuses.add(com.venueon.event.domain.model.EventStatus.ONGOING);
+                statuses.add("ONGOING");
             } else if ("completed".equals(tab)) {
-                statuses.add(com.venueon.event.domain.model.EventStatus.ENDED);
+                statuses.add("ENDED");
             } else {
                 hasStatuses = false;
             }
         }
         
         if (statuses.isEmpty()) {
-            statuses.add(com.venueon.event.domain.model.EventStatus.DRAFT); 
+            statuses.add("DRAFT"); 
         }
 
         return orderJpaRepository.findValidOrdersByUserIdAndEventStatuses(userId, hasStatuses, statuses, pageable).map(this::toDomain);
