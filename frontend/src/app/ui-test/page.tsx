@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput } from '@/components/ui';
+import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput, FilePreviewList } from '@/components/ui';
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import CommunityCard from '@/app/community/components/CommunityCard';
-import { ConfirmModal, InputModal, UploadModal, PaymentModal, ReviewModal } from '@/components/modal';
+import { ConfirmModal, InputModal, UploadModal, PaymentModal, InquiryModal, ReviewModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 
 export default function UITestPage() {
@@ -27,7 +27,16 @@ export default function UITestPage() {
   const [isInputAdminOpen, setIsInputAdminOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [isInquiryUserOpen, setIsInquiryUserOpen] = useState(false);
+  const [isInquiryHostOpen, setIsInquiryHostOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [demoFiles, setDemoFiles] = useState([
+    { name: '스크린샷_오류화면.png', size: 834210 },
+    { name: '사업자등록증.pdf', size: 2148576 },
+    { name: '계약서_최종본.docx', size: 45200 },
+    { name: '첨부자료_모음.zip', size: 10485760 },
+    { name: '발표자료.pptx', size: 3200000 },
+  ]);
 
   // Tailwind CSS가 없는 환경이므로 순수 인라인 스타일로 깔끔한 테스트 레이아웃 구성
   const containerStyle: React.CSSProperties = {
@@ -432,6 +441,33 @@ export default function UITestPage() {
         </div>
       </div>
 
+      {/* 14-1. FilePreviewList (업로드 파일 목록) */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>14-1. FilePreviewList (업로드 파일 목록)</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '500px' }}>
+
+          <div>
+            <p style={{ marginBottom: '12px', color: '#6B7280' }}>편집 모드 (삭제 가능)</p>
+            <FilePreviewList
+              files={demoFiles}
+              onRemove={(index) => setDemoFiles(prev => prev.filter((_, i) => i !== index))}
+              onClickFile={(file) => alert(`파일 클릭: ${file.name}`)}
+            />
+          </div>
+
+          <div>
+            <p style={{ marginBottom: '12px', color: '#6B7280' }}>읽기 전용 (어드민 확인용)</p>
+            <FilePreviewList
+              files={[
+                { name: '첨부_증빙자료.pdf', size: 1520000, url: '#' },
+              ]}
+              onClickFile={(file) => alert(`다운로드: ${file.name}`)}
+            />
+          </div>
+
+        </div>
+      </div>
+
       {/* 15. Modals */}
       <div style={sectionStyle}>
         <h2 style={titleStyle}>15. Modals (모달 창들)</h2>
@@ -443,7 +479,9 @@ export default function UITestPage() {
           <Button variant="outlined" onClick={() => setIsInputAdminOpen(true)}>2. 상세 내역 모달 (Admin)</Button>
           <Button variant="primary" onClick={() => setIsUploadOpen(true)}>3. 파일업로드 모달</Button>
           <Button variant="primary" onClick={() => setIsPaymentOpen(true)}>4. 결제 모달</Button>
-          <Button variant="outlined" onClick={() => setIsReviewOpen(true)}>5. 리뷰 작성 모달</Button>
+          <Button variant="outlined" onClick={() => setIsInquiryUserOpen(true)}>5. 1:1 문의 (User)</Button>
+          <Button variant="outlined" onClick={() => setIsInquiryHostOpen(true)}>5. 1:1 문의 (Host)</Button>
+          <Button variant="outlined" onClick={() => setIsReviewOpen(true)}>6. 리뷰 작성 모달</Button>
         </div>
       </div>
 
@@ -639,7 +677,29 @@ export default function UITestPage() {
         }}
       />
 
-      {/* 5. ReviewModal */}
+      {/* 5-1. InquiryModal (User) */}
+      <InquiryModal
+        isOpen={isInquiryUserOpen}
+        onClose={() => setIsInquiryUserOpen(false)}
+        role="user"
+        onSubmit={(data) => {
+          console.log('User Inquiry:', data);
+          alert(`문의 전송!\n- 유형: ${data.category}\n- 제목: ${data.title}\n- 내용: ${data.content}\n- 첨부: ${data.attachment?.name || '없음'}`);
+        }}
+      />
+
+      {/* 5-2. InquiryModal (Host) */}
+      <InquiryModal
+        isOpen={isInquiryHostOpen}
+        onClose={() => setIsInquiryHostOpen(false)}
+        role="host"
+        onSubmit={(data) => {
+          console.log('Host Inquiry:', data);
+          alert(`호스트 문의 전송!\n- 유형: ${data.category}\n- 제목: ${data.title}\n- 내용: ${data.content}\n- 첨부: ${data.attachment?.name || '없음'}`);
+        }}
+      />
+
+      {/* 6. ReviewModal */}
       <ReviewModal
         isOpen={isReviewOpen}
         onClose={() => setIsReviewOpen(false)}

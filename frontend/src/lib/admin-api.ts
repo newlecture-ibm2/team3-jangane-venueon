@@ -36,7 +36,6 @@ export interface PageResponse<T> {
 
 export interface ApiResponse<T> {
   success: boolean;
-  status: string;
   data: T;
   message?: string;
 }
@@ -45,6 +44,20 @@ export interface AdminUpdateUserRequest {
   nickname?: string;
   role?: string;
   phone?: string;
+}
+
+export interface AdminReportListItem {
+  id: number;
+  reporterId: number;
+  reporterNickname: string;
+  targetType: 'EVENT' | 'POST' | 'COMMENT' | 'USER';
+  targetId: number;
+  reason: string;
+  detail: string;
+  status: 'PENDING' | 'RESOLVED' | 'REJECTED';
+  adminAction: string | null;
+  createdAt: string;
+  resolvedAt: string | null;
 }
 
 // ── API 함수 ──
@@ -119,16 +132,6 @@ export const adminCategoryAPI = {
     api.patch<ApiResponse<void>>(`/admin/categories/${id}/order`, { sortOrder: newOrder }),
 };
 
-export interface AdminReportListItem {
-  id: number;
-  targetId: number;
-  targetType: string;
-  reason: string;
-  reporterNickname: string;
-  status: string;
-  createdAt: string;
-}
-
 export const adminReportAPI = {
   /** 신고 목록 조회 */
   getReports: (params: {
@@ -148,6 +151,7 @@ export const adminReportAPI = {
   processReport: (id: number, action: string, status: string) =>
     api.patch<ApiResponse<void>>(`/admin/reports/${id}`, { action, status }),
 };
+
 export interface AdminEventListItem {
   id: number;
   title: string;
@@ -233,3 +237,4 @@ export const adminEventAPI = {
   deleteEvent: (id: number) =>
     api.delete<ApiResponse<void>>(`/admin/events/${id}`),
 };
+

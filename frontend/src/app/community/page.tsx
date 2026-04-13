@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button, Pagination, Card, CardGrid, Tabs } from '@/components/ui';
+import { Button, Pagination, CardGrid, Tabs } from '@/components/ui';
 import Sidebar from '@/components/layout/Sidebar';
 import { useUIStore } from '@/store/useUIStore';
+import CommunityListCard from './components/CommunityListCard';
 import styles from './page.module.css';
 
 interface CommunityItem {
@@ -90,7 +91,7 @@ export default function CommunityListPage() {
             <CardGrid layout="2-cols">
               {communities.map((community) => (
                 /* 기존 Card 컴포넌트 활용 (프라퍼티 매핑) */
-                <Card
+                <CommunityListCard
                   key={community.id}
                   status="PUBLISHED" // '모집 중' 배지 효과
                   tagText="활발함"
@@ -102,6 +103,7 @@ export default function CommunityListPage() {
                   price={0} // '무료 참여' 표시
                   actionButtonText="커뮤니티 입장하기"
                   onActionClick={() => window.location.href = `/community/${community.id}`}
+                  onEditClick={() => window.location.href = `/community/${community.id}/edit`}
                 />
               ))}
             </CardGrid>

@@ -1,0 +1,192 @@
+.container {
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 1) 탭 + 숨김 체크박스 행 ── */
+.tabRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--space-48);
+  margin-bottom: var(--space-32);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-24);
+}
+
+.tab {
+  padding-bottom: var(--space-8);
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-500);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-bottom: -1px;
+}
+
+.activeTab {
+  color: var(--color-text-gray-900);
+  border-bottom-color: var(--color-text-gray-900);
+}
+
+.checkboxArea {
+  display: flex;
+  align-items: center;
+}
+
+/* ── 2) 검색바 + 상태 버튼 행 ── */
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  margin-bottom: var(--space-24);
+}
+
+.searchWrapper {
+  width: 410px;
+  flex-shrink: 0;
+}
+
+.statusButtons {
+  display: flex;
+  gap: var(--space-8);
+}
+
+/* ── 3) 테이블 ── */
+.tableContainer {
+  width: 100%;
+}
+
+.table {
+  display: block;
+  width: 100%;
+}
+
+.table thead,
+.table tbody {
+  display: block;
+}
+
+.table thead tr {
+  display: flex;
+  padding: var(--space-16) var(--space-24);
+  align-items: center;
+  gap: var(--space-24);
+  border-bottom: 1px solid var(--color-text-gray-300);
+  background: var(--color-bg);
+}
+
+.table th {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  flex: 1 0 0;
+  overflow: hidden;
+  color: var(--color-text-gray-700);
+  text-overflow: ellipsis;
+  font: var(--text-body-regular);
+  padding: 0;
+  border: none;
+  text-align: left;
+}
+
+.table tbody tr {
+  display: flex;
+  padding: var(--space-16) var(--space-24);
+  align-items: center;
+  gap: var(--space-24);
+  border-bottom: 1px solid var(--color-text-gray-100);
+}
+
+.table td {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  flex: 1 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0;
+  border: none;
+  height: auto;
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-700);
+}
+
+/* ── 컬럼 비율 ── */
+.colTitle { flex: 5 0 0; font-weight: 700; }
+.colAuthor { flex: 1.5 0 0; }
+.colDate { flex: 2 0 0; }
+.colStatus { flex: 1.5 0 0; }
+.table td.colMore {
+  flex: 0 0 32px;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  overflow: visible;
+}
+.colStudent { flex: 2.5 0 0; }
+
+
+/* ── 사용자 프로필 ── */
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.avatar {
+  width: var(--space-36);
+  height: var(--space-36);
+  background: #1B10B9; /* 프로필 컬러는 일단 유지하되 필요시 변경 */
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.userName {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+}
+
+/* ── 텍스트 말줄임 ── */
+.ellipsis {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dateText {
+  white-space: pre-line;
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-700);
+}
+
+
+
+/* ── 더보기 버튼 ── */
+.moreWrapper {
+  position: relative;
+}
+
+.iconButton {
+  border: none;
+  background: transparent;
+  padding: var(--space-8);
+  cursor: pointer;
+  color: var(--color-text-gray-500);
+}
+
+/* ── 페이지네이션 ── */
+.paginationArea {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-32);
+}
