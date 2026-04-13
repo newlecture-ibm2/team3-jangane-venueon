@@ -667,26 +667,26 @@ public class DataInitializer implements ApplicationRunner {
     }
 
     private void createInitialCartItems() {
-        log.info("관리자 계정(admin@venueon.com)용 장바구니 임시 데이터 10개 생성을 시작합니다.");
+        log.info("관리자 계정(admin@venueon.com)용 장바구니 임시 데이터 생성을 시작합니다.");
 
         UserJpaEntity admin = userRepository.findByEmail("admin@venueon.com")
                 .orElse(null);
 
-        List<SessionJpaEntity> sessions = sessionRepository.findAll().stream()
+        List<TicketJpaEntity> tickets = ticketRepository.findAll().stream()
                 .limit(10)
                 .toList();
 
-        if (admin == null || sessions.isEmpty()) {
-            log.warn("장바구니를 생성할 관리자 계정이나 세션이 부족합니다.");
+        if (admin == null || tickets.isEmpty()) {
+            log.warn("장바구니를 생성할 관리자 계정이나 티켓이 부족합니다.");
             return;
         }
 
-        for (int i = 0; i < 10 && i < sessions.size(); i++) {
-            SessionJpaEntity session = sessions.get(i);
+        for (int i = 0; i < 10 && i < tickets.size(); i++) {
+            TicketJpaEntity ticket = tickets.get(i);
 
             cartRepository.save(CartJpaEntity.builder()
                     .user(admin)
-                    .eventSession(session)
+                    .ticket(ticket)
                     .quantity((i % 3) + 1)
                     .build());
         }

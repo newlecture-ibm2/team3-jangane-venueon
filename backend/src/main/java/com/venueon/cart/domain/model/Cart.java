@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 /**
  * Cart(장바구니) 도메인 모델 (순수 POJO)
  * Hexagonal Architecture: Domain Layer
+ *
+ * v6: session 기반 → ticket 기반으로 전환
  */
 public class Cart {
 
@@ -12,30 +14,28 @@ public class Cart {
     private String userEmail;
     private Long eventId;
     private String eventTitle;
-    private Long sessionId;
-    private String sessionTitle;
-    private int price;
-    private int discountedPrice;
+    private Long ticketId;
+    private String ticketName;
+    private int ticketPrice;
+    private int ticketOriginalPrice;
     private int quantity;
-    private LocalDateTime startDate;
     private LocalDateTime createdAt;
 
     protected Cart() {}
 
     public Cart(Long id, String userEmail, Long eventId, String eventTitle,
-                Long sessionId, String sessionTitle,
-                int price, int discountedPrice, int quantity,
-                LocalDateTime startDate, LocalDateTime createdAt) {
+                Long ticketId, String ticketName,
+                int ticketPrice, int ticketOriginalPrice, int quantity,
+                LocalDateTime createdAt) {
         this.id = id;
         this.userEmail = userEmail;
         this.eventId = eventId;
         this.eventTitle = eventTitle;
-        this.sessionId = sessionId;
-        this.sessionTitle = sessionTitle;
-        this.price = price;
-        this.discountedPrice = discountedPrice;
+        this.ticketId = ticketId;
+        this.ticketName = ticketName;
+        this.ticketPrice = ticketPrice;
+        this.ticketOriginalPrice = ticketOriginalPrice;
         this.quantity = quantity;
-        this.startDate = startDate;
         this.createdAt = createdAt;
     }
 
@@ -43,10 +43,10 @@ public class Cart {
      * 새로운 장바구니 항목 생성
      */
     public static Cart create(String userEmail, Long eventId, String eventTitle,
-                               Long sessionId, String sessionTitle,
-                               int price, int discountedPrice, LocalDateTime startDate) {
-        return new Cart(null, userEmail, eventId, eventTitle, sessionId, sessionTitle, price, discountedPrice,
-                1, startDate, LocalDateTime.now());
+                               Long ticketId, String ticketName,
+                               int ticketPrice, int ticketOriginalPrice, int quantity) {
+        return new Cart(null, userEmail, eventId, eventTitle, ticketId, ticketName,
+                ticketPrice, ticketOriginalPrice, quantity, LocalDateTime.now());
     }
 
     // --- 비즈니스 행위 ---
@@ -62,17 +62,25 @@ public class Cart {
     }
 
     /**
-     * 소계 계산
+     * 소계 계산 (판매가 기준)
      */
     public int getSubtotal() {
-        return discountedPrice * quantity;
+        return ticketPrice * quantity;
     }
 
     /**
      * 할인 금액 계산
      */
     public int getDiscountAmount() {
-        return (price - discountedPrice) * quantity;
+        return (ticketOriginalPrice - ticketPrice) * quantity;
+    }
+
+    /**
+     * 할인율 계산 (%)
+     */
+    public int getDiscountRate() {
+        if (ticketOriginalPrice <= 0 || ticketPrice >= ticketOriginalPrice) return 0;
+        return (int) Math.round((1.0 - (double) ticketPrice / ticketOriginalPrice) * 100);
     }
 
     /**
@@ -88,11 +96,10 @@ public class Cart {
     public String getUserEmail() { return userEmail; }
     public Long getEventId() { return eventId; }
     public String getEventTitle() { return eventTitle; }
-    public Long getSessionId() { return sessionId; }
-    public String getSessionTitle() { return sessionTitle; }
-    public int getPrice() { return price; }
-    public int getDiscountedPrice() { return discountedPrice; }
+    public Long getTicketId() { return ticketId; }
+    public String getTicketName() { return ticketName; }
+    public int getTicketPrice() { return ticketPrice; }
+    public int getTicketOriginalPrice() { return ticketOriginalPrice; }
     public int getQuantity() { return quantity; }
-    public LocalDateTime getStartDate() { return startDate; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }
