@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Button, Tag } from '@/components/ui';
+import ConfirmModal from '@/components/modal/ConfirmModal';
 import styles from './TicketList.module.css';
 import { format, differenceInDays } from 'date-fns';
 
@@ -44,7 +45,59 @@ interface TicketListProps {
 export default function TicketList({ tickets, sessions, eventStatus }: TicketListProps) {
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const router = useRouter();
+  const params = useParams();
+  const eventId = Number(params?.id);
+
+  const proceedAddToCart = async () => {
+    setAddingToCart(true);
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketId: selectedTicketId, quantity: 1 }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error || '장바구니 추가 실패');
+      }
+      setShowSuccessModal(true);
+    } catch (err: any) {
+      alert(err.message || '장바구니 추가 중 오류가 발생했습니다.');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
+  const handleAddToCartClick = async () => {
+    setAddingToCart(true);
+    try {
+      const cartRes = await fetch('/api/cart');
+      if (!cartRes.ok) throw new Error('장바구니 목록을 불러오지 못했습니다.');
+      
+      const cartItems = await cartRes.json();
+      
+      const hasSameTicket = cartItems.some((item: any) => item.ticketId === selectedTicketId);
+      if (hasSameTicket) {
+        setShowErrorModal(true);
+        return;
+      }
+      
+      const hasSameEventTicket = cartItems.some((item: any) => item.eventId === eventId);
+      if (hasSameEventTicket) {
+        setShowConfirmModal(true);
+        return; // wait for modal
+      }
+      
+      await proceedAddToCart();
+    } catch (err: any) {
+      alert(err.message || '장바구니 확인 중 오류가 발생했습니다.');
+      setAddingToCart(false);
+    }
+  };
 
   if (!tickets || tickets.length === 0) {
     return (
@@ -174,25 +227,7 @@ export default function TicketList({ tickets, sessions, eventStatus }: TicketLis
               size="large"
               style={{ flex: 1 }}
               disabled={addingToCart}
-              onClick={async () => {
-                setAddingToCart(true);
-                try {
-                  const res = await fetch('/api/cart', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ticketId: selectedTicketId, quantity: 1 }),
-                  });
-                  if (!res.ok) {
-                    const body = await res.json().catch(() => null);
-                    throw new Error(body?.error || '장바구니 추가 실패');
-                  }
-                  alert('장바구니에 추가되었습니다!');
-                } catch (err: any) {
-                  alert(err.message || '장바구니 추가 중 오류가 발생했습니다.');
-                } finally {
-                  setAddingToCart(false);
-                }
-              }}
+              onClick={handleAddToCartClick}
             >
               {addingToCart ? '추가 중...' : '장바구니 담기'}
             </Button>
@@ -212,6 +247,51 @@ export default function TicketList({ tickets, sessions, eventStatus }: TicketLis
           </div>
         </div>
       )}
+
+      {/* 동일 이벤트 티켓 확인 모달 */}
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => {
+          setShowConfirmModal(false);
+          setAddingToCart(false);
+        }}
+        onConfirm={() => {
+          setShowConfirmModal(false);
+          proceedAddToCart();
+        }}
+        title="같은 세미나의 티켓을 이미 장바구니에 담으셨습니다."
+        subtitle="그래도 새로운 티켓을 구매하시겠습니까?"
+        confirmText="예"
+        cancelText="아니오"
+      />
+
+      {/* 이미 담겨있는 티켓 에러 모달 */}
+      <ConfirmModal
+        isOpen={showErrorModal}
+        onClose={() => {
+          setShowErrorModal(false);
+          setAddingToCart(false);
+        }}
+        onConfirm={() => {
+          setShowErrorModal(false);
+          setAddingToCart(false);
+        }}
+        title="티켓 추가 불가"
+        subtitle="이미 장바구니에 담겨 있는 티켓입니다."
+        confirmText="확인"
+        hideCancel={true}
+      />
+
+      {/* 장바구니 추가 성공 모달 */}
+      <ConfirmModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        onConfirm={() => router.push('/cart')}
+        title="장바구니 추가 완료"
+        subtitle="티켓이 장바구니에 추가되었습니다."
+        confirmText="장바구니로 이동"
+        cancelText="계속 쇼핑하기"
+      />
     </div>
   );
 }
