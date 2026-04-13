@@ -20,7 +20,7 @@ import com.venueon.common.annotation.UseCase;
 @RequiredArgsConstructor
 @Transactional
 public class CommentCommandService
-        implements CreateCommentUseCase, CommentLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase {
+        implements CreateCommentUseCase, CommentLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase, CommentAdminUseCase {
 
     private final CommentRepositoryPort commentRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
@@ -78,6 +78,7 @@ public class CommentCommandService
         comment.update(request.content());
     }
 
+    @Override
     public void hideComment(Long commentId) {
         Comment comment = commentRepositoryPort.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));
