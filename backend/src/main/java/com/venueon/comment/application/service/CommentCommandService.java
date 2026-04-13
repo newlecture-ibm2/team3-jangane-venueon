@@ -1,6 +1,6 @@
 package com.venueon.comment.application.service;
 
-import com.venueon.common.annotation.UseCase;
+import com.venueon.comment.application.port.in.CommentAdminUseCase;
 import com.venueon.comment.application.port.in.CommentLikeUseCase;
 import com.venueon.comment.application.port.in.CreateCommentUseCase;
 import com.venueon.comment.application.port.in.DeleteCommentUseCase;
@@ -14,6 +14,7 @@ import com.venueon.user.application.port.out.UserRepositoryPort;
 import com.venueon.user.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import com.venueon.common.annotation.UseCase;
 
 @UseCase
 @RequiredArgsConstructor
@@ -75,6 +76,10 @@ public class CommentCommandService implements CreateCommentUseCase, CommentLikeU
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + id));
         
         comment.update(request.content());
+    public void hideComment(Long commentId) {
+        Comment comment = commentRepositoryPort.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));
+        comment.hide();
         commentRepositoryPort.save(comment);
     }
 

@@ -19,7 +19,9 @@ import {
   DelayedRefundIcon,
   SecurityIcon,
   OrderIcon,
-  WishlistIcon
+  WishlistIcon,
+  RequestIcon,
+  ContactIcon
 } from '@/components/icons';
 
 export interface SidebarProps {
@@ -100,6 +102,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
           { label: '커뮤니티 관리', href: '/admin/community', icon: CommunityIcon },
           { label: '신고 관리', href: '/admin/reports', icon: ReportIcon },
           { label: '환불 모니터링', href: '/admin/refunds', icon: DelayedRefundIcon },
+          { label: '문의 관리', href: '/admin/contact', icon: RequestIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
       case 'host':
@@ -107,6 +110,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
           { label: '대시보드', href: '/host', icon: DashboardIcon },
           { label: '내 강의 목록', href: '/host/events', icon: SeminarIcon },
           { label: '프로필 설정', href: '/host/profile', icon: ProfileIcon },
+          { label: '1:1 문의', href: '/host/contact', icon: ContactIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
       case 'user':
@@ -119,6 +123,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
           { label: '내 커뮤니티', href: '/mypage/community', icon: CommunityIcon },
           { label: '프로필 설정', href: '/mypage/profile', icon: ProfileIcon },
           { label: '계정 보안', href: '/mypage/security', icon: SecurityIcon },
+          { label: '1:1 문의', href: '/mypage/contact', icon: ContactIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
     }

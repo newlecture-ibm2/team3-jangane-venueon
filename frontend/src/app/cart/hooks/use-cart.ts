@@ -1,26 +1,39 @@
 import { useState, useEffect, useCallback } from 'react';
 
+/**
+ * 장바구니 항목 (프론트엔드 표시용)
+ * v6: 티켓 기반 — 계층 구조(이벤트 > 세션) 제거, 티켓 단위 플랫 리스트
+ */
 export interface CartItem {
-  id: string; // 부모에서는 eventId (string), 자식에서는 cartId (string) 역할
-  title: string;
-  schedule: string;
-  price: number;
+  id: string;       // cartId (string)
+  eventId: number;
+  eventTitle: string;
+  ticketId: number;
+  ticketName: string;
+  ticketPrice: number;
+  ticketOriginalPrice: number;
+  discountRate: number;
   quantity: number;
+  subtotal: number;
   checked: boolean;
-  sessions?: CartItem[];
+  createdAt: string;
 }
 
+/**
+ * 백엔드 API 응답 타입
+ * v6: CartResponse(ticketId, ticketName, ticketPrice, ticketOriginalPrice, discountRate)
+ */
 export interface ApiCartItem {
   cartId: number;
   eventId: number;
   eventTitle: string;
-  sessionId: number;
-  sessionTitle: string;
-  price: number;
-  discountedPrice: number;
+  ticketId: number;
+  ticketName: string;
+  ticketPrice: number;
+  ticketOriginalPrice: number;
+  discountRate: number;
   quantity: number;
   subtotal: number;
-  startDate: string;
   createdAt: string;
 }
 
@@ -36,51 +49,21 @@ export const useCart = () => {
       
       const items: ApiCartItem[] = await res.json();
       
-      // eventId 기준으로 그룹화하여 부모-자식 구조 생성
-      const eventGroups = items.reduce((acc, item) => {
-        if (!acc[item.eventId]) {
-          acc[item.eventId] = {
-            id: String(item.eventId), // 부모 ID는 eventId 사용
-            title: item.eventTitle,
-            schedule: '일정 확인 필요', // 필요시 API 추가 데이터 활용
-            price: 0, // 하위 세션 합계로 대체될 것임
-            quantity: 1,
-            checked: false,
-            sessions: []
-          };
-        }
-        
-        const group = acc[item.eventId];
-        if (!group.sessions) {
-          group.sessions = [];
-        }
-        
-        group.sessions.push({
-          id: String(item.cartId), // 자식(세션) ID는 cartId 사용 (삭제를 위해)
-          title: item.sessionTitle,
-          schedule: new Date(item.startDate).toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            weekday: 'short',
-            hour: '2-digit',
-            minute: '2-digit'
-          }),
-          price: item.price,
-          quantity: item.quantity,
-          checked: false
-        });
-        
-        return acc;
-      }, {} as Record<number, CartItem>);
-
-      // 부모의 schedule을 첫 번째 세션의 일정으로 임시 표시
-      const formattedItems = Object.values(eventGroups).map(group => {
-        if (group.sessions && group.sessions.length > 0) {
-           group.schedule = group.sessions[0].schedule;
-        }
-        return group;
-      });
+      // v6: 티켓 기반 플랫 리스트 — 그룹핑 없이 바로 CartItem으로 변환
+      const formattedItems: CartItem[] = items.map(item => ({
+        id: String(item.cartId),
+        eventId: item.eventId,
+        eventTitle: item.eventTitle,
+        ticketId: item.ticketId,
+        ticketName: item.ticketName,
+        ticketPrice: item.ticketPrice,
+        ticketOriginalPrice: item.ticketOriginalPrice,
+        discountRate: item.discountRate,
+        quantity: item.quantity,
+        subtotal: item.subtotal,
+        checked: false,
+        createdAt: item.createdAt,
+      }));
 
       setCartItems(formattedItems);
     } catch (error) {
@@ -94,78 +77,38 @@ export const useCart = () => {
     fetchItems();
   }, [fetchItems]);
 
-  // 수량 변경 (백엔드 API 연동 추가)
+  // 수량 변경
   const updateQuantity = async (id: string, delta: number) => {
-    let targetCartId: string | undefined;
-    let newQuantity = 0;
+    const target = cartItems.find(item => item.id === id);
+    if (!target) return;
 
-    // 변경될 수량 계산 및 대상 cartId 식별
-    cartItems.forEach(item => {
-        if (item.sessions) {
-            const session = item.sessions.find(s => s.id === id);
-            if (session) {
-                targetCartId = session.id;
-                newQuantity = Math.max(1, session.quantity + delta);
-            }
-        }
-    });
-
-    if (!targetCartId) return; // 부모 수량 조절 버튼 클릭 시 작동 안함 (혹은 개별 구현)
+    const newQuantity = Math.max(1, target.quantity + delta);
 
     try {
-      const res = await fetch(`/api/cart/${targetCartId}`, {
+      const res = await fetch(`/api/cart/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ quantity: newQuantity }),
       });
       if (!res.ok) throw new Error('수량 변경 실패');
 
-      // 상태 업데이트
-      setCartItems(items => items.map(item => {
-        if (item.sessions) {
-          const updatedSessions = item.sessions.map(s => 
-            s.id === targetCartId ? { ...s, quantity: newQuantity } : s
-          );
-          return { ...item, sessions: updatedSessions };
-        }
-        return item;
-      }));
+      setCartItems(items => items.map(item =>
+        item.id === id
+          ? { ...item, quantity: newQuantity, subtotal: item.ticketPrice * newQuantity }
+          : item
+      ));
     } catch (error) {
       console.error('수량 변경 실패:', error);
     }
   };
 
-  // 항목 삭제 (계층적 삭제 반영)
+  // 항목 삭제
   const removeItem = async (id: string) => {
     try {
-      // 1. 부모 삭제인 경우 (id가 eventId와 동일한 부모)
-      const isParent = cartItems.some(i => i.id === id);
-      if (isParent) {
-         const parent = cartItems.find(i => i.id === id);
-         if (parent?.sessions) {
-            // 모든 자식 cartId 삭제 API 호출 (Promise.all)
-            await Promise.all(
-                parent.sessions.map(session => 
-                    fetch(`/api/cart/${session.id}`, { method: 'DELETE' })
-                )
-            );
-         }
-         setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-         return;
-      }
-
-      // 2. 자식 삭제인 경우 (id가 cartId)
       const res = await fetch(`/api/cart/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('자식 항목 삭제 실패');
+      if (!res.ok) throw new Error('항목 삭제 실패');
 
-      setCartItems(prevItems => {
-        return prevItems.map(item => {
-          if (!item.sessions) return item;
-          const filteredSessions = item.sessions.filter(s => s.id !== id);
-          return { ...item, sessions: filteredSessions };
-        }).filter(item => item.sessions && item.sessions.length > 0);
-      });
-
+      setCartItems(prevItems => prevItems.filter(item => item.id !== id));
     } catch (error) {
       console.error('항목 삭제 실패:', error);
     }
@@ -173,83 +116,44 @@ export const useCart = () => {
 
   // 전체 선택/해제
   const toggleSelectAll = () => {
-    const allChecked = cartItems.every(item => item.checked && item.sessions?.every(s => s.checked));
+    const allChecked = cartItems.every(item => item.checked);
     const nextState = !allChecked;
 
     setCartItems(items => items.map(item => ({
       ...item,
       checked: nextState,
-      sessions: item.sessions?.map(s => ({ ...s, checked: nextState }))
     })));
   };
 
   // 개별 선택 변경
   const toggleSelectItem = (id: string) => {
-    setCartItems(prevItems => {
-      return prevItems.map(item => {
-        if (item.id === id) {
-          const nextChecked = !item.checked;
-          return {
-            ...item,
-            checked: nextChecked,
-            sessions: item.sessions?.map(s => ({ ...s, checked: nextChecked }))
-          };
-        }
-
-        if (item.sessions) {
-          let updatedChild = false;
-          const nextSessions = item.sessions.map(s => {
-            if (s.id === id) {
-              updatedChild = true;
-              return { ...s, checked: !s.checked };
-            }
-            return s;
-          });
-
-          if (updatedChild) {
-            const allSessionsChecked = nextSessions.every(s => s.checked);
-            return {
-              ...item,
-              checked: allSessionsChecked,
-              sessions: nextSessions
-            };
-          }
-        }
-        return item;
-      });
-    });
+    setCartItems(prevItems => prevItems.map(item =>
+      item.id === id ? { ...item, checked: !item.checked } : item
+    ));
   };
 
-  // 부모 가격 계산 및 체크된 항목 집계
-  const processedCartItems = cartItems.map(item => {
-    const sessionsTotal = item.sessions?.reduce((sum, s) => sum + (s.price * s.quantity), 0) || 0;
-    return {
-      ...item,
-      price: sessionsTotal > 0 ? sessionsTotal : item.price
-    };
-  });
-
-  const totalAmount = processedCartItems
+  // 가격 계산
+  const totalAmount = cartItems
     .filter(item => item.checked)
-    .reduce((sum, item) => sum + item.price, 0);
+    .reduce((sum, item) => sum + item.ticketPrice * item.quantity, 0);
 
-  const checkedItemsCount = processedCartItems.filter(item => item.checked).length;
+  const checkedItemsCount = cartItems.filter(item => item.checked).length;
 
-  // 체크된 세션들의 cartId(숫자) 목록 반환
-  const getCheckedCartIds = (): number[] => {
-    const ids: number[] = [];
-    cartItems.forEach(item => {
-      item.sessions?.forEach(session => {
-        if (session.checked) {
-          ids.push(Number(session.id));
-        }
-      });
-    });
-    return ids;
+  /**
+   * 체크된 항목들을 통합 주문 API에 맞는 items 배열로 변환
+   * v6: cartIds 대신 [{ticketId, quantity}] 형태
+   */
+  const getCheckedOrderItems = (): { ticketId: number; quantity: number }[] => {
+    return cartItems
+      .filter(item => item.checked)
+      .map(item => ({
+        ticketId: item.ticketId,
+        quantity: item.quantity,
+      }));
   };
 
   return {
-    cartItems: processedCartItems,
+    cartItems,
     loading,
     totalAmount,
     checkedItemsCount,
@@ -257,7 +161,7 @@ export const useCart = () => {
     removeItem,
     toggleSelectAll,
     toggleSelectItem,
-    getCheckedCartIds,
+    getCheckedOrderItems,
     refresh: fetchItems
   };
 };

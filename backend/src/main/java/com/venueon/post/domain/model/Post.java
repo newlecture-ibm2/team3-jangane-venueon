@@ -24,6 +24,7 @@ public class Post {
     private int likeCount;
     private boolean isPinned;
     private boolean isNotice;
+    private boolean isHidden;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -90,5 +91,7 @@ public class Post {
             }
         }
         this.updatedAt = LocalDateTime.now();
+    public void hide() {
+        this.isHidden = true;
     }
 }

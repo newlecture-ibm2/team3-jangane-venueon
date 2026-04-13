@@ -8,6 +8,9 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * v6: sessionId 기반 → ticketId 기반으로 전환
+ */
 public interface OrderRepositoryPort {
     
     Order save(Order order);
@@ -20,11 +23,9 @@ public interface OrderRepositoryPort {
     
     List<Order> findByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);
     
-    List<Order> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses);
+    List<Order> findByUserIdAndTicketIdAndStatusIn(Long userId, Long ticketId, List<OrderStatus> statuses);
     
     long countByEventIdAndStatusIn(Long eventId, List<OrderStatus> statuses);
-    
-    long countBySessionIdAndStatusIn(Long sessionId, List<OrderStatus> statuses);
     
     Page<Order> findByUserId(Long userId, Pageable pageable);
 

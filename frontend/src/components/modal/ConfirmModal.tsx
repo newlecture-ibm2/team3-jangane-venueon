@@ -18,6 +18,7 @@ export interface ConfirmModalProps {
   checkboxLabel?: string;
   cancelText?: string;
   confirmText?: string;
+  hideCancel?: boolean;
 }
 
 export default function ConfirmModal({
@@ -31,6 +32,7 @@ export default function ConfirmModal({
   checkboxLabel,
   cancelText = '취소',
   confirmText = '확인',
+  hideCancel = false,
 }: ConfirmModalProps) {
   const [isChecked, setIsChecked] = useState(false);
 
@@ -70,9 +72,11 @@ export default function ConfirmModal({
 
         {/* 버튼 그룹 */}
         <div className={styles.buttonGroup}>
-          <Button variant="secondary" style={{ flex: 1, padding: 0 }} onClick={onClose}>
-            {cancelText}
-          </Button>
+          {!hideCancel && (
+            <Button variant="secondary" style={{ flex: 1, padding: 0 }} onClick={onClose}>
+              {cancelText}
+            </Button>
+          )}
           <Button 
             variant={status === 'danger' ? 'danger' : 'primary'}
             style={{ flex: 1, padding: 0 }}

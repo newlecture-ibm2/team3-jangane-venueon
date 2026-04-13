@@ -3,6 +3,7 @@
 import React from 'react';
 import styles from './UserFilter.module.css';
 import { SearchIcon } from '@/components/icons';
+import { Tabs } from '@/components/ui';
 
 interface UserFilterProps {
   keyword: string;
@@ -29,20 +30,17 @@ export default function UserFilter({
 
   return (
     <div className={styles.container}>
-      {/* 탭 영역 */}
+      {/* 탭 영역 (Tabs 컴포넌트 활용) */}
       <div className={styles.tabArea}>
-        <button
-          className={`${styles.tab} ${role === 'HOST' ? styles.activeTab : ''}`}
-          onClick={() => onRoleChange('HOST')}
-        >
-          주최자 관리
-        </button>
-        <button
-          className={`${styles.tab} ${role === 'USER' ? styles.activeTab : ''}`}
-          onClick={() => onRoleChange('USER')}
-        >
-          수강생 관리
-        </button>
+        <Tabs
+          variant="line"
+          options={[
+            { value: 'HOST', label: '주최자 관리' },
+            { value: 'USER', label: '수강생 관리' },
+          ]}
+          activeValue={role}
+          onChange={onRoleChange}
+        />
       </div>
 
       {/* 검색 및 필터 버튼 영역 */}

@@ -4,6 +4,7 @@ export { default as ConfirmModal } from './ConfirmModal';
 export { default as InputModal } from './InputModal';
 export { default as UploadModal } from './UploadModal';
 export { default as PaymentModal } from './PaymentModal';
-export { default as InquiryModal } from './InquiryModal';
+export { default as ContactModal } from './ContactModal';
+export { default as ContactDetailModal } from './ContactDetailModal';
 export { default as ReviewModal } from './ReviewModal';
 export { default as ReportModal } from './ReportModal';
