@@ -3,8 +3,11 @@ package com.venueon.comment.application.service;
 import com.venueon.comment.application.port.in.CommentAdminUseCase;
 import com.venueon.comment.application.port.in.CommentLikeUseCase;
 import com.venueon.comment.application.port.in.CreateCommentUseCase;
+import com.venueon.comment.application.port.in.DeleteCommentUseCase;
+import com.venueon.comment.application.port.in.UpdateCommentUseCase;
 import com.venueon.comment.application.port.in.dto.CommentResponse;
 import com.venueon.comment.application.port.in.dto.CreateCommentRequest;
+import com.venueon.comment.application.port.in.dto.UpdateCommentRequest;
 import com.venueon.comment.application.port.out.CommentRepositoryPort;
 import com.venueon.comment.domain.model.Comment;
 import com.venueon.user.application.port.out.UserRepositoryPort;
@@ -16,7 +19,7 @@ import com.venueon.common.annotation.UseCase;
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class CommentCommandService implements CreateCommentUseCase, CommentLikeUseCase, CommentAdminUseCase {
+public class CommentCommandService implements CreateCommentUseCase, CommentLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase {
 
     private final CommentRepositoryPort commentRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
@@ -68,6 +71,11 @@ public class CommentCommandService implements CreateCommentUseCase, CommentLikeU
     }
 
     @Override
+    public void updateComment(Long id, UpdateCommentRequest request) {
+        Comment comment = commentRepositoryPort.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + id));
+        
+        comment.update(request.content());
     public void hideComment(Long commentId) {
         Comment comment = commentRepositoryPort.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));
@@ -76,10 +84,10 @@ public class CommentCommandService implements CreateCommentUseCase, CommentLikeU
     }
 
     @Override
-    public void deleteComment(Long commentId) {
-        if (!commentRepositoryPort.existsById(commentId)) {
-            throw new IllegalArgumentException("Comment not found: " + commentId);
-        }
-        commentRepositoryPort.deleteById(commentId);
+    public void deleteComment(Long id) {
+        commentRepositoryPort.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + id));
+        
+        commentRepositoryPort.delete(id);
     }
 }

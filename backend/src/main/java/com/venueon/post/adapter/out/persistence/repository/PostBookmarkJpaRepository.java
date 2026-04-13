@@ -9,4 +9,8 @@ public interface PostBookmarkJpaRepository extends JpaRepository<PostBookmarkJpa
     boolean existsByPostIdAndUserId(Long postId, Long userId);
     void deleteByPostIdAndUserId(Long postId, Long userId);
     Page<PostBookmarkJpaEntity> findAllByUserId(Long userId, Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("delete from PostBookmarkJpaEntity b where b.post.id = :postId")
+    void deleteByPostId(Long postId);
 }

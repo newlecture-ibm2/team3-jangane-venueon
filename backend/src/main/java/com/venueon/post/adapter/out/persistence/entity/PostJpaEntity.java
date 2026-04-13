@@ -1,5 +1,6 @@
 package com.venueon.post.adapter.out.persistence.entity;
 
+import com.venueon.comment.adapter.out.persistence.entity.CommentJpaEntity;
 import com.venueon.community.adapter.out.persistence.entity.CommunityJpaEntity;
 import com.venueon.post.domain.model.PostType;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
@@ -9,10 +10,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -72,4 +76,16 @@ public class PostJpaEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<CommentJpaEntity> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<PostLikeJpaEntity> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<PostBookmarkJpaEntity> bookmarks = new ArrayList<>();
 }

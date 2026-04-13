@@ -109,6 +109,10 @@
   background-color: #F3F4F6;
 }
 
+.optionButtonWrapper {
+  position: relative;
+}
+
 .detailActions {
   display: flex;
   align-items: center;

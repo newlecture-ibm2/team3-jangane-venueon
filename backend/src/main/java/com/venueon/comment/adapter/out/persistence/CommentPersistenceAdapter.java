@@ -28,6 +28,17 @@ public class CommentPersistenceAdapter implements CommentRepositoryPort {
 
     @Override
     public Comment save(Comment comment) {
+        if (comment.getId() != null) {
+            CommentJpaEntity existing = commentJpaRepository.findById(comment.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Comment not found with id: " + comment.getId()));
+            
+            existing.setContent(comment.getContent());
+            existing.setLikeCount(comment.getLikeCount());
+            
+            CommentJpaEntity saved = commentJpaRepository.save(existing);
+            return mapToDomain(saved);
+        }
+
         PostJpaEntity post = postJpaRepository.findById(comment.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("Post not found with id: " + comment.getPostId()));
 
@@ -41,7 +52,6 @@ public class CommentPersistenceAdapter implements CommentRepositoryPort {
         }
 
         CommentJpaEntity entity = CommentJpaEntity.builder()
-                .id(comment.getId())
                 .post(post)
                 .author(author)
                 .parent(parent)
@@ -96,12 +106,10 @@ public class CommentPersistenceAdapter implements CommentRepositoryPort {
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return commentJpaRepository.existsById(id);
-    }
-
-    @Override
-    public void deleteById(Long id) {
+    @org.springframework.transaction.annotation.Transactional
+    public void delete(Long id) {
+        commentJpaRepository.deleteByParentId(id);
+        commentLikeJpaRepository.deleteByCommentId(id);
         commentJpaRepository.deleteById(id);
     }
 
