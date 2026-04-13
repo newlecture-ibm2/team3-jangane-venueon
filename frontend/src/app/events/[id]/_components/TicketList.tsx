@@ -39,10 +39,10 @@ function getUrgencyLevel(endDateStr: string | null | undefined) {
 interface TicketListProps {
   tickets: Ticket[];
   sessions?: any[];
-  eventStatus: string;
+  eventStatusId: number;
 }
 
-export default function TicketList({ tickets, sessions, eventStatus }: TicketListProps) {
+export default function TicketList({ tickets, sessions, eventStatusId }: TicketListProps) {
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
   const [addingToCart, setAddingToCart] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -107,7 +107,7 @@ export default function TicketList({ tickets, sessions, eventStatus }: TicketLis
     );
   }
 
-  const canPurchase = eventStatus === 'PUBLISHED' || eventStatus === 'ONGOING';
+  const canPurchase = eventStatusId === 2 || eventStatusId === 3;
 
   return (
     <div className={styles.ticketListWrapper}>

@@ -9,7 +9,7 @@ export interface AdminUserListItem {
   id: number;
   email: string;
   nickname: string;
-  role: string;
+  role: { id: number; label: string };
   active: boolean;
   createdAt: string;
 }
@@ -18,7 +18,7 @@ export interface AdminUserDetail {
   id: number;
   email: string;
   nickname: string;
-  role: string;
+  role: { id: number; label: string };
   phone: string | null;
   profileImg: string | null;
   active: boolean;

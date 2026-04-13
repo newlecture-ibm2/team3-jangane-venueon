@@ -11,9 +11,9 @@ interface EventData {
   id: number;
   title: string;
   thumbnailUrl: string;
-  type: string;
-  status: string;
-  recruitmentStatus: string | null;
+  type: { id: number; label: string };
+  status: { id: number; label: string };
+  recruitmentStatus: { id: number; label: string } | null;
   location: string;
   isOnline: boolean;
   price: number;
@@ -128,8 +128,8 @@ export default function EventsPage() {
                       dateTime={event.startDate ? format(new Date(event.startDate), 'yyyy년 M월 d일 a h시') : '일정 미정'}
                       location={event.isOnline ? '온라인' : (event.location || '장소 미정')}
                       price={event.price ?? 0}
-                      status={event.status}
-                      recruitmentStatus={event.recruitmentStatus || undefined}
+                      status={event.status?.label}
+                      recruitmentStatus={event.recruitmentStatus?.label || undefined}
                     />
                   </Link>
                 );

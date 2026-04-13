@@ -12,8 +12,8 @@ interface EventData {
   title: string;
   thumbnailUrl: string | null;
   type: string;
-  status: string;
-  recruitmentStatus: string;
+  status: { id: number; label: string };
+  recruitmentStatus: { id: number; label: string };
   categoryId: number;
   creatorId: number;
   createdAt: string;
@@ -163,7 +163,7 @@ export default function Home() {
           {loading ? (
             <div>Loading...</div>
           ) : events.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '100px 0' }}>등록된 세션가 없습니다.</div>
+            <div style={{ textAlign: 'center', padding: '100px 0' }}>등록된 이벤트가 없습니다.</div>
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => {
@@ -201,8 +201,8 @@ export default function Home() {
                       location={event.isOnline ? '온라인 (Zoom 등)' : (event.primaryLocation || '장소 미정')}
                       price={event.minPrice !== null ? (event.hasDiscount ? `${event.minPrice.toLocaleString()}원` : event.minPrice) : 0}
                       originalPrice={event.hasDiscount && event.originalPrice ? event.originalPrice : undefined}
-                      status={event.status}
-                      recruitmentStatus={event.recruitmentStatus}
+                      status={event.status?.label || 'DRAFT'}
+                      recruitmentStatus={event.recruitmentStatus?.label || 'PENDING'}
                     />
                   </div>
                 );

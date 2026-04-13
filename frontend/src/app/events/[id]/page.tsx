@@ -66,21 +66,21 @@ export default async function EventDetailPage({ params }: Props) {
     );
   }
 
-  const STATUS_MAP: Record<string, { label: string; variant: 'green' | 'purple' | 'gray' | 'red' }> = {
-    PUBLISHED: { label: '게시됨', variant: 'green' },
-    ONGOING: { label: '진행 중', variant: 'purple' },
-    DRAFT: { label: '게시 전', variant: 'gray' },
-    ENDED: { label: '종료', variant: 'gray' },
-    CANCELLED: { label: '취소', variant: 'red' },
+  const STATUS_VARIANTS: Record<number, { variant: 'green' | 'purple' | 'gray' | 'red' }> = {
+    1: { variant: 'gray' }, // DRAFT
+    2: { variant: 'green' }, // PUBLISHED
+    3: { variant: 'purple' }, // ONGOING
+    4: { variant: 'gray' }, // ENDED
+    5: { variant: 'red' }, // CANCELLED
   };
 
-  const RECRUIT_MAP: Record<string, { label: string; variant: 'green' | 'purple' | 'gray' | 'red' }> = {
-    OPEN: { label: '모집중', variant: 'green' },
-    PENDING: { label: '모집 대기', variant: 'gray' },
-    CLOSED: { label: '마감', variant: 'red' },
+  const RECRUIT_VARIANTS: Record<number, { variant: 'green' | 'purple' | 'gray' | 'red' }> = {
+    1: { variant: 'gray' }, // PENDING
+    2: { variant: 'green' }, // OPEN
+    3: { variant: 'red' }, // CLOSED
   };
 
-  const statusInfo = STATUS_MAP[event.status] || { label: event.status, variant: 'gray' };
+  const statusVariant = STATUS_VARIANTS[event.status?.id]?.variant || 'gray';
   const imageUrl = event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : '';
 
   // v6: 이벤트 기간은 백엔드의 Computed 필드(event.startDate, event.endDate) 또는 세션 도출을 사용
@@ -118,13 +118,13 @@ export default async function EventDetailPage({ params }: Props) {
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {/* 모집상태 뱃지 */}
           {event.recruitmentStatus && (
-            <Tag variant={RECRUIT_MAP[event.recruitmentStatus]?.variant || 'gray'}>
-              {RECRUIT_MAP[event.recruitmentStatus]?.label || event.recruitmentStatus}
+            <Tag variant={RECRUIT_VARIANTS[event.recruitmentStatus?.id]?.variant || 'gray'}>
+              {event.recruitmentStatus?.label}
             </Tag>
           )}
           {/* 강의상태 뱃지 (DRAFT/PUBLISHED는 숨김) */}
-          {event.status && event.status !== 'DRAFT' && event.status !== 'PUBLISHED' && (
-            <Tag variant={statusInfo.variant}>{statusInfo.label}</Tag>
+          {event.status && event.status.id !== 1 && event.status.id !== 2 && (
+            <Tag variant={statusVariant}>{event.status?.label}</Tag>
           )}
         </div>
         <div className={styles.titleRow}>
@@ -181,15 +181,15 @@ export default async function EventDetailPage({ params }: Props) {
                 : '상시 모집'
               }
               <span style={{ marginLeft: '8px' }}>
-                <Tag variant={RECRUIT_MAP[event.recruitmentStatus]?.variant || 'gray'}>
-                  {RECRUIT_MAP[event.recruitmentStatus]?.label || event.recruitmentStatus || '모집 상태 미정'}
+                <Tag variant={RECRUIT_VARIANTS[event.recruitmentStatus?.id]?.variant || 'gray'}>
+                  {event.recruitmentStatus?.label || '모집 상태 미정'}
                 </Tag>
               </span>
             </span>
           </div>
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>유형</span>
-            <span className={styles.infoValue}>{event.type}</span>
+            <span className={styles.infoValue}>{event.type?.label}</span>
           </div>
         </div>
       </section>
@@ -202,12 +202,12 @@ export default async function EventDetailPage({ params }: Props) {
           </h3>
           <div className={styles.sessionList}>
             {sessions.map((session: any, index: number) => {
-              const recruitInfo = RECRUIT_MAP[session.recruitmentStatus] || { label: '—', variant: 'gray' };
+              const recruitVariant = RECRUIT_VARIANTS[session.recruitmentStatus?.id]?.variant || 'gray';
               return (
                 <div key={session.id || index} className={styles.sessionCard}>
                   <div className={styles.sessionHeader}>
                     <h4 className={styles.sessionTitle}>{session.title || `세션 ${index + 1}`}</h4>
-                    <Tag variant={recruitInfo.variant}>{recruitInfo.label}</Tag>
+                    <Tag variant={recruitVariant}>{session.recruitmentStatus?.label || '—'}</Tag>
                   </div>
                   {session.description && (
                     <p className={styles.sessionDesc}>{session.description}</p>
@@ -228,7 +228,7 @@ export default async function EventDetailPage({ params }: Props) {
       {/* 티켓 선택 섹션 */}
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>티켓 선택</h3>
-        <TicketList tickets={tickets} sessions={sessions} eventStatus={event.status} />
+        <TicketList tickets={tickets} sessions={sessions} eventStatusId={event.status?.id || 1} />
       </section>
 
       {/* 주최자 정보 섹션 */}

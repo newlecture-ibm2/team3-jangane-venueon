@@ -29,7 +29,7 @@ public class UserJpaEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private UserRoleJpaEntity role;
 

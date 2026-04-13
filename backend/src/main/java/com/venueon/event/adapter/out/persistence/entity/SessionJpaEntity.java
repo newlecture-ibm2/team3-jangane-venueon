@@ -86,11 +86,11 @@ public class SessionJpaEntity {
     @Builder.Default
     private Boolean isRecruitmentClosed = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "forced_recruitment_status_id")
     private com.venueon.ticket.adapter.out.persistence.entity.RecruitmentStatusJpaEntity forcedRecruitmentStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "forced_session_status_id")
     private EventStatusJpaEntity forcedSessionStatus;
 

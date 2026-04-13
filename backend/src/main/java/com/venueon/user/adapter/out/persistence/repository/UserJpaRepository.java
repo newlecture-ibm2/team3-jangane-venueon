@@ -14,10 +14,10 @@ import org.springframework.data.jpa.repository.EntityGraph;
 
 public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
 
-    @EntityGraph(attributePaths = {"categories"})
+    @EntityGraph(attributePaths = {"categories", "role"})
     Optional<UserJpaEntity> findByEmail(String email);
 
-    @EntityGraph(attributePaths = {"categories"})
+    @EntityGraph(attributePaths = {"categories", "role"})
     Optional<UserJpaEntity> findWithCategoriesById(Long id);
 
     Optional<UserJpaEntity> findByNickname(String nickname);
