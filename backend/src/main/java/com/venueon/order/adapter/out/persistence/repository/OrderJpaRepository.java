@@ -13,6 +13,9 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * v6: session 기반 쿼리 → ticket 기반으로 전환
+ */
 public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> {
 
     Page<OrderJpaEntity> findByUserId(Long userId, Pageable pageable);
@@ -33,7 +36,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
 
     long countByEventIdAndStatusIn(Long eventId, List<OrderStatus> statuses);
 
-    long countBySessionIdAndStatusIn(Long sessionId, List<OrderStatus> statuses);
+    // v6: ticket 기반 쿼리
+    long countByTicketIdAndStatusIn(Long ticketId, List<OrderStatus> statuses);
 
     @Query("""
             select new com.venueon.host.dto.HostRecentOrderResponse(
@@ -98,7 +102,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
 
     List<OrderJpaEntity> findByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);
 
-    List<OrderJpaEntity> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses);
+    // v6: ticket 기반 중복 검증
+    List<OrderJpaEntity> findByUserIdAndTicketIdAndStatusIn(Long userId, Long ticketId, List<OrderStatus> statuses);
 
     Page<OrderJpaEntity> findByEventIdIn(List<Long> eventIds, Pageable pageable);
 

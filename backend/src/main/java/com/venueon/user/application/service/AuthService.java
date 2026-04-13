@@ -11,6 +11,7 @@ import com.venueon.user.adapter.in.security.JwtTokenProvider;
 import com.venueon.user.application.port.in.*;
 import com.venueon.user.application.port.out.HostProfileRepositoryPort;
 import com.venueon.user.application.port.out.UserRepositoryPort;
+
 import com.venueon.user.domain.model.AuthProvider;
 import com.venueon.user.domain.model.HostProfile;
 import com.venueon.user.domain.model.User;
@@ -42,6 +43,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
     private final HostProfileRepositoryPort hostProfileRepositoryPort;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+
 
     @Value("${google.client-id:}")
     private String googleClientId;
@@ -98,6 +100,8 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
                 null, savedUser.getId(), orgName, orgNumber,
                 managerName, orgDescription, null, null);
         hostProfileRepositoryPort.save(hostProfile);
+
+
 
         log.info("호스트 회원가입 완료: email={}, orgName={}", email, orgName);
         return savedUser;
@@ -201,6 +205,8 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
                 null, savedUser.getId(), orgName, orgNumber,
                 managerName, orgDescription != null ? orgDescription : "", null, null);
         hostProfileRepositoryPort.save(hostProfile);
+
+
 
         log.info("호스트 업그레이드 완료: email={}, orgName={}", email, orgName);
         return savedUser;

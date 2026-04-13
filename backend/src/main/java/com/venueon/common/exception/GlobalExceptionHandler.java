@@ -46,6 +46,14 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(e.getMessage()));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException e) {
+        log.warn("IllegalStateException: {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.INVALID_INPUT_VALUE.getStatus())
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
         log.error("Exception: {}", e.getMessage(), e);

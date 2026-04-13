@@ -1,7 +1,9 @@
 package com.venueon.common.config;
 
 import com.venueon.category.adapter.out.persistence.repository.CategoryJpaRepository;
+import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
+import com.venueon.event.adapter.out.persistence.repository.SessionJpaRepository;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -28,6 +30,7 @@ public class DevDataController {
     private final UserJpaRepository userRepository;
     private final CategoryJpaRepository categoryRepository;
     private final EventJpaRepository eventRepository;
+    private final SessionJpaRepository sessionRepository;
 
     @GetMapping("/data")
     @Transactional(readOnly = true)
@@ -63,11 +66,23 @@ public class DevDataController {
                     map.put("title", e.getTitle());
                     map.put("type", e.getType().name());
                     map.put("status", e.getStatus().name());
-                    map.put("price", e.getPrice());
-                    map.put("maxAttendees", e.getMaxAttendees());
-                    map.put("location", e.getLocation());
+                    map.put("price", 0); // TODO: Ticket (Phase 3)
                     map.put("creator", e.getCreator().getNickname());
                     map.put("category", e.getCategory().getName());
+                    return map;
+                }).collect(Collectors.toList());
+
+        // Sessions
+        List<Map<String, Object>> sessions = sessionRepository.findAll().stream()
+                .map(s -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", s.getId());
+                    map.put("eventId", s.getEvent().getId());
+                    map.put("title", s.getTitle());
+                    map.put("maxAttendees", s.getMaxAttendees());
+                    map.put("location", s.isOnline() ? "온라인" : s.getLocation());
+                    map.put("recruitStartDate", s.getRecruitStartDate());
+                    map.put("recruitEndDate", s.getRecruitEndDate());
                     return map;
                 }).collect(Collectors.toList());
 
@@ -77,6 +92,8 @@ public class DevDataController {
         result.put("categoryCount", categories.size());
         result.put("events", events);
         result.put("eventCount", events.size());
+        result.put("sessions", sessions);
+        result.put("sessionCount", sessions.size());
 
         return result;
     }

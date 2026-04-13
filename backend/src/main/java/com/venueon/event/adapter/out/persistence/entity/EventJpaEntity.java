@@ -3,7 +3,6 @@ package com.venueon.event.adapter.out.persistence.entity;
 import com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
-import com.venueon.event.domain.model.PurchaseType;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,6 +11,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Event JPA Entity — DB 매핑 전용
+ * v6: price, maxAttendees, location, isOnline, startDate, endDate, purchaseType 제거
+ */
 @Entity
 @Table(name = "events")
 @Getter
@@ -47,39 +50,16 @@ public class EventJpaEntity {
     @Builder.Default
     private EventStatus status = EventStatus.DRAFT;
 
-    private String location;
-
-    @Column(name = "is_online")
-    @Builder.Default
-    private boolean isOnline = false;
-
-    @Builder.Default
-    private int price = 0;
-
-    @Column(name = "max_attendees")
-    private int maxAttendees;
-
     @Column(name = "thumbnail_url")
     private String thumbnailUrl;
-
-    @Column(name = "is_hidden", nullable = false)
-    @Builder.Default
-    private boolean isHidden = false;
-
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
-
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
 
     @Column(name = "has_session")
     @Builder.Default
     private boolean hasSession = false;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "purchase_type")
+    @Column(name = "is_hidden", nullable = false)
     @Builder.Default
-    private PurchaseType purchaseType = PurchaseType.SINGLE;
+    private boolean isHidden = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

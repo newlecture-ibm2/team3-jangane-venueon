@@ -10,17 +10,21 @@ import { format } from 'date-fns';
 interface EventData {
   id: number;
   title: string;
-  thumbnailUrl: string;
+  thumbnailUrl: string | null;
   type: string;
   status: string;
-  location: string;
-  isOnline: boolean;
-  price: number;
-  maxAttendees: number;
-  startDate: string;
-  endDate: string;
+  recruitmentStatus: string;
   categoryId: number;
   creatorId: number;
+  createdAt: string;
+  hasSession: boolean;
+  minPrice: number | null;
+  maxPrice: number | null;
+  hasDiscount: boolean;
+  originalPrice: number | null;
+  primaryLocation: string | null;
+  isOnline: boolean;
+  startDate?: string;
 }
 
 export default function Home() {
@@ -33,20 +37,39 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
 
-  const categoryOptions = [
-    { value: 'all', label: '전체보기' },
-    { value: '1', label: '디자인' },
-    { value: '2', label: '개발' },
-    { value: '3', label: '마케팅' },
-  ];
+  const [categoryOptions, setCategoryOptions] = useState<{value: string, label: string}[]>([
+    { value: 'all', label: '전체보기' }
+  ]);
 
-  const fetchEvents = async (page: number, keyword: string = '') => {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/categories');
+        const resData = await res.json();
+        if (resData.success && resData.data) {
+          const opts = resData.data.map((c: any) => ({
+            value: String(c.id),
+            label: c.name
+          }));
+          setCategoryOptions([{ value: 'all', label: '전체보기' }, ...opts]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const fetchEvents = async (page: number, keyword: string = '', categoryId: string = 'all') => {
     setLoading(true);
     try {
       // Backend pagination is 0-indexed, UI is 1-indexed
       let url = `/api/events?page=${page - 1}&size=12&sort=latest`;
       if (keyword) {
         url += `&keyword=${encodeURIComponent(keyword)}`;
+      }
+      if (categoryId !== 'all') {
+        url += `&categoryId=${categoryId}`;
       }
 
       const res = await fetch(url);
@@ -80,14 +103,14 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchEvents(currentPage, searchQuery);
-  }, [currentPage]);
+    fetchEvents(currentPage, searchQuery, activeCategory);
+  }, [currentPage, activeCategory]);
 
   // Handle Search Submit
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setCurrentPage(1);
-      fetchEvents(1, searchQuery);
+      fetchEvents(1, searchQuery, activeCategory);
     }
   };
 
@@ -144,9 +167,17 @@ export default function Home() {
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => {
-                const startTime = new Date(event.startDate).getTime();
-                const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
-                const dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                let dDayData: number | string | undefined = undefined;
+                let dateTimeStr = '일정 미정';
+
+                if (event.startDate) {
+                  const startTime = new Date(event.startDate).getTime();
+                  const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
+                  dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                  try {
+                    dateTimeStr = format(new Date(event.startDate), 'yyyy년 M월 d일 a h시');
+                  } catch(e) {}
+                }
                 
                 // 간단한 카테고리 맵핑 (프론트에서 관리하는 카테고리가 있다면 가져옴)
                 const categoryLabel = categoryOptions.find(c => c.value === String(event.categoryId))?.label || '기타';
@@ -166,10 +197,12 @@ export default function Home() {
                       isWishlistedProp={wishlistSet.has(event.id)}
                       imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
                       organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 이름으로 변경
-                      dateTime={format(new Date(event.startDate), 'yyyy년 M월 d일 a h시')}
-                      location={event.isOnline ? '온라인' : event.location}
-                      price={event.price}
+                      dateTime={dateTimeStr}
+                      location={event.isOnline ? '온라인 (Zoom 등)' : (event.primaryLocation || '장소 미정')}
+                      price={event.minPrice !== null ? (event.hasDiscount ? `${event.minPrice.toLocaleString()}원` : event.minPrice) : 0}
+                      originalPrice={event.hasDiscount && event.originalPrice ? event.originalPrice : undefined}
                       status={event.status}
+                      recruitmentStatus={event.recruitmentStatus}
                     />
                   </div>
                 );

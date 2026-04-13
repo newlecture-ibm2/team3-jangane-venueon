@@ -137,6 +137,7 @@ export const adminReportAPI = {
   getReports: (params: {
     status?: string;
     targetType?: string;
+    keyword?: string;
     page?: number;
     size?: number;
   }) => {

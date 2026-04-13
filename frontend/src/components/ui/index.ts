@@ -17,6 +17,7 @@ export { default as TextareaField } from './TextareaField';
 export { default as Dropdown } from './Dropdown';
 export { default as UploadField } from './UploadField';
 export { default as CommentInput } from './CommentInput';
+export { default as ReviewItem } from './ReviewItem';
 export { default as PopoverMenu } from './PopoverMenu';
 export { default as FilePreviewList } from './FilePreviewList';
 export * from './Table';

@@ -11,8 +11,8 @@ import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
-import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.repository.TicketJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +23,9 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+/**
+ * v6: Session 기반 → Ticket 기반으로 전환
+ */
 @Component
 @RequiredArgsConstructor
 public class OrderPersistenceAdapter implements OrderRepositoryPort {
@@ -30,7 +33,7 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
     private final OrderJpaRepository orderJpaRepository;
     private final EventJpaRepository eventJpaRepository;
     private final UserJpaRepository userJpaRepository;
-    private final EventSessionJpaRepository eventSessionJpaRepository;
+    private final TicketJpaRepository ticketJpaRepository;
 
     @Override
     public Order save(Order order) {
@@ -43,16 +46,16 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
             EventJpaEntity event = eventJpaRepository.findById(order.getEventId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
-            EventSessionJpaEntity session = null;
-            if (order.getSessionId() != null) {
-                session = eventSessionJpaRepository.findById(order.getSessionId())
-                        .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND)); // Or Session NotFound
+            TicketJpaEntity ticket = null;
+            if (order.getTicketId() != null) {
+                ticket = ticketJpaRepository.findById(order.getTicketId())
+                        .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_INPUT_VALUE));
             }
 
             entity = OrderJpaEntity.builder()
                     .user(user)
                     .event(event)
-                    .session(session)
+                    .ticket(ticket)
                     .status(order.getStatus())
                     .quantity(order.getQuantity())
                     .amount(order.getAmount())
@@ -109,13 +112,8 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
     }
 
     @Override
-    public long countBySessionIdAndStatusIn(Long sessionId, List<OrderStatus> statuses) {
-        return orderJpaRepository.countBySessionIdAndStatusIn(sessionId, statuses);
-    }
-
-    @Override
-    public List<Order> findByUserIdAndSessionIdAndStatusIn(Long userId, Long sessionId, List<OrderStatus> statuses) {
-        return orderJpaRepository.findByUserIdAndSessionIdAndStatusIn(userId, sessionId, statuses)
+    public List<Order> findByUserIdAndTicketIdAndStatusIn(Long userId, Long ticketId, List<OrderStatus> statuses) {
+        return orderJpaRepository.findByUserIdAndTicketIdAndStatusIn(userId, ticketId, statuses)
                 .stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
@@ -134,7 +132,7 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
         if (tab != null && !tab.isEmpty()) {
             hasStatuses = true;
             if ("upcoming".equals(tab)) {
-                statuses.addAll(List.of(com.venueon.event.domain.model.EventStatus.DRAFT, com.venueon.event.domain.model.EventStatus.PUBLISHED, com.venueon.event.domain.model.EventStatus.PREPARING));
+                statuses.addAll(List.of(com.venueon.event.domain.model.EventStatus.DRAFT, com.venueon.event.domain.model.EventStatus.PUBLISHED));
             } else if ("enrolled".equals(tab)) {
                 statuses.add(com.venueon.event.domain.model.EventStatus.ONGOING);
             } else if ("completed".equals(tab)) {
@@ -167,7 +165,7 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
                 entity.getId(),
                 entity.getUser().getId(),
                 entity.getEvent().getId(),
-                entity.getSession() != null ? entity.getSession().getId() : null,
+                entity.getTicket() != null ? entity.getTicket().getId() : null,
                 entity.getStatus(),
                 entity.getQuantity(),
                 entity.getAmount(),

@@ -3,12 +3,15 @@ package com.venueon.common.config;
 import com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity;
 import com.venueon.category.adapter.out.persistence.repository.CategoryJpaRepository;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
+import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
-import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
+import com.venueon.event.adapter.out.persistence.repository.SessionJpaRepository;
 import com.venueon.event.domain.model.EventStatus;
 import com.venueon.event.domain.model.EventType;
-import com.venueon.event.domain.model.PurchaseType;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketSessionJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.repository.TicketJpaRepository;
+import com.venueon.ticket.adapter.out.persistence.repository.TicketSessionJpaRepository;
 import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
 import com.venueon.order.adapter.out.persistence.repository.OrderJpaRepository;
 import com.venueon.order.domain.model.OrderStatus;
@@ -55,11 +58,13 @@ public class DataInitializer implements ApplicationRunner {
     private final HostProfileJpaRepository hostProfileRepository;
     private final CategoryJpaRepository categoryRepository;
     private final EventJpaRepository eventRepository;
-    private final EventSessionJpaRepository eventSessionRepository;
+    private final SessionJpaRepository sessionRepository;
     private final OrderJpaRepository orderRepository;
     private final ReportJpaRepository reportRepository;
     private final RefundJpaRepository refundRepository;
     private final CartJpaRepository cartRepository;
+    private final TicketJpaRepository ticketRepository;
+    private final TicketSessionJpaRepository ticketSessionRepository;
     private final CommunityJpaRepository communityRepository;
     private final PostJpaRepository postRepository;
     private final JdbcTemplate jdbcTemplate;
@@ -97,7 +102,8 @@ public class DataInitializer implements ApplicationRunner {
         List<CategoryJpaEntity> categories = createCategories();
         List<EventJpaEntity> events = createEvents(hosts, categories);
         createSessions(events);
-        List<CommunityJpaEntity> communities = createCommunities();
+        createTickets(events);
+        List<CommunityJpaEntity> communities = createCommunities(admin);
         List<PostJpaEntity> posts = createPosts(users, communities);
         List<OrderJpaEntity> orders = createOrders(users, events);
         List<ReportJpaEntity> reports = createReports(users, events, posts);
@@ -106,7 +112,8 @@ public class DataInitializer implements ApplicationRunner {
 
         log.info("=== 개발용 초기 데이터 생성 완료 ===");
         log.info("Admin: 1명, User: {}명, Host: {}명", users.size(), hosts.size());
-        log.info("Category: {}개, Event: {}개, Session: {}개", categories.size(), events.size(), eventSessionRepository.count());
+        log.info("Category: {}개, Event: {}개, Session: {}개, Ticket: {}개",
+                categories.size(), events.size(), sessionRepository.count(), ticketRepository.count());
         log.info("Order: {}개, Report: {}개, Refund: {}개", orders.size(), reports.size(), refunds.size());
     }
 
@@ -225,186 +232,178 @@ public class DataInitializer implements ApplicationRunner {
         ));
     }
 
+    /**
+     * v6: Event에서 price, maxAttendees, location, startDate, endDate, purchaseType, isOnline 제거
+     * 이 정보들은 Session에서 관리
+     */
     private List<EventJpaEntity> createEvents(List<UserJpaEntity> hosts, List<CategoryJpaEntity> categories) {
         return eventRepository.saveAll(List.of(
                 EventJpaEntity.builder()
-                        .creator(hosts.get(0))
-                        .category(categories.get(0))
+                        .creator(hosts.get(0)).category(categories.get(0))
                         .title("AI & Cloud Bootcamp")
-                        .description("현직 개발자와 함께하는 2일 집중 부트캠프. AI 모델 배포부터 클라우드 인프라 설계까지, 실무에서 바로 쓸 수 있는 기술을 배웁니다. AWS, GCP 환경에서 직접 실습하며 포트폴리오를 완성합니다.")
-                        .type(EventType.SEMINAR)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 강남구 테헤란로 123 넥스트코드 교육센터")
-                        .isOnline(false)
-                        .price(150000)
-                        .maxAttendees(40)
+                        .description("현직 개발자와 함께하는 2일 집중 부트캠프. AI 모델 배포부터 클라우드 인프라 설계까지, 실무에서 바로 쓸 수 있는 기술을 배웁니다.")
+                        .type(EventType.SEMINAR).status(EventStatus.PUBLISHED)
                         .thumbnailUrl("event-thumbnail/2026/04/NC_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 4, 12, 10, 0))
-                        .endDate(LocalDateTime.of(2026, 4, 13, 18, 0))
+                        .hasSession(true)
                         .build(),
                 EventJpaEntity.builder()
-                        .creator(hosts.get(1))
-                        .category(categories.get(1))
+                        .creator(hosts.get(1)).category(categories.get(1))
                         .title("UX Design Workshop")
-                        .description("사용자 리서치부터 프로토타이핑까지, UX 디자인의 전 과정을 실습합니다. Figma를 활용한 와이어프레임 제작과 사용성 테스트 방법을 현업 디자이너에게 직접 배울 수 있습니다.")
-                        .type(EventType.CLASS)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 성동구 성수이로 45 디자인브릿지 스튜디오")
-                        .isOnline(false)
-                        .price(80000)
-                        .maxAttendees(25)
+                        .description("사용자 리서치부터 프로토타이핑까지, UX 디자인의 전 과정을 실습합니다.")
+                        .type(EventType.CLASS).status(EventStatus.PUBLISHED)
                         .thumbnailUrl("event-thumbnail/2026/04/DB_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 4, 26, 10, 0))
-                        .endDate(LocalDateTime.of(2026, 4, 27, 17, 0))
                         .build(),
                 EventJpaEntity.builder()
-                        .creator(hosts.get(2))
-                        .category(categories.get(2))
+                        .creator(hosts.get(2)).category(categories.get(2))
                         .title("Startup Demo Day")
-                        .description("스파크벤처스 5기 배치 스타트업 10팀의 데모데이. 투자자, 멘토, 예비 창업자가 한자리에 모여 혁신적인 비즈니스 모델을 발표하고 네트워킹합니다. 참관은 무료입니다.")
-                        .type(EventType.CONFERENCE)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 영등포구 여의대로 108 파크원타워 컨벤션홀")
-                        .isOnline(false)
-                        .price(0)
-                        .maxAttendees(200)
+                        .description("스파크벤처스 5기 배치 스타트업 10팀의 데모데이. 투자자, 멘토, 예비 창업자가 한자리에 모여 혁신적인 비즈니스 모델을 발표합니다.")
+                        .type(EventType.CONFERENCE).status(EventStatus.PUBLISHED)
                         .thumbnailUrl("event-thumbnail/2026/04/SV_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 5, 10, 14, 0))
-                        .endDate(LocalDateTime.of(2026, 5, 10, 20, 0))
                         .build(),
                 EventJpaEntity.builder()
-                        .creator(hosts.get(3))
-                        .category(categories.get(3))
+                        .creator(hosts.get(3)).category(categories.get(3))
                         .title("마음챙김 요가 클래스")
-                        .description("바쁜 일상 속 나를 돌보는 시간. 호흡법과 명상을 결합한 빈야사 요가 클래스입니다. 초보자도 편하게 참여할 수 있으며, 요가 매트와 소도구는 현장에서 제공됩니다.")
-                        .type(EventType.CLASS)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 마포구 연남로 27 그린라이프 웰니스센터")
-                        .isOnline(false)
-                        .price(30000)
-                        .maxAttendees(20)
+                        .description("바쁜 일상 속 나를 돌보는 시간. 호흡법과 명상을 결합한 빈야사 요가 클래스입니다.")
+                        .type(EventType.CLASS).status(EventStatus.ENDED)
                         .thumbnailUrl("event-thumbnail/2026/04/GLA_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 5, 17, 9, 0))
-                        .endDate(LocalDateTime.of(2026, 5, 17, 11, 30))
                         .build(),
                 EventJpaEntity.builder()
-                        .creator(hosts.get(4))
-                        .category(categories.get(4))
+                        .creator(hosts.get(4)).category(categories.get(4))
                         .title("현대미술 워크숍")
-                        .description("추상표현주의부터 미디어아트까지, 현대미술의 주요 흐름을 이해하고 직접 작품을 제작합니다. 전시 큐레이터와 작가가 함께 진행하며, 완성 작품은 갤러리에서 전시됩니다.")
-                        .type(EventType.CLASS)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 성동구 서울숲2길 17 아트스페이스 서울")
-                        .isOnline(false)
-                        .price(120000)
-                        .maxAttendees(15)
+                        .description("추상표현주의부터 미디어아트까지, 현대미술의 주요 흐름을 이해하고 직접 작품을 제작합니다.")
+                        .type(EventType.CLASS).status(EventStatus.PUBLISHED)
                         .thumbnailUrl("event-thumbnail/2026/04/AS_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 5, 24, 10, 0))
-                        .endDate(LocalDateTime.of(2026, 5, 25, 17, 0))
                         .build(),
                 EventJpaEntity.builder()
-                        .creator(hosts.get(5))
-                        .category(categories.get(5))
+                        .creator(hosts.get(5)).category(categories.get(5))
                         .title("Business Growth Summit")
-                        .description("기업 성장의 핵심 전략을 다루는 비즈니스 서밋. 데이터 기반 의사결정, 조직 확장, 해외 진출 등 실전 경험을 가진 CEO와 임원진의 강연과 패널 토론으로 구성됩니다.")
-                        .type(EventType.CONFERENCE)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 중구 세종대로 110 프레스센터 국제회의장")
-                        .isOnline(true)
-                        .price(50000)
-                        .maxAttendees(150)
+                        .description("기업 성장의 핵심 전략을 다루는 비즈니스 서밋.")
+                        .type(EventType.CONFERENCE).status(EventStatus.PUBLISHED)
                         .thumbnailUrl("event-thumbnail/2026/04/BOC_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 5, 31, 9, 30))
-                        .endDate(LocalDateTime.of(2026, 5, 31, 18, 0))
                         .build(),
                 EventJpaEntity.builder()
-                        .creator(hosts.get(6))
-                        .category(categories.get(6))
+                        .creator(hosts.get(6)).category(categories.get(6))
                         .title("한식 마스터클래스")
-                        .description("전통 한식의 맛과 멋을 배우는 쿠킹 클래스. 계절 식재료를 활용한 상차림을 셰프와 함께 만들고, 한식 플레이팅 기법까지 배웁니다. 만든 음식은 현장에서 시식합니다.")
-                        .type(EventType.CLASS)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 종로구 인사동길 38 푸드랩 서울 쿠킹스튜디오")
-                        .isOnline(false)
-                        .price(65000)
-                        .maxAttendees(12)
+                        .description("전통 한식의 맛과 멋을 배우는 쿠킹 클래스.")
+                        .type(EventType.CLASS).status(EventStatus.PUBLISHED)
                         .thumbnailUrl("event-thumbnail/2026/04/FLS_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 6, 7, 11, 0))
-                        .endDate(LocalDateTime.of(2026, 6, 7, 15, 0))
                         .build(),
                 EventJpaEntity.builder()
-                        .creator(hosts.get(7))
-                        .category(categories.get(7))
+                        .creator(hosts.get(7)).category(categories.get(7))
                         .title("Smart Investment Seminar 2026")
-                        .description("개인 투자자를 위한 스마트 투자 전략 세미나. 글로벌 매크로 분석, ETF 포트폴리오 구성, AI 기반 퀀트 투자까지 최신 투자 트렌드를 금융 전문가가 직접 해설합니다.")
-                        .type(EventType.SEMINAR)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 영등포구 국제금융로 10 머니플로우 세미나홀")
-                        .isOnline(true)
-                        .price(40000)
-                        .maxAttendees(100)
+                        .description("개인 투자자를 위한 스마트 투자 전략 세미나.")
+                        .type(EventType.SEMINAR).status(EventStatus.PUBLISHED)
                         .thumbnailUrl("event-thumbnail/2026/04/MF_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 6, 14, 13, 0))
-                        .endDate(LocalDateTime.of(2026, 6, 14, 18, 0))
                         .build(),
                 EventJpaEntity.builder()
-                        .creator(hosts.get(8))
-                        .category(categories.get(8))
+                        .creator(hosts.get(8)).category(categories.get(8))
                         .title("Creator Academy: Video Editing")
-                        .description("유튜브·숏폼 콘텐츠 제작을 위한 영상 편집 아카데미. Premiere Pro와 DaVinci Resolve를 활용한 컷 편집, 색보정, 자막 디자인을 실습합니다. 개인 노트북 지참 필수.")
-                        .type(EventType.CLASS)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 강남구 논현로 515 크리에이터즈 허브 미디어랩")
-                        .isOnline(false)
-                        .price(90000)
-                        .maxAttendees(30)
+                        .description("유튜브·숏폼 콘텐츠 제작을 위한 영상 편집 아카데미.")
+                        .type(EventType.CLASS).status(EventStatus.PUBLISHED)
                         .thumbnailUrl("event-thumbnail/2026/04/CH_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 6, 21, 10, 0))
-                        .endDate(LocalDateTime.of(2026, 6, 22, 17, 0))
                         .build(),
                 EventJpaEntity.builder()
-                        .creator(hosts.get(9))
-                        .category(categories.get(9))
+                        .creator(hosts.get(9)).category(categories.get(9))
                         .title("Future Science Conference")
-                        .description("미래 과학 기술의 최신 연구 성과를 공유하는 학술 컨퍼런스. 생명공학, 양자컴퓨팅, 우주과학 등 분야별 세션으로 구성되며, 국내외 연구자 발표와 포스터 세션이 진행됩니다.")
-                        .type(EventType.CONFERENCE)
-                        .status(EventStatus.PUBLISHED)
-                        .location("서울 동대문구 회기로 85 서울과학기술대 국제회의실")
-                        .isOnline(true)
-                        .price(0)
-                        .maxAttendees(300)
+                        .description("미래 과학 기술의 최신 연구 성과를 공유하는 학술 컨퍼런스.")
+                        .type(EventType.CONFERENCE).status(EventStatus.PUBLISHED)
                         .thumbnailUrl("event-thumbnail/2026/04/SSF_thumbnail.jpg")
-                        .startDate(LocalDateTime.of(2026, 6, 28, 9, 0))
-                        .endDate(LocalDateTime.of(2026, 6, 29, 18, 0))
+                        .hasSession(true)
                         .build()
         ));
     }
 
     /**
-     * 세션 생성 — 모든 이벤트에 기본 세션(is_default=true) 생성
-     * AI Bootcamp(index 0)와 Future Science Conference(index 9)는 hasSession=true로 다중 세션 예시
+     * 세션 생성 — v6: SessionJpaEntity 사용, price 제거, 모집 기간 추가
+     * 장소/가격/정원 등은 모두 세션에서 관리
      */
     private void createSessions(List<EventJpaEntity> events) {
-        // 1) 모든 이벤트에 기본 세션 생성
-        for (EventJpaEntity event : events) {
-            eventSessionRepository.save(EventSessionJpaEntity.builder()
+        // 이벤트별 세션 데이터 (제목, 장소, 온라인여부, 정원, 시작, 종료, 모집시작, 모집마감)
+        record SessionData(String title, String desc, String location, String sido, String sigungu,
+                           boolean online, String onlineLink, int maxAttendees,
+                           LocalDateTime start, LocalDateTime end,
+                           LocalDateTime recruitStart, LocalDateTime recruitEnd) {}
+
+        // 1) 단일 이벤트들 — 기본 세션 (is_default=true)
+        SessionData[] defaultSessions = {
+            // 0: AI Bootcamp (hasSession=true이므로 기본 세션 + 추가 세션)
+            new SessionData("AI & Cloud Bootcamp", "2일 집중 부트캠프",
+                    "서울 강남구 테헤란로 123 넥스트코드 교육센터", "서울", "강남구", false, null, 40,
+                    LocalDateTime.of(2026, 4, 12, 10, 0), LocalDateTime.of(2026, 4, 13, 18, 0),
+                    LocalDateTime.of(2026, 4, 1, 0, 0), LocalDateTime.of(2026, 4, 11, 23, 59)),
+            // 1: UX Design
+            new SessionData("UX Design Workshop", "UX 디자인 실습",
+                    "서울 성동구 성수이로 45 디자인브릿지 스튜디오", "서울", "성동구", false, null, 25,
+                    LocalDateTime.of(2026, 4, 26, 10, 0), LocalDateTime.of(2026, 4, 27, 17, 0),
+                    LocalDateTime.of(2026, 4, 10, 0, 0), LocalDateTime.of(2026, 4, 25, 23, 59)),
+            // 2: Startup Demo Day
+            new SessionData("Startup Demo Day", "데모데이",
+                    "서울 영등포구 여의대로 108 파크원타워 컨벤션홀", "서울", "영등포구", false, null, 200,
+                    LocalDateTime.of(2026, 5, 10, 14, 0), LocalDateTime.of(2026, 5, 10, 20, 0),
+                    LocalDateTime.of(2026, 4, 15, 0, 0), LocalDateTime.of(2026, 5, 9, 23, 59)),
+            // 3: 요가 클래스
+            new SessionData("마음챙김 요가 클래스", "빈야사 요가",
+                    "서울 마포구 연남로 27 그린라이프 웰니스센터", "서울", "마포구", false, null, 20,
+                    LocalDateTime.of(2026, 5, 17, 9, 0), LocalDateTime.of(2026, 5, 17, 11, 30),
+                    LocalDateTime.of(2026, 5, 1, 0, 0), LocalDateTime.of(2026, 5, 16, 23, 59)),
+            // 4: 현대미술 워크숍
+            new SessionData("현대미술 워크숍", "현대미술 작품 제작",
+                    "서울 성동구 서울숲2길 17 아트스페이스 서울", "서울", "성동구", false, null, 15,
+                    LocalDateTime.of(2026, 5, 24, 10, 0), LocalDateTime.of(2026, 5, 25, 17, 0),
+                    LocalDateTime.of(2026, 5, 1, 0, 0), LocalDateTime.of(2026, 5, 23, 23, 59)),
+            // 5: Business Growth Summit (온라인 겸용)
+            new SessionData("Business Growth Summit", "비즈니스 서밋",
+                    "서울 중구 세종대로 110 프레스센터 국제회의장", "서울", "중구", true, null, 150,
+                    LocalDateTime.of(2026, 5, 31, 9, 30), LocalDateTime.of(2026, 5, 31, 18, 0),
+                    LocalDateTime.of(2026, 5, 1, 0, 0), LocalDateTime.of(2026, 5, 30, 23, 59)),
+            // 6: 한식 마스터클래스
+            new SessionData("한식 마스터클래스", "한식 쿠킹 클래스",
+                    "서울 종로구 인사동길 38 푸드랩 서울 쿠킹스튜디오", "서울", "종로구", false, null, 12,
+                    LocalDateTime.of(2026, 6, 7, 11, 0), LocalDateTime.of(2026, 6, 7, 15, 0),
+                    LocalDateTime.of(2026, 5, 15, 0, 0), LocalDateTime.of(2026, 6, 6, 23, 59)),
+            // 7: Smart Investment Seminar (온라인 겸용)
+            new SessionData("Smart Investment Seminar 2026", "투자 전략 세미나",
+                    "서울 영등포구 국제금융로 10 머니플로우 세미나홀", "서울", "영등포구", true, null, 100,
+                    LocalDateTime.of(2026, 6, 14, 13, 0), LocalDateTime.of(2026, 6, 14, 18, 0),
+                    LocalDateTime.of(2026, 5, 20, 0, 0), LocalDateTime.of(2026, 6, 13, 23, 59)),
+            // 8: Creator Academy
+            new SessionData("Creator Academy: Video Editing", "영상 편집 아카데미",
+                    "서울 강남구 논현로 515 크리에이터즈 허브 미디어랩", "서울", "강남구", false, null, 30,
+                    LocalDateTime.of(2026, 6, 21, 10, 0), LocalDateTime.of(2026, 6, 22, 17, 0),
+                    LocalDateTime.of(2026, 6, 1, 0, 0), LocalDateTime.of(2026, 6, 20, 23, 59)),
+            // 9: Future Science Conference (hasSession=true)
+            new SessionData("Future Science Conference", "학술 컨퍼런스",
+                    "서울 동대문구 회기로 85 서울과학기술대 국제회의실", "서울", "동대문구", true, null, 300,
+                    LocalDateTime.of(2026, 6, 28, 9, 0), LocalDateTime.of(2026, 6, 29, 18, 0),
+                    LocalDateTime.of(2026, 6, 1, 0, 0), LocalDateTime.of(2026, 6, 27, 23, 59))
+        };
+
+        // 기본 세션 생성
+        for (int i = 0; i < events.size(); i++) {
+            EventJpaEntity event = events.get(i);
+            SessionData sd = defaultSessions[i];
+            sessionRepository.save(SessionJpaEntity.builder()
                     .event(event)
-                    .title(event.getTitle())
-                    .description(event.getDescription())
+                    .title(sd.title())
+                    .description(sd.desc())
                     .sortOrder(0)
-                    .startTime(event.getStartDate())
-                    .endTime(event.getEndDate())
-                    .location(event.getLocation())
-                    .isOnline(event.isOnline())
-                    .price(event.getPrice())
-                    .maxAttendees(event.getMaxAttendees())
+                    .startTime(sd.start())
+                    .endTime(sd.end())
+                    .location(sd.location())
+                    .regionSido(sd.sido())
+                    .regionSigungu(sd.sigungu())
+                    .isOnline(sd.online())
+                    .onlineLink(sd.onlineLink())
+                    .maxAttendees(sd.maxAttendees())
+                    .recruitStartDate(sd.recruitStart())
+                    .recruitEndDate(sd.recruitEnd())
                     .isDefault(true)
                     .build());
         }
 
-        // 2) AI & Cloud Bootcamp — 다중 세션 예시 (hasSession=true 이벤트)
+        // 2) AI & Cloud Bootcamp — 다중 세션 (hasSession=true)
         EventJpaEntity bootcamp = events.get(0);
-        eventSessionRepository.save(EventSessionJpaEntity.builder()
+        sessionRepository.save(SessionJpaEntity.builder()
                 .event(bootcamp)
                 .title("Day 1: AI 모델 배포")
                 .description("TensorFlow/PyTorch 모델을 AWS SageMaker에 배포하는 실습")
@@ -412,11 +411,13 @@ public class DataInitializer implements ApplicationRunner {
                 .startTime(LocalDateTime.of(2026, 4, 12, 10, 0))
                 .endTime(LocalDateTime.of(2026, 4, 12, 18, 0))
                 .location("서울 강남구 테헤란로 123 넥스트코드 교육센터")
-                .price(80000)
+                .regionSido("서울").regionSigungu("강남구")
                 .maxAttendees(40)
+                .recruitStartDate(LocalDateTime.of(2026, 4, 1, 0, 0))
+                .recruitEndDate(LocalDateTime.of(2026, 4, 11, 23, 59))
                 .isDefault(false)
                 .build());
-        eventSessionRepository.save(EventSessionJpaEntity.builder()
+        sessionRepository.save(SessionJpaEntity.builder()
                 .event(bootcamp)
                 .title("Day 2: 클라우드 인프라 설계")
                 .description("AWS/GCP 기반 마이크로서비스 아키텍처 설계 및 배포 파이프라인 구축")
@@ -424,14 +425,16 @@ public class DataInitializer implements ApplicationRunner {
                 .startTime(LocalDateTime.of(2026, 4, 13, 10, 0))
                 .endTime(LocalDateTime.of(2026, 4, 13, 18, 0))
                 .location("서울 강남구 테헤란로 123 넥스트코드 교육센터")
-                .price(80000)
+                .regionSido("서울").regionSigungu("강남구")
                 .maxAttendees(40)
+                .recruitStartDate(LocalDateTime.of(2026, 4, 1, 0, 0))
+                .recruitEndDate(LocalDateTime.of(2026, 4, 11, 23, 59))
                 .isDefault(false)
                 .build());
 
-        // 3) Future Science Conference — 다중 세션 예시 (온라인 포함)
+        // 3) Future Science Conference — 다중 세션 (온라인 포함)
         EventJpaEntity sciConf = events.get(9);
-        eventSessionRepository.save(EventSessionJpaEntity.builder()
+        sessionRepository.save(SessionJpaEntity.builder()
                 .event(sciConf)
                 .title("세션 A: 생명공학의 미래")
                 .description("유전자 편집 기술과 맞춤형 의료의 최신 연구 성과 발표")
@@ -439,11 +442,13 @@ public class DataInitializer implements ApplicationRunner {
                 .startTime(LocalDateTime.of(2026, 6, 28, 10, 0))
                 .endTime(LocalDateTime.of(2026, 6, 28, 12, 0))
                 .location("서울 동대문구 회기로 85 국제회의실 A홀")
-                .price(0)
+                .regionSido("서울").regionSigungu("동대문구")
                 .maxAttendees(100)
+                .recruitStartDate(LocalDateTime.of(2026, 6, 1, 0, 0))
+                .recruitEndDate(LocalDateTime.of(2026, 6, 27, 23, 59))
                 .isDefault(false)
                 .build());
-        eventSessionRepository.save(EventSessionJpaEntity.builder()
+        sessionRepository.save(SessionJpaEntity.builder()
                 .event(sciConf)
                 .title("세션 B: 양자컴퓨팅")
                 .description("양자 알고리즘과 오류 보정 기술의 최신 동향")
@@ -452,11 +457,12 @@ public class DataInitializer implements ApplicationRunner {
                 .endTime(LocalDateTime.of(2026, 6, 28, 16, 0))
                 .isOnline(true)
                 .onlineLink("https://zoom.us/j/1234567890")
-                .price(0)
                 .maxAttendees(200)
+                .recruitStartDate(LocalDateTime.of(2026, 6, 1, 0, 0))
+                .recruitEndDate(LocalDateTime.of(2026, 6, 27, 23, 59))
                 .isDefault(false)
                 .build());
-        eventSessionRepository.save(EventSessionJpaEntity.builder()
+        sessionRepository.save(SessionJpaEntity.builder()
                 .event(sciConf)
                 .title("세션 C: 우주과학")
                 .description("차세대 우주탐사 기술과 민간 우주산업의 전망")
@@ -464,27 +470,129 @@ public class DataInitializer implements ApplicationRunner {
                 .startTime(LocalDateTime.of(2026, 6, 29, 10, 0))
                 .endTime(LocalDateTime.of(2026, 6, 29, 12, 0))
                 .location("서울 동대문구 회기로 85 국제회의실 B홀")
-                .price(0)
+                .regionSido("서울").regionSigungu("동대문구")
                 .maxAttendees(100)
+                .recruitStartDate(LocalDateTime.of(2026, 6, 1, 0, 0))
+                .recruitEndDate(LocalDateTime.of(2026, 6, 27, 23, 59))
                 .isDefault(false)
                 .build());
 
         log.info("세션 생성 완료: 기본 세션 {}개, 추가 세션 5개", events.size());
     }
 
+    /**
+     * 티켓 생성 — v6: 이벤트별 기본 티켓 + 다중 세션 이벤트에는 개별 세션 티켓
+     */
+    private void createTickets(List<EventJpaEntity> events) {
+        // 이벤트별 가격 정보 (이전 Event.price를 Ticket으로 이전)
+        int[] prices = {150000, 80000, 0, 30000, 120000, 50000, 65000, 40000, 90000, 0};
+        int[] originalPrices = {180000, 100000, 0, 35000, 150000, 60000, 75000, 50000, 110000, 0};
+        String[] ticketNames = {
+                "전체 패키지", "워크숍 참가권", "무료 입장", "요가 클래스 참가권",
+                "워크숍 참가권", "서밋 참가권", "마스터클래스 참가권",
+                "세미나 참가권", "아카데미 참가권", "무료 입장"
+        };
+
+        for (int i = 0; i < events.size(); i++) {
+            EventJpaEntity event = events.get(i);
+
+            // 기본 티켓 (전체 세션 포함)
+            TicketJpaEntity defaultTicket = ticketRepository.save(TicketJpaEntity.builder()
+                    .event(event)
+                    .name(ticketNames[i])
+                    .description(event.getTitle() + " 입장 티켓")
+                    .price(prices[i])
+                    .originalPrice(originalPrices[i])
+                    .maxQuantity(null) // 무제한 (세션 정원으로 관리)
+                    .soldCount(0)
+                    .isAllSessions(true)
+                    .sortOrder(0)
+                    .isActive(true)
+                    .build());
+
+            log.debug("기본 티켓 생성: {} (이벤트: {})", defaultTicket.getName(), event.getTitle());
+        }
+
+        // 다중 세션 이벤트(AI Bootcamp, Future Science Conference)에 개별 세션 티켓 추가
+        // AI Bootcamp (index 0)
+        EventJpaEntity bootcamp = events.get(0);
+        List<SessionJpaEntity> bootcampSessions = sessionRepository.findByEventIdOrderBySortOrder(bootcamp.getId());
+        // 개별 Day 1 티켓
+        if (bootcampSessions.size() > 1) {
+            TicketJpaEntity day1Ticket = ticketRepository.save(TicketJpaEntity.builder()
+                    .event(bootcamp)
+                    .name("Day 1: AI 모델 배포 입장권")
+                    .description("Day 1 세션만 참가")
+                    .price(80000)
+                    .originalPrice(100000)
+                    .maxQuantity(40)
+                    .isAllSessions(false)
+                    .sortOrder(1)
+                    .isActive(true)
+                    .build());
+            // Day 1 세션 매핑 (sortOrder=1)
+            SessionJpaEntity day1Session = bootcampSessions.stream()
+                    .filter(s -> s.getSortOrder() == 1).findFirst().orElse(null);
+            if (day1Session != null) {
+                ticketSessionRepository.save(TicketSessionJpaEntity.builder()
+                        .ticket(day1Ticket).session(day1Session).build());
+            }
+
+            TicketJpaEntity day2Ticket = ticketRepository.save(TicketJpaEntity.builder()
+                    .event(bootcamp)
+                    .name("Day 2: 클라우드 인프라 입장권")
+                    .description("Day 2 세션만 참가")
+                    .price(80000)
+                    .originalPrice(100000)
+                    .maxQuantity(40)
+                    .isAllSessions(false)
+                    .sortOrder(2)
+                    .isActive(true)
+                    .build());
+            SessionJpaEntity day2Session = bootcampSessions.stream()
+                    .filter(s -> s.getSortOrder() == 2).findFirst().orElse(null);
+            if (day2Session != null) {
+                ticketSessionRepository.save(TicketSessionJpaEntity.builder()
+                        .ticket(day2Ticket).session(day2Session).build());
+            }
+        }
+
+        // Future Science Conference (index 9)
+        EventJpaEntity sciConf = events.get(9);
+        List<SessionJpaEntity> sciSessions = sessionRepository.findByEventIdOrderBySortOrder(sciConf.getId());
+        if (sciSessions.size() > 1) {
+            for (int s = 1; s < sciSessions.size(); s++) {
+                SessionJpaEntity sci = sciSessions.get(s);
+                TicketJpaEntity sciTicket = ticketRepository.save(TicketJpaEntity.builder()
+                        .event(sciConf)
+                        .name(sci.getTitle() + " 입장권")
+                        .description(sci.getDescription())
+                        .price(0)
+                        .originalPrice(0)
+                        .isAllSessions(false)
+                        .sortOrder(s)
+                        .isActive(true)
+                        .build());
+                ticketSessionRepository.save(TicketSessionJpaEntity.builder()
+                        .ticket(sciTicket).session(sci).build());
+            }
+        }
+
+        log.info("티켓 생성 완료: 전체 {}개", ticketRepository.count());
+    }
+
     private List<OrderJpaEntity> createOrders(List<UserJpaEntity> users, List<EventJpaEntity> events) {
         List<OrderJpaEntity> orders = new java.util.ArrayList<>();
         String[] paymentMethods = {"CARD", "KAKAO_PAY", "NAVER_PAY", "BANK_TRANSFER"};
+        // 가격 정보는 세션/티켓으로 이동했으므로 하드코딩 (Phase 3에서 Ticket 기반으로 변경)
+        int[] prices = {150000, 80000, 0, 30000, 120000, 50000, 65000, 40000, 90000, 0};
 
         for (int i = 0; i < events.size(); i++) {
             EventJpaEntity event = events.get(i);
             UserJpaEntity buyer = users.get(i % users.size());
-            int price = event.getPrice();
+            int price = prices[i];
 
-            // 기본 상태 설정: 유료는 PAID, 무료는 REGISTERED
             OrderStatus status = (price > 0) ? OrderStatus.PAID : OrderStatus.REGISTERED;
-
-            // 환불(Refund) 데이터 연동을 위해 특정 이벤트는 CANCELLED로 설정 (Event Index 5: Business Growth Summit)
             if (i == 5) {
                 status = OrderStatus.CANCELLED;
             }
@@ -504,10 +612,10 @@ public class DataInitializer implements ApplicationRunner {
     }
 
 
-    private List<CommunityJpaEntity> createCommunities() {
+    private List<CommunityJpaEntity> createCommunities(UserJpaEntity admin) {
         return communityRepository.saveAll(List.of(
-                CommunityJpaEntity.builder().name("자유게시판").description("누구나 자유롭게 이야기하는 공간").build(),
-                CommunityJpaEntity.builder().name("질문답변").description("서로 돕고 배우는 공간").build()
+                CommunityJpaEntity.builder().name("자유게시판").description("누구나 자유롭게 이야기하는 공간").creator(admin).build(),
+                CommunityJpaEntity.builder().name("질문답변").description("서로 돕고 배우는 공간").creator(admin).build()
         ));
     }
 
@@ -545,7 +653,7 @@ public class DataInitializer implements ApplicationRunner {
                         .targetType(ReportTargetType.EVENT)
                         .targetId(events.get(0).getId())
                         .reason("허위 정보")
-                        .detail("강의 내용과 실제 진행 내용이 전혀 다릅니다. 설명에는 AWS, GCP 실습이라고 되어 있지만 실제로는 이론 수업만 진행됩니다.")
+                        .detail("강의 내용과 실제 진행 내용이 전혀 다릅니다.")
                         .status(ReportStatus.PENDING)
                         .build(),
                 // 신고 2: user2가 user3을 스팸/광고로 신고 — 대기중
@@ -554,7 +662,7 @@ public class DataInitializer implements ApplicationRunner {
                         .targetType(ReportTargetType.USER)
                         .targetId(users.get(2).getId())
                         .reason("스팸/광고")
-                        .detail("커뮤니티에서 반복적으로 외부 사이트 링크를 게시하고 있습니다. 광고성 글을 지속적으로 작성합니다.")
+                        .detail("커뮤니티에서 반복적으로 외부 사이트 링크를 게시하고 있습니다.")
                         .status(ReportStatus.PENDING)
                         .build(),
                 // 신고 3: user3이 게시글을 부적절한 언어로 신고 — 대기중
@@ -593,17 +701,15 @@ public class DataInitializer implements ApplicationRunner {
 
     private List<RefundJpaEntity> createRefunds(List<UserJpaEntity> users, List<OrderJpaEntity> orders) {
         return refundRepository.saveAll(List.of(
-                // 환불 1: Business Growth Summit(Index 5) 취소 → 환불 요청 (대기중)
                 RefundJpaEntity.builder()
-                        .order(orders.get(5))  // CANCELLED 상태인 주문
+                        .order(orders.get(5))
                         .user(orders.get(5).getUser())
                         .amount(orders.get(5).getAmount())
                         .status(RefundStatus.PENDING)
                         .reason("일정이 변경되어 참석이 어렵습니다.")
                         .build(),
-                // 환불 2: 마음챙김 요가 클래스(Index 3) 환불 (승인 완료)
                 RefundJpaEntity.builder()
-                        .order(orders.get(3))  // 요가 클래스 주문
+                        .order(orders.get(3))
                         .user(orders.get(3).getUser())
                         .amount(orders.get(3).getAmount())
                         .status(RefundStatus.APPROVED)
@@ -624,29 +730,31 @@ public class DataInitializer implements ApplicationRunner {
     }
 
     private void createInitialCartItems() {
-        log.info("관리자 계정(admin@venueon.com)용 장바구니 임시 데이터 10개 생성을 시작합니다.");
-        
+        log.info("관리자 계정(admin@venueon.com)용 장바구니 임시 데이터 생성을 시작합니다.");
+
         UserJpaEntity admin = userRepository.findByEmail("admin@venueon.com")
                 .orElse(null);
 
-        List<EventSessionJpaEntity> sessions = eventSessionRepository.findAll().stream()
+        List<TicketJpaEntity> tickets = ticketRepository.findAll().stream()
                 .limit(10)
                 .toList();
 
-        if (admin == null || sessions.isEmpty()) {
-            log.warn("장바구니를 생성할 관리자 계정이나 세션이 부족합니다.");
+        if (admin == null || tickets.isEmpty()) {
+            log.warn("장바구니를 생성할 관리자 계정이나 티켓이 부족합니다.");
             return;
         }
 
-        for (int i = 0; i < 10 && i < sessions.size(); i++) {
-            EventSessionJpaEntity session = sessions.get(i);
-            
+        for (int i = 0; i < 10 && i < tickets.size(); i++) {
+            TicketJpaEntity ticket = tickets.get(i);
+
             cartRepository.save(CartJpaEntity.builder()
                     .user(admin)
-                    .eventSession(session)
+                    .ticket(ticket)
                     .quantity((i % 3) + 1)
                     .build());
         }
         log.info("관리자용 장바구니 임시 데이터 생성 완료.");
     }
+
+
 }

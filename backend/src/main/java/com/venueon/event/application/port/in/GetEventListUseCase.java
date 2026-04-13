@@ -14,19 +14,18 @@ public interface GetEventListUseCase {
 
     /**
      * 이벤트 검색/필터 조건
+     * v6: isFree, minPrice, maxPrice 제거 (가격은 Ticket 도메인)
+     *     isOnline은 유지하되 세션 기반으로 필터링
      */
     record EventSearchCondition(
             String keyword,
             Long categoryId,
             EventType type,
-            Boolean isOnline,
-            Boolean isFree,
-            Integer minPrice,
-            Integer maxPrice,
+            Boolean isOnline,       // 세션 기반 필터 (향후 JOIN)
             String sort
     ) {
         public static EventSearchCondition empty() {
-            return new EventSearchCondition(null, null, null, null, null, null, null, null);
+            return new EventSearchCondition(null, null, null, null, null);
         }
     }
 }

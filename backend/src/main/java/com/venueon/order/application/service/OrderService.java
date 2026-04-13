@@ -1,11 +1,11 @@
 package com.venueon.order.application.service;
 
 import com.venueon.cart.application.port.out.CartRepositoryPort;
-import com.venueon.cart.domain.model.Cart;
 import com.venueon.common.exception.BusinessException;
 import com.venueon.common.exception.ErrorCode;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
+import com.venueon.event.domain.model.RecruitmentStatus;
 import com.venueon.order.adapter.out.payment.TossPaymentClient;
 import com.venueon.order.application.port.in.RequestRefundUseCase;
 import com.venueon.order.application.port.out.OrderRepositoryPort;
@@ -14,7 +14,9 @@ import com.venueon.order.domain.model.Order;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.order.adapter.in.web.dto.*;
 import com.venueon.event.application.port.out.SessionPort;
-import com.venueon.event.domain.model.EventSession;
+import com.venueon.event.domain.model.Session;
+import com.venueon.ticket.application.port.out.TicketRepositoryPort;
+import com.venueon.ticket.domain.model.Ticket;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * 주문 서비스
+ *
+ * v6: session 기반 → ticket 기반 전환
+ * - 이중 게이트 검증 (티켓 재고 + 세션 정원) 구현
+ * - 단건/배치 주문 통합 (createBatchOrder 제거)
+ * - 환불 시 티켓 재고 + 세션 정원 복구
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -45,181 +55,113 @@ public class OrderService {
     private final RequestRefundUseCase requestRefundUseCase;
     private final SessionPort sessionPort;
     private final CartRepositoryPort cartRepositoryPort;
+    private final TicketRepositoryPort ticketRepositoryPort;
 
     @Value("${toss.client-key}")
     private String tossClientKey;
 
     /**
-     * 단건 주문 생성 (PENDING 상태)
+     * 통합 주문 생성 (단건/다건 모두 지원)
      * API 스펙: POST /orders
+     *
+     * 이중 게이트 검증:
+     * Gate 1: 티켓 재고 검증 (hasStock)
+     * Gate 2: 연결된 모든 세션 정원 검증 (hasCapacity)
+     * Gate 3: 모집 상태 검증 (OPEN)
      */
     @Transactional
     public CreateOrderResponse createOrder(Long userId, CreateOrderRequest request) {
-        // 1. 이벤트 존재 여부 확인
-        EventJpaEntity event = eventRepository.findById(request.getEventId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
-
-        // 2. 유저 조회
+        // 1. 유저 조회
         UserJpaEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
-        // 3. 세션 조회 및 검증
-        EventSession session = null;
-        if (request.getSessionId() != null) {
-            session = sessionPort.findById(request.getSessionId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND)); // Session Not Found
-            if (!session.getEventId().equals(event.getId())) {
-                throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
-            }
-        } else {
-            if (event.isHasSession()) {
-                throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE); // 세션이 필수인 이벤트
-            }
-            session = sessionPort.findDefaultByEventId(event.getId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
-        }
+        // 2. 공유 tossOrderId 발급
+        String tossOrderId = "venueon_order_" + userId + "_" + System.currentTimeMillis();
 
-        // 3-2. 중복 주문 검증 (세션 기준)
-        List<Order> existingOrders = orderRepository.findByUserIdAndSessionIdAndStatusIn(
-                userId, session.getId(),
-                List.of(OrderStatus.PAID, OrderStatus.REGISTERED));
-        if (!existingOrders.isEmpty()) {
-            throw new BusinessException(ErrorCode.ORDER_ALREADY_EXISTS);
-        }
-
-        // 4. 정원 초과 검증 (세션 기준)
-        long currentAttendees = orderRepository.countBySessionIdAndStatusIn(
-                session.getId(),
-                List.of(OrderStatus.PAID, OrderStatus.REGISTERED));
-        if (session.getMaxAttendees() > 0 && currentAttendees + request.getQuantity() > session.getMaxAttendees()) {
-            throw new BusinessException(ErrorCode.EVENT_FULL);
-        }
-
-        // 5. 주문 금액 계산 (세션 금액 기준)
-        int totalAmount = session.getPrice() * request.getQuantity();
-
-        // 6. 순수 도메인 모델 생성 및 초기 저장
-        Order pendingOrder = Order.createPending(userId, request.getEventId(), session.getId(), request.getQuantity(), totalAmount,
-                request.getPaymentMethod());
-        Order savedOrder = orderRepository.save(pendingOrder);
-
-        // 7. tossOrderId 발급 및 무료 승인 처리
-        String tossOrderId = "venueon_order_" + savedOrder.getId() + "_" + System.currentTimeMillis();
-        savedOrder.updateTossOrderId(tossOrderId);
-        
-        // 무료 주문인 경우 즉시 승인 및 참석자 증가
-        if (savedOrder.getStatus() == OrderStatus.REGISTERED) {
-            session.incrementAttendees(savedOrder.getQuantity());
-            sessionPort.save(session, event.getId());
-        }
-
-        // 8. 변경된(tossOrderId가 추가된) 도메인 모델 다시 저장
-        savedOrder = orderRepository.save(savedOrder);
-
-        log.info("주문 생성 완료: orderId={}, tossOrderId={}, status={}", savedOrder.getId(), tossOrderId,
-                savedOrder.getStatus());
-
-        return CreateOrderResponse.builder()
-                .orderId(savedOrder.getId())
-                .tossOrderId(tossOrderId)
-                .amount(totalAmount)
-                .orderName(event.getTitle())
-                .customerName(user.getNickname())
-                .customerEmail(user.getEmail())
-                .tossClientKey(tossClientKey)
-                .build();
-    }
-
-    /**
-     * 장바구니 일괄 주문 생성 (PENDING 상태)
-     * API 스펙: POST /orders/batch
-     */
-    @Transactional
-    public CreateBatchOrderResponse createBatchOrder(Long userId, String userEmail, CreateBatchOrderRequest request) {
-        // 1. 장바구니 항목 조회
-        List<Cart> carts = cartRepositoryPort.findAllByIds(request.getCartIds());
-        if (carts.isEmpty()) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
-        }
-
-        // 2. 소유권 검증
-        for (Cart cart : carts) {
-            if (!cart.isOwnedBy(userEmail)) {
-                throw new BusinessException(ErrorCode.FORBIDDEN);
-            }
-        }
-
-        // 3. 유저 조회
-        UserJpaEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
-
-        // 4. 대표 tossOrderId 발급 (시간 기반 고유 값)
-        String batchTossOrderId = "venueon_batch_" + userId + "_" + System.currentTimeMillis();
-
-        // 5. 각 장바구니 항목별 Order 생성
         List<Long> orderIds = new ArrayList<>();
         int totalAmount = 0;
         List<String> eventTitles = new ArrayList<>();
 
-        for (Cart cart : carts) {
-            // 세션 조회 및 검증
-            EventSession session = sessionPort.findById(cart.getSessionId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
+        // 3. 각 항목별 검증 및 주문 생성
+        for (CreateOrderRequest.OrderItemRequest item : request.getItems()) {
+            // 3-1. 티켓 조회
+            Ticket ticket = ticketRepositoryPort.findById(item.getTicketId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_INPUT_VALUE));
 
-            // 중복 주문 검증
-            List<Order> existingOrders = orderRepository.findByUserIdAndSessionIdAndStatusIn(
-                    userId, session.getId(),
+            // 3-2. 이벤트 존재 확인
+            EventJpaEntity event = eventRepository.findById(ticket.getEventId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
+
+            // === Gate 1: 티켓 판매 상태 + 재고 검증 ===
+            if (!ticket.isOnSale()) {
+                throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+            }
+            if (!ticket.hasStock(item.getQuantity())) {
+                throw new BusinessException(ErrorCode.EVENT_FULL);
+            }
+
+            // === Gate 2: 연결된 모든 세션 정원 검증 ===
+            List<Session> linkedSessions = resolveTicketSessions(ticket);
+            for (Session session : linkedSessions) {
+                if (!session.hasCapacity(item.getQuantity())) {
+                    throw new BusinessException(ErrorCode.EVENT_FULL);
+                }
+            }
+
+            // === Gate 3: 모집 상태 검증 ===
+            for (Session session : linkedSessions) {
+                if (session.getRecruitmentStatus() != RecruitmentStatus.OPEN) {
+                    throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+                }
+            }
+
+            // 3-3. 중복 구매 검증 (동일 티켓 중복 방지)
+            List<Order> existingOrders = orderRepository.findByUserIdAndTicketIdAndStatusIn(
+                    userId, ticket.getId(),
                     List.of(OrderStatus.PAID, OrderStatus.REGISTERED));
             if (!existingOrders.isEmpty()) {
                 throw new BusinessException(ErrorCode.ORDER_ALREADY_EXISTS);
             }
 
-            // 정원 초과 검증
-            long currentAttendees = orderRepository.countBySessionIdAndStatusIn(
-                    session.getId(),
-                    List.of(OrderStatus.PAID, OrderStatus.REGISTERED));
-            if (session.getMaxAttendees() > 0 && currentAttendees + cart.getQuantity() > session.getMaxAttendees()) {
-                throw new BusinessException(ErrorCode.EVENT_FULL);
-            }
-
-            // 주문 금액 계산
-            int itemAmount = session.getPrice() * cart.getQuantity();
+            // 3-4. 주문 금액 계산
+            int itemAmount = ticket.getPrice() * item.getQuantity();
             totalAmount += itemAmount;
 
-            // Order 생성
+            // 3-5. 티켓 재고 차감
+            ticket.decreaseStock(item.getQuantity());
+            ticketRepositoryPort.updateSoldCount(ticket.getId(), ticket.getSoldCount());
+
+            // 3-6. 주문 도메인 모델 생성
             Order pendingOrder = Order.createPending(
-                    userId, cart.getEventId(), session.getId(),
-                    cart.getQuantity(), itemAmount, request.getPaymentMethod());
-            Order savedOrder = orderRepository.save(pendingOrder);
+                    userId, ticket.getEventId(), ticket.getId(),
+                    item.getQuantity(), itemAmount, request.getPaymentMethod());
+            pendingOrder.updateTossOrderId(tossOrderId);
 
-            // 동일한 batchTossOrderId 부여
-            savedOrder.updateTossOrderId(batchTossOrderId);
-
-            // 무료 주문인 경우 즉시 승인
-            if (savedOrder.getStatus() == OrderStatus.REGISTERED) {
-                session.incrementAttendees(savedOrder.getQuantity());
-                sessionPort.save(session, cart.getEventId());
+            // 3-7. 무료 주문인 경우 즉시 등록 + 세션 참석자 증가
+            if (pendingOrder.getStatus() == OrderStatus.REGISTERED) {
+                for (Session session : linkedSessions) {
+                    session.incrementAttendees(item.getQuantity());
+                    sessionPort.save(session, ticket.getEventId());
+                }
             }
 
-            savedOrder = orderRepository.save(savedOrder);
+            Order savedOrder = orderRepository.save(pendingOrder);
             orderIds.add(savedOrder.getId());
 
-            if (!eventTitles.contains(cart.getEventTitle())) {
-                eventTitles.add(cart.getEventTitle());
+            if (!eventTitles.contains(event.getTitle())) {
+                eventTitles.add(event.getTitle());
             }
         }
 
-        // 6. 주문명 생성
-        String orderName = eventTitles.size() == 1
-                ? eventTitles.get(0)
-                : eventTitles.get(0) + " 외 " + (eventTitles.size() - 1) + "건";
+        // 4. 주문명 생성
+        String orderName = buildOrderName(eventTitles);
 
-        log.info("일괄 주문 생성 완료: orderIds={}, tossOrderId={}, totalAmount={}",
-                orderIds, batchTossOrderId, totalAmount);
+        log.info("주문 생성 완료: orderIds={}, tossOrderId={}, totalAmount={}",
+                orderIds, tossOrderId, totalAmount);
 
-        return CreateBatchOrderResponse.builder()
+        return CreateOrderResponse.builder()
                 .orderIds(orderIds)
-                .tossOrderId(batchTossOrderId)
+                .tossOrderId(tossOrderId)
                 .totalAmount(totalAmount)
                 .orderName(orderName)
                 .customerName(user.getNickname())
@@ -229,7 +171,7 @@ public class OrderService {
     }
 
     /**
-     * 토스 결제 승인 요청 (단건 + 일괄 주문 모두 지원)
+     * 토스 결제 승인 요청 (tossOrderId 기반 일괄 처리)
      * API 스펙: POST /orders/{id}/confirm
      */
     @Transactional
@@ -238,7 +180,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
-        // 2. 동일 tossOrderId를 가진 모든 주문 조회 (일괄 주문 지원)
+        // 2. 동일 tossOrderId를 가진 모든 주문 조회
         List<Order> relatedOrders = orderRepository.findAllByTossOrderId(order.getTossOrderId());
 
         // 3. 합산 금액 검증
@@ -248,7 +190,7 @@ public class OrderService {
             throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
         }
 
-        // 4. 토스 결제 승인 API 호출 (더미테스트용 키인 경우 패스)
+        // 4. 토스 결제 승인 API 호출
         if (!"dummy_key".equals(request.getPaymentKey())) {
             tossPaymentClient.confirmPayment(
                     request.getPaymentKey(),
@@ -262,49 +204,46 @@ public class OrderService {
                 relatedOrder.confirmPayment(request.getPaymentKey());
                 orderRepository.save(relatedOrder);
 
-                // 세션 참석자 업데이트
-                if (relatedOrder.getSessionId() != null) {
-                    int qty = relatedOrder.getQuantity();
-                    Long evtId = relatedOrder.getEventId();
-                    sessionPort.findById(relatedOrder.getSessionId()).ifPresent(session -> {
-                        session.incrementAttendees(qty);
-                        sessionPort.save(session, evtId);
+                // 티켓의 연결된 세션들 참석자 증가
+                if (relatedOrder.getTicketId() != null) {
+                    ticketRepositoryPort.findById(relatedOrder.getTicketId()).ifPresent(ticket -> {
+                        int qty = relatedOrder.getQuantity();
+                        List<Session> sessions = resolveTicketSessions(ticket);
+                        for (Session session : sessions) {
+                            session.incrementAttendees(qty);
+                            sessionPort.save(session, ticket.getEventId());
+                        }
                     });
                 }
             }
         }
 
-        // 6. 일괄 주문(batch)인 경우 장바구니 항목 삭제
-        if (order.getTossOrderId() != null && order.getTossOrderId().startsWith("venueon_batch_")) {
-            try {
-                // 결제 완료된 주문들의 sessionId로 장바구니 항목을 찾아 삭제
-                String userEmail = userRepository.findById(order.getUserId())
-                        .map(UserJpaEntity::getEmail).orElse(null);
-                if (userEmail != null) {
-                    for (Order relatedOrder : relatedOrders) {
-                        if (relatedOrder.getSessionId() != null) {
-                            cartRepositoryPort.findByUserEmailAndSessionId(userEmail, relatedOrder.getSessionId())
-                                    .ifPresent(cart -> cartRepositoryPort.deleteById(cart.getId()));
-                        }
+        // 6. 결제 완료 후 장바구니 항목 삭제
+        try {
+            String userEmail = userRepository.findById(order.getUserId())
+                    .map(UserJpaEntity::getEmail).orElse(null);
+            if (userEmail != null) {
+                for (Order relatedOrder : relatedOrders) {
+                    if (relatedOrder.getTicketId() != null) {
+                        cartRepositoryPort.findByUserEmailAndTicketId(userEmail, relatedOrder.getTicketId())
+                                .ifPresent(cart -> cartRepositoryPort.deleteById(cart.getId()));
                     }
                 }
-                log.info("결제 완료 후 장바구니 항목 삭제 완료");
-            } catch (Exception e) {
-                log.warn("장바구니 항목 삭제 중 오류 (결제는 정상 처리됨): {}", e.getMessage());
             }
+            log.info("결제 완료 후 장바구니 항목 삭제 완료");
+        } catch (Exception e) {
+            log.warn("장바구니 항목 삭제 중 오류 (결제는 정상 처리됨): {}", e.getMessage());
         }
 
         log.info("결제 승인 완료: orderId={}, paymentKey={}, relatedOrders={}",
                 orderId, request.getPaymentKey(), relatedOrders.size());
 
-        // 7. 반환할 주문 객체 최신화 (PAID 상태 반영)
-        // relatedOrders 리스트에서 현재 orderId와 일치하는 인스턴스를 찾거나, 상태를 직접 동기화
+        // 7. 반환할 주문 객체 최신화
         Order confirmedOrder = relatedOrders.stream()
                 .filter(o -> o.getId().equals(orderId))
                 .findFirst()
-                .orElse(order); // 만약 못 찾으면 기존 order 반환 (거의 일어날 수 없음)
+                .orElse(order);
 
-        // 이벤트명(강의명) 조회
         String orderName = eventRepository.findById(confirmedOrder.getEventId())
                 .map(EventJpaEntity::getTitle)
                 .orElse("VenueOn 강의");
@@ -330,7 +269,6 @@ public class OrderService {
     public void handleTossWebhook(Map<String, Object> payload) {
         log.info("토스 Webhook 원본 수신: {}", payload);
 
-        // 토스 웹훅은 보통 "data" 필드 안에 실제 상태값들이 들어 있습니다.
         @SuppressWarnings("unchecked")
         Map<String, Object> data = (Map<String, Object>) payload.getOrDefault("data", payload);
 
@@ -357,18 +295,20 @@ public class OrderService {
         // 3. 결제 성공 처리
         if ("DONE".equals(status) && order.getStatus() == OrderStatus.PENDING) {
             order.confirmPayment(paymentKey);
-            orderRepository.save(order); // 변경 상태 저장
-            
-            // 참석자 업데이트
-            int qty = order.getQuantity();
-            Long evtId = order.getEventId();
-            if (order.getSessionId() != null) {
-                sessionPort.findById(order.getSessionId()).ifPresent(session -> {
-                    session.incrementAttendees(qty);
-                    sessionPort.save(session, evtId);
+            orderRepository.save(order);
+
+            // 티켓의 연결된 세션 참석자 업데이트
+            if (order.getTicketId() != null) {
+                ticketRepositoryPort.findById(order.getTicketId()).ifPresent(ticket -> {
+                    int qty = order.getQuantity();
+                    List<Session> sessions = resolveTicketSessions(ticket);
+                    for (Session session : sessions) {
+                        session.incrementAttendees(qty);
+                        sessionPort.save(session, ticket.getEventId());
+                    }
                 });
             }
-            
+
             log.info("Webhook: 결제 확인 완료. orderId={}", order.getId());
         }
     }
@@ -381,7 +321,6 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
-        // 본인 주문인지 검증
         if (!order.isOwnedBy(userId)) {
             throw new BusinessException(ErrorCode.ORDER_ACCESS_DENIED);
         }
@@ -397,14 +336,14 @@ public class OrderService {
         return orderRepository.findValidOrdersByUserId(userId, tab, pageable)
                 .map(order -> {
                     List<Order> relatedOrders = orderRepository.findAllByTossOrderId(order.getTossOrderId());
-                    
+
                     int totalAmount = relatedOrders.stream().mapToInt(Order::getAmount).sum();
                     int totalQuantity = relatedOrders.stream().mapToInt(Order::getQuantity).sum();
-                    
+
                     String baseTitle = eventRepository.findById(order.getEventId())
                             .map(EventJpaEntity::getTitle)
                             .orElse("알 수 없는 이벤트");
-                    
+
                     String orderName = baseTitle;
                     if (relatedOrders.size() > 1) {
                         orderName += " 외 " + (relatedOrders.size() - 1) + "건";
@@ -424,7 +363,7 @@ public class OrderService {
     }
 
     /**
-     * 참가 취소 (환불)
+     * 참가 취소 (환불) — 티켓 재고 복구 + 세션 정원 복구
      * API 스펙: POST /orders/{id}/refund
      */
     @Transactional
@@ -441,7 +380,7 @@ public class OrderService {
         // 3. 일괄 환불을 위해 공유 tossOrderId에 속한 모든 주문 조회
         List<Order> batchOrders = orderRepository.findAllByTossOrderId(order.getTossOrderId());
 
-        // 4. 환불 가능 상태 검증 (하나라도 환불된게 있으면 안됨 - 여기선 단순화)
+        // 4. 환불 가능 상태 검증
         for (Order o : batchOrders) {
             if (o.getStatus() == OrderStatus.REFUNDED || o.getStatus() == OrderStatus.CANCELLED) {
                 throw new BusinessException(ErrorCode.ALREADY_REFUNDED);
@@ -451,20 +390,28 @@ public class OrderService {
             }
         }
 
-        // 5. 토스 결제 취소 API 호출 (배치 전체에 대해 1회 호출)
+        // 5. 토스 결제 취소 API 호출
         if (order.getTossPaymentKey() != null && !"dummy_key".equals(order.getTossPaymentKey())) {
             tossPaymentClient.cancelPayment(order.getTossPaymentKey(), reason);
         }
 
-        // 6. 모든 주문 상태 변경 및 참석자 감소
+        // 6. 모든 주문 상태 변경 + 티켓 재고/세션 정원 복구
         for (Order o : batchOrders) {
             o.refund();
             orderRepository.save(o);
 
-            if (o.getSessionId() != null) {
-                sessionPort.findById(o.getSessionId()).ifPresent(session -> {
-                    session.decrementAttendees(o.getQuantity());
-                    sessionPort.save(session, o.getEventId());
+            if (o.getTicketId() != null) {
+                ticketRepositoryPort.findById(o.getTicketId()).ifPresent(ticket -> {
+                    // 티켓 재고 복구
+                    ticket.increaseStock(o.getQuantity());
+                    ticketRepositoryPort.updateSoldCount(ticket.getId(), ticket.getSoldCount());
+
+                    // 세션 정원 복구
+                    List<Session> sessions = resolveTicketSessions(ticket);
+                    for (Session session : sessions) {
+                        session.decrementAttendees(o.getQuantity());
+                        sessionPort.save(session, ticket.getEventId());
+                    }
                 });
             }
 
@@ -478,7 +425,6 @@ public class OrderService {
                 .map(EventJpaEntity::getTitle)
                 .orElse("알 수 없는 이벤트");
 
-        // 첫 번째 주문 기준으로 응답 생성
         return CancelOrderResponse.builder()
                 .orderId(orderId)
                 .eventTitle(eventTitle)
@@ -489,20 +435,60 @@ public class OrderService {
                 .build();
     }
 
-    // --- Private Helper ---
+    // --- Private Helpers ---
+
+    /**
+     * 티켓에 연결된 세션 목록 조회
+     * isAllSessions=true → 이벤트의 모든 세션
+     * isAllSessions=false → ticket_sessions 매핑 테이블의 세션
+     */
+    private List<Session> resolveTicketSessions(Ticket ticket) {
+        if (ticket.getIsAllSessions()) {
+            return sessionPort.findByEventId(ticket.getEventId());
+        } else {
+            List<Long> sessionIds = ticket.getSessionIds();
+            if (sessionIds == null || sessionIds.isEmpty()) {
+                return List.of();
+            }
+            return sessionPort.findAllByIds(sessionIds);
+        }
+    }
+
+    /**
+     * 주문명 생성 헬퍼
+     */
+    private String buildOrderName(List<String> eventTitles) {
+        if (eventTitles.isEmpty())
+            return "VenueOn 강의";
+        if (eventTitles.size() == 1)
+            return eventTitles.get(0);
+        return eventTitles.get(0) + " 외 " + (eventTitles.size() - 1) + "건";
+    }
 
     private OrderDetailResponse toOrderDetailResponse(Order order) {
-        // Event Title 및 상세 정보를 가져오기 위해 EventJpaRepository 호출 필요
         EventJpaEntity event = eventRepository.findById(order.getEventId()).orElse(null);
 
         String eventTitle = event != null ? event.getTitle() : "알 수 없는 이벤트";
         String organizer = event != null ? "호스트 " + event.getCreator().getId() : "알 수 없는 호스트";
-        String location = event != null ? (event.isOnline() ? "온라인" : event.getLocation()) : "-";
+        String location = "-";
+
+        // 티켓 정보 조회
+        String ticketName = "-";
+        int ticketPrice = 0;
+        if (order.getTicketId() != null) {
+            Ticket ticket = ticketRepositoryPort.findById(order.getTicketId()).orElse(null);
+            if (ticket != null) {
+                ticketName = ticket.getName();
+                ticketPrice = ticket.getPrice();
+            }
+        }
 
         return OrderDetailResponse.builder()
                 .orderId(order.getId())
                 .eventId(order.getEventId())
                 .eventTitle(eventTitle)
+                .ticketName(ticketName)
+                .ticketPrice(ticketPrice)
                 .status(order.getStatus().name())
                 .quantity(order.getQuantity())
                 .amount(order.getAmount())
@@ -511,7 +497,6 @@ public class OrderService {
                 .paidAt(order.getPaidAt())
                 .organizer(organizer)
                 .location(location)
-                .eventStartDate(event != null ? event.getStartDate() : null)
                 .eventStatus(event != null ? event.getStatus().name() : "DRAFT")
                 .build();
     }

@@ -1,6 +1,6 @@
 package com.venueon.cart.adapter.out.persistence.entity;
 
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 /**
  * Cart JPA Entity
  * Hexagonal Architecture: Adapter Layer (Persistence)
+ *
+ * v6: event_session_id FK → ticket_id FK 전환
  */
 @Entity
 @Table(name = "cart")
@@ -29,8 +31,8 @@ public class CartJpaEntity {
     private UserJpaEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_session_id", nullable = false)
-    private EventSessionJpaEntity eventSession;
+    @JoinColumn(name = "ticket_id", nullable = false)
+    private TicketJpaEntity ticket;
 
     @Column(nullable = false)
     @Builder.Default

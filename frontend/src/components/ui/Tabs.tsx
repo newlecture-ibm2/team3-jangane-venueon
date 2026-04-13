@@ -47,7 +47,7 @@ export default function Tabs({
             role="tab"
             aria-selected={isActive}
             className={tabClass.trim()}
-            onClick={() => onChange(option.value)}
+            onClick={() => onChange(isActive ? '' : option.value)}
           >
             {option.label}
           </button>

@@ -1,7 +1,7 @@
 package com.venueon.order.adapter.out.persistence.entity;
 
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
 import com.venueon.order.domain.model.OrderStatus;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
@@ -10,6 +10,11 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Order JPA Entity
+ *
+ * v6: session_id FK → ticket_id FK 전환. event_id FK 유지.
+ */
 @Entity
 @Table(name = "orders")
 @Getter
@@ -31,8 +36,8 @@ public class OrderJpaEntity {
     private EventJpaEntity event;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id")
-    private EventSessionJpaEntity session;
+    @JoinColumn(name = "ticket_id")
+    private TicketJpaEntity ticket;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -81,7 +86,7 @@ public class OrderJpaEntity {
         this.status = newStatus;
     }
 
-    public EventSessionJpaEntity getSession() {
-        return session;
+    public TicketJpaEntity getTicket() {
+        return ticket;
     }
 }

@@ -14,6 +14,8 @@ interface OrderDetailResponse {
   orderId: number;
   eventId: number;
   eventTitle: string;
+  ticketName: string;
+  ticketPrice: number;
   status: string;
   quantity: number;
   amount: number;
@@ -142,6 +144,12 @@ export default function OrderDetailPage() {
                 <span className={styles.label}>행사명</span>
                 <span className={styles.value}>{order.eventTitle}</span>
               </div>
+              {order.ticketName && (
+                <div className={styles.row}>
+                  <span className={styles.label}>티켓</span>
+                  <span className={styles.value}>{order.ticketName}</span>
+                </div>
+              )}
               <div className={styles.row}>
                 <span className={styles.label}>참가 인원(수량)</span>
                 <span className={styles.value}>{order.quantity}명</span>

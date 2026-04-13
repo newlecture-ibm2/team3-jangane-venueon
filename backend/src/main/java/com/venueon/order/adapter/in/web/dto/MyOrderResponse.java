@@ -2,39 +2,34 @@ package com.venueon.order.adapter.in.web.dto;
 
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
 
 import java.time.format.DateTimeFormatter;
 
 /**
  * 마이페이지 "내 강의 목록" 응답 DTO
  * 프론트 Card 컴포넌트에 맞는 필드 구성
+ *
+ * v6: session 기반 → ticket 기반 전환
  */
 public record MyOrderResponse(
         Long orderId,
         String status,
         String title,
         String organizer,
-        String dateTime,
-        String location,
+        String ticketName,
         int price,
         Long eventId
 ) {
-    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-
     /**
      * JPA 엔티티 → DTO 변환 (Lazy 로딩 대비 fetch join 필수)
      */
     public static MyOrderResponse from(OrderJpaEntity order) {
         EventJpaEntity event = order.getEvent();
+        TicketJpaEntity ticket = order.getTicket();
 
-        String dateRange = "";
-        if (event.getStartDate() != null && event.getEndDate() != null) {
-            dateRange = event.getStartDate().format(FMT) + " ~ " + event.getEndDate().format(FMT);
-        }
-
-        String loc = event.isOnline()
-                ? "온라인"
-                : (event.getLocation() != null ? event.getLocation() : "미정");
+        String ticketLabel = ticket != null ? ticket.getName() : "-";
+        int ticketPrice = ticket != null ? ticket.getPrice() : 0;
 
         String statusLabel = mapStatus(order.getStatus().name(), event.getStatus().name());
 
@@ -43,9 +38,8 @@ public record MyOrderResponse(
                 statusLabel,
                 event.getTitle(),
                 event.getCreator().getNickname(),
-                dateRange,
-                loc,
-                event.getPrice(),
+                ticketLabel,
+                ticketPrice,
                 event.getId()
         );
     }

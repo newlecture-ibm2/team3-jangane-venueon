@@ -165,7 +165,15 @@
 .priceSection {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
+  align-items: flex-end;
+  gap: var(--space-8);
+}
+
+.originalPrice {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-500);
+  text-decoration: line-through;
+  margin-bottom: 2px;
 }
 
 .price {

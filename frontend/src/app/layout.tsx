@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Toast from "@/components/ui/Toast";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "VenueOn — 세션 중계 플랫폼",
@@ -22,6 +23,7 @@ export default function RootLayout({
         <main>{children}</main>
         <Footer />
         <Toast />
+        <Script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" strategy="lazyOnload" />
       </body>
     </html>
   );

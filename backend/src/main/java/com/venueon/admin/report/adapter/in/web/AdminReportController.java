@@ -25,9 +25,10 @@ public class AdminReportController {
     public ResponseEntity<ApiResponse<Page<ReportResponse>>> getReports(
             @RequestParam(required = false) ReportStatus status,
             @RequestParam(required = false) ReportTargetType targetType,
+            @RequestParam(required = false) String keyword,
             @PageableDefault(size = 10) Pageable pageable) {
 
-        Page<ReportResponse> response = adminReportUseCase.getReports(status, targetType, pageable);
+        Page<ReportResponse> response = adminReportUseCase.getReports(status, targetType, keyword, pageable);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
