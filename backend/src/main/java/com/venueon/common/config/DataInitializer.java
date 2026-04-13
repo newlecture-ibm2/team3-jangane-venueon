@@ -264,7 +264,7 @@ public class DataInitializer implements ApplicationRunner {
                         .creator(hosts.get(3)).category(categories.get(3))
                         .title("마음챙김 요가 클래스")
                         .description("바쁜 일상 속 나를 돌보는 시간. 호흡법과 명상을 결합한 빈야사 요가 클래스입니다.")
-                        .type(EventType.CLASS).status(EventStatus.PUBLISHED)
+                        .type(EventType.CLASS).status(EventStatus.ENDED)
                         .thumbnailUrl("event-thumbnail/2026/04/GLA_thumbnail.jpg")
                         .build(),
                 EventJpaEntity.builder()

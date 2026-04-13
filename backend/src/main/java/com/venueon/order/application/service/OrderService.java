@@ -37,9 +37,9 @@ import java.util.stream.Collectors;
  * 주문 서비스
  *
  * v6: session 기반 → ticket 기반 전환
- *     - 이중 게이트 검증 (티켓 재고 + 세션 정원) 구현
- *     - 단건/배치 주문 통합 (createBatchOrder 제거)
- *     - 환불 시 티켓 재고 + 세션 정원 복구
+ * - 이중 게이트 검증 (티켓 재고 + 세션 정원) 구현
+ * - 단건/배치 주문 통합 (createBatchOrder 제거)
+ * - 환불 시 티켓 재고 + 세션 정원 복구
  */
 @Slf4j
 @Service
@@ -65,9 +65,9 @@ public class OrderService {
      * API 스펙: POST /orders
      *
      * 이중 게이트 검증:
-     *   Gate 1: 티켓 재고 검증 (hasStock)
-     *   Gate 2: 연결된 모든 세션 정원 검증 (hasCapacity)
-     *   Gate 3: 모집 상태 검증 (OPEN)
+     * Gate 1: 티켓 재고 검증 (hasStock)
+     * Gate 2: 연결된 모든 세션 정원 검증 (hasCapacity)
+     * Gate 3: 모집 상태 검증 (OPEN)
      */
     @Transactional
     public CreateOrderResponse createOrder(Long userId, CreateOrderRequest request) {
@@ -296,7 +296,7 @@ public class OrderService {
         if ("DONE".equals(status) && order.getStatus() == OrderStatus.PENDING) {
             order.confirmPayment(paymentKey);
             orderRepository.save(order);
-            
+
             // 티켓의 연결된 세션 참석자 업데이트
             if (order.getTicketId() != null) {
                 ticketRepositoryPort.findById(order.getTicketId()).ifPresent(ticket -> {
@@ -308,7 +308,7 @@ public class OrderService {
                     }
                 });
             }
-            
+
             log.info("Webhook: 결제 확인 완료. orderId={}", order.getId());
         }
     }
@@ -336,14 +336,14 @@ public class OrderService {
         return orderRepository.findValidOrdersByUserId(userId, tab, pageable)
                 .map(order -> {
                     List<Order> relatedOrders = orderRepository.findAllByTossOrderId(order.getTossOrderId());
-                    
+
                     int totalAmount = relatedOrders.stream().mapToInt(Order::getAmount).sum();
                     int totalQuantity = relatedOrders.stream().mapToInt(Order::getQuantity).sum();
-                    
+
                     String baseTitle = eventRepository.findById(order.getEventId())
                             .map(EventJpaEntity::getTitle)
                             .orElse("알 수 없는 이벤트");
-                    
+
                     String orderName = baseTitle;
                     if (relatedOrders.size() > 1) {
                         orderName += " 외 " + (relatedOrders.size() - 1) + "건";
@@ -458,8 +458,10 @@ public class OrderService {
      * 주문명 생성 헬퍼
      */
     private String buildOrderName(List<String> eventTitles) {
-        if (eventTitles.isEmpty()) return "VenueOn 강의";
-        if (eventTitles.size() == 1) return eventTitles.get(0);
+        if (eventTitles.isEmpty())
+            return "VenueOn 강의";
+        if (eventTitles.size() == 1)
+            return eventTitles.get(0);
         return eventTitles.get(0) + " 외 " + (eventTitles.size() - 1) + "건";
     }
 
