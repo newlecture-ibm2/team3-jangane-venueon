@@ -5,7 +5,7 @@ import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Lo
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import CommunityCard from '@/app/community/components/CommunityCard';
-import { ConfirmModal, InputModal, UploadModal, PaymentModal, InquiryModal, ReviewModal } from '@/components/modal';
+import { ConfirmModal, InputModal, UploadModal, PaymentModal, ContactModal, ContactDetailModal, ReviewModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 
 export default function UITestPage() {
@@ -30,6 +30,7 @@ export default function UITestPage() {
   const [isInquiryUserOpen, setIsInquiryUserOpen] = useState(false);
   const [isInquiryHostOpen, setIsInquiryHostOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [demoFiles, setDemoFiles] = useState([
     { name: '스크린샷_오류화면.png', size: 834210 },
     { name: '사업자등록증.pdf', size: 2148576 },
@@ -482,6 +483,7 @@ export default function UITestPage() {
           <Button variant="outlined" onClick={() => setIsInquiryUserOpen(true)}>5. 1:1 문의 (User)</Button>
           <Button variant="outlined" onClick={() => setIsInquiryHostOpen(true)}>5. 1:1 문의 (Host)</Button>
           <Button variant="outlined" onClick={() => setIsReviewOpen(true)}>6. 리뷰 작성 모달</Button>
+          <Button variant="outlined" onClick={() => setIsRequestModalOpen(true)}>7. 요청 상세</Button>
         </div>
       </div>
 
@@ -677,8 +679,8 @@ export default function UITestPage() {
         }}
       />
 
-      {/* 5-1. InquiryModal (User) */}
-      <InquiryModal
+      {/* 5-1. ContactModal (User) */}
+      <ContactModal
         isOpen={isInquiryUserOpen}
         onClose={() => setIsInquiryUserOpen(false)}
         role="user"
@@ -688,8 +690,8 @@ export default function UITestPage() {
         }}
       />
 
-      {/* 5-2. InquiryModal (Host) */}
-      <InquiryModal
+      {/* 5-2. ContactModal (Host) */}
+      <ContactModal
         isOpen={isInquiryHostOpen}
         onClose={() => setIsInquiryHostOpen(false)}
         role="host"
@@ -709,6 +711,15 @@ export default function UITestPage() {
           alert('리뷰 등록 성공!');
           setIsReviewOpen(false);
         }}
+      />
+
+      {/* 7. ContactDetailModal */}
+      <ContactDetailModal
+        isOpen={isRequestModalOpen}
+        requestId={1}
+        onClose={() => setIsRequestModalOpen(false)}
+        onUpdated={() => console.log('Updated')}
+        role="admin"
       />
 
     </div>

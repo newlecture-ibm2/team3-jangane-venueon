@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/me").authenticated()
                 .requestMatchers("/users", "/users/**").authenticated()
                 .requestMatchers("/orders", "/orders/**").authenticated()
-                .requestMatchers("/requests", "/requests/**").authenticated()
+                .requestMatchers("/contacts", "/contacts/**").authenticated()
                 
                 // /admin/** — ADMIN 권한 필요
                 .requestMatchers("/admin/**").hasRole("ADMIN")

@@ -38,3 +38,4 @@ export { default as FileAddIcon } from './FileAddIcon';
 export { default as FileImageIcon } from './FileImageIcon';
 export { default as ReviewStarIcon } from './ReviewStarIcon';
 export { default as RequestIcon } from './RequestIcon';
+export { default as ContactIcon } from './ContactIcon';
