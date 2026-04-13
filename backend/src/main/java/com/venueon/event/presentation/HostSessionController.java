@@ -115,26 +115,50 @@ public class HostSessionController {
     /**
      * 세션별 모집 마감/재개
      * PATCH /host/events/{eventId}/sessions/{sessionId}/recruitment
-     * Body: { "closed": true | false }
+     * Body: { "status": "PENDING" | "OPEN" | "CLOSED" | "AUTO" }
      */
     @PatchMapping("/{sessionId}/recruitment")
-    public ApiResponse<SessionResponse> toggleRecruitment(
+    public ApiResponse<SessionResponse> changeRecruitmentStatus(
             @PathVariable Long eventId,
             @PathVariable Long sessionId,
             @RequestHeader("X-User-Id") Long hostId,
             @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole,
-            @RequestBody RecruitmentToggleRequest request) {
+            @RequestBody RecruitmentStatusRequest request) {
 
-        var command = new ManageRecruitmentUseCase.ToggleRecruitmentCommand(
-                sessionId, eventId, hostId, userRole, request.closed()
+        var command = new ManageRecruitmentUseCase.ChangeRecruitmentStatusCommand(
+                sessionId, eventId, hostId, userRole, request.status()
         );
-        var session = manageRecruitmentUseCase.toggleRecruitment(command);
+        var session = manageRecruitmentUseCase.changeRecruitmentStatus(command);
         return ApiResponse.success(SessionResponse.from(session));
     }
 
     /**
-     * 모집 마감/재개 요청 DTO
+     * 세션별 진행 상태 강제 변경
+     * PATCH /host/events/{eventId}/sessions/{sessionId}/status
+     * Body: { "status": "PUBLISHED" | "ONGOING" | "ENDED" | "CANCELLED" | "AUTO" }
      */
-    public record RecruitmentToggleRequest(boolean closed) {}
-}
+    @PatchMapping("/{sessionId}/status")
+    public ApiResponse<SessionResponse> changeSessionStatus(
+            @PathVariable Long eventId,
+            @PathVariable Long sessionId,
+            @RequestHeader("X-User-Id") Long hostId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String userRole,
+            @RequestBody SessionStatusRequest request) {
 
+        var command = new ManageRecruitmentUseCase.ChangeSessionStatusCommand(
+                sessionId, eventId, hostId, userRole, request.status()
+        );
+        var session = manageRecruitmentUseCase.changeSessionStatus(command);
+        return ApiResponse.success(SessionResponse.from(session));
+    }
+
+    /**
+     * 모집 상태 변경 요청 DTO
+     */
+    public record RecruitmentStatusRequest(String status) {}
+
+    /**
+     * 진행 상태 변경 요청 DTO
+     */
+    public record SessionStatusRequest(String status) {}
+}

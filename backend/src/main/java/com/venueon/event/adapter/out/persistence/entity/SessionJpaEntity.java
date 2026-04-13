@@ -86,6 +86,14 @@ public class SessionJpaEntity {
     @Builder.Default
     private boolean isRecruitmentClosed = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "forced_recruitment_status")
+    private com.venueon.event.domain.model.RecruitmentStatus forcedRecruitmentStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "forced_session_status")
+    private com.venueon.event.domain.model.EventStatus forcedSessionStatus;
+
     // 시스템 관리
     @Column(name = "is_default")
     @Builder.Default

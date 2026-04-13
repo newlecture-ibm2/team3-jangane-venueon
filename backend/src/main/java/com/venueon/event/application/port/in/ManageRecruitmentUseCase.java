@@ -9,17 +9,32 @@ import com.venueon.event.domain.model.Session;
 public interface ManageRecruitmentUseCase {
 
     /**
-     * 모집 마감/재개 토글
-     * @param command 세션ID, 이벤트ID, 요청자 정보, 마감 여부
+     * 모집 상태 수동 관리
+     * @param command 세션ID, 이벤트ID, 요청자 정보, 강제 상태(PENDING, OPEN, CLOSED, AUTO)
      * @return 변경된 세션
      */
-    Session toggleRecruitment(ToggleRecruitmentCommand command);
+    Session changeRecruitmentStatus(ChangeRecruitmentStatusCommand command);
 
-    record ToggleRecruitmentCommand(
+    record ChangeRecruitmentStatusCommand(
         Long sessionId,
         Long eventId,
         Long requesterId,
         String requesterRole,
-        boolean closed
+        String forcedStatus // "PENDING", "OPEN", "CLOSED", or "AUTO"
+    ) {}
+
+    /**
+     * 진행 상태 수동 관리
+     * @param command 세션ID, 이벤트ID, 요청자 정보, 강제 상태(PUBLISHED, ONGOING, ENDED, CANCELLED, AUTO)
+     * @return 변경된 세션
+     */
+    Session changeSessionStatus(ChangeSessionStatusCommand command);
+
+    record ChangeSessionStatusCommand(
+        Long sessionId,
+        Long eventId,
+        Long requesterId,
+        String requesterRole,
+        String forcedStatus // "PUBLISHED", "ONGOING", "ENDED", "CANCELLED", or "AUTO"
     ) {}
 }

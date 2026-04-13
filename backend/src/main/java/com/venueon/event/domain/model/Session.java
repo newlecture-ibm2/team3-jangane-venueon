@@ -37,6 +37,8 @@ public class Session {
     private LocalDateTime recruitStartDate;
     private LocalDateTime recruitEndDate;
     private boolean isRecruitmentClosed;
+    private RecruitmentStatus forcedRecruitmentStatus; // null means AUTO
+    private EventStatus forcedSessionStatus; // null means AUTO
 
     // 시스템 관리
     private boolean isDefault;
@@ -53,7 +55,8 @@ public class Session {
                    boolean isOnline, String onlineLink,
                    int maxAttendees, int currentAttendees,
                    LocalDateTime recruitStartDate, LocalDateTime recruitEndDate,
-                   boolean isRecruitmentClosed,
+                   boolean isRecruitmentClosed, RecruitmentStatus forcedRecruitmentStatus,
+                   EventStatus forcedSessionStatus,
                    boolean isDefault,
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -75,6 +78,8 @@ public class Session {
         this.recruitStartDate = recruitStartDate;
         this.recruitEndDate = recruitEndDate;
         this.isRecruitmentClosed = isRecruitmentClosed;
+        this.forcedRecruitmentStatus = forcedRecruitmentStatus;
+        this.forcedSessionStatus = forcedSessionStatus;
         this.isDefault = isDefault;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -173,10 +178,11 @@ public class Session {
 
     /**
      * 이 세션의 모집 상태 계산
-     * 우선순위: 수동 마감 > 정원 초과 > 날짜 기반 > 기본(OPEN)
+     * 우선순위: 강제 상태 > 정원 초과 > 날짜 기반 > 기본(OPEN)
      */
     public RecruitmentStatus getRecruitmentStatus() {
-        if (isRecruitmentClosed) return RecruitmentStatus.CLOSED;
+        if (forcedRecruitmentStatus != null) return forcedRecruitmentStatus;
+        if (isRecruitmentClosed) return RecruitmentStatus.CLOSED; // legacy
         if (maxAttendees > 0 && currentAttendees >= maxAttendees) return RecruitmentStatus.CLOSED;
         LocalDateTime now = LocalDateTime.now();
         if (recruitStartDate != null && now.isBefore(recruitStartDate)) return RecruitmentStatus.PENDING;
@@ -188,6 +194,7 @@ public class Session {
      * 이 세션의 진행 상태 계산
      */
     public EventStatus getSessionStatus() {
+        if (forcedSessionStatus != null) return forcedSessionStatus;
         LocalDateTime now = LocalDateTime.now();
         if (startTime != null && endTime != null) {
             if (now.isBefore(startTime)) return EventStatus.PUBLISHED;
@@ -206,6 +213,18 @@ public class Session {
     /** 마감 해제 */
     public void openRecruitment() {
         this.isRecruitmentClosed = false;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /** 강제 모집 상태 설정 */
+    public void setForcedRecruitmentStatus(RecruitmentStatus status) {
+        this.forcedRecruitmentStatus = status;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /** 강제 진행 상태 설정 */
+    public void setForcedSessionStatus(EventStatus status) {
+        this.forcedSessionStatus = status;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -230,6 +249,8 @@ public class Session {
     public LocalDateTime getRecruitStartDate() { return recruitStartDate; }
     public LocalDateTime getRecruitEndDate() { return recruitEndDate; }
     public boolean getIsRecruitmentClosed() { return isRecruitmentClosed; }
+    public RecruitmentStatus getForcedRecruitmentStatus() { return forcedRecruitmentStatus; }
+    public EventStatus getForcedSessionStatus() { return forcedSessionStatus; }
     public boolean getIsDefault() { return isDefault; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

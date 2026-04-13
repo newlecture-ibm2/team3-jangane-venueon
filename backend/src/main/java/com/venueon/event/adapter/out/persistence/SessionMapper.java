@@ -41,6 +41,8 @@ public class SessionMapper {
                 entity.getRecruitStartDate(),
                 entity.getRecruitEndDate(),
                 entity.isRecruitmentClosed(),
+                entity.getForcedRecruitmentStatus(),
+                entity.getForcedSessionStatus(),
                 entity.isDefault(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
@@ -71,6 +73,8 @@ public class SessionMapper {
                 .recruitStartDate(domain.getRecruitStartDate())
                 .recruitEndDate(domain.getRecruitEndDate())
                 .isRecruitmentClosed(domain.getIsRecruitmentClosed())
+                .forcedRecruitmentStatus(domain.getForcedRecruitmentStatus())
+                .forcedSessionStatus(domain.getForcedSessionStatus())
                 .isDefault(domain.getIsDefault())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())

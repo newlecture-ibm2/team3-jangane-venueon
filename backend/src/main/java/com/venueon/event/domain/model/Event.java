@@ -48,10 +48,14 @@ public class Event {
     // --- 비즈니스 행위 메서드 ---
 
     public void publish() {
-        if (this.status != EventStatus.DRAFT) {
-            throw new IllegalStateException("DRAFT 상태에서만 공개 가능합니다.");
+        if (this.status != EventStatus.DRAFT && this.status != EventStatus.CANCELLED) {
+            throw new IllegalStateException("DRAFT 또는 CANCELLED 상태에서만 공개 가능합니다.");
         }
         this.status = EventStatus.PUBLISHED;
+    }
+
+    public void revertToDraft() {
+        this.status = EventStatus.DRAFT;
     }
 
     public void end() {

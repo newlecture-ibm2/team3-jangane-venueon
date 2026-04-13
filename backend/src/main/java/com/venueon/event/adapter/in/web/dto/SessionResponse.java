@@ -33,7 +33,9 @@ public record SessionResponse(
     LocalDateTime recruitStartDate,
     LocalDateTime recruitEndDate,
     boolean isRecruitmentClosed,
-    int remainingCapacity          // Computed: maxAttendees - currentAttendees (0이면 무제한)
+    int remainingCapacity,          // Computed: maxAttendees - currentAttendees (0이면 무제한)
+    String forcedRecruitmentStatus,
+    String forcedSessionStatus
 ) {
     public static SessionResponse from(Session session) {
         return new SessionResponse(
@@ -59,7 +61,9 @@ public record SessionResponse(
             session.getRecruitStartDate(),
             session.getRecruitEndDate(),
             session.getIsRecruitmentClosed(),
-            session.getRemainingCapacity()
+            session.getRemainingCapacity(),
+            session.getForcedRecruitmentStatus() != null ? session.getForcedRecruitmentStatus().name() : null,
+            session.getForcedSessionStatus() != null ? session.getForcedSessionStatus().name() : null
         );
     }
 }

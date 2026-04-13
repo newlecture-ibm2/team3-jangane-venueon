@@ -77,17 +77,18 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
     }
 
     @Override
-    public Event updateStatus(Long eventId, Long requesterId, EventStatus newStatus) {
+    public Event updateStatus(Long eventId, Long requesterId, String requesterRole, EventStatus newStatus) {
         Event event = eventRepositoryPort.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다. ID: " + eventId));
 
-        // 본인 소유 이벤트만 상태 변경 가능
-        if (!event.isOwnedBy(requesterId)) {
+        // ADMIN 역할이면 소유권 검증 우회
+        if (!"ADMIN".equalsIgnoreCase(requesterRole) && !event.isOwnedBy(requesterId)) {
             throw new IllegalStateException("이벤트 상태 변경 권한이 없습니다.");
         }
 
         // 도메인 비즈니스 로직 위임
         switch (newStatus) {
+            case DRAFT -> event.revertToDraft();
             case PUBLISHED -> event.publish();
             case ENDED -> event.end();
             case CANCELLED -> event.cancel();

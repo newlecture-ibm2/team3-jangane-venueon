@@ -52,6 +52,8 @@ public class EventSessionService implements
                 null,      // recruitStartDate
                 null,      // recruitEndDate
                 false,     // isRecruitmentClosed
+                null,      // forcedRecruitmentStatus
+                null,      // forcedSessionStatus
                 true,      // isDefault
                 null,
                 null
@@ -87,6 +89,8 @@ public class EventSessionService implements
                 command.recruitStartDate(),
                 command.recruitEndDate(),
                 false, // isRecruitmentClosed
+                null,  // forcedRecruitmentStatus
+                null,  // forcedSessionStatus
                 false, // isDefault
                 null,
                 null
@@ -196,7 +200,7 @@ public class EventSessionService implements
     // ── P2: 모집 상태 수동 관리 ──
 
     @Override
-    public Session toggleRecruitment(ToggleRecruitmentCommand command) {
+    public Session changeRecruitmentStatus(ChangeRecruitmentStatusCommand command) {
         getEventAndValidateOwner(command.eventId(), command.requesterId(), command.requesterRole());
 
         Session session = sessionPort.findById(command.sessionId())
@@ -206,10 +210,43 @@ public class EventSessionService implements
             throw new IllegalArgumentException("세션이 해당 이벤트에 속하지 않습니다.");
         }
 
-        if (command.closed()) {
-            session.closeRecruitment();
+        if ("AUTO".equalsIgnoreCase(command.forcedStatus())) {
+            session.setForcedRecruitmentStatus(null);
+            session.openRecruitment(); // legacy flag reset
         } else {
-            session.openRecruitment();
+            try {
+                com.venueon.event.domain.model.RecruitmentStatus status = 
+                    com.venueon.event.domain.model.RecruitmentStatus.valueOf(command.forcedStatus().toUpperCase());
+                session.setForcedRecruitmentStatus(status);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("올바르지 않은 강제 모집 상태입니다: " + command.forcedStatus());
+            }
+        }
+
+        return sessionPort.save(session, command.eventId());
+    }
+
+    @Override
+    public Session changeSessionStatus(ChangeSessionStatusCommand command) {
+        getEventAndValidateOwner(command.eventId(), command.requesterId(), command.requesterRole());
+
+        Session session = sessionPort.findById(command.sessionId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
+
+        if (!session.getEventId().equals(command.eventId())) {
+            throw new IllegalArgumentException("세션이 해당 이벤트에 속하지 않습니다.");
+        }
+
+        if ("AUTO".equalsIgnoreCase(command.forcedStatus())) {
+            session.setForcedSessionStatus(null);
+        } else {
+            try {
+                com.venueon.event.domain.model.EventStatus status = 
+                    com.venueon.event.domain.model.EventStatus.valueOf(command.forcedStatus().toUpperCase());
+                session.setForcedSessionStatus(status);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("올바르지 않은 강제 진행 상태입니다: " + command.forcedStatus());
+            }
         }
 
         return sessionPort.save(session, command.eventId());

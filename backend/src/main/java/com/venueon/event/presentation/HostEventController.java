@@ -54,9 +54,10 @@ public class HostEventController {
     public ApiResponse<EventDetailResponse> updateEventStatus(
             @PathVariable Long id,
             @RequestHeader("X-User-Id") Long requesterId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "HOST") String requesterRole,
             @RequestParam EventStatus status
     ) {
-        Event updated = updateEventStatusUseCase.updateStatus(id, requesterId, status);
+        Event updated = updateEventStatusUseCase.updateStatus(id, requesterId, requesterRole, status);
         return ApiResponse.success(EventDetailResponse.from(updated));
     }
 

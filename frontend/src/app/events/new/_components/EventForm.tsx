@@ -7,6 +7,7 @@ import ConfirmModal from '@/components/modal/ConfirmModal';
 import styles from './EventForm.module.css';
 import { useUIStore } from '@/store/useUIStore';
 import Image from 'next/image';
+import HostManagementPanel from '../../[id]/_components/HostManagementPanel';
 
 export interface EventFormProps {
   mode?: 'create' | 'edit';
@@ -391,8 +392,16 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   return (
     <div className={styles.formContainer}>
       <button className={styles.backButton} onClick={() => router.back()}>
-        ← 세션 목록 보기
+        ← 이전으로 돌아가기
       </button>
+
+      {mode === 'edit' && initialData && (
+        <HostManagementPanel 
+          eventId={Number(eventId)}
+          status={initialData.status}
+          sessions={initialData.sessions || []}
+        />
+      )}
 
       <div className={styles.formGroup}>
         <label className={styles.label}>카테고리</label>
