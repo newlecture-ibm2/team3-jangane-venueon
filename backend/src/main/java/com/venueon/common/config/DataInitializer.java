@@ -103,7 +103,7 @@ public class DataInitializer implements ApplicationRunner {
         List<EventJpaEntity> events = createEvents(hosts, categories);
         createSessions(events);
         createTickets(events);
-        List<CommunityJpaEntity> communities = createCommunities();
+        List<CommunityJpaEntity> communities = createCommunities(admin);
         List<PostJpaEntity> posts = createPosts(users, communities);
         List<OrderJpaEntity> orders = createOrders(users, events);
         List<ReportJpaEntity> reports = createReports(users, events, posts);
@@ -612,10 +612,10 @@ public class DataInitializer implements ApplicationRunner {
     }
 
 
-    private List<CommunityJpaEntity> createCommunities() {
+    private List<CommunityJpaEntity> createCommunities(UserJpaEntity admin) {
         return communityRepository.saveAll(List.of(
-                CommunityJpaEntity.builder().name("자유게시판").description("누구나 자유롭게 이야기하는 공간").build(),
-                CommunityJpaEntity.builder().name("질문답변").description("서로 돕고 배우는 공간").build()
+                CommunityJpaEntity.builder().name("자유게시판").description("누구나 자유롭게 이야기하는 공간").creator(admin).build(),
+                CommunityJpaEntity.builder().name("질문답변").description("서로 돕고 배우는 공간").creator(admin).build()
         ));
     }
 
