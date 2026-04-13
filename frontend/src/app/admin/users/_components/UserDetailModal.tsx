@@ -43,10 +43,26 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
   };
 
   const handleUpdateRole = async () => {
-    // TODO: 실제 권한 업데이트 API 호츨 위치
-    alert(`권한을 ${selectedRole}로 변경(예정)입니다.`);
-    setIsEditing(false);
-    // 권한 변경 후 리프레시 로직 등 추가 필요 (onUpdated 등)
+    if (!userId || !user) return;
+    
+    setIsLoading(true);
+    try {
+      // 권한(role)과 함께 기존 닉네임, 전화번호를 유지하여 전송
+      await adminUserAPI.updateUser(userId, {
+        nickname: user.nickname,
+        role: selectedRole,
+        phone: user.phone || undefined
+      });
+      
+      setIsEditing(false);
+      onUpdated(); // 목록 새로고침
+      onClose();   // 모달 닫기
+    } catch (err) {
+      console.error('권한 변경 실패:', err);
+      alert('권한 변경에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const roleOptions = [

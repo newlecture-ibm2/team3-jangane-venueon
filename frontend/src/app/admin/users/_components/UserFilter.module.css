@@ -2,9 +2,10 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 32px;
+  gap: var(--space-48); /* 탭 영역과 검색 영역 사이 간격 확대 (48px) */
   flex: 1 0 0;
   align-self: stretch;
+  margin-bottom: var(--space-32); /* 아래 테이블과의 여백 확보 (32px) */
 }
 
 .tabArea {
@@ -38,8 +39,9 @@
   background: transparent;
   width: 100%;
   outline: none;
-  font-family: Inter, sans-serif;
+  font-family: var(--font-sans);
   font-size: 14px;
+  color: var(--color-text-gray-900);
 }
 
 .buttonArea {
@@ -52,18 +54,18 @@
 
 .filterButton {
   display: flex;
-  padding: 8px 16px;
+  padding: 8px 18px;
   justify-content: center;
   align-items: center;
-  border-radius: 100px;
-  background: var(--Gray-100, #F3F4F6);
+  border-radius: var(--radius-full);
+  background: var(--color-text-gray-100);
   border: none;
-  color: var(--Gray-600, #4B5563);
-  font-family: Inter, sans-serif;
+  color: var(--color-text-gray-500);
+  font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition);
 }
 
 .filterButton.active {

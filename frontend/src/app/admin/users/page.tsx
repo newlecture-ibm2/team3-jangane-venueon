@@ -27,6 +27,8 @@ export default function AdminUsersPage() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<AdminUserListItem | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [statusTarget, setStatusTarget] = useState<AdminUserListItem | null>(null);
+  const [isStatusOpen, setIsStatusOpen] = useState(false);
 
   // ── 데이터 패칭 ──
   const fetchUsers = useCallback(async () => {
@@ -37,7 +39,7 @@ export default function AdminUsersPage() {
         role: roleFilter || undefined,
         active: activeFilter || undefined,
         page: String(currentPage - 1), // Spring은 0-indexed
-        size: '20',
+        size: '6',
       });
 
       setUsers(res.data.content);
@@ -93,6 +95,23 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleToggleStatus = (user: AdminUserListItem) => {
+    setStatusTarget(user);
+    setIsStatusOpen(true);
+  };
+
+  const handleStatusConfirm = async () => {
+    if (!statusTarget) return;
+    try {
+      await adminUserAPI.changeStatus(statusTarget.id, !statusTarget.active);
+      setIsStatusOpen(false);
+      setStatusTarget(null);
+      fetchUsers();
+    } catch (err) {
+      console.error('상태 변경 실패:', err);
+    }
+  };
+
   return (
     <div className="container-sidebar">
       <Sidebar role="admin" />
@@ -117,6 +136,7 @@ export default function AdminUsersPage() {
           isLoading={isLoading}
           onViewDetail={handleViewDetail}
           onDeleteClick={handleDeleteClick}
+          onToggleStatus={handleToggleStatus}
         />
 
         <Pagination
@@ -145,6 +165,20 @@ export default function AdminUsersPage() {
         requireCheckbox
         checkboxLabel="위 내용을 확인했습니다."
         confirmText="삭제"
+      />
+
+      {/* 상태 변경 확인 모달 */}
+      <ConfirmModal
+        isOpen={isStatusOpen}
+        onClose={() => setIsStatusOpen(false)}
+        onConfirm={handleStatusConfirm}
+        title={`${statusTarget?.nickname || ''} 회원을 ${statusTarget?.active ? '비활성화' : '활성화'}하시겠습니까?`}
+        subtitle={statusTarget?.active
+          ? '비활성화 시 해당 회원은 서비스 이용이 제한됩니다.'
+          : '활성화 시 해당 회원은 서비스를 정상적으로 이용할 수 있습니다.'
+        }
+        status={statusTarget?.active ? 'danger' : 'default'}
+        confirmText={statusTarget?.active ? '비활성화' : '활성화'}
       />
     </div>
   );
