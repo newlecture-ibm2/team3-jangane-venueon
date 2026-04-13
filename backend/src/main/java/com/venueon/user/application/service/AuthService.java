@@ -11,8 +11,7 @@ import com.venueon.user.adapter.in.security.JwtTokenProvider;
 import com.venueon.user.application.port.in.*;
 import com.venueon.user.application.port.out.HostProfileRepositoryPort;
 import com.venueon.user.application.port.out.UserRepositoryPort;
-import com.venueon.admin.contact.application.port.in.UserContactUseCase;
-import com.venueon.admin.contact.domain.model.ContactCategory;
+
 import com.venueon.user.domain.model.AuthProvider;
 import com.venueon.user.domain.model.HostProfile;
 import com.venueon.user.domain.model.User;
@@ -44,7 +43,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
     private final HostProfileRepositoryPort hostProfileRepositoryPort;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserContactUseCase userContactUseCase;
+
 
     @Value("${google.client-id:}")
     private String googleClientId;
@@ -102,10 +101,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
                 managerName, orgDescription, null, null);
         hostProfileRepositoryPort.save(hostProfile);
 
-        // 사업자등록증 심사 요청 자동 생성
-        String title = "[가입 심사] " + orgName;
-        String content = "기관명: " + orgName + "\n담당자명: " + managerName + "\n사업자등록번호: " + orgNumber;
-        userContactUseCase.createContact(savedUser.getId(), ContactCategory.BUSINESS_LICENSE, title, content, null);
+
 
         log.info("호스트 회원가입 완료: email={}, orgName={}", email, orgName);
         return savedUser;
@@ -210,10 +206,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
                 managerName, orgDescription != null ? orgDescription : "", null, null);
         hostProfileRepositoryPort.save(hostProfile);
 
-        // 사업자등록증 심사 요청 자동 생성
-        String title = "[가입 심사] " + orgName;
-        String content = "기관명: " + orgName + "\n담당자명: " + managerName + "\n사업자등록번호: " + orgNumber;
-        userContactUseCase.createContact(savedUser.getId(), ContactCategory.BUSINESS_LICENSE, title, content, null);
+
 
         log.info("호스트 업그레이드 완료: email={}, orgName={}", email, orgName);
         return savedUser;

@@ -16,10 +16,8 @@ interface ContactFilterProps {
 
 const CATEGORY_TABS = [
   { value: '', label: '전체' },
-  { value: 'BUSINESS_LICENSE', label: '사업자등록증' },
   { value: 'HOST_INQUIRY', label: '호스트 문의' },
   { value: 'USER_INQUIRY', label: '참석자 문의' },
-  { value: 'OTHER', label: '기타' },
 ];
 
 const STATUS_TABS = [

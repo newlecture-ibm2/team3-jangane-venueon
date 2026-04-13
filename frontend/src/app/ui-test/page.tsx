@@ -437,7 +437,7 @@ export default function UITestPage() {
           <UploadField
             label="사업자등록증명 업로드"
             accept="image/*,.pdf"
-            onFileSelect={(file) => console.log('Selected file:', file.name)}
+            onFileSelect={(file) => console.log('Selected file:', file?.name)}
           />
         </div>
       </div>
@@ -716,7 +716,7 @@ export default function UITestPage() {
       {/* 7. ContactDetailModal */}
       <ContactDetailModal
         isOpen={isRequestModalOpen}
-        requestId={1}
+        contactId={1}
         onClose={() => setIsRequestModalOpen(false)}
         onUpdated={() => console.log('Updated')}
         role="admin"

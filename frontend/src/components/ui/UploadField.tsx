@@ -3,17 +3,18 @@
 import React, { useRef, useState } from 'react';
 import styles from './UploadField.module.css';
 import { UploadIcon } from '@/components/icons';
+import FilePreviewList from './FilePreviewList';
 
 export interface UploadFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   /** 라벨 텍스트 */
   label?: string;
-  /** 파일이 선택되거나 드롭되었을 때 실행될 콜백 */
-  onFileSelect?: (file: File) => void;
+  /** 파일이 선택되거나 제거될 때 실행될 콜백 */
+  onFileSelect?: (file: File | null) => void;
 }
 
 export default function UploadField({ label, onFileSelect, className = '', ...props }: UploadFieldProps) {
   const [isDragOver, setIsDragOver] = useState(false);
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 드래그 앤 드롭 세션 핸들러
@@ -31,7 +32,7 @@ export default function UploadField({ label, onFileSelect, className = '', ...pr
     setIsDragOver(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      setFileName(file.name);
+      setSelectedFile(file);
       if (onFileSelect) onFileSelect(file);
     }
   };
@@ -40,9 +41,17 @@ export default function UploadField({ label, onFileSelect, className = '', ...pr
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setFileName(file.name);
+      setSelectedFile(file);
       if (onFileSelect) onFileSelect(file);
     }
+  };
+
+  const handleRemove = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    if (onFileSelect) onFileSelect(null);
   };
 
   return (
@@ -76,9 +85,16 @@ export default function UploadField({ label, onFileSelect, className = '', ...pr
         </div>
         
         <span className={styles.text}>
-          {fileName ? fileName : '클릭하거나 파일을 여기로 끌어다 놓으세요'}
+          클릭하거나 파일을 여기로 끌어다 놓으세요
         </span>
       </div>
+
+      {selectedFile && (
+        <FilePreviewList
+          files={[{ name: selectedFile.name, size: selectedFile.size }]}
+          onRemove={handleRemove}
+        />
+      )}
     </div>
   );
 }

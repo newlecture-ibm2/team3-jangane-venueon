@@ -70,12 +70,6 @@ export default function UploadModal({
             accept={accept} 
             onFileSelect={setSelectedFile}
           />
-          {selectedFile && (
-            <FilePreviewList
-              files={[{ name: selectedFile.name, size: selectedFile.size }]}
-              onRemove={() => setSelectedFile(null)}
-            />
-          )}
         </div>
 
         {requireCheckbox && checkboxLabel && (

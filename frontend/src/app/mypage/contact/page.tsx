@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styles from './page.module.css';
 import { Sidebar } from '@/components/layout';
-import { Pagination, Button, Table, TableHeader, TableRow, TableCell } from '@/components/ui';
+import { Pagination, Button, Table, TableHeader, TableRow, TableCell, Tabs, InputField } from '@/components/ui';
 import StatusTag from '@/components/ui/StatusTag';
 import { ContactModal, ContactDetailModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
@@ -41,6 +41,11 @@ export default function UserContactPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
+  // ── 필터 상태 ──
+  const [keyword, setKeyword] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+
   // 모달 상태
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -53,6 +58,8 @@ export default function UserContactPage() {
     setIsLoading(true);
     try {
       const res = await userContactAPI.getMyContacts({
+        category: categoryFilter || undefined,
+        status: statusFilter || undefined,
         page: String(currentPage - 1),
         size: '20',
       });
@@ -64,7 +71,7 @@ export default function UserContactPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, showToast]);
+  }, [currentPage, categoryFilter, statusFilter, showToast]);
 
   useEffect(() => {
     fetchContacts();
@@ -111,6 +118,44 @@ export default function UserContactPage() {
           </div>
 
           <div className={styles.tableSection}>
+            {/* 필터 영역 */}
+            <div className={styles.filterContainer}>
+              <div className={styles.tabArea}>
+                <Tabs
+                  variant="line"
+                  options={[
+                    { value: '', label: '전체' },
+                    { value: 'USER_INQUIRY', label: '일반 문의' },
+                    { value: 'OTHER', label: '기타' },
+                  ]}
+                  activeValue={categoryFilter}
+                  onChange={(val) => { setCategoryFilter(val); setCurrentPage(1); }}
+                />
+              </div>
+              <div className={styles.searchFilterArea}>
+                <InputField
+                  variant="search"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && fetchContacts()}
+                  className={styles.searchComponent}
+                />
+                <div className={styles.buttonArea}>
+                  <Tabs
+                    variant="pill"
+                    options={[
+                      { value: '', label: '전체' },
+                      { value: 'PENDING', label: '대기 중' },
+                      { value: 'REVIEWING', label: '검토 중' },
+                      { value: 'COMPLETED', label: '처리 완료' },
+                    ]}
+                    activeValue={statusFilter}
+                    onChange={(val) => { setStatusFilter(val); setCurrentPage(1); }}
+                  />
+                </div>
+              </div>
+            </div>
+
             {isLoading ? (
               <div className={styles.emptyState}>데이터를 불러오는 중...</div>
             ) : contacts.length === 0 ? (

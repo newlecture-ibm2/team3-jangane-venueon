@@ -33,29 +33,29 @@ function mapCategoryToBackend(category: string): ContactCategory {
 
 export default function HostContactPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [requests, setRequests] = useState<ContactListItem[]>([]);
+  const [contacts, setContacts] = useState<ContactListItem[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   // 모달 상태
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [detailRequestId, setDetailRequestId] = useState<number | null>(null);
+  const [detailContactId, setDetailContactId] = useState<number | null>(null);
 
   const { showToast } = useUIStore();
 
   // ── 데이터 패칭 ──
-  const fetchRequests = useCallback(async () => {
+  const fetchContacts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await userContactAPI.getMyRequests({
+      const res = await userContactAPI.getMyContacts({
         page: String(currentPage - 1),
         size: '20',
       });
-      setRequests(res.data.content);
+      setContacts(res.data.content);
       setTotalPages(res.data.totalPages);
     } catch (error) {
-      console.error('Failed to fetch requests:', error);
+      console.error('Failed to fetch contacts:', error);
       showToast('문의 목록을 불러오는데 실패했습니다.', 'error');
     } finally {
       setIsLoading(false);
@@ -63,11 +63,11 @@ export default function HostContactPage() {
   }, [currentPage, showToast]);
 
   useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests]);
+    fetchContacts();
+  }, [fetchContacts]);
 
   const handleViewDetail = (id: number) => {
-    setDetailRequestId(id);
+    setDetailContactId(id);
     setIsDetailOpen(true);
   };
 
@@ -78,7 +78,7 @@ export default function HostContactPage() {
     attachment?: File | null;
   }) => {
     try {
-      await userContactAPI.createRequest({
+      await userContactAPI.createContact({
         category: mapCategoryToBackend(data.category),
         title: data.title,
         content: data.content,
@@ -86,9 +86,9 @@ export default function HostContactPage() {
       });
       showToast('문의가 접수되었습니다.', 'success');
       setIsContactOpen(false);
-      fetchRequests();
+      fetchContacts();
     } catch (error) {
-      console.error('Failed to create request:', error);
+      console.error('Failed to create contact:', error);
       showToast('문의 접수에 실패했습니다.', 'error');
     }
   };
@@ -109,7 +109,7 @@ export default function HostContactPage() {
           <div className={styles.tableSection}>
             {isLoading ? (
               <div className={styles.emptyState}>데이터를 불러오는 중...</div>
-            ) : requests.length === 0 ? (
+            ) : contacts.length === 0 ? (
               <div className={styles.emptyState}>문의 내역이 없습니다.</div>
             ) : (
               <Table columns="1fr 120px 120px 100px">
@@ -120,7 +120,7 @@ export default function HostContactPage() {
                   <TableCell header>상태</TableCell>
                 </TableHeader>
 
-                {requests.map((req) => (
+                {contacts.map((req) => (
                   <TableRow key={req.id}>
                     <TableCell>
                       <button className={styles.titleLink} onClick={() => handleViewDetail(req.id)}>
@@ -157,9 +157,9 @@ export default function HostContactPage() {
       {/* 문의 상세 모달 */}
       <ContactDetailModal
         isOpen={isDetailOpen}
-        requestId={detailRequestId}
+        contactId={detailContactId}
         onClose={() => setIsDetailOpen(false)}
-        onUpdated={fetchRequests}
+        onUpdated={fetchContacts}
       />
     </div>
   );
