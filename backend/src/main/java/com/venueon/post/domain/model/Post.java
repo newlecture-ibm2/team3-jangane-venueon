@@ -28,7 +28,8 @@ public class Post {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    protected Post() {}
+    protected Post() {
+    }
 
     // --- 비즈니스 행위 ---
     public boolean isOwnedBy(Long userId) {
@@ -91,6 +92,8 @@ public class Post {
             }
         }
         this.updatedAt = LocalDateTime.now();
+    }
+
     public void hide() {
         this.isHidden = true;
     }
