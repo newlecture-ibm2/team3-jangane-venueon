@@ -13,4 +13,7 @@ public interface GetPostQuery {
 
     // 내 북마크 목록만 모아보기
     Page<PostListResponse> getBookmarkedPosts(String email, Pageable pageable);
+
+    // 게시글 상세 조회 (수정용)
+    PostListResponse getPostById(Long id);
 }

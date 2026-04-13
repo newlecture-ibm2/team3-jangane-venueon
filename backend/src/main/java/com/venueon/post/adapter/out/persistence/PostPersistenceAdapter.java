@@ -8,6 +8,8 @@ import com.venueon.post.adapter.out.persistence.entity.PostLikeJpaEntity;
 import com.venueon.post.adapter.out.persistence.repository.PostBookmarkJpaRepository;
 import com.venueon.post.adapter.out.persistence.repository.PostJpaRepository;
 import com.venueon.post.adapter.out.persistence.repository.PostLikeJpaRepository;
+import com.venueon.comment.adapter.out.persistence.repository.CommentJpaRepository;
+import com.venueon.comment.adapter.out.persistence.repository.CommentLikeJpaRepository;
 import com.venueon.post.application.port.out.PostRepositoryPort;
 import com.venueon.post.domain.model.Post;
 import com.venueon.post.domain.model.PostType;
@@ -27,6 +29,8 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
     private final PostJpaRepository postJpaRepository;
     private final PostLikeJpaRepository postLikeJpaRepository;
     private final PostBookmarkJpaRepository postBookmarkJpaRepository;
+    private final CommentJpaRepository commentJpaRepository;
+    private final CommentLikeJpaRepository commentLikeJpaRepository;
     private final CommunityJpaRepository communityJpaRepository;
     private final UserJpaRepository userRepository;
 
@@ -39,34 +43,32 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
         UserJpaEntity author = userRepository.findById(post.getAuthorId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + post.getAuthorId()));
 
+        if (post.getId() != null) {
+            PostJpaEntity existing = postJpaRepository.findById(post.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Post not found with id: " + post.getId()));
+            
+            existing.setTitle(post.getTitle());
+            existing.setContent(post.getContent());
+            existing.setType(post.getType());
+            existing.setPinned(post.isPinned());
+            existing.setNotice(post.isNotice());
+            existing.setViewCount(post.getViewCount());
+            existing.setCommentCount(post.getCommentCount());
+            existing.setLikeCount(post.getLikeCount());
+            
+            PostJpaEntity savedPost = postJpaRepository.save(existing);
+            return mapToDomain(savedPost);
+        }
+
         PostJpaEntity postEntity = PostJpaEntity.builder()
                 .community(community)
                 .author(author)
                 .title(post.getTitle())
                 .content(post.getContent())
                 .type(post.getType())
+                .isPinned(post.isPinned())
+                .isNotice(post.isNotice())
                 .build();
-
-        if (post.getId() != null) {
-            PostJpaEntity existing = postJpaRepository.findById(post.getId()).orElse(null);
-            if (existing != null) {
-                postEntity = PostJpaEntity.builder()
-                        .id(post.getId())
-                        .community(existing.getCommunity())
-                        .author(existing.getAuthor())
-                        .title(post.getTitle())
-                        .content(post.getContent())
-                        .type(post.getType())
-                        .viewCount(post.getViewCount())
-                        .commentCount(post.getCommentCount())
-                        .likeCount(post.getLikeCount())
-                        .isHidden(existing.isHidden())
-                        .isPinned(post.isPinned())
-                        .isNotice(post.isNotice())
-                        .createdAt(existing.getCreatedAt())
-                        .build();
-            }
-        }
 
         PostJpaEntity savedPost = postJpaRepository.save(postEntity);
         return mapToDomain(savedPost);
@@ -144,12 +146,12 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return postJpaRepository.existsById(id);
-    }
-
-    @Override
-    public void deleteById(Long id) {
+    @org.springframework.transaction.annotation.Transactional
+    public void delete(Long id) {
+        commentLikeJpaRepository.deleteByPostId(id);
+        commentJpaRepository.deleteByPostId(id);
+        postLikeJpaRepository.deleteByPostId(id);
+        postBookmarkJpaRepository.deleteByPostId(id);
         postJpaRepository.deleteById(id);
     }
 

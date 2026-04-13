@@ -28,7 +28,8 @@ public class Post {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    protected Post() {}
+    protected Post() {
+    }
 
     // --- 비즈니스 행위 ---
     public boolean isOwnedBy(Long userId) {
@@ -74,6 +75,23 @@ public class Post {
         } else {
             this.isPinned = false; // 공지 해제 시 고정도 함께 해제
         }
+    }
+
+    public void update(String title, String content, String type) {
+        if (title != null && !title.isBlank()) {
+            this.title = title;
+        }
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
+        if (type != null && !type.isBlank()) {
+            try {
+                this.type = PostType.valueOf(type);
+            } catch (IllegalArgumentException e) {
+                // Ignore invalid type
+            }
+        }
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void hide() {

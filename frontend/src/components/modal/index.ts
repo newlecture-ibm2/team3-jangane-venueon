@@ -7,3 +7,4 @@ export { default as PaymentModal } from './PaymentModal';
 export { default as ContactModal } from './ContactModal';
 export { default as ContactDetailModal } from './ContactDetailModal';
 export { default as ReviewModal } from './ReviewModal';
+export { default as ReportModal } from './ReportModal';

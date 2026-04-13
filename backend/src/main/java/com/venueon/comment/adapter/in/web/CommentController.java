@@ -1,10 +1,9 @@
 package com.venueon.comment.adapter.in.web;
 
-import com.venueon.comment.application.port.in.CommentLikeUseCase;
-import com.venueon.comment.application.port.in.CreateCommentUseCase;
-import com.venueon.comment.application.port.in.GetCommentQuery;
+import com.venueon.comment.application.port.in.*;
 import com.venueon.comment.application.port.in.dto.CommentResponse;
 import com.venueon.comment.application.port.in.dto.CreateCommentRequest;
+import com.venueon.comment.application.port.in.dto.UpdateCommentRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +22,28 @@ public class CommentController {
     private final CreateCommentUseCase createCommentUseCase;
     private final GetCommentQuery getCommentQuery;
     private final CommentLikeUseCase commentLikeUseCase;
+    private final UpdateCommentUseCase updateCommentUseCase;
+    private final DeleteCommentUseCase deleteCommentUseCase;
+
+    /**
+     * 댓글 수정 API
+     * PUT /comments/{id}
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateComment(@PathVariable Long id, @RequestBody UpdateCommentRequest request) {
+        updateCommentUseCase.updateComment(id, request);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 댓글 삭제 API
+     * DELETE /comments/{id}
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        deleteCommentUseCase.deleteComment(id);
+        return ResponseEntity.ok().build();
+    }
 
     /**
      * 댓글 등록 API

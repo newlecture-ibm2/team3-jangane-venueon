@@ -5,6 +5,9 @@ import com.venueon.post.application.port.in.GetPostQuery;
 import com.venueon.post.application.port.in.PostAdminUseCase;
 import com.venueon.post.application.port.in.PostBookmarkUseCase;
 import com.venueon.post.application.port.in.PostLikeUseCase;
+import com.venueon.post.application.port.in.UpdatePostUseCase;
+import com.venueon.post.application.port.in.DeletePostUseCase;
+import com.venueon.post.application.port.in.dto.UpdatePostRequest;
 import com.venueon.post.application.port.in.dto.CreatePostRequest;
 import com.venueon.post.application.port.in.dto.CreatePostResponse;
 import com.venueon.post.application.port.in.dto.PostListResponse;
@@ -31,6 +34,38 @@ public class PostController {
     private final PostLikeUseCase postLikeUseCase;
     private final PostBookmarkUseCase postBookmarkUseCase;
     private final PostAdminUseCase postAdminUseCase;
+    private final UpdatePostUseCase updatePostUseCase;
+    private final DeletePostUseCase deletePostUseCase;
+
+    /**
+     * 게시글 수정
+     * PUT /posts/{id}
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updatePost(@PathVariable Long id, @RequestBody UpdatePostRequest request) {
+        updatePostUseCase.updatePost(id, request);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 게시글 상세 조회 (수정용)
+     * GET /posts/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<PostListResponse> getPost(@PathVariable Long id) {
+        PostListResponse post = getPostQuery.getPostById(id);
+        return ResponseEntity.ok(post);
+    }
+
+    /**
+     * 게시글 삭제
+     * DELETE /posts/{id}
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+        deletePostUseCase.deletePost(id);
+        return ResponseEntity.ok().build();
+    }
 
     /**
      * 1단계: 게시글 등록

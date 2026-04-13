@@ -50,6 +50,7 @@ public class PostQueryService implements GetPostQuery {
                     post.getId(),
                     post.getTitle(),
                     post.getType(),
+                    post.getAuthorId(),
                     post.getAuthorNickname(),
                     post.getContent(),
                     post.getViewCount(),
@@ -74,6 +75,7 @@ public class PostQueryService implements GetPostQuery {
                             post.getId(),
                             post.getTitle(),
                             post.getType(),
+                            post.getAuthorId(),
                             post.getAuthorNickname(),
                             post.getContent(),
                             post.getViewCount(),
@@ -84,5 +86,27 @@ public class PostQueryService implements GetPostQuery {
                             post.isNotice(),
                             post.getCreatedAt());
                 });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PostListResponse getPostById(Long id) {
+        Post post = postRepositoryPort.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found with id: " + id));
+
+        return new PostListResponse(
+                post.getId(),
+                post.getTitle(),
+                post.getType(),
+                post.getAuthorId(),
+                post.getAuthorNickname(),
+                post.getContent(),
+                post.getViewCount(),
+                post.getCommentCount(),
+                post.getLikeCount(),
+                false, // 단건 조회 수정용이므로 북마크 여부는 기본값 처리
+                post.isPinned(),
+                post.isNotice(),
+                post.getCreatedAt());
     }
 }
