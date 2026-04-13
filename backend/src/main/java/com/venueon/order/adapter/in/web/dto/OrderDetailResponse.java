@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/**
+ * v6: ticket 정보 필드 추가
+ */
 @Getter
 @AllArgsConstructor
 @Builder
@@ -13,6 +16,8 @@ public class OrderDetailResponse {
     private Long orderId;
     private Long eventId;
     private String eventTitle;
+    private String ticketName;
+    private int ticketPrice;
     private String status;
     private int quantity;
     private int amount;
@@ -22,6 +27,5 @@ public class OrderDetailResponse {
     // For MyPage Cards
     private String organizer;
     private String location;
-    private LocalDateTime eventStartDate;
     private String eventStatus;
 }

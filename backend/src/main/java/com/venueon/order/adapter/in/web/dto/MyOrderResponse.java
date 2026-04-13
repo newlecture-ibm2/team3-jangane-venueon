@@ -2,42 +2,34 @@ package com.venueon.order.adapter.in.web.dto;
 
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
 
 import java.time.format.DateTimeFormatter;
 
 /**
  * 마이페이지 "내 강의 목록" 응답 DTO
  * 프론트 Card 컴포넌트에 맞는 필드 구성
+ *
+ * v6: session 기반 → ticket 기반 전환
  */
 public record MyOrderResponse(
         Long orderId,
         String status,
         String title,
         String organizer,
-        String dateTime,
-        String location,
+        String ticketName,
         int price,
         Long eventId
 ) {
-    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-
     /**
      * JPA 엔티티 → DTO 변환 (Lazy 로딩 대비 fetch join 필수)
      */
     public static MyOrderResponse from(OrderJpaEntity order) {
         EventJpaEntity event = order.getEvent();
+        TicketJpaEntity ticket = order.getTicket();
 
-        com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity session = order.getSession();
-        
-        String dateRange = "";
-        String loc = "-";
-
-        if (session != null) {
-            if (session.getStartTime() != null && session.getEndTime() != null) {
-                dateRange = session.getStartTime().format(FMT) + " ~ " + session.getEndTime().format(FMT);
-            }
-            loc = session.isOnline() ? "온라인" : (session.getLocation() != null ? session.getLocation() : "미정");
-        }
+        String ticketLabel = ticket != null ? ticket.getName() : "-";
+        int ticketPrice = ticket != null ? ticket.getPrice() : 0;
 
         String statusLabel = mapStatus(order.getStatus().name(), event.getStatus().name());
 
@@ -46,9 +38,8 @@ public record MyOrderResponse(
                 statusLabel,
                 event.getTitle(),
                 event.getCreator().getNickname(),
-                dateRange,
-                loc,
-                0, // price는 Phase 3에서 Ticket 기반으로 변경
+                ticketLabel,
+                ticketPrice,
                 event.getId()
         );
     }
