@@ -98,4 +98,20 @@ public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, P
                 post.toggleNotice();
                 postRepositoryPort.save(post);
         }
+
+        @Override
+        public void hidePost(Long postId) {
+                Post post = postRepositoryPort.findById(postId)
+                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
+                post.hide();
+                postRepositoryPort.save(post);
+        }
+
+        @Override
+        public void deletePost(Long postId) {
+                if (!postRepositoryPort.existsById(postId)) {
+                        throw new IllegalArgumentException("Post not found: " + postId);
+                }
+                postRepositoryPort.deleteById(postId);
+        }
 }

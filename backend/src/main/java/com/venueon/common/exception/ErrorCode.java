@@ -29,7 +29,10 @@ public enum ErrorCode {
     
     // Session
     SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "세션을 찾을 수 없습니다."),
-    SESSION_DELETE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "기본 세션이거나 등록된 주문이 있어 삭제할 수 없습니다.");
+    SESSION_DELETE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "기본 세션이거나 등록된 주문이 있어 삭제할 수 없습니다."),
+    
+    // Report
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "신고를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

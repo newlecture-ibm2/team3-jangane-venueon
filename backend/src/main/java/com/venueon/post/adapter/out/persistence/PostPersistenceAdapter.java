@@ -143,6 +143,16 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
                 .map(bookmark -> mapToDomain(bookmark.getPost()));
     }
 
+    @Override
+    public boolean existsById(Long id) {
+        return postJpaRepository.existsById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        postJpaRepository.deleteById(id);
+    }
+
     private Post mapToDomain(PostJpaEntity entity) {
         return Post.builder()
                 .id(entity.getId())
