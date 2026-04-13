@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput, FilePreviewList } from '@/components/ui';
+import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput, FilePreviewList, ReviewItem } from '@/components/ui';
 import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
 import CommunityCard from '@/app/community/components/CommunityCard';
@@ -438,6 +438,27 @@ export default function UITestPage() {
             label="사업자등록증명 업로드"
             accept="image/*,.pdf"
             onFileSelect={(file) => console.log('Selected file:', file?.name)}
+          />
+        </div>
+      </div>
+
+      {/* 15. ReviewItem */}
+      <div style={sectionStyle}>
+        <h2 style={titleStyle}>15. ReviewItem (리뷰 항목)</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '600px' }}>
+          <ReviewItem
+            authorName="이아무개"
+            rating={4}
+            date="2026.04.13"
+            content="수업이 너무 유익했습니다. 강사님이 질문에 정말 친절하게 대답해주셔서 좋았어요. 다음にも 다른 강의 들으러 오겠습니다!"
+          />
+          <ReviewItem
+            authorName="장개발"
+            authorProfileUrl="https://github.com/github.png"
+            rating={5}
+            date="2026.04.14"
+            content="프론트엔드부터 백엔드까지 정말 알차게 구성되어 있습니다. 실무에서 바로 적용 가능한 꿀팁들을 많이 배웠습니다."
+            images={['https://picsum.photos/200', 'https://picsum.photos/201']}
           />
         </div>
       </div>

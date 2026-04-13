@@ -7,6 +7,7 @@ import { Tag, Button } from '@/components/ui';
 import { format } from 'date-fns';
 import EventActionMenu from './_components/EventActionMenu';
 import TicketList from './_components/TicketList';
+import EventReviewSection from './_components/EventReviewSection';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -246,6 +247,11 @@ export default async function EventDetailPage({ params }: Props) {
             <p className={styles.hostDesc}>{event.host?.orgDescription || '주최자 소개가 없습니다.'}</p>
           </div>
         </div>
+      </section>
+
+      {/* 수강생 후기 섹션 */}
+      <section className={styles.section}>
+        <EventReviewSection eventId={Number(event.id)} eventTitle={event.title} />
       </section>
 
       {/* 하단 액션 버튼 */}
