@@ -17,12 +17,7 @@ public class HostEventMapper {
                 entity.getThumbnailUrl(),
                 entity.getType().name(),
                 entity.getStatus().name(),
-                entity.getPrice(),
-                entity.getStartDate(),
-                entity.getEndDate(),
-                entity.getMaxAttendees(),
-                entity.getLocation(),
-                entity.isOnline(),
+                entity.isHasSession(),
                 entity.getDescription(),
                 entity.getCreatedAt()
         );
