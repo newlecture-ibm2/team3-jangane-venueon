@@ -9,6 +9,10 @@ import Pagination from '@/components/ui/Pagination';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 import { useCart } from './hooks/use-cart';
 
+/**
+ * 장바구니 페이지
+ * v6: 이벤트-세션 계층 구조 제거 → 티켓 단위 플랫 리스트
+ */
 export default function CartPage() {
   const {
     cartItems,
@@ -19,7 +23,7 @@ export default function CartPage() {
     removeItem,
     toggleSelectAll,
     toggleSelectItem,
-    getCheckedCartIds
+    getCheckedOrderItems
   } = useCart();
 
   const router = useRouter();
@@ -32,7 +36,10 @@ export default function CartPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = cartItems.slice(startIndex, endIndex);
 
-  const finalAmount = totalAmount; // No discount applied
+  const finalAmount = totalAmount;
+
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat('ko-KR').format(price) + '원';
 
   return (
     <div className={styles.container}>
@@ -55,8 +62,7 @@ export default function CartPage() {
                         onChange={toggleSelectAll}
                       />
                     </div>
-                    <div className={styles.courseNameCell}>이벤트 명</div>
-                    <div className={styles.scheduleCell}>일정</div>
+                    <div className={styles.courseNameCell}>이벤트 / 티켓</div>
                     <div className={styles.priceCell}>가격</div>
                     <div className={styles.quantityCell}>수량</div>
                     <div className={styles.deleteCell}></div>
@@ -65,87 +71,59 @@ export default function CartPage() {
 
                 <div className={styles.body}>
                   {currentItems.map(item => (
-                    <div key={item.id}>
-                      {/* 부모 행 */}
-                      <div className={styles.row}>
-                        <div className={styles.checkboxCell}>
-                          <Checkbox
-                            checked={item.checked}
-                            onChange={() => toggleSelectItem(item.id)}
-                          />
-                        </div>
-                        <div className={styles.courseNameCell}>{item.title}</div>
-                        <div className={styles.scheduleCell}>{item.schedule}</div>
-                        <div className={styles.priceCell}>{item.price.toLocaleString()}원</div>
-                        <div className={styles.quantityCell}>
-                          {/* 부모 수량 조절 (필요 시 유지, 세션들의 수량을 대표할 수도 있음) */}
-                          <div className={styles.quantityControl}>
-                            <button 
-                              className={styles.quantityButton}
-                              onClick={() => updateQuantity(item.id, -1)}
-                            >
-                              -
-                            </button>
-                            <span className={styles.quantityNumber}>{item.quantity}</span>
-                            <button 
-                              className={styles.quantityButton}
-                              onClick={() => updateQuantity(item.id, 1)}
-                            >
-                              +
-                            </button>
+                    <div key={item.id} className={styles.row}>
+                      <div className={styles.checkboxCell}>
+                        <Checkbox
+                          checked={item.checked}
+                          onChange={() => toggleSelectItem(item.id)}
+                        />
+                      </div>
+                      <div className={styles.courseNameCell}>
+                        <div>
+                          <div style={{ fontWeight: 600, marginBottom: '4px' }}>{item.eventTitle}</div>
+                          <div style={{ fontSize: '13px', color: 'var(--color-text-gray-500)' }}>
+                            🎟️ {item.ticketName}
+                            {item.discountRate > 0 && (
+                              <span style={{ marginLeft: '8px', color: 'var(--color-error)', fontWeight: 600 }}>
+                                {item.discountRate}% 할인
+                              </span>
+                            )}
                           </div>
                         </div>
-                        <div className={styles.deleteCell}>
-                          <button
-                            className={styles.deleteIconButton}
-                            onClick={() => removeItem(item.id)}
+                      </div>
+                      <div className={styles.priceCell}>
+                        {item.discountRate > 0 && item.ticketOriginalPrice > 0 && (
+                          <div style={{ textDecoration: 'line-through', color: 'var(--color-text-gray-400)', fontSize: '12px' }}>
+                            {formatPrice(item.ticketOriginalPrice)}
+                          </div>
+                        )}
+                        <div>{item.ticketPrice === 0 ? '무료' : formatPrice(item.ticketPrice)}</div>
+                      </div>
+                      <div className={styles.quantityCell}>
+                        <div className={styles.quantityControl}>
+                          <button 
+                            className={styles.quantityButton}
+                            onClick={() => updateQuantity(item.id, -1)}
                           >
-                            <DeleteIcon className={styles.deleteIcon} />
+                            -
+                          </button>
+                          <span className={styles.quantityNumber}>{item.quantity}</span>
+                          <button 
+                            className={styles.quantityButton}
+                            onClick={() => updateQuantity(item.id, 1)}
+                          >
+                            +
                           </button>
                         </div>
                       </div>
-
-                      {/* 하위 세션 행들 */}
-                      {item.sessions?.map(session => (
-                        <div key={session.id} className={`${styles.row} ${styles.sessionRow}`}>
-                          <div className={styles.checkboxCell}>
-                            <Checkbox
-                              checked={session.checked}
-                              onChange={() => toggleSelectItem(session.id)}
-                            />
-                          </div>
-                          <div className={`${styles.courseNameCell} ${styles.indent}`}>
-                            <span>└ {session.title}</span>
-                          </div>
-                          <div className={styles.scheduleCell}>{session.schedule}</div>
-                          <div className={styles.priceCell}>{session.price.toLocaleString()}원</div>
-                          <div className={styles.quantityCell}>
-                            <div className={styles.quantityControl}>
-                              <button 
-                                className={styles.quantityButton}
-                                onClick={() => updateQuantity(session.id, -1)}
-                              >
-                                -
-                              </button>
-                              <span className={styles.quantityNumber}>{session.quantity}</span>
-                              <button 
-                                className={styles.quantityButton}
-                                onClick={() => updateQuantity(session.id, 1)}
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
-                          <div className={styles.deleteCell}>
-                            <button
-                              className={styles.deleteIconButton}
-                              onClick={() => removeItem(session.id)}
-                            >
-                              <DeleteIcon className={styles.deleteIcon} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                      <div className={styles.deleteCell}>
+                        <button
+                          className={styles.deleteIconButton}
+                          onClick={() => removeItem(item.id)}
+                        >
+                          <DeleteIcon className={styles.deleteIcon} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -167,7 +145,7 @@ export default function CartPage() {
             <div className={styles.summaryDetails}>
               <div className={styles.summaryRow}>
                 <span className="label">총 선택상품금액</span>
-                <span className="value">{totalAmount.toLocaleString()}원</span>
+                <span className="value">{formatPrice(totalAmount)}</span>
               </div>
               <div className={styles.summaryRow}>
                 <span className="label">즉시할인 예상금액</span>
@@ -177,17 +155,13 @@ export default function CartPage() {
                 <span className="label">쿠폰할인 예상금액</span>
                 <span className="value discount">0원</span>
               </div>
-              <div className={styles.summaryRow}>
-                <span className="label">총 배송비</span>
-                <span className="value">0원</span>
-              </div>
             </div>
 
             <div className={styles.divider}></div>
 
             <div className={styles.total}>
               <span className="label">총 주문 예상 금액</span>
-              <span className="value total">{finalAmount.toLocaleString()}원</span>
+              <span className="value total">{formatPrice(finalAmount)}</span>
             </div>
           </div>
 
@@ -196,13 +170,14 @@ export default function CartPage() {
             size="large"
             className={styles.orderButton}
             onClick={() => {
-              const cartIds = getCheckedCartIds();
-              if (cartIds.length === 0) {
+              const orderItems = getCheckedOrderItems();
+              if (orderItems.length === 0) {
                 alert('주문할 항목을 선택해주세요.');
                 return;
               }
+              // v6: items를 URL 파라미터로 전달 (JSON 인코딩)
               const params = new URLSearchParams();
-              params.set('cartIds', cartIds.join(','));
+              params.set('items', JSON.stringify(orderItems));
               router.push(`/orders/checkout?${params.toString()}`);
             }}
           >

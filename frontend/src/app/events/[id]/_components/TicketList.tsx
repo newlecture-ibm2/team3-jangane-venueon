@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Tag } from '@/components/ui';
 import styles from './TicketList.module.css';
 import { format, differenceInDays } from 'date-fns';
@@ -42,6 +43,8 @@ interface TicketListProps {
 
 export default function TicketList({ tickets, sessions, eventStatus }: TicketListProps) {
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
+  const [addingToCart, setAddingToCart] = useState(false);
+  const router = useRouter();
 
   if (!tickets || tickets.length === 0) {
     return (
@@ -165,10 +168,48 @@ export default function TicketList({ tickets, sessions, eventStatus }: TicketLis
           <p className={styles.selectedInfo}>
             선택된 티켓: <strong>{tickets.find(t => t.id === selectedTicketId)?.name}</strong>
           </p>
-          {/* TODO: Order/Cart 연동 시 실제 주문 페이지 이동 구현 */}
-          <Button variant="primary" size="large" disabled>
-            수강 신청 (추후 연동 예정)
-          </Button>
+          <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+            <Button
+              variant="outlined"
+              size="large"
+              style={{ flex: 1 }}
+              disabled={addingToCart}
+              onClick={async () => {
+                setAddingToCart(true);
+                try {
+                  const res = await fetch('/api/cart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ticketId: selectedTicketId, quantity: 1 }),
+                  });
+                  if (!res.ok) {
+                    const body = await res.json().catch(() => null);
+                    throw new Error(body?.error || '장바구니 추가 실패');
+                  }
+                  alert('장바구니에 추가되었습니다!');
+                } catch (err: any) {
+                  alert(err.message || '장바구니 추가 중 오류가 발생했습니다.');
+                } finally {
+                  setAddingToCart(false);
+                }
+              }}
+            >
+              {addingToCart ? '추가 중...' : '장바구니 담기'}
+            </Button>
+            <Button
+              variant="primary"
+              size="large"
+              style={{ flex: 1 }}
+              onClick={() => {
+                const params = new URLSearchParams();
+                params.set('ticketId', String(selectedTicketId));
+                params.set('quantity', '1');
+                router.push(`/orders/checkout?${params.toString()}`);
+              }}
+            >
+              바로 구매
+            </Button>
+          </div>
         </div>
       )}
     </div>

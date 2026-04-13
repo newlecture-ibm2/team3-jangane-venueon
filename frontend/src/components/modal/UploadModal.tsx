@@ -5,7 +5,7 @@ import styles from './UploadModal.module.css';
 import ModalOverlay from './ModalOverlay';
 import ModalCard from './ModalCard';
 import { CancelIcon } from '@/components/icons';
-import { Checkbox, UploadField, Button } from '@/components/ui';
+import { Checkbox, UploadField, Button, FilePreviewList } from '@/components/ui';
 
 export interface UploadModalProps {
   isOpen: boolean;

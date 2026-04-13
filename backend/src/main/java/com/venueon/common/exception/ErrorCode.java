@@ -34,6 +34,11 @@ public enum ErrorCode {
     // Report
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "신고를 찾을 수 없습니다.");
 
+    // Admin Request
+    REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "요청을 찾을 수 없습니다."),
+    NOT_FOUND(HttpStatus.NOT_FOUND, "리소스를 찾을 수 없습니다."),
+    ALREADY_PROCESSED(HttpStatus.UNPROCESSABLE_ENTITY, "이미 처리된 요청입니다.");
+
     private final HttpStatus status;
     private final String message;
 }

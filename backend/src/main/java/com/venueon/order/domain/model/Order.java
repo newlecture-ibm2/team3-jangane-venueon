@@ -4,13 +4,15 @@ import java.time.LocalDateTime;
 
 /**
  * Order(참가 신청) 도메인 모델 (순수 POJO)
+ *
+ * v6: sessionId → ticketId 전환
  */
 public class Order {
 
     private Long id;
     private Long userId;
     private Long eventId;
-    private Long sessionId;
+    private Long ticketId;
     private OrderStatus status;
     private int quantity;
     private int amount;
@@ -22,14 +24,14 @@ public class Order {
 
     protected Order() {}
 
-    public Order(Long id, Long userId, Long eventId, Long sessionId, OrderStatus status,
+    public Order(Long id, Long userId, Long eventId, Long ticketId, OrderStatus status,
                  int quantity, int amount, String paymentMethod,
                  String tossPaymentKey, String tossOrderId,
                  LocalDateTime orderedAt, LocalDateTime paidAt) {
         this.id = id;
         this.userId = userId;
         this.eventId = eventId;
-        this.sessionId = sessionId;
+        this.ticketId = ticketId;
         this.status = status;
         this.quantity = quantity;
         this.amount = amount;
@@ -40,9 +42,9 @@ public class Order {
         this.paidAt = paidAt;
     }
 
-    public static Order createPending(Long userId, Long eventId, Long sessionId, int quantity, int amount, String paymentMethod) {
+    public static Order createPending(Long userId, Long eventId, Long ticketId, int quantity, int amount, String paymentMethod) {
         OrderStatus initialStatus = (amount == 0) ? OrderStatus.REGISTERED : OrderStatus.PENDING;
-        return new Order(null, userId, eventId, sessionId, initialStatus, quantity, amount, paymentMethod, null, null, LocalDateTime.now(), null);
+        return new Order(null, userId, eventId, ticketId, initialStatus, quantity, amount, paymentMethod, null, null, LocalDateTime.now(), null);
     }
 
     // --- 비즈니스 행위 ---
@@ -91,7 +93,7 @@ public class Order {
     public Long getId() { return id; }
     public Long getUserId() { return userId; }
     public Long getEventId() { return eventId; }
-    public Long getSessionId() { return sessionId; }
+    public Long getTicketId() { return ticketId; }
     public OrderStatus getStatus() { return status; }
     public int getQuantity() { return quantity; }
     public int getAmount() { return amount; }

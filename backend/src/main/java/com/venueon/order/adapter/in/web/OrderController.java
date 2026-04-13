@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * Order REST API Controller
+ *
+ * v6: batch 엔드포인트 제거 → POST /orders 통합 주문
+ */
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -23,8 +28,11 @@ public class OrderController {
     private final OrderService orderService;
 
     /**
-     * 단건 주문 생성 (PENDING 상태)
+     * 통합 주문 생성 (단건/다건 모두 지원)
      * POST /orders
+     *
+     * 단건: { items: [{ticketId: 5, quantity: 1}], paymentMethod: "CARD" }
+     * 다건: { items: [{ticketId: 1, quantity: 2}, {ticketId: 5, quantity: 1}], paymentMethod: "CARD" }
      */
     @PostMapping
     public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrder(
@@ -35,22 +43,6 @@ public class OrderController {
         Long userId = orderService.getUserIdByEmail(email);
 
         CreateOrderResponse response = orderService.createOrder(userId, request);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    /**
-     * 장바구니 일괄 주문 생성 (PENDING 상태)
-     * POST /orders/batch
-     */
-    @PostMapping("/batch")
-    public ResponseEntity<ApiResponse<CreateBatchOrderResponse>> createBatchOrder(
-            Authentication authentication,
-            @Valid @RequestBody CreateBatchOrderRequest request) {
-
-        String email = authentication.getName();
-        Long userId = orderService.getUserIdByEmail(email);
-
-        CreateBatchOrderResponse response = orderService.createBatchOrder(userId, email, request);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -117,8 +109,11 @@ public class OrderController {
     @PostMapping("/{id}/refund")
     public ResponseEntity<ApiResponse<CancelOrderResponse>> cancelOrder(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "1") Long userId,  // TODO: @AuthenticationPrincipal로 교체
+            Authentication authentication,
             @Valid @RequestBody CancelOrderRequest request) {
+
+        String email = authentication.getName();
+        Long userId = orderService.getUserIdByEmail(email);
 
         CancelOrderResponse response = orderService.cancelOrder(id, userId, request.getReason());
         return ResponseEntity.ok(ApiResponse.success(response));
