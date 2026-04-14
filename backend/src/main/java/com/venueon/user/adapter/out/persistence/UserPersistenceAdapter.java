@@ -31,10 +31,10 @@ public class UserPersistenceAdapter implements UserRepositoryPort {
         if (user.getId() != null) {
             entity = userJpaRepository.findWithCategoriesById(user.getId()).orElse(userMapper.toEntity(user, roleEntity));
             entity.updateProfile(user.getNickname(), user.getProfileImg());
+            entity.updatePassword(user.getPassword());
             entity.updateBadgeVisibility(user.isBadgeVisible());
-            // Here we should also ideally allow updating role, but keeping existing logic as is unless role update is needed
             if (!user.isActive()) {
-                entity.softDelete();
+                entity.softDelete(user.getEmail());
             }
         } else {
             entity = userMapper.toEntity(user, roleEntity);

@@ -114,6 +114,7 @@ public class User {
      */
     public void deactivate() {
         this.active = false;
+        this.email = "deleted_" + System.currentTimeMillis() + "_" + this.email;
         this.updatedAt = LocalDateTime.now();
     }
 

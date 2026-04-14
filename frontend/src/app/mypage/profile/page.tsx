@@ -15,6 +15,7 @@ import styles from './page.module.css';
 
 export default function ProfileSettingsPage() {
   const { showToast } = useUIStore();
+  const { logout } = useAuth();
   const router = useRouter();
 
   const [baseImage, setBaseImage] = useState<string | undefined>(undefined);
@@ -241,6 +242,7 @@ export default function ProfileSettingsPage() {
       const res = await fetch('/api/users/me', { method: 'DELETE' });
       if (res.ok) {
         showToast('계정이 안전하게 탈퇴 처리되었습니다.', 'success');
+        await logout(); // 로그아웃 처리하여 세션 파기
         router.push('/');
       } else {
         showToast('탈퇴 처리 중 오류가 발생했습니다.', 'error');
