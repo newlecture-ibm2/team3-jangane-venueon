@@ -6,12 +6,13 @@ import styles from '../[id]/page.module.css';
 interface Props {
   name: string;
   description: string;
+  canManage?: boolean; // 관리 권한 여부 추가
 }
 
 import { useRouter, useParams } from 'next/navigation';
 import EditIcon from '@/components/icons/EditIcon';
 
-export default function CommunityDetailHeader({ name, description }: Props) {
+export default function CommunityDetailHeader({ name, description, canManage }: Props) {
   const router = useRouter();
   const params = useParams();
   const id = params?.id;
@@ -30,7 +31,7 @@ export default function CommunityDetailHeader({ name, description }: Props) {
         </div>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>{name}</h1>
-          {id && (
+          {id && canManage && ( // canManage 권한이 있을 때만 수정 버튼 노출
             <button
               className={styles.editButtonDetail}
               onClick={() => router.push(`/community/${id}/edit`)}

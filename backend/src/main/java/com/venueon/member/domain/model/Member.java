@@ -10,22 +10,22 @@ public class Member {
     private Long id;
     private Long communityId;
     private Long userId;
-    private MemberRole role;
+    private boolean manager; // boolean으로 변경
     private LocalDateTime joinedAt;
 
     protected Member() {}
 
     public Member(Long id, Long communityId, Long userId,
-                  MemberRole role, LocalDateTime joinedAt) {
+                  boolean manager, LocalDateTime joinedAt) {
         this.id = id;
         this.communityId = communityId;
         this.userId = userId;
-        this.role = role;
+        this.manager = manager;
         this.joinedAt = joinedAt;
     }
 
     public boolean isManager() {
-        return this.role == MemberRole.MANAGER;
+        return this.manager;
     }
 
     // --- Getters ---
@@ -33,6 +33,6 @@ public class Member {
     public Long getId() { return id; }
     public Long getCommunityId() { return communityId; }
     public Long getUserId() { return userId; }
-    public MemberRole getRole() { return role; }
+    public boolean isManagerValue() { return manager; }
     public LocalDateTime getJoinedAt() { return joinedAt; }
 }

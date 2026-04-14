@@ -56,7 +56,13 @@ public class SecurityConfig {
                 // /host/** — 인증 필요 (Host 전용)
                 .requestMatchers("/host/**").authenticated()
                 
-                // 그 외 기존 경로는 일단 허용 (점진적으로 보호 추가 예정)
+                // 커뮤니티/게시글/댓글 수정 및 삭제 — 인증 필요
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/communities/**", "/posts/**", "/comments/**").authenticated()
+                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/communities/**", "/posts/**", "/comments/**").authenticated()
+                .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/communities/**", "/posts/**", "/comments/**").authenticated()
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/communities/**", "/posts/**", "/comments/**").authenticated()
+
+                // 그 외 기존 경로는 일단 허용
                 .anyRequest().permitAll()
             )
             .exceptionHandling(exceptions -> exceptions

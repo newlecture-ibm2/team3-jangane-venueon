@@ -71,19 +71,36 @@ public class CommentCommandService
     }
 
     @Override
-    public void updateComment(Long id, UpdateCommentRequest request) {
+    public void updateComment(Long id, UpdateCommentRequest request, String email) {
+        User requester = userRepositoryPort.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+
         Comment comment = commentRepositoryPort.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + id));
 
+        // 권한 체크: 작성자 본인만 수정 가능
+        if (!comment.getAuthorId().equals(requester.getId())) {
+            throw new IllegalArgumentException("Permission denied: only the author can update the comment.");
+        }
+
         comment.update(request.content());
+        commentRepositoryPort.save(comment);
     }
 
 
 
     @Override
-    public void deleteComment(Long id) {
-        commentRepositoryPort.findById(id)
+    public void deleteComment(Long id, String email) {
+        User requester = userRepositoryPort.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+
+        Comment comment = commentRepositoryPort.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + id));
+
+        // 권한 체크: 작성자 본인이거나 시스템 어드민만 삭제 가능
+        if (!comment.getAuthorId().equals(requester.getId()) && !requester.isAdmin()) {
+            throw new IllegalArgumentException("Permission denied: only the author or system admin can delete the comment.");
+        }
         
         commentRepositoryPort.delete(id);
     }

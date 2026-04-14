@@ -12,7 +12,8 @@ public record CommunityResponse(
         int memberCount,
         boolean isPublic,
         String creatorNickname,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean canManage // 관리 권한 여부
 ) {
     public static CommunityResponse from(CommunityJpaEntity entity) {
         return new CommunityResponse(
@@ -23,7 +24,8 @@ public record CommunityResponse(
                 entity.getMemberCount(),
                 entity.isPublic(),
                 entity.getCreator().getNickname(),
-                entity.getCreatedAt()
+                entity.getCreatedAt(),
+                false // 기본값
         );
     }
 }
