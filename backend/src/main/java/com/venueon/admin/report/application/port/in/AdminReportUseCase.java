@@ -9,5 +9,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface AdminReportUseCase {
     Page<ReportResponse> getReports(ReportStatus status, ReportTargetType targetType, String keyword, Pageable pageable);
-    void processReport(Long reportId, AdminAction action, ReportStatus status);
+    void processReport(Long reportId, AdminAction action, ReportStatus status, String adminEmail);
 }

@@ -102,11 +102,12 @@ public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, P
 
         @Override
         public void toggleBookmark(Long postId, String email) {
-                // 비로그인 사용자 대응 (익명 계정)
-                String targetEmail = (email == null || email.isEmpty()) ? "admin@venueon.com" : email;
-                User user = userRepositoryPort.findByEmail(targetEmail)
-                                .orElseThrow(() -> new IllegalArgumentException(
-                                                "User not found with email: " + targetEmail));
+                if (email == null || email.isEmpty()) {
+                        throw new IllegalArgumentException("Authentication required to toggle bookmark.");
+                }
+                
+                User user = userRepositoryPort.findByEmail(email)
+                                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
 
                 postRepositoryPort.findById(postId)
                                 .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));

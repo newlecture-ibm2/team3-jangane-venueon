@@ -7,6 +7,7 @@ import com.venueon.report.application.port.in.GetReportQuery;
 import com.venueon.report.domain.model.Report;
 import com.venueon.user.adapter.in.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +30,10 @@ public class ReportController {
             @RequestBody CreateReportRequest request,
             @LoginUser UserPrincipal userPrincipal) {
         
-        String email = (userPrincipal != null && !userPrincipal.getUsername().equals("anonymous")) 
-                ? userPrincipal.getUsername() 
-                : "admin@venueon.com";
+        if (userPrincipal == null || userPrincipal.getUsername().equals("anonymous")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String email = userPrincipal.getUsername();
         createReportUseCase.createReport(request, email);
         return ResponseEntity.ok().build();
     }

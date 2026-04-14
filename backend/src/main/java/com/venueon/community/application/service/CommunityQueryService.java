@@ -8,7 +8,6 @@ import com.venueon.community.domain.model.Community;
 import com.venueon.user.application.port.out.UserRepositoryPort;
 import com.venueon.user.domain.model.User;
 import com.venueon.member.application.port.out.MemberRepositoryPort;
-import com.venueon.member.domain.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

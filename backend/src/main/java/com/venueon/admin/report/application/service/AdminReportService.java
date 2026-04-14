@@ -43,7 +43,7 @@ public class AdminReportService implements AdminReportUseCase {
 
     @Override
     @Transactional
-    public void processReport(Long reportId, AdminAction action, ReportStatus status) {
+    public void processReport(Long reportId, AdminAction action, ReportStatus status, String adminEmail) {
         // 1. 신고 상태 변경 (Adapter 경유)
         ReportTargetType targetType = adminReportPort.getTargetType(reportId);
         Long targetId = adminReportPort.getTargetId(reportId);
@@ -52,19 +52,20 @@ public class AdminReportService implements AdminReportUseCase {
 
         // 2. 실제 조치 실행
         if (status == ReportStatus.RESOLVED) {
-            executeAdminAction(targetType, targetId, action);
+            executeAdminAction(targetType, targetId, action, adminEmail);
         }
     }
 
-    private void executeAdminAction(ReportTargetType targetType, Long targetId, AdminAction action) {
+    private void executeAdminAction(ReportTargetType targetType, Long targetId, AdminAction action, String adminEmail) {
+        // 어드민 액션 수행 시 전달받은 adminEmail 사용 (하드코딩 제거)
         switch (targetType) {
             case POST -> {
-                if (action == AdminAction.DELETE) postManagerUseCase.deletePost(targetId, "admin@venueon.com");
-                else if (action == AdminAction.HIDE) postManagerUseCase.hidePost(targetId, "admin@venueon.com");
+                if (action == AdminAction.DELETE) postManagerUseCase.deletePost(targetId, adminEmail);
+                else if (action == AdminAction.HIDE) postManagerUseCase.hidePost(targetId, adminEmail);
             }
             case COMMENT -> {
-                if (action == AdminAction.DELETE) commentManagerUseCase.deleteComment(targetId, "admin@venueon.com");
-                else if (action == AdminAction.HIDE) commentManagerUseCase.hideComment(targetId, "admin@venueon.com");
+                if (action == AdminAction.DELETE) commentManagerUseCase.deleteComment(targetId, adminEmail);
+                else if (action == AdminAction.HIDE) commentManagerUseCase.hideComment(targetId, adminEmail);
             }
             case USER -> {
                 if (action == AdminAction.DELETE) deleteAdminUserUseCase.deleteUser(targetId);

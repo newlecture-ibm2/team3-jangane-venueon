@@ -32,10 +32,10 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateComment(@PathVariable Long id, @RequestBody UpdateCommentRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = "admin@venueon.com"; // 기본값
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         updateCommentUseCase.updateComment(id, request, email);
         return ResponseEntity.ok().build();
     }
@@ -47,10 +47,10 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = "admin@venueon.com"; // 기본값
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         deleteCommentUseCase.deleteComment(id, email);
         return ResponseEntity.ok().build();
     }
@@ -62,7 +62,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(@RequestBody CreateCommentRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = "admin@venueon.com"; // 기본값 (비회원 익명작성용)
+        String email = null; // 비회원은 null로 전달되어 익명 처리됨
 
         if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
             email = ((UserDetails) authentication.getPrincipal()).getUsername();

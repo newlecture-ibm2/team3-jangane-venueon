@@ -44,10 +44,10 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePost(@PathVariable Long id, @RequestBody UpdatePostRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = "admin@venueon.com";
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         updatePostUseCase.updatePost(id, request, email);
         return ResponseEntity.ok().build();
     }
@@ -69,10 +69,10 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = "admin@venueon.com";
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         deletePostUseCase.deletePost(id, email);
         return ResponseEntity.ok().build();
     }
@@ -85,7 +85,7 @@ public class PostController {
     public ResponseEntity<CreatePostResponse> createPost(@RequestBody CreatePostRequest request) {
         // SecurityContext에서 로그인된 사용자의 email 추출
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = "admin@venueon.com"; // 기본값 (비회원 익명작성용)
+        String email = null; // 비회원은 null로 시작
 
         if (authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getPrincipal())) {
@@ -178,10 +178,10 @@ public class PostController {
     @PatchMapping("/{id}/pin")
     public ResponseEntity<Void> togglePin(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = "admin@venueon.com";
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         postManagerUseCase.togglePin(id, email);
         return ResponseEntity.ok().build();
     }
@@ -193,10 +193,10 @@ public class PostController {
     @PatchMapping("/{id}/notice")
     public ResponseEntity<Void> toggleNotice(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = "admin@venueon.com";
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         postManagerUseCase.toggleNotice(id, email);
         return ResponseEntity.ok().build();
     }

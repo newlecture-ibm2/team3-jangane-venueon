@@ -38,7 +38,13 @@ public class AdminReportController {
             @PathVariable Long id,
             @Valid @RequestBody ReportActionRequest request) {
 
-        adminReportUseCase.processReport(id, request.action(), request.status());
+        String adminEmail = null;
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            adminEmail = ((org.springframework.security.core.userdetails.UserDetails) authentication.getPrincipal()).getUsername();
+        }
+
+        adminReportUseCase.processReport(id, request.action(), request.status(), adminEmail);
 
         return ResponseEntity.ok(ApiResponse.success());
     }
