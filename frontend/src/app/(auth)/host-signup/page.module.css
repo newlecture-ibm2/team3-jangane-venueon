@@ -21,3 +21,48 @@
   color: var(--color-text-muted);
   white-space: nowrap;
 }
+
+/* 사업자등록번호 인증 버튼 영역 */
+.businessInputWrapper {
+  display: flex;
+  gap: var(--space-8, 8px);
+  align-items: flex-start;
+}
+
+.businessInputContainer {
+  flex: 1;
+}
+
+.verifyBtn {
+  margin-top: 22px; /* 라벨 높이(18px) + 간격(4px) = 22px */
+  padding: 0 var(--space-16, 16px);
+  height: 48px; /* InputField 기본 높이 48px */
+  border-radius: var(--radius-md, 8px);
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.verifyBtnDefault {
+  border: 1px solid var(--color-text-gray-300, #e2e8f0);
+  background: var(--color-text-white, white);
+  color: var(--color-text-gray-700, #0f172a);
+  cursor: pointer;
+}
+
+.verifyBtnDefault:not(:disabled):hover {
+  background: var(--color-surface, #f8fafc);
+}
+
+.verifyBtnDefault:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.verifyBtnVerified {
+  border: 1px solid var(--color-primary, #10b981);
+  background: var(--color-primary-light, #ecfdf5);
+  color: var(--color-primary, #10b981);
+  cursor: default;
+}
