@@ -65,6 +65,10 @@ export default function Card({
       ? `₩${price.toLocaleString()}`
       : price;
 
+  const discountRate = originalPrice && typeof originalPrice === 'number' && typeof price === 'number' && originalPrice > 0 
+    ? Math.round(((originalPrice - price) / originalPrice) * 100) 
+    : null;
+
   return (
     <div className={styles.card}>
       <div className={styles.header}>
@@ -154,6 +158,9 @@ export default function Card({
       </div>
 
       <div className={styles.priceSection}>
+        {discountRate !== null && discountRate > 0 && (
+          <span className={styles.discountRate}>{discountRate}%</span>
+        )}
         {originalPrice && (
           <span className={styles.originalPrice}>
             {typeof originalPrice === 'number' ? `₩${originalPrice.toLocaleString()}` : originalPrice}

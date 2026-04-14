@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface LoadHostInfoPort {
 
     Optional<HostInfo> findByUserId(Long userId);
+    java.util.List<HostInfo> findByUserIds(java.util.List<Long> userIds);
 
     /**
      * 호스트 정보 Value Object

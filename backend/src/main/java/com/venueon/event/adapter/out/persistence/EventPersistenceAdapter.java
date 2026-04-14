@@ -16,6 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
+
+
 /**
  * EventRepositoryPort 구현체 — JPA 연동
  */
@@ -95,7 +100,104 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
                 }
             }
 
-            // TODO: isOnline 필터 — 세션 JOIN 기반으로 재구현 예정 (EventJpaEntity에 sessions 관계 매핑 추가 후)
+            // isOnline 필터 — 세션 JOIN 기반
+            if (condition.isOnline() != null) {
+                Subquery<Integer> sq = query.subquery(Integer.class);
+                Root<SessionJpaEntity> session = sq.from(SessionJpaEntity.class);
+                sq.select(cb.literal(1));
+                sq.where(
+                        cb.equal(session.get("event").get("id"), root.get("id")),
+                        cb.equal(session.get("isOnline"), condition.isOnline())
+                );
+                predicates.add(cb.exists(sq));
+            }
+
+            // 모집상태 필터 (recruitmentStatusId)
+            if (condition.recruitmentStatusId() != null) {
+                Subquery<Integer> sq = query.subquery(Integer.class);
+                Root<SessionJpaEntity> session = sq.from(SessionJpaEntity.class);
+                sq.select(cb.literal(1));
+
+                java.time.LocalDateTime now = java.time.LocalDateTime.now();
+                Predicate statusPredicate = null;
+
+                if (condition.recruitmentStatusId() == 1L) { // 모집예정 (PENDING)
+                    statusPredicate = cb.and(
+                            cb.isNotNull(session.get("recruitStartDate")),
+                            cb.greaterThan(session.get("recruitStartDate"), now)
+                    );
+                } else if (condition.recruitmentStatusId() == 2L) { // 모집중 (OPEN)
+                    statusPredicate = cb.and(
+                            cb.or(cb.isNull(session.get("isRecruitmentClosed")), cb.isFalse(session.get("isRecruitmentClosed"))),
+                            cb.or(
+                                    cb.equal(session.get("maxAttendees"), 0),
+                                    cb.lessThan(session.get("currentAttendees"), session.get("maxAttendees"))
+                            ),
+                            cb.or(cb.isNull(session.get("recruitStartDate")), cb.lessThanOrEqualTo(session.get("recruitStartDate"), now)),
+                            cb.or(cb.isNull(session.get("recruitEndDate")), cb.greaterThanOrEqualTo(session.get("recruitEndDate"), now))
+                    );
+                } else if (condition.recruitmentStatusId() == 3L) { // 모집마감 (CLOSED)
+                    statusPredicate = cb.or(
+                            cb.isTrue(session.get("isRecruitmentClosed")),
+                            cb.and(cb.greaterThan(session.get("maxAttendees"), 0), cb.greaterThanOrEqualTo(session.get("currentAttendees"), session.get("maxAttendees"))),
+                            cb.and(cb.isNotNull(session.get("recruitEndDate")), cb.lessThan(session.get("recruitEndDate"), now))
+                    );
+                }
+
+                if (statusPredicate != null) {
+                    jakarta.persistence.criteria.Join<Object, Object> forcedRecruitJoin = session.join("forcedRecruitmentStatus", jakarta.persistence.criteria.JoinType.LEFT);
+                    sq.where(
+                            cb.equal(session.get("event").get("id"), root.get("id")),
+                            cb.or(
+                                    cb.equal(forcedRecruitJoin.get("id"), condition.recruitmentStatusId()),
+                                    cb.and(cb.isNull(session.get("forcedRecruitmentStatus")), statusPredicate)
+                            )
+                    );
+                    predicates.add(cb.exists(sq));
+                }
+            }
+
+            // 메인 페이지 이벤트 상태 필터 (eventStatusId)
+            if (condition.eventStatusId() != null) {
+                Subquery<Integer> sq = query.subquery(Integer.class);
+                Root<SessionJpaEntity> session = sq.from(SessionJpaEntity.class);
+                sq.select(cb.literal(1));
+
+                java.time.LocalDateTime now = java.time.LocalDateTime.now();
+                Predicate statusPredicate = null;
+
+                if (condition.eventStatusId() == 2L) { // 진행예정 / 발행됨 (PUBLISHED)
+                    statusPredicate = cb.or(
+                            cb.isNull(session.get("startTime")),
+                            cb.greaterThan(session.get("startTime"), now)
+                    );
+                } else if (condition.eventStatusId() == 3L) { // 진행중 (ONGOING)
+                    statusPredicate = cb.and(
+                            cb.isNotNull(session.get("startTime")),
+                            cb.isNotNull(session.get("endTime")),
+                            cb.lessThanOrEqualTo(session.get("startTime"), now),
+                            cb.greaterThanOrEqualTo(session.get("endTime"), now)
+                    );
+                } else if (condition.eventStatusId() == 4L) { // 종료됨 (ENDED)
+                    statusPredicate = cb.and(
+                            cb.isNotNull(session.get("endTime")),
+                            cb.lessThan(session.get("endTime"), now)
+                    );
+                }
+
+                if (statusPredicate != null) {
+                    jakarta.persistence.criteria.Join<Object, Object> forcedSessionJoin = session.join("forcedSessionStatus", jakarta.persistence.criteria.JoinType.LEFT);
+                    sq.where(
+                            cb.equal(session.get("event").get("id"), root.get("id")),
+                            cb.or(
+                                    cb.equal(forcedSessionJoin.get("id"), condition.eventStatusId()),
+                                    cb.and(cb.isNull(session.get("forcedSessionStatus")), statusPredicate)
+                            )
+                    );
+                    predicates.add(cb.exists(sq));
+                }
+            }
+
             // TODO: 지역(regionSido/regionSigungu) 필터 — 세션 JOIN 기반으로 추가 예정
 
             return cb.and(predicates.toArray(new Predicate[0]));

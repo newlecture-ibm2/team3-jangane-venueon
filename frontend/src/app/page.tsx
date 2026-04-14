@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import { Card, CardGrid, InputField, Tabs, Pagination } from '@/components/ui';
+import { Card, CardGrid, InputField, Tabs, Pagination, FilterDropdown, FilterChip } from '@/components/ui';
 import { format } from 'date-fns';
 
 
@@ -16,6 +16,7 @@ interface EventData {
   recruitmentStatus: { id: number; label: string };
   categoryId: number;
   creatorId: number;
+  creatorName: string;
   createdAt: string;
   hasSession: boolean;
   minPrice: number | null;
@@ -36,10 +37,33 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
+  const [activeIsOnline, setActiveIsOnline] = useState('all');
+  const [activeRecruitmentStatus, setActiveRecruitmentStatus] = useState('all');
+  const [activeEventStatus, setActiveEventStatus] = useState('all');
 
   const [categoryOptions, setCategoryOptions] = useState<{value: string, label: string}[]>([
-    { value: 'all', label: '전체보기' }
+    { value: 'all', label: '카테고리: 전체' }
   ]);
+
+  const isOnlineOptions = [
+    { value: 'all', label: '온/오프라인: 전체' },
+    { value: 'true', label: '온라인' },
+    { value: 'false', label: '오프라인' }
+  ];
+
+  const recruitmentOptions = [
+    { value: 'all', label: '모집상태: 전체' },
+    { value: '1', label: '모집예정' },
+    { value: '2', label: '모집중' },
+    { value: '3', label: '모집마감' }
+  ];
+
+  const eventStatusOptions = [
+    { value: 'all', label: '진행상태: 전체' },
+    { value: '2', label: '진행예정' },
+    { value: '3', label: '진행중' },
+    { value: '4', label: '종료됨' }
+  ];
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -51,7 +75,7 @@ export default function Home() {
             value: String(c.id),
             label: c.name
           }));
-          setCategoryOptions([{ value: 'all', label: '전체보기' }, ...opts]);
+          setCategoryOptions([{ value: 'all', label: '카테고리: 전체' }, ...opts]);
         }
       } catch (error) {
         console.error('Failed to fetch categories:', error);
@@ -60,7 +84,14 @@ export default function Home() {
     fetchCategories();
   }, []);
 
-  const fetchEvents = async (page: number, keyword: string = '', categoryId: string = 'all') => {
+  const fetchEvents = async (
+      page: number, 
+      keyword: string = '', 
+      categoryId: string = 'all',
+      isOnline: string = 'all',
+      recruitmentStatusId: string = 'all',
+      eventStatusId: string = 'all'
+    ) => {
     setLoading(true);
     try {
       // Backend pagination is 0-indexed, UI is 1-indexed
@@ -70,6 +101,15 @@ export default function Home() {
       }
       if (categoryId !== 'all') {
         url += `&categoryId=${categoryId}`;
+      }
+      if (isOnline !== 'all') {
+        url += `&isOnline=${isOnline}`;
+      }
+      if (recruitmentStatusId !== 'all') {
+        url += `&recruitmentStatusId=${recruitmentStatusId}`;
+      }
+      if (eventStatusId !== 'all') {
+        url += `&eventStatusId=${eventStatusId}`;
       }
 
       const res = await fetch(url);
@@ -103,14 +143,14 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchEvents(currentPage, searchQuery, activeCategory);
-  }, [currentPage, activeCategory]);
+    fetchEvents(currentPage, searchQuery, activeCategory, activeIsOnline, activeRecruitmentStatus, activeEventStatus);
+  }, [currentPage, activeCategory, activeIsOnline, activeRecruitmentStatus, activeEventStatus]);
 
   // Handle Search Submit
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setCurrentPage(1);
-      fetchEvents(1, searchQuery, activeCategory);
+      fetchEvents(1, searchQuery, activeCategory, activeIsOnline, activeRecruitmentStatus, activeEventStatus);
     }
   };
 
@@ -139,22 +179,65 @@ export default function Home() {
 
         {/* 필터 및 검색 섹션 */}
         <section className={styles.filterSection}>
-          <div className={styles.searchBox}>
-            <InputField
-              variant="search"
-              placeholder="검색어를 입력하세요"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearch}
-            />
+          <div className={styles.filterBar}>
+            <div className={styles.searchBox}>
+              <InputField
+                variant="search"
+                placeholder="검색어를 입력하세요"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
+              />
+            </div>
+            <div className={styles.dropdownGroup}>
+              <FilterDropdown
+                options={categoryOptions}
+                value={activeCategory}
+                onChange={(val) => { setActiveCategory(val); setCurrentPage(1); }}
+              />
+              <FilterDropdown
+                options={isOnlineOptions}
+                value={activeIsOnline}
+                onChange={(val) => { setActiveIsOnline(val); setCurrentPage(1); }}
+              />
+              <FilterDropdown
+                options={recruitmentOptions}
+                value={activeRecruitmentStatus}
+                onChange={(val) => { setActiveRecruitmentStatus(val); setCurrentPage(1); }}
+              />
+              <FilterDropdown
+                options={eventStatusOptions}
+                value={activeEventStatus}
+                onChange={(val) => { setActiveEventStatus(val); setCurrentPage(1); }}
+              />
+            </div>
           </div>
-          <div className={styles.tagGroup}>
-            <Tabs
-              variant="pill"
-              options={categoryOptions}
-              activeValue={activeCategory}
-              onChange={(val) => setActiveCategory(val)}
-            />
+
+          <div className={styles.activeFilters}>
+            {activeCategory !== 'all' && (
+              <FilterChip 
+                label={categoryOptions.find(o => o.value === activeCategory)?.label || ''} 
+                onClose={() => setActiveCategory('all')} 
+              />
+            )}
+            {activeIsOnline !== 'all' && (
+              <FilterChip 
+                label={isOnlineOptions.find(o => o.value === activeIsOnline)?.label || ''} 
+                onClose={() => setActiveIsOnline('all')} 
+              />
+            )}
+            {activeRecruitmentStatus !== 'all' && (
+              <FilterChip 
+                label={recruitmentOptions.find(o => o.value === activeRecruitmentStatus)?.label || ''} 
+                onClose={() => setActiveRecruitmentStatus('all')} 
+              />
+            )}
+            {activeEventStatus !== 'all' && (
+              <FilterChip 
+                label={eventStatusOptions.find(o => o.value === activeEventStatus)?.label || ''} 
+                onClose={() => setActiveEventStatus('all')} 
+              />
+            )}
           </div>
         </section>
 
@@ -196,10 +279,10 @@ export default function Home() {
                       eventId={event.id}
                       isWishlistedProp={wishlistSet.has(event.id)}
                       imageUrl={event.thumbnailUrl ? `/upload/${event.thumbnailUrl}` : ''}
-                      organizer={`호스트 ${event.creatorId}`} // 백엔드 조인 시 실제 이름으로 변경
+                      organizer={event.creatorName || `호스트 ${event.creatorId}`}
                       dateTime={dateTimeStr}
                       location={event.isOnline ? '온라인 (Zoom 등)' : (event.primaryLocation || '장소 미정')}
-                      price={event.minPrice !== null ? (event.hasDiscount ? `${event.minPrice.toLocaleString()}원` : event.minPrice) : 0}
+                      price={event.minPrice !== null ? event.minPrice : 0}
                       originalPrice={event.hasDiscount && event.originalPrice ? event.originalPrice : undefined}
                       status={event.status?.label || 'DRAFT'}
                       recruitmentStatus={event.recruitmentStatus?.label || 'PENDING'}

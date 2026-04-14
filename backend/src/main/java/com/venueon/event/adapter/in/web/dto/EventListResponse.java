@@ -20,6 +20,7 @@ public record EventListResponse(
         com.venueon.common.dto.CodeDto recruitmentStatus,   // 모집상태 (세션 종합)
         Long categoryId,
         Long creatorId,
+        String creatorName,
         LocalDateTime createdAt,
         boolean hasSession,
         LocalDateTime startDate,               // 세션 최소 시작일
@@ -34,21 +35,21 @@ public record EventListResponse(
     /**
      * 세션 정보 없이 생성 (fallback)
      */
-    public static EventListResponse from(Event event) {
-        return from(event, List.of(), List.of());
+    public static EventListResponse from(Event event, String creatorName) {
+        return from(event, List.of(), List.of(), creatorName);
     }
 
     /**
      * 세션만 있는 경우 (하위 호환)
      */
-    public static EventListResponse from(Event event, List<Session> sessions) {
-        return from(event, sessions, List.of());
+    public static EventListResponse from(Event event, List<Session> sessions, String creatorName) {
+        return from(event, sessions, List.of(), creatorName);
     }
 
     /**
      * 세션 + 티켓 정보를 받아 전체 Computed 필드 계산
      */
-    public static EventListResponse from(Event event, List<Session> sessions, List<Ticket> tickets) {
+    public static EventListResponse from(Event event, List<Session> sessions, List<Ticket> tickets, String creatorName) {
         LocalDateTime startDate = null;
         LocalDateTime endDate = null;
         com.venueon.common.model.DomainCode effectiveStatus = event.getStatus();
@@ -122,6 +123,7 @@ public record EventListResponse(
                 recruitmentStatus != null ? com.venueon.common.dto.CodeDto.of(recruitmentStatus.id(), recruitmentStatus.label()) : null,
                 event.getCategoryId(),
                 event.getCreatorId(),
+                creatorName,
                 event.getCreatedAt(),
                 event.getHasSession(),
                 startDate,

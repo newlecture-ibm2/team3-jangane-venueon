@@ -46,12 +46,14 @@ public class EventController {
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) Boolean isOnline,
+            @RequestParam(required = false) Long recruitmentStatusId,
+            @RequestParam(required = false) Long eventStatusId,
             @RequestParam(required = false, defaultValue = "latest") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size
     ) {
         EventSearchCondition condition = new EventSearchCondition(
-                keyword, categoryId, type, isOnline, sort
+                keyword, categoryId, type, isOnline, recruitmentStatusId, eventStatusId, sort
         );
 
         Pageable pageable = createPageable(page, size, sort);
@@ -73,11 +75,21 @@ public class EventController {
         Map<Long, List<Ticket>> ticketsByEventId = allTickets.stream()
                 .collect(Collectors.groupingBy(Ticket::getEventId));
 
+        // 호스트 정보 벌크 조회
+        List<Long> creatorIds = eventPage.getContent().stream()
+                .map(Event::getCreatorId)
+                .distinct()
+                .toList();
+        List<HostInfo> hostInfos = eventQueryService.getHostInfosByCreatorIds(creatorIds);
+        Map<Long, String> hostNameMap = hostInfos.stream()
+                .collect(Collectors.toMap(HostInfo::userId, HostInfo::orgName));
+
         Page<EventListResponse> result = eventPage.map(event ->
                 EventListResponse.from(
                         event,
                         sessionsByEventId.getOrDefault(event.getId(), List.of()),
-                        ticketsByEventId.getOrDefault(event.getId(), List.of())
+                        ticketsByEventId.getOrDefault(event.getId(), List.of()),
+                        hostNameMap.getOrDefault(event.getCreatorId(), "호스트 " + event.getCreatorId())
                 )
         );
 

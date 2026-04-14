@@ -21,10 +21,12 @@ public interface GetEventListUseCase {
             Long categoryId,
             String type,
             Boolean isOnline,       // 세션 기반 필터 (향후 JOIN)
+            Long recruitmentStatusId, // 모집 상태 필터
+            Long eventStatusId,       // 이벤트 진행 상태 필터
             String sort
     ) {
         public static EventSearchCondition empty() {
-            return new EventSearchCondition(null, null, null, null, null);
+            return new EventSearchCondition(null, null, null, null, null, null, null);
         }
     }
 }
