@@ -1,7 +1,7 @@
 package com.venueon.order.adapter.out.persistence.repository;
 
-import com.venueon.host.dto.HostAttendeeResponse;
-import com.venueon.host.dto.HostRecentOrderResponse;
+import com.venueon.host.order.adapter.in.web.dto.HostAttendeeResponse;
+import com.venueon.host.order.adapter.in.web.dto.HostRecentOrderResponse;
 import com.venueon.order.adapter.out.persistence.entity.OrderJpaEntity;
 import com.venueon.order.domain.model.OrderStatus;
 import org.springframework.data.domain.Page;
@@ -40,7 +40,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
     long countByTicketIdAndStatusIn(Long ticketId, List<OrderStatus> statuses);
 
     @Query("""
-            select new com.venueon.host.dto.HostRecentOrderResponse(
+            select new com.venueon.host.order.adapter.in.web.dto.HostRecentOrderResponse(
                 o.id,
                 u.nickname,
                 e.title,
@@ -57,7 +57,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
     Page<HostRecentOrderResponse> findRecentOrdersByHostId(Long creatorId, Pageable pageable);
 
     @Query("""
-            select new com.venueon.host.dto.HostRecentOrderResponse(
+            select new com.venueon.host.order.adapter.in.web.dto.HostRecentOrderResponse(
                 o.id,
                 u.nickname,
                 e.title,
@@ -124,7 +124,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
     long countTotalAttendeesByHostId(@Param("hostId") Long hostId);
 
     @Query("""
-            select new com.venueon.host.dto.HostAttendeeResponse(
+            select new com.venueon.host.order.adapter.in.web.dto.HostAttendeeResponse(
                 o.id,
                 u.nickname,
                 u.email,

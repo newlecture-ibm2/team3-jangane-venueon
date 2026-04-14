@@ -618,7 +618,7 @@ ORDER, CART, COMMUNITY, COMMUNITY_MEMBER, POST, COMMENT, POST_LIKE, COMMENT_LIKE
 | USER | `User.java` | `UserJpaEntity.java` | `user/` |
 | CATEGORY | `Category.java` | `CategoryJpaEntity.java` | `category/` |
 | EVENT | `Event.java` | `EventJpaEntity.java` | `event/` |
-| EVENT_SESSION | `Session.java` | `SessionJpaEntity.java` | `event/` |
+| EVENT_SESSION | `Session.java` | `SessionJpaEntity.java` | `session/` |
 | TICKET | `Ticket.java` | `TicketJpaEntity.java` | `ticket/` |
 | TICKET_SESSION | — | `@JoinTable` 또는 별도 Entity | `ticket/` |
 | ORDER_TABLE | `Order.java` | `OrderJpaEntity.java` | `order/` |

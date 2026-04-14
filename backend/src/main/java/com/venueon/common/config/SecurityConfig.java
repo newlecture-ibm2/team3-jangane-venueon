@@ -53,6 +53,9 @@ public class SecurityConfig {
                 // /admin/** — ADMIN 권한 필요
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 
+                // /host/** — 인증 필요 (Host 전용)
+                .requestMatchers("/host/**").authenticated()
+                
                 // 그 외 기존 경로는 일단 허용 (점진적으로 보호 추가 예정)
                 .anyRequest().permitAll()
             )
