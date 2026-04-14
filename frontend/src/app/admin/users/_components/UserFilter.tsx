@@ -68,7 +68,7 @@ export default function UserFilter({
             className={activeStatus === 'false' ? `${styles.filterButton} ${styles.active}` : styles.filterButton}
             onClick={() => onActiveChange('false')}
           >
-            승인대기 / 정지
+            정지
           </button>
           <button 
             className={activeStatus === 'true' ? `${styles.filterButton} ${styles.active}` : styles.filterButton}

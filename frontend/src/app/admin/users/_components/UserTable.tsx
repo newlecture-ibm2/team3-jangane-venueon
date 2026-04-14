@@ -5,6 +5,7 @@ import styles from './UserTable.module.css';
 import { MoreIcon } from '@/components/icons';
 import { PopoverMenu } from '@/components/ui';
 import type { AdminUserListItem } from '@/lib/admin-api';
+import Tag from '@/components/ui/Tag';
 
 interface UserTableProps {
   users: AdminUserListItem[];
@@ -112,10 +113,12 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
               </td>
               <td className={styles.statusCol}>
                 <button
-                  className={`${styles.statusToggleBtn} ${user.active ? styles.statusActive : styles.statusInactive}`}
+                  className={styles.statusToggleBtn}
                   onClick={(e) => { e.stopPropagation(); onToggleStatus(user); }}
                 >
-                  {user.active ? '활성' : '승인대기/정지'}
+                  <Tag variant={user.active ? 'green' : 'red'}>
+                    {user.active ? '활성' : '정지'}
+                  </Tag>
                 </button>
               </td>
               <td className={styles.actionCol}>
