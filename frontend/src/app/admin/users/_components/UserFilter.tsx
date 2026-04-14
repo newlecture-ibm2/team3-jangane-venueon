@@ -35,8 +35,8 @@ export default function UserFilter({
         <Tabs
           variant="line"
           options={[
-            { value: 'HOST', label: '주최자 관리' },
-            { value: 'USER', label: '수강생 관리' },
+            { value: '3', label: '주최자 관리' },
+            { value: '2', label: '수강생 관리' },
           ]}
           activeValue={role}
           onChange={onRoleChange}
@@ -68,7 +68,7 @@ export default function UserFilter({
             className={activeStatus === 'false' ? `${styles.filterButton} ${styles.active}` : styles.filterButton}
             onClick={() => onActiveChange('false')}
           >
-            승인대기 / 정지
+            정지
           </button>
           <button 
             className={activeStatus === 'true' ? `${styles.filterButton} ${styles.active}` : styles.filterButton}

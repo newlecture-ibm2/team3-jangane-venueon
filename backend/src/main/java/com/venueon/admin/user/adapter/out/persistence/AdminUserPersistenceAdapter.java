@@ -3,9 +3,12 @@ package com.venueon.admin.user.adapter.out.persistence;
 import com.venueon.admin.user.application.port.out.AdminUserRepositoryPort;
 import com.venueon.user.adapter.out.persistence.UserMapper;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
+import com.venueon.user.adapter.out.persistence.entity.UserRoleJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
+import com.venueon.user.adapter.out.persistence.repository.UserRoleJpaRepository;
+import com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository;
+import com.venueon.user.domain.model.HostProfile;
 import com.venueon.user.domain.model.User;
-import com.venueon.user.domain.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,20 +26,30 @@ import java.util.Optional;
 public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
 
     private final UserJpaRepository userJpaRepository;
+    private final UserRoleJpaRepository userRoleJpaRepository;
+    private final HostProfileJpaRepository hostProfileJpaRepository;
     private final UserMapper userMapper;
 
     @Override
-    public Page<User> findUsers(String keyword, UserRole role, Boolean active, Pageable pageable) {
+    public Page<User> findUsers(String keyword, String role, Boolean active, Pageable pageable) {
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
         String safeKeyword = hasKeyword ? keyword.toLowerCase() : "";
 
         boolean hasRole = role != null;
-        UserRole safeRole = hasRole ? role : UserRole.USER;
+        Long safeRoleId = null;
+        if (hasRole) {
+            try {
+                safeRoleId = Long.parseLong(role);
+            } catch (NumberFormatException e) {
+                // role이 문자열("ADMIN" 등)으로 들어온 경우 무시 (필터 미적용)
+                hasRole = false;
+            }
+        }
 
         boolean hasActive = active != null;
         Boolean safeActive = hasActive ? active : false;
 
-        return userJpaRepository.findUsersDynamically(safeKeyword, hasKeyword, safeRole, hasRole, safeActive, hasActive, pageable)
+        return userJpaRepository.findUsersDynamically(safeKeyword, hasKeyword, safeRoleId, hasRole, safeActive, hasActive, pageable)
                 .map(userMapper::toDomain);
     }
 
@@ -48,7 +61,8 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
 
     @Override
     public User save(User user) {
-        UserJpaEntity entity = userMapper.toEntity(user);
+        UserRoleJpaEntity roleEntity = user.getRole() != null ? userRoleJpaRepository.findById(user.getRole().id()).orElse(null) : null;
+        UserJpaEntity entity = userMapper.toEntity(user, roleEntity);
         UserJpaEntity saved = userJpaRepository.save(entity);
         return userMapper.toDomain(saved);
     }
@@ -56,6 +70,21 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
     @Override
     public boolean existsById(Long id) {
         return userJpaRepository.existsById(id);
+    }
+
+    @Override
+    public Optional<HostProfile> findHostProfileByUserId(Long userId) {
+        return hostProfileJpaRepository.findByUserId(userId)
+                .map(entity -> new HostProfile(
+                        entity.getId(),
+                        entity.getUser().getId(),
+                        entity.getOrgName(),
+                        entity.getOrgNumber(),
+                        entity.getManagerName(),
+                        entity.getOrgDescription(),
+                        entity.getCreatedAt(),
+                        entity.getUpdatedAt()
+                ));
     }
 
     @Override

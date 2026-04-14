@@ -27,5 +27,5 @@ public class OrderDetailResponse {
     // For MyPage Cards
     private String organizer;
     private String location;
-    private String eventStatus;
+    private com.venueon.common.dto.CodeDto eventStatus;
 }

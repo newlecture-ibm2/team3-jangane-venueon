@@ -6,7 +6,7 @@ package com.venueon.admin.user.adapter.in.web.dto.request;
  */
 public record AdminUpdateUserRequest(
         String nickname,
-        String role,
+        Long roleId,
         String phone
 ) {
 }

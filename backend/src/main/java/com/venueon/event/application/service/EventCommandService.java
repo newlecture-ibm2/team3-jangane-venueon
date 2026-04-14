@@ -8,7 +8,6 @@ import com.venueon.event.application.port.in.UpdateEventUseCase;
 import com.venueon.event.application.port.in.CreateSessionUseCase;
 import com.venueon.event.application.port.out.EventRepositoryPort;
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +33,8 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                 command.categoryId(),
                 command.title(),
                 command.description(),
-                command.type(),
-                EventStatus.DRAFT,          // 최초 생성 시 항상 DRAFT
+                com.venueon.common.model.DomainCode.of(command.typeId(), "이벤트타입"), // DB 맵핑용
+                com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID, "임시저장"),          // 최초 생성 시 항상 DRAFT
                 command.thumbnailUrl(),
                 command.hasSession(),
                 false,                      // isHidden
@@ -77,7 +76,7 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
     }
 
     @Override
-    public Event updateStatus(Long eventId, Long requesterId, String requesterRole, EventStatus newStatus) {
+    public Event updateStatus(Long eventId, Long requesterId, String requesterRole, Long newStatusId) {
         Event event = eventRepositoryPort.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다. ID: " + eventId));
 
@@ -87,13 +86,11 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
         }
 
         // 도메인 비즈니스 로직 위임
-        switch (newStatus) {
-            case DRAFT -> event.revertToDraft();
-            case PUBLISHED -> event.publish();
-            case ENDED -> event.end();
-            case CANCELLED -> event.cancel();
-            default -> throw new IllegalArgumentException("지원하지 않는 상태 변경입니다: " + newStatus);
-        }
+        if (newStatusId.equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID)) event.revertToDraft();
+        else if (newStatusId.equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_PUBLISHED_ID)) event.publish();
+        else if (newStatusId.equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_ENDED_ID)) event.end();
+        else if (newStatusId.equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_CANCELLED_ID)) event.cancel();
+        else throw new IllegalArgumentException("지원하지 않는 상태 변경입니다: " + newStatusId);
 
         return eventRepositoryPort.save(event);
     }
@@ -111,7 +108,7 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                 command.categoryId(),
                 command.title(),
                 command.description(),
-                command.type(),
+                com.venueon.common.model.DomainCode.of(command.typeId(), "이벤트타입"),
                 command.thumbnailUrl(),
                 command.hasSession()
         );

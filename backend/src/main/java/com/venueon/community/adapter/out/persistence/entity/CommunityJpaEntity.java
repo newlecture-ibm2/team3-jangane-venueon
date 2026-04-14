@@ -22,6 +22,7 @@ public class CommunityJpaEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private EventJpaEntity event;
 
     @ManyToOne(fetch = FetchType.LAZY)

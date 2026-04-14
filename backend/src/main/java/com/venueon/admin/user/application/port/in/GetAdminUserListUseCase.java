@@ -1,7 +1,6 @@
 package com.venueon.admin.user.application.port.in;
 
 import com.venueon.user.domain.model.User;
-import com.venueon.user.domain.model.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,5 +18,5 @@ public interface GetAdminUserListUseCase {
      * @param pageable 페이징 정보
      * @return 페이징된 회원 목록
      */
-    Page<User> getUsers(String keyword, UserRole role, Boolean active, Pageable pageable);
+    Page<User> getUsers(String keyword, String role, Boolean active, Pageable pageable);
 }

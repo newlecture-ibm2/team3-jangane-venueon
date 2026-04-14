@@ -1,7 +1,6 @@
 package com.venueon.user.adapter.out.persistence.entity;
 
 import com.venueon.user.domain.model.AuthProvider;
-import com.venueon.user.domain.model.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,9 +29,9 @@ public class UserJpaEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private UserRoleJpaEntity role;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -74,6 +73,10 @@ public class UserJpaEntity {
         this.profileImg = profileImg;
     }
 
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
     public void updateBadgeVisibility(boolean isBadgeVisible) {
         this.isBadgeVisible = isBadgeVisible;
     }
@@ -85,9 +88,10 @@ public class UserJpaEntity {
         }
     }
 
-    public void softDelete() {
+    public void softDelete(String newEmail) {
         this.isActive = false;
-        // Optionally clear personal info or change email to prevent re-join blocks if required
-        // this.email = "deleted_" + this.id + "_" + this.email;
+        if (newEmail != null) {
+            this.email = newEmail;
+        }
     }
 }

@@ -15,7 +15,7 @@ export default async function NewEventPage() {
     redirect('/login?redirect=/events/new');
   }
 
-  if (session.role !== 'HOST' && session.role !== 'ADMIN') {
+  if (session.role?.id !== 3 && session.role?.id !== 1) {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>접근 권한이 없습니다</h2>

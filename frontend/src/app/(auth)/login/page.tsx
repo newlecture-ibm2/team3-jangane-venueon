@@ -8,7 +8,8 @@ import { useUIStore } from "@/store/useUIStore";
 import InputField from "@/components/ui/InputField";
 import AuthFormLayout from "../_components/AuthFormLayout";
 import GoogleLoginButton from "../_components/GoogleLoginButton";
-import React from "react";
+import ConfirmModal from "@/components/modal/ConfirmModal";
+import React, { useEffect } from "react";
 
 function LoginContent() {
   const router = useRouter();
@@ -20,6 +21,18 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("alert") === "auth_required") {
+      setIsAuthModalOpen(true);
+      
+      // 모달이 무한 반복으로 뜨지 않도록 파라미터 제거
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.delete("alert");
+      router.replace(`?${newSearchParams.toString()}`);
+    }
+  }, [searchParams, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,8 +56,9 @@ function LoginContent() {
   };
 
   return (
-    <AuthFormLayout
-      title="로그인"
+    <>
+      <AuthFormLayout
+        title="로그인"
       onSubmit={handleSubmit}
       loading={loading}
       submitText="로그인"
@@ -73,7 +87,18 @@ function LoginContent() {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="********"
       />
-    </AuthFormLayout>
+      </AuthFormLayout>
+
+      <ConfirmModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onConfirm={() => setIsAuthModalOpen(false)}
+        title="로그인 필요"
+        subtitle="로그인 후 이용 가능한 서비스입니다."
+        confirmText="확인"
+        hideCancel={true}
+      />
+    </>
   );
 }
 

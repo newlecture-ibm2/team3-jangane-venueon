@@ -53,6 +53,11 @@ export default function ContactTable({ contacts, isLoading, onViewDetail }: Cont
             <TableCell>
               <UserProfile 
                 name={req.requesterNickname || req.requesterEmail?.split('@')[0] || '사용자'} 
+                imageUrl={req.requesterProfileImg 
+                  ? (req.requesterProfileImg.startsWith('/') || req.requesterProfileImg.startsWith('http') 
+                    ? req.requesterProfileImg 
+                    : `/upload/${req.requesterProfileImg}`)
+                  : undefined}
                 size="medium" 
               />
             </TableCell>

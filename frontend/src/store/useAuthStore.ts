@@ -6,7 +6,7 @@ interface User {
   email?: string;
   nickname?: string;
   profileImg?: string;
-  role?: "ADMIN" | "HOST" | "USER";
+  role?: { id: number; label: string };
 }
 
 interface AuthState {

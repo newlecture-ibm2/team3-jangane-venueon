@@ -46,22 +46,23 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   const [tickets, setTickets] = useState<any[]>(
     (initialData?.tickets || []).length > 0
       ? initialData!.tickets.map((t: any) => {
-          const hasDiscount = t.originalPrice > 0 && t.price < t.originalPrice;
-          return {
-            ...t,
-            // 할인 있으면: price=정가(originalPrice), discountPrice=할인가(price)
-            price: hasDiscount ? t.originalPrice : t.price,
-            discountPrice: hasDiscount ? t.price : undefined,
-            useDiscount: hasDiscount,
-            selectedSessionIndices: t.sessionIds 
-              ? t.sessionIds.map((sid: number) => (initialData?.sessions || []).findIndex((s: any) => s.id === sid)).filter((i: number) => i !== -1)
-              : []
-          };
-        })
+        const hasDiscount = t.originalPrice > 0 && t.price < t.originalPrice;
+        return {
+          ...t,
+          // 할인 있으면: price=정가(originalPrice), discountPrice=할인가(price)
+          price: hasDiscount ? t.originalPrice : t.price,
+          discountPrice: hasDiscount ? t.price : undefined,
+          useDiscount: hasDiscount,
+          selectedSessionIndices: t.sessionIds
+            ? t.sessionIds.map((sid: number) => (initialData?.sessions || []).findIndex((s: any) => s.id === sid)).filter((i: number) => i !== -1)
+            : []
+        };
+      })
       : [{ name: '기본 티켓', price: 0, originalPrice: 0, useDiscount: false, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }]
   );
-  const [categories, setCategories] = useState<{id: number, name: string}[]>([]);
+  const [categories, setCategories] = useState<{ id: number, name: string }[]>([]);
   const [deletedTicketIds, setDeletedTicketIds] = useState<number[]>([]);
+  const [deletedSessionIds, setDeletedSessionIds] = useState<number[]>([]);
 
   const [formData, setFormData] = useState({
     categoryId: initialData?.categoryId ? String(initialData.categoryId) : '1',
@@ -116,7 +117,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
   const handleFileUpload = async (file: File) => {
     // 이미지 파일 유형 검증
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith('image/') && !file.name.toLowerCase().match(/\.(png|jpe?g|gif|webp)$/)) {
       showToast('이미지 파일만 업로드 가능합니다.', 'error');
       return;
     }
@@ -201,7 +202,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         categoryId: parseInt(formData.categoryId, 10) || 1,
         title: formData.title || '새 이벤트',
         description: formData.description,
-        type: initialData?.type || 'SEMINAR',
+        typeId: initialData?.type?.id || 4, // 4 = SEMINAR default
         thumbnailUrl: thumbnailUrl,
         hasSession,
       };
@@ -241,7 +242,8 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       // 세션 저장 로직
       const savedSessionIds: number[] = [];
       if (hasSession && sessions.length > 0) {
-        for (const session of sessions) {
+        for (let i = 0; i < sessions.length; i++) {
+          const session = sessions[i];
           // 세션 기간: 날짜+시간을 합쳐서 ISO 형식 생성
           let startTime = null;
           let endTime = null;
@@ -267,7 +269,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           const sessionPayload = {
             title: session.title || '새 세션',
             description: session.description || '세션 설명',
-            sortOrder: session.sortOrder || 0,
+            sortOrder: i,
             startTime,
             endTime,
             location: session.useCustomAddress ? session.location : formData.location || '',
@@ -309,19 +311,29 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         }
       }
 
+      // 실제 백엔드 연동을 위한 세션 삭제 처리 (DB에 존재하는 세션만)
+      for (const deletedId of deletedSessionIds) {
+        const dsRes = await fetch(`/api/host/events/${targetId}/sessions/${deletedId}`, { method: 'DELETE' });
+        if (!dsRes.ok) {
+          const dsErr = await dsRes.json().catch(() => ({}));
+          throw new Error(`세션 삭제 실패: ${dsErr.message || "오류가 발생했습니다"}`);
+        }
+      }
+
       // 티켓 저장 로직
       // 1) 삭제된 티켓 처리 (DB에 존재하는 티켓만)
       for (const deletedId of deletedTicketIds) {
-        try {
-          await fetch(`/api/host/tickets/${deletedId}`, { method: 'DELETE' });
-        } catch (e) {
-          console.error(`Failed to delete ticket ${deletedId}:`, e);
+        const dtRes = await fetch(`/api/host/tickets/${deletedId}`, { method: 'DELETE' });
+        if (!dtRes.ok) {
+          const dtErr = await dtRes.json().catch(() => ({}));
+          throw new Error(`티켓 삭제 실패: ${dtErr.message || "오류가 발생했습니다"}`);
         }
       }
 
       // 2) 생성/수정
       if (tickets.length > 0) {
-        for (const t of tickets) {
+        for (let j = 0; j < tickets.length; j++) {
+          const t = tickets[j];
           // 유효성 검증
           if (!t.isAllSessions && (!t.selectedSessionIndices || t.selectedSessionIndices.length === 0)) {
             throw new Error(`"${t.name || '새 티켓'}" 티켓에 포함할 세션을 1개 이상 선택해주세요.`);
@@ -339,19 +351,19 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             price: finalPrice,
             isAllSessions: Boolean(t.isAllSessions),
             maxQuantity: t.maxQuantity ? Number(t.maxQuantity) : null,
-            sessionIds: t.isAllSessions 
-              ? [] 
+            sessionIds: t.isAllSessions
+              ? []
               : (t.selectedSessionIndices || []).map((idx: number) => savedSessionIds[idx]).filter((id: any) => id !== undefined),
-            sortOrder: 0,
+            sortOrder: j,
             salesStart: t.salesStart || null,
             salesEnd: t.salesEnd || null,
           };
-          
+
           if (t.id) {
             const ticketPutRes = await fetch(`/api/host/tickets/${t.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({...ticketPayload, isActive: t.isActive !== false})
+              body: JSON.stringify({ ...ticketPayload, isActive: t.isActive !== false })
             });
             if (!ticketPutRes.ok) {
               console.error(`[DEBUG] Ticket PUT ${t.id} failed:`, ticketPutRes.status, await ticketPutRes.text().catch(() => ''));
@@ -371,10 +383,8 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
       if (mode === 'create' && !isDraft) {
         // 바로 게시하기 (새로 만들 때만)
-        const publishRes = await fetch(`/api/events/${targetId}/status`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: 'PUBLISHED' })
+        const publishRes = await fetch(`/api/host/events/${targetId}/status?status=2`, {
+          method: 'PATCH'
         });
         if (!publishRes.ok) throw new Error('상태 변경 실패');
       }
@@ -389,6 +399,43 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     }
   };
 
+  const handleMoveSession = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === sessions.length - 1) return;
+
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+    // 티켓이 가리키는 인덱스도 같이 스왑해줍니다.
+    const newTickets = tickets.map(t => {
+      if (t.isAllSessions || !t.selectedSessionIndices) return t;
+      const newIndices = t.selectedSessionIndices.map((idx: number) => {
+        if (idx === index) return targetIndex;
+        if (idx === targetIndex) return index;
+        return idx;
+      });
+      return { ...t, selectedSessionIndices: newIndices };
+    });
+    setTickets(newTickets);
+
+    const newSessions = [...sessions];
+    const temp = newSessions[index];
+    newSessions[index] = newSessions[targetIndex];
+    newSessions[targetIndex] = temp;
+    setSessions(newSessions);
+  };
+
+  const handleMoveTicket = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === tickets.length - 1) return;
+
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    const newTickets = [...tickets];
+    const temp = newTickets[index];
+    newTickets[index] = newTickets[targetIndex];
+    newTickets[targetIndex] = temp;
+    setTickets(newTickets);
+  };
+
   return (
     <div className={styles.formContainer}>
       <button className={styles.backButton} onClick={() => router.back()}>
@@ -396,7 +443,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       </button>
 
       {mode === 'edit' && initialData && (
-        <HostManagementPanel 
+        <HostManagementPanel
           eventId={Number(eventId)}
           status={initialData.status}
           sessions={initialData.sessions || []}
@@ -462,7 +509,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*, .png, .jpg, .jpeg"
           style={{ display: 'none' }}
           onChange={(e) => {
             if (e.target.files && e.target.files[0]) {
@@ -490,7 +537,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       <div className={styles.formGroup}>
         <label className={styles.label}>이벤트 운영 방식</label>
         <div className={styles.methodCardsContainer}>
-          <div 
+          <div
             className={`${styles.methodCard} ${!hasSession ? styles.activeMethod : ''}`}
             onClick={() => setHasSession(false)}
           >
@@ -499,7 +546,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               <span className={styles.methodDesc}>지정된 날짜/주제 그대로 참여하는 기본적인 형태의 이벤트입니다.</span>
             </div>
           </div>
-          <div 
+          <div
             className={`${styles.methodCard} ${hasSession ? styles.activeMethod : ''}`}
             onClick={() => setHasSession(true)}
           >
@@ -647,17 +694,59 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                       </span>
                       세션 {index + 1}
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const newSessions = [...sessions];
-                        newSessions.splice(index, 1);
-                        setSessions(newSessions);
-                      }}
-                      style={{ background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '0.85rem' }}
-                    >
-                      🗑️ 삭제
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => handleMoveSession(index, 'up')}
+                          style={{ background: 'none', border: '1px solid #ddd', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                        >
+                          ⬆️ 위로
+                        </button>
+                      )}
+                      {index < sessions.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleMoveSession(index, 'down')}
+                          style={{ background: 'none', border: '1px solid #ddd', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                        >
+                          ⬇️ 아래로
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const isSessionUsedInTicket = tickets.some(t => 
+                            !t.isAllSessions && t.selectedSessionIndices && t.selectedSessionIndices.includes(index)
+                          );
+
+                          if (isSessionUsedInTicket) {
+                            alert('티켓에 포함된 세션은 티켓 삭제 후 삭제가능합니다.');
+                            return;
+                          }
+
+                          const newTickets = tickets.map(t => {
+                            if (t.isAllSessions || !t.selectedSessionIndices) return t;
+                            return {
+                              ...t,
+                              selectedSessionIndices: t.selectedSessionIndices.map((idx: number) => idx > index ? idx - 1 : idx)
+                            };
+                          });
+                          setTickets(newTickets);
+
+                          if (sessions[index].id) {
+                            setDeletedSessionIds(prev => [...prev, sessions[index].id]);
+                          }
+
+                          const newSessions = [...sessions];
+                          newSessions.splice(index, 1);
+                          setSessions(newSessions);
+                        }}
+                        style={{ background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '0.85rem' }}
+                      >
+                        🗑️ 삭제
+                      </button>
+                    </div>
                   </div>
 
                   {/* 기본 정보: 제목, 정원, 장소 */}
@@ -894,7 +983,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         <div className={styles.formGroup} style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '8px' }}>
           <label className={styles.label} style={{ fontSize: '1rem' }}>결제 진행 방식 (티켓 구매 옵션)</label>
           <div className={styles.methodCardsContainer}>
-            <div 
+            <div
               className={`${styles.methodCard} ${purchaseType === 'SINGLE' ? styles.activeMethod : ''}`}
               onClick={() => setPurchaseType('SINGLE')}
             >
@@ -903,7 +992,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                 <span className={styles.methodDesc}>티켓 1장만 선택하여 구매 가능</span>
               </div>
             </div>
-            <div 
+            <div
               className={`${styles.methodCard} ${purchaseType === 'MULTI' ? styles.activeMethod : ''}`}
               onClick={() => setPurchaseType('MULTI')}
             >
@@ -929,22 +1018,47 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {tickets.map((ticket, index) => (
-              <div key={index} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem', position: 'relative' }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const removed = tickets[index];
-                    if (removed.id) {
-                      setDeletedTicketIds(prev => [...prev, removed.id]);
-                    }
-                    const newTickets = [...tickets];
-                    newTickets.splice(index, 1);
-                    setTickets(newTickets);
-                  }}
-                  style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer' }}
-                >
-                  🗑️ 삭제
-                </button>
+              <div key={index} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1.5rem', position: 'relative', background: '#fafbfc' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid #eee' }}>
+                  <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#333' }}>
+                    티켓 {index + 1}
+                  </span>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleMoveTicket(index, 'up')}
+                        style={{ background: 'none', border: '1px solid #ddd', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                      >
+                        ⬆️ 위로
+                      </button>
+                    )}
+                    {index < tickets.length - 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleMoveTicket(index, 'down')}
+                        style={{ background: 'none', border: '1px solid #ddd', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                      >
+                        ⬇️ 아래로
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const removed = tickets[index];
+                        if (removed.id) {
+                          setDeletedTicketIds(prev => [...prev, removed.id]);
+                        }
+                        const newTickets = [...tickets];
+                        newTickets.splice(index, 1);
+                        setTickets(newTickets);
+                      }}
+                      style={{ background: 'none', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '0.85rem' }}
+                    >
+                      🗑️ 삭제
+                    </button>
+                  </div>
+                </div>
                 <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
                   <div style={{ gridColumn: '1 / -1' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>티켓 이름</label>
@@ -964,10 +1078,10 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                     <input
                       type="number"
                       min="0"
-                      value={ticket.price || 0}
+                      value={ticket.price === 0 ? '' : ticket.price}
                       onChange={(e) => {
                         const newTickets = [...tickets];
-                        newTickets[index].price = parseInt(e.target.value, 10) || 0;
+                        newTickets[index].price = e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0;
                         setTickets(newTickets);
                       }}
                       style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
@@ -1017,6 +1131,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                     <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.3rem', fontWeight: 'bold' }}>수량 제한 <span style={{ fontWeight: 'normal', color: '#666' }}>(비우면 무제한)</span></label>
                     <input
                       type="number"
+                      min="0"
                       value={ticket.maxQuantity || ''}
                       onChange={(e) => {
                         const newTickets = [...tickets];
@@ -1049,7 +1164,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                       </label>
                     </div>
                   </div>
-                  
+
                   {ticket.isAllSessions === false && hasSession && (
                     <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem', padding: '1rem', background: '#f5f5f5', borderRadius: '8px', border: '1px solid #ddd' }}>
                       <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>포함할 세션 선택</label>
@@ -1059,8 +1174,8 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         {sessions.map((s, sIndex) => (
                           <label key={sIndex} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem' }}>
-                            <input 
-                              type="checkbox" 
+                            <input
+                              type="checkbox"
                               checked={(ticket.selectedSessionIndices || []).includes(sIndex)}
                               onChange={(e) => {
                                 const newTickets = [...tickets];

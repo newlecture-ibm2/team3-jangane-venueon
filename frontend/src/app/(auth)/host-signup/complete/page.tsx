@@ -39,7 +39,7 @@ export default function HostSignupCompletePage() {
     if (!user) {
       showToast("로그인이 필요합니다.", "error");
       router.push("/login?redirect=/host-signup/complete");
-    } else if (user.role === "HOST") {
+    } else if (user.role?.id === 3) {
       showToast("이미 호스트로 등록된 계정입니다.", "error");
       router.push("/host/dashboard");
     }
@@ -80,7 +80,7 @@ export default function HostSignupCompletePage() {
     }
   };
 
-  if (!user || user.role === "HOST") return null;
+  if (!user || user.role?.id === 3) return null;
 
   return (
     <AuthFormLayout

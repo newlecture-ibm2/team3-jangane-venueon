@@ -210,17 +210,12 @@ public class EventSessionService implements
             throw new IllegalArgumentException("세션이 해당 이벤트에 속하지 않습니다.");
         }
 
-        if ("AUTO".equalsIgnoreCase(command.forcedStatus())) {
+        if (command.forcedStatusId() == null) {
             session.setForcedRecruitmentStatus(null);
             session.openRecruitment(); // legacy flag reset
         } else {
-            try {
-                com.venueon.event.domain.model.RecruitmentStatus status = 
-                    com.venueon.event.domain.model.RecruitmentStatus.valueOf(command.forcedStatus().toUpperCase());
-                session.setForcedRecruitmentStatus(status);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("올바르지 않은 강제 모집 상태입니다: " + command.forcedStatus());
-            }
+            com.venueon.common.model.DomainCode code = com.venueon.common.model.DomainCode.of(command.forcedStatusId(), "강제모집상태");
+            session.setForcedRecruitmentStatus(code);
         }
 
         return sessionPort.save(session, command.eventId());
@@ -237,16 +232,11 @@ public class EventSessionService implements
             throw new IllegalArgumentException("세션이 해당 이벤트에 속하지 않습니다.");
         }
 
-        if ("AUTO".equalsIgnoreCase(command.forcedStatus())) {
+        if (command.forcedStatusId() == null) {
             session.setForcedSessionStatus(null);
         } else {
-            try {
-                com.venueon.event.domain.model.EventStatus status = 
-                    com.venueon.event.domain.model.EventStatus.valueOf(command.forcedStatus().toUpperCase());
-                session.setForcedSessionStatus(status);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("올바르지 않은 강제 진행 상태입니다: " + command.forcedStatus());
-            }
+            com.venueon.common.model.DomainCode code = com.venueon.common.model.DomainCode.of(command.forcedStatusId(), "강제진행상태");
+            session.setForcedSessionStatus(code);
         }
 
         return sessionPort.save(session, command.eventId());

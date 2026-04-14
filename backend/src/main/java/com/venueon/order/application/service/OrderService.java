@@ -3,9 +3,8 @@ package com.venueon.order.application.service;
 import com.venueon.cart.application.port.out.CartRepositoryPort;
 import com.venueon.common.exception.BusinessException;
 import com.venueon.common.exception.ErrorCode;
-import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
-import com.venueon.event.domain.model.RecruitmentStatus;
+import com.venueon.event.application.port.out.EventRepositoryPort;
+import com.venueon.event.domain.model.Event;
 import com.venueon.order.adapter.out.payment.TossPaymentClient;
 import com.venueon.order.application.port.in.RequestRefundUseCase;
 import com.venueon.order.application.port.out.OrderRepositoryPort;
@@ -17,8 +16,8 @@ import com.venueon.event.application.port.out.SessionPort;
 import com.venueon.event.domain.model.Session;
 import com.venueon.ticket.application.port.out.TicketRepositoryPort;
 import com.venueon.ticket.domain.model.Ticket;
-import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
-import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
+import com.venueon.user.application.port.out.UserRepositoryPort;
+import com.venueon.user.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,8 +47,8 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepositoryPort orderRepository;
-    private final EventJpaRepository eventRepository;
-    private final UserJpaRepository userRepository;
+    private final EventRepositoryPort eventRepository;
+    private final UserRepositoryPort userRepository;
     private final TossPaymentClient tossPaymentClient;
     private final RefundSavePort refundSavePort;
     private final RequestRefundUseCase requestRefundUseCase;
@@ -72,7 +71,7 @@ public class OrderService {
     @Transactional
     public CreateOrderResponse createOrder(Long userId, CreateOrderRequest request) {
         // 1. 유저 조회
-        UserJpaEntity user = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
         // 2. 공유 tossOrderId 발급
@@ -89,7 +88,7 @@ public class OrderService {
                     .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_INPUT_VALUE));
 
             // 3-2. 이벤트 존재 확인
-            EventJpaEntity event = eventRepository.findById(ticket.getEventId())
+            Event event = eventRepository.findById(ticket.getEventId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
             // === Gate 1: 티켓 판매 상태 + 재고 검증 ===
@@ -110,7 +109,7 @@ public class OrderService {
 
             // === Gate 3: 모집 상태 검증 ===
             for (Session session : linkedSessions) {
-                if (session.getRecruitmentStatus() != RecruitmentStatus.OPEN) {
+                if (session.getRecruitmentStatus() == null || !session.getRecruitmentStatus().id().equals(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_OPEN_ID)) {
                     throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
                 }
             }
@@ -221,7 +220,7 @@ public class OrderService {
         // 6. 결제 완료 후 장바구니 항목 삭제
         try {
             String userEmail = userRepository.findById(order.getUserId())
-                    .map(UserJpaEntity::getEmail).orElse(null);
+                    .map(User::getEmail).orElse(null);
             if (userEmail != null) {
                 for (Order relatedOrder : relatedOrders) {
                     if (relatedOrder.getTicketId() != null) {
@@ -245,7 +244,7 @@ public class OrderService {
                 .orElse(order);
 
         String orderName = eventRepository.findById(confirmedOrder.getEventId())
-                .map(EventJpaEntity::getTitle)
+                .map(Event::getTitle)
                 .orElse("VenueOn 강의");
         if (relatedOrders.size() > 1) {
             orderName = orderName + " 외 " + (relatedOrders.size() - 1) + "건";
@@ -341,7 +340,7 @@ public class OrderService {
                     int totalQuantity = relatedOrders.stream().mapToInt(Order::getQuantity).sum();
 
                     String baseTitle = eventRepository.findById(order.getEventId())
-                            .map(EventJpaEntity::getTitle)
+                            .map(Event::getTitle)
                             .orElse("알 수 없는 이벤트");
 
                     String orderName = baseTitle;
@@ -422,7 +421,7 @@ public class OrderService {
         log.info("일괄 환불 완료: tossOrderId={}, count={}", order.getTossOrderId(), batchOrders.size());
 
         String eventTitle = eventRepository.findById(order.getEventId())
-                .map(EventJpaEntity::getTitle)
+                .map(Event::getTitle)
                 .orElse("알 수 없는 이벤트");
 
         return CancelOrderResponse.builder()
@@ -466,10 +465,10 @@ public class OrderService {
     }
 
     private OrderDetailResponse toOrderDetailResponse(Order order) {
-        EventJpaEntity event = eventRepository.findById(order.getEventId()).orElse(null);
+        Event event = eventRepository.findById(order.getEventId()).orElse(null);
 
         String eventTitle = event != null ? event.getTitle() : "알 수 없는 이벤트";
-        String organizer = event != null ? "호스트 " + event.getCreator().getId() : "알 수 없는 호스트";
+        String organizer = event != null ? "호스트 " + event.getCreatorId() : "알 수 없는 호스트";
         String location = "-";
 
         // 티켓 정보 조회
@@ -497,7 +496,7 @@ public class OrderService {
                 .paidAt(order.getPaidAt())
                 .organizer(organizer)
                 .location(location)
-                .eventStatus(event != null ? event.getStatus().name() : "DRAFT")
+                .eventStatus(event != null && event.getStatus() != null ? com.venueon.common.dto.CodeDto.of(event.getStatus().id(), event.getStatus().label()) : com.venueon.common.dto.CodeDto.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID, "임시저장"))
                 .build();
     }
 

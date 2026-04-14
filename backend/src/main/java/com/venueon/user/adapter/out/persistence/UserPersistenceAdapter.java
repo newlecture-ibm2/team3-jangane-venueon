@@ -19,21 +19,25 @@ import java.util.stream.Collectors;
 public class UserPersistenceAdapter implements UserRepositoryPort {
 
     private final UserJpaRepository userJpaRepository;
+    private final com.venueon.user.adapter.out.persistence.repository.UserRoleJpaRepository userRoleJpaRepository;
     private final com.venueon.category.adapter.out.persistence.repository.CategoryJpaRepository categoryJpaRepository;
     private final UserMapper userMapper;
 
     @Override
     public User save(User user) {
         UserJpaEntity entity;
+        com.venueon.user.adapter.out.persistence.entity.UserRoleJpaEntity roleEntity = user.getRole() != null ? userRoleJpaRepository.findById(user.getRole().id()).orElse(null) : null;
+
         if (user.getId() != null) {
-            entity = userJpaRepository.findWithCategoriesById(user.getId()).orElse(userMapper.toEntity(user));
+            entity = userJpaRepository.findWithCategoriesById(user.getId()).orElse(userMapper.toEntity(user, roleEntity));
             entity.updateProfile(user.getNickname(), user.getProfileImg());
+            entity.updatePassword(user.getPassword());
             entity.updateBadgeVisibility(user.isBadgeVisible());
             if (!user.isActive()) {
-                entity.softDelete();
+                entity.softDelete(user.getEmail());
             }
         } else {
-            entity = userMapper.toEntity(user);
+            entity = userMapper.toEntity(user, roleEntity);
         }
 
         // 카테고리 업데이트

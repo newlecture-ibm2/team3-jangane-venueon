@@ -10,7 +10,7 @@ import com.venueon.common.dto.ApiResponse;
 import com.venueon.common.exception.BusinessException;
 import com.venueon.common.exception.ErrorCode;
 import com.venueon.user.domain.model.User;
-import com.venueon.user.domain.model.UserRole;
+import com.venueon.user.domain.model.HostProfile;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,13 +49,14 @@ public class AdminUserController {
     @GetMapping
     public ResponseEntity<ApiResponse<Page<AdminUserListResponse>>> getUsers(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String role,
+            @RequestParam(required = false) Long roleId,
             @RequestParam(required = false) Boolean active,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        log.debug("회원 목록 조회: keyword={}, role={}, active={}, page={}", keyword, role, active, pageable.getPageNumber());
+        log.debug("회원 목록 조회: keyword={}, roleId={}, active={}, page={}", keyword, roleId, active, pageable.getPageNumber());
 
-        UserRole userRole = parseRole(role);
+        // roleId를 문자열로 변환하여 UseCase 인터페이스 호환 (Adapter에서 Long으로 파싱)
+        String userRole = roleId != null ? roleId.toString() : null;
         Page<User> users = getAdminUserListUseCase.getUsers(keyword, userRole, active, pageable);
         Page<AdminUserListResponse> response = users.map(AdminUserListResponse::from);
 
@@ -70,7 +71,13 @@ public class AdminUserController {
         log.debug("회원 상세 조회: id={}", id);
 
         User user = getAdminUserDetailUseCase.getUserById(id);
-        AdminUserDetailResponse response = AdminUserDetailResponse.from(user);
+        HostProfile hostProfile = null;
+
+        if (user.isHost()) {
+            hostProfile = getAdminUserDetailUseCase.getHostProfileByUserId(id);
+        }
+
+        AdminUserDetailResponse response = AdminUserDetailResponse.from(user, hostProfile);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -85,15 +92,14 @@ public class AdminUserController {
 
         log.debug("회원 정보 수정: id={}", id);
 
-        UserRole newRole = parseRole(request.role());
         UpdateUserCommand command = new UpdateUserCommand(
                 request.nickname(),
-                newRole,
+                request.roleId(),
                 request.phone()
         );
 
         User updatedUser = updateAdminUserUseCase.updateUser(id, command);
-        AdminUserDetailResponse response = AdminUserDetailResponse.from(updatedUser);
+        AdminUserDetailResponse response = AdminUserDetailResponse.from(updatedUser, null);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -127,17 +133,5 @@ public class AdminUserController {
 
     // ── private 헬퍼 ──
 
-    /**
-     * 문자열 role을 UserRole enum으로 변환 (null이면 null 반환)
-     */
-    private UserRole parseRole(String role) {
-        if (role == null || role.isBlank()) {
-            return null;
-        }
-        try {
-            return UserRole.valueOf(role.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "유효하지 않은 역할입니다: " + role);
-        }
-    }
+    // removed parseRole as it is unused
 }

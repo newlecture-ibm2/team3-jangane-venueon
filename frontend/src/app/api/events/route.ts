@@ -42,18 +42,23 @@ export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies();
     const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
-    
+
     // 임시로 로그인 안된 경우 테스트용 5번 유저 (추후 수정)
     const userId = session.userId || 5;
 
     const body = await request.json();
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "X-User-Id": userId.toString()
+    };
+    if (session.jwt) {
+      headers["Authorization"] = `Bearer ${session.jwt}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}/host/events`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-User-Id": userId.toString()
-      },
+      headers,
       body: JSON.stringify(body)
     });
 

@@ -40,10 +40,13 @@ async function proxyRequest(req: NextRequest) {
   // ✅ /host/ 경로 API는 X-User-Id / X-Host-Id / X-User-Role 헤더 필요
   if (backendPath.startsWith("/host/")) {
     const userId = session.userId || 5; // 임시 기본값 (추후 인증 완성 시 수정)
-    const userRole = session.role || "HOST";
+    let userRoleStr = "HOST";
+    if (session.role?.id === 1) userRoleStr = "ADMIN";
+    else if (session.role?.id === 2) userRoleStr = "USER";
+    
     headers["X-User-Id"] = userId.toString();
     headers["X-Host-Id"] = userId.toString();
-    headers["X-User-Role"] = userRole;
+    headers["X-User-Role"] = userRoleStr;
   }
 
   // ✅ 요청 본문(Body) 안전하게 전달

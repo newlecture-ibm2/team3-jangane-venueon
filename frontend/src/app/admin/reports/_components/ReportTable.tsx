@@ -267,7 +267,17 @@ export default function ReportTable() {
                   <>
                     <td className={styles.colStudent}>
                       <div className={styles.userProfile}>
-                        <div className={styles.avatar}></div>
+                        <div className={styles.avatar}>
+                          {item.reporterProfileImg && (
+                            <img 
+                              src={item.reporterProfileImg.startsWith('/') || item.reporterProfileImg.startsWith('http') 
+                                ? item.reporterProfileImg 
+                                : `/upload/${item.reporterProfileImg}`}
+                              alt={item.reporterNickname}
+                              style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                            />
+                          )}
+                        </div>
                         <span className={styles.userName}>{item.reporterNickname}</span>
                       </div>
                     </td>

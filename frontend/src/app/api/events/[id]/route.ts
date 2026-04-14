@@ -15,7 +15,7 @@ export async function GET(
     const data = await response.json();
 
     if (!response.ok) {
-        return NextResponse.json(data, { status: response.status });
+      return NextResponse.json(data, { status: response.status });
     }
 
     return NextResponse.json(data);
@@ -37,17 +37,24 @@ export async function PUT(
     const cookieStore = await cookies();
     const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
     const userId = session.userId || 5;
-    const userRole = session.role || 'HOST';
+    let userRoleStr = "HOST";
+    if (session.role?.id === 1) userRoleStr = "ADMIN";
+    else if (session.role?.id === 2) userRoleStr = "USER";
 
     const body = await request.json();
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "X-User-Id": userId.toString(),
+      "X-User-Role": userRoleStr,
+    };
+    if (session.jwt) {
+      headers["Authorization"] = `Bearer ${session.jwt}`;
+    }
+
     const response = await fetch(`${BACKEND_URL}/host/events/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "X-User-Id": userId.toString(),
-        "X-User-Role": userRole,
-      },
+      headers,
       body: JSON.stringify(body),
     });
 
@@ -76,14 +83,21 @@ export async function DELETE(
     const cookieStore = await cookies();
     const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
     const userId = session.userId || 5;
-    const userRole = session.role || 'HOST';
+    let userRoleStr = "HOST";
+    if (session.role?.id === 1) userRoleStr = "ADMIN";
+    else if (session.role?.id === 2) userRoleStr = "USER";
+
+    const headers: Record<string, string> = {
+      "X-User-Id": userId.toString(),
+      "X-User-Role": userRoleStr,
+    };
+    if (session.jwt) {
+      headers["Authorization"] = `Bearer ${session.jwt}`;
+    }
 
     const response = await fetch(`${BACKEND_URL}/host/events/${id}`, {
       method: "DELETE",
-      headers: {
-        "X-User-Id": userId.toString(),
-        "X-User-Role": userRole,
-      },
+      headers,
     });
 
     if (!response.ok) {

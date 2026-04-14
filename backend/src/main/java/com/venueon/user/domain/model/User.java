@@ -13,7 +13,7 @@ public class User {
     private String email;
     private String password;
     private String nickname;
-    private UserRole role;
+    private com.venueon.common.model.DomainCode role;
     private AuthProvider provider;
     private String profileImg;
     private String phone;
@@ -28,7 +28,7 @@ public class User {
     protected User() {}
 
     // 전체 필드 생성자
-    public User(Long id, String email, String password, String nickname, UserRole role,
+    public User(Long id, String email, String password, String nickname, com.venueon.common.model.DomainCode role,
                 AuthProvider provider, String profileImg, String phone, boolean active,
                 LocalDateTime createdAt, LocalDateTime updatedAt, 
                 java.util.List<String> categories, boolean badgeVisible) {
@@ -48,7 +48,7 @@ public class User {
     }
 
     // 구버전 호환용 생성자
-    public User(Long id, String email, String password, String nickname, UserRole role,
+    public User(Long id, String email, String password, String nickname, com.venueon.common.model.DomainCode role,
                 AuthProvider provider, String profileImg, String phone, boolean active,
                 LocalDateTime createdAt, LocalDateTime updatedAt) {
         this(id, email, password, nickname, role, provider, profileImg, phone, active, createdAt, updatedAt, new java.util.ArrayList<>(), true);
@@ -57,11 +57,11 @@ public class User {
     // --- 비즈니스 행위 메서드 ---
 
     public boolean isHost() {
-        return this.role == UserRole.HOST;
+        return this.role != null && this.role.id().equals(com.venueon.common.model.CodeConstants.ROLE_HOST_ID);
     }
 
     public boolean isAdmin() {
-        return this.role == UserRole.ADMIN;
+        return this.role != null && this.role.id().equals(com.venueon.common.model.CodeConstants.ROLE_ADMIN_ID);
     }
 
     public boolean isGoogleUser() {
@@ -88,7 +88,7 @@ public class User {
     /**
      * 역할 변경 (어드민 전용)
      */
-    public void changeRole(UserRole newRole) {
+    public void changeRole(com.venueon.common.model.DomainCode newRole) {
         this.role = newRole;
         this.updatedAt = LocalDateTime.now();
     }
@@ -114,6 +114,7 @@ public class User {
      */
     public void deactivate() {
         this.active = false;
+        this.email = "deleted_" + System.currentTimeMillis() + "_" + this.email;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -131,7 +132,7 @@ public class User {
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public String getNickname() { return nickname; }
-    public UserRole getRole() { return role; }
+    public com.venueon.common.model.DomainCode getRole() { return role; }
     public AuthProvider getProvider() { return provider; }
     public String getProfileImg() { return profileImg; }
     public String getPhone() { return phone; }

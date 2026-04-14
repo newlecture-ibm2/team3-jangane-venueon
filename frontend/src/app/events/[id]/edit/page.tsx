@@ -55,18 +55,6 @@ export default async function EventEditPage({ params }: Props) {
     redirect(`/login?redirect=/events/${id}/edit`);
   }
 
-  if (session.role !== 'HOST' && session.role !== 'ADMIN') {
-    return (
-      <div style={{ textAlign: 'center', padding: '100px 20px' }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>접근 권한이 없습니다</h2>
-        <p style={{ color: '#666' }}>이벤트 수정은 호스트(HOST) 또는 관리자(ADMIN) 계정만 가능합니다.</p>
-        <a href="/" style={{ display: 'inline-block', marginTop: '1.5rem', padding: '0.75rem 1.5rem', background: '#000', color: '#fff', borderRadius: '8px', textDecoration: 'none' }}>
-          홈으로 돌아가기
-        </a>
-      </div>
-    );
-  }
-
   const { id } = await params;
   const [event, tickets] = await Promise.all([
     getEventDetail(id),
@@ -79,6 +67,13 @@ export default async function EventEditPage({ params }: Props) {
         <h2>이벤트를 찾을 수 없습니다.</h2>
       </div>
     );
+  }
+
+  const isAdmin = session.role?.id === 1;
+  const isCreator = session.userId === event.creatorId;
+
+  if (!isAdmin && !isCreator) {
+    redirect(`/events/${id}`);
   }
 
   return (

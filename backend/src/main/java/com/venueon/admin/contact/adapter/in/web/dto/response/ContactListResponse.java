@@ -16,6 +16,7 @@ public record ContactListResponse(
         Long requesterId,
         String requesterNickname,
         String requesterEmail,
+        String requesterProfileImg,
         ContactCategory category,
         ContactStatus status,
         String title,
@@ -29,6 +30,7 @@ public record ContactListResponse(
                 .requesterId(contact.getRequesterId())
                 .requesterNickname(contact.getRequesterNickname())
                 .requesterEmail(contact.getRequesterEmail())
+                .requesterProfileImg(contact.getRequesterProfileImg())
                 .category(contact.getCategory())
                 .status(contact.getStatus())
                 .title(contact.getTitle())

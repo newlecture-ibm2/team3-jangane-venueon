@@ -7,7 +7,7 @@ import { getIronSession } from "iron-session";
 import { sessionOptions, SessionData } from "@/lib/session";
 
 // 인증이 필요한 경로 패턴
-const protectedPaths = ["/mypage", "/events/new", "/host", "/admin"];
+const protectedPaths = ["/mypage", "/events/new", "/host", "/admin", "/cart"];
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
@@ -26,13 +26,14 @@ export async function middleware(req: NextRequest) {
 
   // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
   if (!session.isLoggedIn) {
-    const loginUrl = new URL("/auth/login", req.url);
+    const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("redirect", req.nextUrl.pathname);
+    loginUrl.searchParams.set("alert", "auth_required");
     return NextResponse.redirect(loginUrl);
   }
 
   // 관리자 권한이 필요한 경로의 권한 체크
-  if (req.nextUrl.pathname.startsWith("/admin") && session.role !== "ADMIN") {
+  if (req.nextUrl.pathname.startsWith("/admin") && session.role?.id !== 1) {
     // 권한이 없으면 메인 페이지로 리다이렉트
     return NextResponse.redirect(new URL("/", req.url));
   }
@@ -46,5 +47,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/mypage/:path*", "/events/new", "/host", "/host/:path*", "/admin/:path*"],
+  matcher: ["/mypage/:path*", "/events/new", "/host", "/host/:path*", "/admin/:path*", "/cart", "/cart/:path*"],
 };

@@ -7,7 +7,8 @@ import com.venueon.common.annotation.UseCase;
 import com.venueon.common.exception.BusinessException;
 import com.venueon.common.exception.ErrorCode;
 import com.venueon.user.domain.model.User;
-import com.venueon.user.domain.model.UserRole;
+import com.venueon.user.domain.model.HostProfile;
+import com.venueon.common.model.DomainCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,7 +36,7 @@ public class AdminUserService implements
     // ── 목록 조회 ──
 
     @Override
-    public Page<User> getUsers(String keyword, UserRole role, Boolean active, Pageable pageable) {
+    public Page<User> getUsers(String keyword, String role, Boolean active, Pageable pageable) {
         return adminUserRepositoryPort.findUsers(keyword, role, active, pageable);
     }
 
@@ -44,6 +45,11 @@ public class AdminUserService implements
     @Override
     public User getUserById(Long id) {
         return findUserOrThrow(id);
+    }
+
+    @Override
+    public HostProfile getHostProfileByUserId(Long userId) {
+        return adminUserRepositoryPort.findHostProfileByUserId(userId).orElse(null);
     }
 
     // ── 정보 수정 ──
@@ -56,8 +62,9 @@ public class AdminUserService implements
         if (command.nickname() != null) {
             user.changeNickname(command.nickname());
         }
-        if (command.role() != null) {
-            user.changeRole(command.role());
+        if (command.roleId() != null) {
+            DomainCode roleCode = DomainCode.of(command.roleId(), "역할");
+            user.changeRole(roleCode);
         }
         if (command.phone() != null) {
             user.changePhone(command.phone());

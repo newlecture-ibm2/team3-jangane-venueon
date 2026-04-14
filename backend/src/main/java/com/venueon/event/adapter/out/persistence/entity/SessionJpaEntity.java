@@ -26,6 +26,7 @@ public class SessionJpaEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private EventJpaEntity event;
 
     @Column(nullable = false)
@@ -86,13 +87,13 @@ public class SessionJpaEntity {
     @Builder.Default
     private Boolean isRecruitmentClosed = false;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "forced_recruitment_status")
-    private com.venueon.event.domain.model.RecruitmentStatus forcedRecruitmentStatus;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "forced_recruitment_status_id")
+    private com.venueon.ticket.adapter.out.persistence.entity.RecruitmentStatusJpaEntity forcedRecruitmentStatus;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "forced_session_status")
-    private com.venueon.event.domain.model.EventStatus forcedSessionStatus;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "forced_session_status_id")
+    private EventStatusJpaEntity forcedSessionStatus;
 
     // 시스템 관리
     @Column(name = "is_default")

@@ -34,7 +34,7 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
     try {
       const res = await adminUserAPI.getUser(id);
       setUser(res.data);
-      setSelectedRole(res.data.role || 'USER');
+      setSelectedRole(res.data.role?.id === 1 ? 'ADMIN' : res.data.role?.id === 3 ? 'HOST' : 'USER');
     } catch (err) {
       console.error('회원 조회 실패:', err);
     } finally {
@@ -43,10 +43,26 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
   };
 
   const handleUpdateRole = async () => {
-    // TODO: 실제 권한 업데이트 API 호츨 위치
-    alert(`권한을 ${selectedRole}로 변경(예정)입니다.`);
-    setIsEditing(false);
-    // 권한 변경 후 리프레시 로직 등 추가 필요 (onUpdated 등)
+    if (!userId || !user) return;
+    
+    setIsLoading(true);
+    try {
+      // 권한(role)과 함께 기존 닉네임, 전화번호를 유지하여 전송
+      await adminUserAPI.updateUser(userId, {
+        nickname: user.nickname,
+        role: selectedRole,
+        phone: user.phone || undefined
+      });
+      
+      setIsEditing(false);
+      onUpdated(); // 목록 새로고침
+      onClose();   // 모달 닫기
+    } catch (err) {
+      console.error('권한 변경 실패:', err);
+      alert('권한 변경에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const roleOptions = [
@@ -58,15 +74,15 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
       <ModalCard size="md">
-        {/* 상단바 */}
-        <div className={styles.topBar}>
-          <div /> {/* Right align placeholder */}
-          <CancelIcon style={{ cursor: 'pointer', color: 'var(--color-text-gray-500)' }} onClick={onClose} />
-        </div>
-
-        {/* 텍스트 영역 */}
-        <div className={styles.textWrapper}>
-          <h2 className={styles.title}>사용자 프로필</h2>
+        {/* 헤더 영역 (배경색 적용) */}
+        <div className={styles.modalHeader}>
+          <div className={styles.topBar}>
+            <div />
+            <CancelIcon style={{ cursor: 'pointer', color: 'var(--color-text-gray-500)' }} onClick={onClose} />
+          </div>
+          <div className={styles.textWrapper}>
+            <h2 className={styles.title}>사용자 프로필</h2>
+          </div>
         </div>
 
         {isLoading || !user ? (
@@ -104,11 +120,11 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
               </div>
 
               {/* 기본 데이터 렌더링은 user.role 기준이거나 selectedRole 기준일 수 있습니다. (여기선 기존 Role 유지) */}
-              {user.role === 'HOST' ? (
+              {user.role?.id === 3 ? (
                 <>
                   <div className={styles.fieldBlock}>
                     <span className={styles.fieldLabel}>기관명</span>
-                    <InputField value="기관명_데이터_없음" disabled />
+                    <InputField value={user.orgName || '기관명 정보 없음'} disabled />
                   </div>
                   <div className={styles.fieldBlock}>
                     <span className={styles.fieldLabel}>담당자명</span>
@@ -116,16 +132,16 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
                   </div>
                   <div className={styles.fieldBlock}>
                     <span className={styles.fieldLabel}>사업자 등록번호</span>
-                    <InputField value="000-00-00000" disabled />
+                    <InputField value={user.orgNumber || '000-00-00000'} disabled />
                   </div>
 
                   <div className={styles.hostIntroLayout}>
                     <div className={styles.hostIntroHeader}>
                       <span className={styles.fieldLabel}>호스트 소개</span>
-                      <span className={styles.charCount}>0/300</span>
+                      <span className={styles.charCount}>{user.orgDescription?.length || 0}/300</span>
                     </div>
                     <textarea 
-                      value="데이터를 넘어 마케팅의 본질을 꿰뚫는 AI 전략 그룹으로 실무 마케터들의 AI 전환(AI Transformation) 가속화 및 실질적 생산성 도구 보급합니다." 
+                      value={user.orgDescription || '호스트 소개 내용이 없습니다.'} 
                       disabled
                       className={styles.hostIntroTextarea}
                     />
@@ -156,7 +172,7 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
                     style={{ flex: 1, padding: 0 }} 
                     onClick={() => {
                       setIsEditing(false);
-                      setSelectedRole(user.role || 'USER'); // 취소 시 롤백
+                      setSelectedRole(user.role?.id === 1 ? 'ADMIN' : user.role?.id === 3 ? 'HOST' : 'USER'); // 취소 시 롤백
                     }}
                   >
                     수정 취소
@@ -172,7 +188,7 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
               ) : (
                 <>
                   <div className={styles.buttonRow}>
-                    {user.role === 'HOST' && (
+                    {user.role?.id === 3 && (
                       <Button 
                         variant="danger" 
                         style={{ flex: 1, padding: 0 }}

@@ -28,8 +28,8 @@ public class EventMapper {
                 entity.getCategory() != null ? entity.getCategory().getId() : null,
                 entity.getTitle(),
                 entity.getDescription(),
-                entity.getType(),
-                entity.getStatus(),
+                entity.getType() != null ? com.venueon.common.model.DomainCode.of(entity.getType().getId(), entity.getType().getName()) : null,
+                entity.getStatus() != null ? com.venueon.common.model.DomainCode.of(entity.getStatus().getId(), entity.getStatus().getLabel()) : null,
                 entity.getThumbnailUrl(),
                 entity.isHasSession(),
                 entity.isHidden(),
@@ -41,7 +41,7 @@ public class EventMapper {
     /**
      * 도메인 모델 → JPA Entity (생성 시)
      */
-    public EventJpaEntity toEntity(Event domain) {
+    public EventJpaEntity toEntity(Event domain, com.venueon.event.adapter.out.persistence.entity.EventTypeJpaEntity typeEntity, com.venueon.event.adapter.out.persistence.entity.EventStatusJpaEntity statusEntity) {
         UserJpaEntity creatorRef = domain.getCreatorId() != null
                 ? entityManager.getReference(UserJpaEntity.class, domain.getCreatorId())
                 : null;
@@ -55,8 +55,8 @@ public class EventMapper {
                 .category(categoryRef)
                 .title(domain.getTitle())
                 .description(domain.getDescription())
-                .type(domain.getType())
-                .status(domain.getStatus())
+                .type(typeEntity)
+                .status(statusEntity)
                 .thumbnailUrl(domain.getThumbnailUrl())
                 .hasSession(domain.getHasSession())
                 .isHidden(domain.getIsHidden())

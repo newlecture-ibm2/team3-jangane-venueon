@@ -5,12 +5,14 @@ import styles from './UserTable.module.css';
 import { MoreIcon } from '@/components/icons';
 import { PopoverMenu } from '@/components/ui';
 import type { AdminUserListItem } from '@/lib/admin-api';
+import Tag from '@/components/ui/Tag';
 
 interface UserTableProps {
   users: AdminUserListItem[];
   isLoading: boolean;
   onViewDetail: (id: number) => void;
   onDeleteClick: (user: AdminUserListItem) => void;
+  onToggleStatus: (user: AdminUserListItem) => void;
 }
 
 /** 날짜 포맷 */
@@ -35,7 +37,7 @@ const POPOVER_ITEMS = [
   { value: 'report', label: '경고' },
 ];
 
-export default function UserTable({ users, isLoading, onViewDetail, onDeleteClick }: UserTableProps) {
+export default function UserTable({ users, isLoading, onViewDetail, onDeleteClick, onToggleStatus }: UserTableProps) {
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
 
   if (isLoading) {
@@ -48,7 +50,7 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
 
   // 주최자 관리/수강생 관리에 따라 헤더가 다를 수 있지만, 
   // 요청하신 디자인 사양(이미지) 기준으로 주최자 헤더를 구현합니다.
-  const isHostView = users.length > 0 && users[0].role === 'HOST';
+  const isHostView = users.length > 0 && users[0].role?.id === 3;
 
   const handleMoreClick = (e: React.MouseEvent, userId: number) => {
     e.stopPropagation();
@@ -90,32 +92,39 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.id}>
+            <tr key={user.id} onClick={() => onViewDetail(user.id)} style={{ cursor: 'pointer' }}>
               <td className={styles.hostCol}>
                 <div className={styles.userProfile}>
                   <div className={styles.avatar}></div>
-                  <span className={styles.userName}>{user.nickname}</span>
+                  <span className={styles.userName} title={user.nickname}>
+                    {user.nickname}
+                  </span>
                 </div>
               </td>
-              <td className={styles.managerCol}>
-                {/* 담당자명이 별도로 없으므로 닉네임을 활용하거나 더미 데이터를 표시합니다. */}
+              <td className={styles.managerCol} title={user.nickname}>
                 {user.nickname}
               </td>
               <td className={styles.bizNumCol}>
                 {/* 사업자 번호가 별도로 없으므로 수강생인 경우 이메일을, 호스트인 경우 더미를 표시합니다. */}
-                {user.role === 'HOST' ? '000-00-00000' : user.email}
+                {user.role?.id === 3 ? '000-00-00000' : user.email}
               </td>
               <td className={styles.dateCol}>
                 {formatDate(user.createdAt)}
               </td>
               <td className={styles.statusCol}>
-                <span className={styles.statusBadge}>
-                  {user.active ? '활성' : '승인 대기'}
-                </span>
+                <button
+                  className={styles.statusToggleBtn}
+                  onClick={(e) => { e.stopPropagation(); onToggleStatus(user); }}
+                >
+                  <Tag variant={user.active ? 'green' : 'red'}>
+                    {user.active ? '활성' : '정지'}
+                  </Tag>
+                </button>
               </td>
               <td className={styles.actionCol}>
                 <div
                   className={styles.moreWrapper}
+                  onClick={(e) => e.stopPropagation()} /* 행 클릭 이벤트로 전파되지 않도록 차단 */
                   style={{ zIndex: openPopoverId === user.id ? 50 : 1 }}
                 >
                   <button

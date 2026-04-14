@@ -481,8 +481,8 @@ export default function CommunityPostContainer({ communityId }: Props) {
                     </svg>
                   </button>
                   <div className={styles.optionButtonWrapper}>
-                    <button 
-                      className={styles.optionButton} 
+                    <button
+                      className={styles.optionButton}
                       type="button"
                       onClick={() => setIsPostMenuOpen(!isPostMenuOpen)}
                     >
