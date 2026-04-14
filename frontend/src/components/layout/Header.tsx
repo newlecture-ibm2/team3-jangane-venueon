@@ -63,6 +63,7 @@ export default function Header({
     if (roleId === 1 || roleLabel === 'admin') {
       return (
         <div className={styles.actionGroup}>
+          <Link href="/host"><Button variant="outlined" size="medium">호스트 센터</Button></Link>
           <Link href="/admin"><Button variant="outlined" size="medium">어드민 센터</Button></Link>
           <Link href="/community"><Button variant="outlined" size="medium">커뮤니티</Button></Link>
           <Link href="/mypage/profile">
@@ -77,7 +78,7 @@ export default function Header({
     if (roleId === 3 || roleLabel === 'host') {
       return (
         <div className={styles.actionGroup}>
-          <Link href="/host/dashboard"><Button variant="outlined" size="medium">호스트 센터</Button></Link>
+          <Link href="/host"><Button variant="outlined" size="medium">호스트 센터</Button></Link>
           <Link href="/community"><Button variant="outlined" size="medium">커뮤니티</Button></Link>
           <Link href="/mypage/profile">
             <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
