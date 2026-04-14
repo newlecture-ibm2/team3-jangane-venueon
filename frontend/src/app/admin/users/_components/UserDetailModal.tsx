@@ -74,15 +74,15 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
       <ModalCard size="md">
-        {/* 상단바 */}
-        <div className={styles.topBar}>
-          <div /> {/* Right align placeholder */}
-          <CancelIcon style={{ cursor: 'pointer', color: 'var(--color-text-gray-500)' }} onClick={onClose} />
-        </div>
-
-        {/* 텍스트 영역 */}
-        <div className={styles.textWrapper}>
-          <h2 className={styles.title}>사용자 프로필</h2>
+        {/* 헤더 영역 (배경색 적용) */}
+        <div className={styles.modalHeader}>
+          <div className={styles.topBar}>
+            <div />
+            <CancelIcon style={{ cursor: 'pointer', color: 'var(--color-text-gray-500)' }} onClick={onClose} />
+          </div>
+          <div className={styles.textWrapper}>
+            <h2 className={styles.title}>사용자 프로필</h2>
+          </div>
         </div>
 
         {isLoading || !user ? (
@@ -124,7 +124,7 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
                 <>
                   <div className={styles.fieldBlock}>
                     <span className={styles.fieldLabel}>기관명</span>
-                    <InputField value="기관명_데이터_없음" disabled />
+                    <InputField value={user.orgName || '기관명 정보 없음'} disabled />
                   </div>
                   <div className={styles.fieldBlock}>
                     <span className={styles.fieldLabel}>담당자명</span>
@@ -132,16 +132,16 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
                   </div>
                   <div className={styles.fieldBlock}>
                     <span className={styles.fieldLabel}>사업자 등록번호</span>
-                    <InputField value="000-00-00000" disabled />
+                    <InputField value={user.orgNumber || '000-00-00000'} disabled />
                   </div>
 
                   <div className={styles.hostIntroLayout}>
                     <div className={styles.hostIntroHeader}>
                       <span className={styles.fieldLabel}>호스트 소개</span>
-                      <span className={styles.charCount}>0/300</span>
+                      <span className={styles.charCount}>{user.orgDescription?.length || 0}/300</span>
                     </div>
                     <textarea 
-                      value="데이터를 넘어 마케팅의 본질을 꿰뚫는 AI 전략 그룹으로 실무 마케터들의 AI 전환(AI Transformation) 가속화 및 실질적 생산성 도구 보급합니다." 
+                      value={user.orgDescription || '호스트 소개 내용이 없습니다.'} 
                       disabled
                       className={styles.hostIntroTextarea}
                     />

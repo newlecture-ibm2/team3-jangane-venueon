@@ -14,4 +14,12 @@ public interface GetAdminUserDetailUseCase {
      * @return 회원 도메인 모델
      */
     User getUserById(Long id);
+
+    /**
+     * ID로 호스트 프로필 정보 조회
+     *
+     * @param userId 회원 ID
+     * @return 호스트 프로필 도메인 모델 (없으면 null)
+     */
+    com.venueon.user.domain.model.HostProfile getHostProfileByUserId(Long userId);
 }

@@ -16,9 +16,13 @@ public record AdminUserDetailResponse(
         String profileImg,
         boolean active,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        // 호스트 추가 정보
+        String orgName,
+        String orgNumber,
+        String orgDescription
 ) {
-    public static AdminUserDetailResponse from(User user) {
+    public static AdminUserDetailResponse from(User user, com.venueon.user.domain.model.HostProfile hostProfile) {
         return new AdminUserDetailResponse(
                 user.getId(),
                 user.getEmail(),
@@ -28,7 +32,10 @@ public record AdminUserDetailResponse(
                 user.getProfileImg(),
                 user.isActive(),
                 user.getCreatedAt(),
-                user.getUpdatedAt()
+                user.getUpdatedAt(),
+                hostProfile != null ? hostProfile.getOrgName() : null,
+                hostProfile != null ? hostProfile.getOrgNumber() : null,
+                hostProfile != null ? hostProfile.getOrgDescription() : null
         );
     }
 }

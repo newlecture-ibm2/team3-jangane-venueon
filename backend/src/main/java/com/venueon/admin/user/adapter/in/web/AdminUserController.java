@@ -70,7 +70,13 @@ public class AdminUserController {
         log.debug("회원 상세 조회: id={}", id);
 
         User user = getAdminUserDetailUseCase.getUserById(id);
-        AdminUserDetailResponse response = AdminUserDetailResponse.from(user);
+        com.venueon.user.domain.model.HostProfile hostProfile = null;
+
+        if (user.isHost()) {
+            hostProfile = getAdminUserDetailUseCase.getHostProfileByUserId(id);
+        }
+
+        AdminUserDetailResponse response = AdminUserDetailResponse.from(user, hostProfile);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

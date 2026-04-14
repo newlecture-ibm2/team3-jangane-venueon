@@ -24,6 +24,10 @@ export interface AdminUserDetail {
   active: boolean;
   createdAt: string;
   updatedAt: string;
+  // 호스트 전용
+  orgName?: string;
+  orgNumber?: string;
+  orgDescription?: string;
 }
 
 export interface PageResponse<T> {

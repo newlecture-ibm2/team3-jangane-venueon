@@ -34,6 +34,11 @@ public interface AdminUserRepositoryPort {
     boolean existsById(Long id);
 
     /**
+     * ID로 호스트 프로필 조회
+     */
+    Optional<com.venueon.user.domain.model.HostProfile> findHostProfileByUserId(Long userId);
+
+    /**
      * 회원 삭제
      */
     void deleteById(Long id);

@@ -45,6 +45,11 @@ public class AdminUserService implements
         return findUserOrThrow(id);
     }
 
+    @Override
+    public com.venueon.user.domain.model.HostProfile getHostProfileByUserId(Long userId) {
+        return adminUserRepositoryPort.findHostProfileByUserId(userId).orElse(null);
+    }
+
     // ── 정보 수정 ──
 
     @Override

@@ -23,6 +23,7 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
 
     private final UserJpaRepository userJpaRepository;
     private final com.venueon.user.adapter.out.persistence.repository.UserRoleJpaRepository userRoleJpaRepository;
+    private final com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository hostProfileJpaRepository;
     private final UserMapper userMapper;
 
     @Override
@@ -65,6 +66,21 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
     @Override
     public boolean existsById(Long id) {
         return userJpaRepository.existsById(id);
+    }
+
+    @Override
+    public Optional<com.venueon.user.domain.model.HostProfile> findHostProfileByUserId(Long userId) {
+        return hostProfileJpaRepository.findByUserId(userId)
+                .map(entity -> new com.venueon.user.domain.model.HostProfile(
+                        entity.getId(),
+                        entity.getUser().getId(),
+                        entity.getOrgName(),
+                        entity.getOrgNumber(),
+                        entity.getManagerName(),
+                        entity.getOrgDescription(),
+                        entity.getCreatedAt(),
+                        entity.getUpdatedAt()
+                ));
     }
 
     @Override
