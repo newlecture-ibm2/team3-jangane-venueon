@@ -1,7 +1,6 @@
 package com.venueon.member.adapter.out.persistence.entity;
 
 import com.venueon.community.adapter.out.persistence.entity.CommunityJpaEntity;
-import com.venueon.member.domain.model.MemberRole;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,10 +29,8 @@ public class MemberJpaEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserJpaEntity user;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private MemberRole role = MemberRole.MEMBER;
+    @Column(name = "is_manager", nullable = false) // role 컬럼 대신 is_manager 사용
+    private boolean manager;
 
     @CreationTimestamp
     @Column(name = "joined_at", nullable = false, updatable = false)

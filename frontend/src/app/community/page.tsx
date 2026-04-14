@@ -14,6 +14,7 @@ interface CommunityItem {
   memberCount: number;
   creatorNickname: string;
   createdAt: string;
+  canManage: boolean; // 권한 정보 추가
 }
 
 interface PageData {
@@ -103,7 +104,7 @@ export default function CommunityListPage() {
                   price={0} // '무료 참여' 표시
                   actionButtonText="커뮤니티 입장하기"
                   onActionClick={() => window.location.href = `/community/${community.id}`}
-                  onEditClick={() => window.location.href = `/community/${community.id}/edit`}
+                  onEditClick={community.canManage ? () => window.location.href = `/community/${community.id}/edit` : undefined}
                 />
               ))}
             </CardGrid>

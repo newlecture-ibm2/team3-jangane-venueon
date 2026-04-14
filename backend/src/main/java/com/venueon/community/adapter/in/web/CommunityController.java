@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/communities")
 @RequiredArgsConstructor
+@lombok.extern.slf4j.Slf4j
 public class CommunityController {
 
     private final CreateCommunityUseCase createCommunityUseCase;
@@ -34,12 +35,17 @@ public class CommunityController {
     @PostMapping
     public ResponseEntity<CommunityResponse> createCommunity(
             @RequestBody CreateCommunityRequest request) {
+        System.out.println(">>>> [CommunityAPI] POST /communities request: " + request.name());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = "admin@venueon.com"; // 기본값 (비회원 익명작성용)
+        String email = null;
         
         if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
             email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+
+        if (email == null) {
+            throw new IllegalArgumentException("Authentication required to create a community.");
         }
 
         CommunityResponse response = createCommunityUseCase.createCommunity(request, email);
@@ -54,7 +60,12 @@ public class CommunityController {
     public ResponseEntity<?> getCommunities(
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
-            Page<CommunityResponse> communities = getCommunityQuery.getPublicCommunities(pageable);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = null;
+            if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+                email = ((UserDetails) authentication.getPrincipal()).getUsername();
+            }
+            Page<CommunityResponse> communities = getCommunityQuery.getPublicCommunities(pageable, email);
             return ResponseEntity.ok(communities);
         } catch (Exception e) {
             java.io.StringWriter sw = new java.io.StringWriter();
@@ -70,7 +81,13 @@ public class CommunityController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<CommunityResponse> getCommunity(@PathVariable Long id) {
-        CommunityResponse response = getCommunityQuery.getCommunityById(id);
+        System.out.println(">>>> [CommunityAPI] GET /communities/" + id + " request");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = null;
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        CommunityResponse response = getCommunityQuery.getCommunityById(id, email);
         return ResponseEntity.ok(response);
     }
 
@@ -83,7 +100,18 @@ public class CommunityController {
             @PathVariable Long id,
             @RequestBody UpdateCommunityRequest request) {
 
-        CommunityResponse response = updateCommunityUseCase.updateCommunity(id, request);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = null;
+        
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+
+        if (email == null) {
+            throw new IllegalArgumentException("Authentication required to update a community.");
+        }
+
+        CommunityResponse response = updateCommunityUseCase.updateCommunity(id, request, email);
         return ResponseEntity.ok(response);
     }
 }

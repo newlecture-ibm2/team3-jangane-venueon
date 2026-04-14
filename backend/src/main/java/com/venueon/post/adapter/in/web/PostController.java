@@ -43,7 +43,12 @@ public class PostController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePost(@PathVariable Long id, @RequestBody UpdatePostRequest request) {
-        updatePostUseCase.updatePost(id, request);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = "admin@venueon.com";
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        updatePostUseCase.updatePost(id, request, email);
         return ResponseEntity.ok().build();
     }
 
@@ -63,7 +68,12 @@ public class PostController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        deletePostUseCase.deletePost(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = "admin@venueon.com";
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        deletePostUseCase.deletePost(id, email);
         return ResponseEntity.ok().build();
     }
 
@@ -167,7 +177,12 @@ public class PostController {
      */
     @PatchMapping("/{id}/pin")
     public ResponseEntity<Void> togglePin(@PathVariable Long id) {
-        postManagerUseCase.togglePin(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = "admin@venueon.com";
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        postManagerUseCase.togglePin(id, email);
         return ResponseEntity.ok().build();
     }
 
@@ -177,7 +192,12 @@ public class PostController {
      */
     @PatchMapping("/{id}/notice")
     public ResponseEntity<Void> toggleNotice(@PathVariable Long id) {
-        postManagerUseCase.toggleNotice(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = "admin@venueon.com";
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        postManagerUseCase.toggleNotice(id, email);
         return ResponseEntity.ok().build();
     }
 }

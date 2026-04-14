@@ -59,12 +59,12 @@ public class AdminReportService implements AdminReportUseCase {
     private void executeAdminAction(ReportTargetType targetType, Long targetId, AdminAction action) {
         switch (targetType) {
             case POST -> {
-                if (action == AdminAction.DELETE) postManagerUseCase.deletePost(targetId);
-                else if (action == AdminAction.HIDE) postManagerUseCase.hidePost(targetId);
+                if (action == AdminAction.DELETE) postManagerUseCase.deletePost(targetId, "admin@venueon.com");
+                else if (action == AdminAction.HIDE) postManagerUseCase.hidePost(targetId, "admin@venueon.com");
             }
             case COMMENT -> {
-                if (action == AdminAction.DELETE) commentManagerUseCase.deleteComment(targetId);
-                else if (action == AdminAction.HIDE) commentManagerUseCase.hideComment(targetId);
+                if (action == AdminAction.DELETE) commentManagerUseCase.deleteComment(targetId, "admin@venueon.com");
+                else if (action == AdminAction.HIDE) commentManagerUseCase.hideComment(targetId, "admin@venueon.com");
             }
             case USER -> {
                 if (action == AdminAction.DELETE) deleteAdminUserUseCase.deleteUser(targetId);

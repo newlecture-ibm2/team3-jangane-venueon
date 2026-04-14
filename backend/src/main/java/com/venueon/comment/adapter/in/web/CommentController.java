@@ -31,7 +31,12 @@ public class CommentController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateComment(@PathVariable Long id, @RequestBody UpdateCommentRequest request) {
-        updateCommentUseCase.updateComment(id, request);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = "admin@venueon.com"; // 기본값
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        updateCommentUseCase.updateComment(id, request, email);
         return ResponseEntity.ok().build();
     }
 
@@ -41,7 +46,12 @@ public class CommentController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
-        deleteCommentUseCase.deleteComment(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = "admin@venueon.com"; // 기본값
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        deleteCommentUseCase.deleteComment(id, email);
         return ResponseEntity.ok().build();
     }
 

@@ -48,18 +48,34 @@ public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, P
         }
 
         @Override
-        public void updatePost(Long id, UpdatePostRequest request) {
+        public void updatePost(Long id, UpdatePostRequest request, String email) {
+                User requester = userRepositoryPort.findByEmail(email)
+                                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+
                 Post post = postRepositoryPort.findById(id)
                                 .orElseThrow(() -> new IllegalArgumentException("Post not found: " + id));
+
+                // 권한 체크: 작성자 본인만 수정 가능
+                if (!post.getAuthorId().equals(requester.getId())) {
+                        throw new IllegalArgumentException("Permission denied: only the author can update the post.");
+                }
 
                 post.update(request.title(), request.content(), request.type());
                 postRepositoryPort.save(post);
         }
 
         @Override
-        public void deletePost(Long id) {
-                postRepositoryPort.findById(id)
+        public void deletePost(Long id, String email) {
+                User requester = userRepositoryPort.findByEmail(email)
+                                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+
+                Post post = postRepositoryPort.findById(id)
                                 .orElseThrow(() -> new IllegalArgumentException("Post not found: " + id));
+
+                // 권한 체크: 작성자 본인이거나 시스템 어드민만 삭제 가능
+                if (!post.getAuthorId().equals(requester.getId()) && !requester.isAdmin()) {
+                        throw new IllegalArgumentException("Permission denied: only the author or system admin can delete the post.");
+                }
 
                 postRepositoryPort.delete(id);
         }

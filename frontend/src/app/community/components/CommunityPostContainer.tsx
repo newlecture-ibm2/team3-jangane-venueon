@@ -48,12 +48,13 @@ interface PageData {
 
 interface Props {
   communityId: string;
+  canManage: boolean;
 }
 
-export default function CommunityPostContainer({ communityId }: Props) {
+export default function CommunityPostContainer({ communityId, canManage }: Props) {
   const router = useRouter();
   const { showToast } = useUIStore();
-  const { user } = useAuth();
+  const { user, isLoggedIn } = useAuth();
 
   const [posts, setPosts] = useState<PostListResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -368,7 +369,17 @@ export default function CommunityPostContainer({ communityId }: Props) {
           <div className={styles.searchInputWrapper}>
             <InputField variant="search" placeholder="검색어를 입력하세요" />
           </div>
-          <Button variant="primary" onClick={() => window.location.href = `/community/${communityId}/write`}>
+          <Button 
+            variant="primary" 
+            onClick={() => {
+              if (!isLoggedIn) {
+                showToast('로그인이 필요합니다.', 'error');
+                router.push('/login');
+                return;
+              }
+              router.push(`/community/${communityId}/write`);
+            }}
+          >
             글쓰기
           </Button>
         </div>
@@ -461,25 +472,29 @@ export default function CommunityPostContainer({ communityId }: Props) {
                       <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
                     </svg>
                   </button>
-                  <button
-                    className={`${styles.adminButton} ${selectedPost.isPinned ? styles.active : ''}`}
-                    onClick={handlePinToggle}
-                    title={selectedPost.isNotice ? "공지사항은 고정 해제가 불가능합니다" : "상단 고정"}
-                    disabled={selectedPost.isNotice}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="12" y1="17" x2="12" y2="22" /><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.79-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.76a2 2 0 0 1-1.11 1.79l-1.79.9A2 2 0 0 0 5 15.24Z" />
-                    </svg>
-                  </button>
-                  <button
-                    className={`${styles.adminButton} ${selectedPost.isNotice ? styles.noticeActive : ''}`}
-                    onClick={handleNoticeToggle}
-                    title="공지 설정"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
-                    </svg>
-                  </button>
+                  {canManage && (
+                    <>
+                      <button
+                        className={`${styles.adminButton} ${selectedPost.isPinned ? styles.active : ''}`}
+                        onClick={handlePinToggle}
+                        title={selectedPost.isNotice ? "공지사항은 고정 해제가 불가능합니다" : "상단 고정"}
+                        disabled={selectedPost.isNotice}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="12" y1="17" x2="12" y2="22" /><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.79-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.76a2 2 0 0 1-1.11 1.79l-1.79.9A2 2 0 0 0 5 15.24Z" />
+                        </svg>
+                      </button>
+                      <button
+                        className={`${styles.adminButton} ${selectedPost.isNotice ? styles.noticeActive : ''}`}
+                        onClick={handleNoticeToggle}
+                        title="공지 설정"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
                   <div className={styles.optionButtonWrapper}>
                     <button
                       className={styles.optionButton}
@@ -527,8 +542,8 @@ export default function CommunityPostContainer({ communityId }: Props) {
               <div className={styles.commentInputWrapper}>
                 <CommentInput
                   onSubmit={(v) => handleCommentSubmit(v)}
-                  disabled={isCommentSubmitting}
-                  placeholder={isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요.."}
+                  disabled={!isLoggedIn || isCommentSubmitting}
+                  placeholder={!isLoggedIn ? "로그인 후 댓글을 작성할 수 있습니다." : (isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요..")}
                 />
               </div>
 
@@ -546,7 +561,13 @@ export default function CommunityPostContainer({ communityId }: Props) {
                         content={comment.content}
                         likeCount={comment.likeCount}
                         onLike={() => handleCommentLikeToggle(comment.id)}
-                        onReply={() => setReplyToCommentId(comment.id)}
+                        onReply={() => {
+                          if (!isLoggedIn) {
+                            showToast('로그인이 필요합니다.', 'error');
+                            return;
+                          }
+                          setReplyToCommentId(comment.id);
+                        }}
                         level={level}
                         isEditing={editingCommentId === comment.id}
                         editingValue={editingCommentValue}
