@@ -131,42 +131,15 @@
   white-space: nowrap;
 }
 
-/* ── 상태 토글 버튼 (공통) ── */
+/* ── 상태 토글 버튼 (Tag 감싸는 용도) ── */
 .statusToggleBtn {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 500;
+  background: none;
+  border: none;
+  padding: 0;
   cursor: pointer;
-  transition: all var(--transition);
-  white-space: nowrap;
-}
-
-.statusActive {
-  background: #fff;
-  border: 1px solid var(--color-tag-text-red);
-  color: var(--color-tag-text-red);
-}
-
-.statusActive:hover {
-  background: var(--color-tag-background-red);
-  border-color: #7F1D1D;
-  color: #7F1D1D;
-}
-
-.statusInactive {
-  background: #fff;
-  border: 1px solid #1E3A5F;
-  color: #1E3A5F;
-}
-
-.statusInactive:hover {
-  background: var(--color-tag-background-gray);
-  border-color: #1E40AF;
-  color: #1E40AF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ── More 버튼 / Popover ── */
