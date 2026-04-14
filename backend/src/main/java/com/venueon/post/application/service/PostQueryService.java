@@ -22,13 +22,13 @@ public class PostQueryService implements GetPostQuery {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostListResponse> getPostsByCommunityId(Long communityId, PostType type, Pageable pageable) {
-        return getPostsByCommunityId(communityId, type, pageable, null);
+    public Page<PostListResponse> getPostsByCommunityId(Long communityId, PostType type, String keyword, Pageable pageable) {
+        return getPostsByCommunityId(communityId, type, keyword, pageable, null);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostListResponse> getPostsByCommunityId(Long communityId, PostType type, Pageable pageable,
+    public Page<PostListResponse> getPostsByCommunityId(Long communityId, PostType type, String keyword, Pageable pageable,
             String email) {
         Page<Post> postPage;
 
@@ -37,7 +37,9 @@ public class PostQueryService implements GetPostQuery {
                 ? userRepositoryPort.findByEmail(email).map(User::getId).orElse(null)
                 : null;
 
-        if (type != null) {
+        if (keyword != null && !keyword.isBlank()) {
+            postPage = postRepositoryPort.findByKeyword(communityId, type, keyword, pageable);
+        } else if (type != null) {
             postPage = postRepositoryPort.findByCommunityIdAndType(communityId, type, pageable);
         } else {
             postPage = postRepositoryPort.findByCommunityId(communityId, pageable);

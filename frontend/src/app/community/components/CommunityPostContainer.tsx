@@ -60,6 +60,8 @@ export default function CommunityPostContainer({ communityId, canManage }: Props
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [keyword, setKeyword] = useState('');
+  const [searchInput, setSearchInput] = useState('');
 
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [comments, setComments] = useState<CommentResponse[]>([]);
@@ -83,7 +85,7 @@ export default function CommunityPostContainer({ communityId, canManage }: Props
     if (!silent) setIsLoading(true);
     try {
       const response = await fetch(
-        `/api/posts?communityId=${communityId}&page=${currentPage - 1}&size=10`
+        `/api/posts?communityId=${communityId}&page=${currentPage - 1}&size=10${keyword ? `&keyword=${encodeURIComponent(keyword)}` : ''}`
       );
 
       if (!response.ok) {
@@ -320,11 +322,22 @@ export default function CommunityPostContainer({ communityId, canManage }: Props
     }
   };
 
+  const handleSearch = () => {
+    setKeyword(searchInput);
+    setCurrentPage(1); // 검색 시 첫 페이지로 이동
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   const [isPostMenuOpen, setIsPostMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchPosts();
-  }, [communityId, currentPage]);
+  }, [communityId, currentPage, keyword]);
 
   useEffect(() => {
     if (selectedPostId) {
@@ -367,10 +380,27 @@ export default function CommunityPostContainer({ communityId, canManage }: Props
       <div className={styles.leftSidebar}>
         <div className={styles.searchRow}>
           <div className={styles.searchInputWrapper}>
-            <InputField variant="search" placeholder="검색어를 입력하세요" />
+            <InputField 
+              variant="search" 
+              placeholder="게시글 검색 (제목, 내용, 작성자)" 
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
           </div>
           <Button 
             variant="primary" 
+            onClick={handleSearch}
+            className={styles.searchButton}
+          >
+            검색
+          </Button>
+        </div>
+
+        <div className={styles.writeRow}>
+          <Button 
+            variant="primary" 
+            fullWidth
             onClick={() => {
               if (!isLoggedIn) {
                 showToast('로그인이 필요합니다.', 'error');

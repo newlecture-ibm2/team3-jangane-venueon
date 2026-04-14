@@ -108,6 +108,7 @@ public class PostController {
     public ResponseEntity<Page<PostListResponse>> getPostList(
             @RequestParam Long communityId,
             @RequestParam(required = false) PostType type,
+            @RequestParam(required = false) String keyword,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -116,7 +117,7 @@ public class PostController {
             email = ((UserDetails) authentication.getPrincipal()).getUsername();
         }
 
-        Page<PostListResponse> posts = getPostQuery.getPostsByCommunityId(communityId, type, pageable, email);
+        Page<PostListResponse> posts = getPostQuery.getPostsByCommunityId(communityId, type, keyword, pageable, email);
         return ResponseEntity.ok(posts);
     }
 
