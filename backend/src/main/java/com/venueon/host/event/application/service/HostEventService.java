@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  * 호스트 이벤트 관리 서비스
@@ -16,7 +18,9 @@ import org.springframework.data.domain.Pageable;
 @Slf4j
 @UseCase
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class HostEventService implements GetHostEventsUseCase {
+
 
     private final HostEventQueryPort hostEventQueryPort;
 
