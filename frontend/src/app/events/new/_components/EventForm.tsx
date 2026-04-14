@@ -46,21 +46,21 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   const [tickets, setTickets] = useState<any[]>(
     (initialData?.tickets || []).length > 0
       ? initialData!.tickets.map((t: any) => {
-          const hasDiscount = t.originalPrice > 0 && t.price < t.originalPrice;
-          return {
-            ...t,
-            // 할인 있으면: price=정가(originalPrice), discountPrice=할인가(price)
-            price: hasDiscount ? t.originalPrice : t.price,
-            discountPrice: hasDiscount ? t.price : undefined,
-            useDiscount: hasDiscount,
-            selectedSessionIndices: t.sessionIds 
-              ? t.sessionIds.map((sid: number) => (initialData?.sessions || []).findIndex((s: any) => s.id === sid)).filter((i: number) => i !== -1)
-              : []
-          };
-        })
+        const hasDiscount = t.originalPrice > 0 && t.price < t.originalPrice;
+        return {
+          ...t,
+          // 할인 있으면: price=정가(originalPrice), discountPrice=할인가(price)
+          price: hasDiscount ? t.originalPrice : t.price,
+          discountPrice: hasDiscount ? t.price : undefined,
+          useDiscount: hasDiscount,
+          selectedSessionIndices: t.sessionIds
+            ? t.sessionIds.map((sid: number) => (initialData?.sessions || []).findIndex((s: any) => s.id === sid)).filter((i: number) => i !== -1)
+            : []
+        };
+      })
       : [{ name: '기본 티켓', price: 0, originalPrice: 0, useDiscount: false, isAllSessions: true, maxQuantity: '', description: '', selectedSessionIndices: [] }]
   );
-  const [categories, setCategories] = useState<{id: number, name: string}[]>([]);
+  const [categories, setCategories] = useState<{ id: number, name: string }[]>([]);
   const [deletedTicketIds, setDeletedTicketIds] = useState<number[]>([]);
 
   const [formData, setFormData] = useState({
@@ -339,19 +339,19 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             price: finalPrice,
             isAllSessions: Boolean(t.isAllSessions),
             maxQuantity: t.maxQuantity ? Number(t.maxQuantity) : null,
-            sessionIds: t.isAllSessions 
-              ? [] 
+            sessionIds: t.isAllSessions
+              ? []
               : (t.selectedSessionIndices || []).map((idx: number) => savedSessionIds[idx]).filter((id: any) => id !== undefined),
             sortOrder: 0,
             salesStart: t.salesStart || null,
             salesEnd: t.salesEnd || null,
           };
-          
+
           if (t.id) {
             const ticketPutRes = await fetch(`/api/host/tickets/${t.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({...ticketPayload, isActive: t.isActive !== false})
+              body: JSON.stringify({ ...ticketPayload, isActive: t.isActive !== false })
             });
             if (!ticketPutRes.ok) {
               console.error(`[DEBUG] Ticket PUT ${t.id} failed:`, ticketPutRes.status, await ticketPutRes.text().catch(() => ''));
@@ -396,7 +396,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       </button>
 
       {mode === 'edit' && initialData && (
-        <HostManagementPanel 
+        <HostManagementPanel
           eventId={Number(eventId)}
           status={initialData.status}
           sessions={initialData.sessions || []}
@@ -490,7 +490,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       <div className={styles.formGroup}>
         <label className={styles.label}>이벤트 운영 방식</label>
         <div className={styles.methodCardsContainer}>
-          <div 
+          <div
             className={`${styles.methodCard} ${!hasSession ? styles.activeMethod : ''}`}
             onClick={() => setHasSession(false)}
           >
@@ -499,7 +499,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               <span className={styles.methodDesc}>지정된 날짜/주제 그대로 참여하는 기본적인 형태의 이벤트입니다.</span>
             </div>
           </div>
-          <div 
+          <div
             className={`${styles.methodCard} ${hasSession ? styles.activeMethod : ''}`}
             onClick={() => setHasSession(true)}
           >
@@ -894,7 +894,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         <div className={styles.formGroup} style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '8px' }}>
           <label className={styles.label} style={{ fontSize: '1rem' }}>결제 진행 방식 (티켓 구매 옵션)</label>
           <div className={styles.methodCardsContainer}>
-            <div 
+            <div
               className={`${styles.methodCard} ${purchaseType === 'SINGLE' ? styles.activeMethod : ''}`}
               onClick={() => setPurchaseType('SINGLE')}
             >
@@ -903,7 +903,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                 <span className={styles.methodDesc}>티켓 1장만 선택하여 구매 가능</span>
               </div>
             </div>
-            <div 
+            <div
               className={`${styles.methodCard} ${purchaseType === 'MULTI' ? styles.activeMethod : ''}`}
               onClick={() => setPurchaseType('MULTI')}
             >
@@ -1049,7 +1049,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                       </label>
                     </div>
                   </div>
-                  
+
                   {ticket.isAllSessions === false && hasSession && (
                     <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem', padding: '1rem', background: '#f5f5f5', borderRadius: '8px', border: '1px solid #ddd' }}>
                       <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>포함할 세션 선택</label>
@@ -1059,8 +1059,8 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         {sessions.map((s, sIndex) => (
                           <label key={sIndex} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem' }}>
-                            <input 
-                              type="checkbox" 
+                            <input
+                              type="checkbox"
                               checked={(ticket.selectedSessionIndices || []).includes(sIndex)}
                               onChange={(e) => {
                                 const newTickets = [...tickets];

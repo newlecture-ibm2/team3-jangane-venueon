@@ -1,6 +1,6 @@
 package com.venueon.comment.application.service;
 
-import com.venueon.comment.application.port.in.CommentAdminUseCase;
+
 import com.venueon.comment.application.port.in.CommentLikeUseCase;
 import com.venueon.comment.application.port.in.CreateCommentUseCase;
 import com.venueon.comment.application.port.in.DeleteCommentUseCase;
@@ -20,7 +20,7 @@ import com.venueon.common.annotation.UseCase;
 @RequiredArgsConstructor
 @Transactional
 public class CommentCommandService
-        implements CreateCommentUseCase, CommentLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase, CommentAdminUseCase {
+        implements CreateCommentUseCase, CommentLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase {
 
     private final CommentRepositoryPort commentRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
@@ -78,13 +78,7 @@ public class CommentCommandService
         comment.update(request.content());
     }
 
-    @Override
-    public void hideComment(Long commentId) {
-        Comment comment = commentRepositoryPort.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));
-        comment.hide();
-        commentRepositoryPort.save(comment);
-    }
+
 
     @Override
     public void deleteComment(Long id) {

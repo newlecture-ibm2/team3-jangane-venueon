@@ -2,7 +2,10 @@ package com.venueon.post.application.service;
 
 import com.venueon.common.annotation.UseCase;
 import com.venueon.post.application.port.in.CreatePostUseCase;
-import com.venueon.post.application.port.in.*;
+import com.venueon.post.application.port.in.PostLikeUseCase;
+import com.venueon.post.application.port.in.PostBookmarkUseCase;
+import com.venueon.post.application.port.in.UpdatePostUseCase;
+import com.venueon.post.application.port.in.DeletePostUseCase;
 import com.venueon.post.application.port.in.dto.CreatePostRequest;
 import com.venueon.post.application.port.in.dto.CreatePostResponse;
 import com.venueon.post.application.port.in.dto.UpdatePostRequest;
@@ -16,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, PostBookmarkUseCase, PostAdminUseCase,
+public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, PostBookmarkUseCase,
                 UpdatePostUseCase, DeletePostUseCase {
 
         private final PostRepositoryPort postRepositoryPort;
@@ -97,32 +100,6 @@ public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, P
                 } else {
                         postRepositoryPort.saveBookmark(postId, user.getId());
                 }
-        }
-
-        @Override
-        public void togglePin(Long postId) {
-                Post post = postRepositoryPort.findById(postId)
-                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
-
-                post.togglePin();
-                postRepositoryPort.save(post);
-        }
-
-        @Override
-        public void toggleNotice(Long postId) {
-                Post post = postRepositoryPort.findById(postId)
-                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
-
-                post.toggleNotice();
-                postRepositoryPort.save(post);
-        }
-
-        @Override
-        public void hidePost(Long postId) {
-                Post post = postRepositoryPort.findById(postId)
-                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
-                post.hide();
-                postRepositoryPort.save(post);
         }
 
 }

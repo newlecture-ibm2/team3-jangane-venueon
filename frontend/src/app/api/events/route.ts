@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies();
     const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
-    
+
     // 임시로 로그인 안된 경우 테스트용 5번 유저 (추후 수정)
     const userId = session.userId || 5;
 
