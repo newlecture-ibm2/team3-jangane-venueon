@@ -1,6 +1,7 @@
 package com.venueon.admin.user.application.port.in;
 
 import com.venueon.user.domain.model.User;
+import com.venueon.user.domain.model.HostProfile;
 
 /**
  * 관리자용 회원 상세 조회 UseCase
@@ -21,5 +22,5 @@ public interface GetAdminUserDetailUseCase {
      * @param userId 회원 ID
      * @return 호스트 프로필 도메인 모델 (없으면 null)
      */
-    com.venueon.user.domain.model.HostProfile getHostProfileByUserId(Long userId);
+    HostProfile getHostProfileByUserId(Long userId);
 }

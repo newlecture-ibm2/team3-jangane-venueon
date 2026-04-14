@@ -1,6 +1,8 @@
 package com.venueon.admin.user.adapter.in.web.dto.response;
 
 import com.venueon.user.domain.model.User;
+import com.venueon.user.domain.model.HostProfile;
+import com.venueon.common.dto.CodeDto;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +13,7 @@ public record AdminUserDetailResponse(
         Long id,
         String email,
         String nickname,
-        com.venueon.common.dto.CodeDto role,
+        CodeDto role,
         String phone,
         String profileImg,
         boolean active,
@@ -22,12 +24,12 @@ public record AdminUserDetailResponse(
         String orgNumber,
         String orgDescription
 ) {
-    public static AdminUserDetailResponse from(User user, com.venueon.user.domain.model.HostProfile hostProfile) {
+    public static AdminUserDetailResponse from(User user, HostProfile hostProfile) {
         return new AdminUserDetailResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getNickname(),
-                user.getRole() != null ? com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()) : null,
+                user.getRole() != null ? CodeDto.of(user.getRole().id(), user.getRole().label()) : null,
                 user.getPhone(),
                 user.getProfileImg(),
                 user.isActive(),

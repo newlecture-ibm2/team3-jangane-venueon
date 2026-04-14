@@ -10,6 +10,7 @@ import com.venueon.common.dto.ApiResponse;
 import com.venueon.common.exception.BusinessException;
 import com.venueon.common.exception.ErrorCode;
 import com.venueon.user.domain.model.User;
+import com.venueon.user.domain.model.HostProfile;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +71,7 @@ public class AdminUserController {
         log.debug("회원 상세 조회: id={}", id);
 
         User user = getAdminUserDetailUseCase.getUserById(id);
-        com.venueon.user.domain.model.HostProfile hostProfile = null;
+        HostProfile hostProfile = null;
 
         if (user.isHost()) {
             hostProfile = getAdminUserDetailUseCase.getHostProfileByUserId(id);
@@ -98,7 +99,7 @@ public class AdminUserController {
         );
 
         User updatedUser = updateAdminUserUseCase.updateUser(id, command);
-        AdminUserDetailResponse response = AdminUserDetailResponse.from(updatedUser);
+        AdminUserDetailResponse response = AdminUserDetailResponse.from(updatedUser, null);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

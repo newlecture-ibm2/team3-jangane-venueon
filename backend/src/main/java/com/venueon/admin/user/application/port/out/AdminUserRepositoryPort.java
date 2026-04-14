@@ -1,6 +1,7 @@
 package com.venueon.admin.user.application.port.out;
 
 import com.venueon.user.domain.model.User;
+import com.venueon.user.domain.model.HostProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -36,7 +37,7 @@ public interface AdminUserRepositoryPort {
     /**
      * ID로 호스트 프로필 조회
      */
-    Optional<com.venueon.user.domain.model.HostProfile> findHostProfileByUserId(Long userId);
+    Optional<HostProfile> findHostProfileByUserId(Long userId);
 
     /**
      * 회원 삭제
