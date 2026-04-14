@@ -15,6 +15,6 @@ public class ConfirmPaymentRequest {
     @NotBlank(message = "orderId는 필수입니다.")
     private String orderId;  // tossOrderId
 
-    @Min(value = 1, message = "결제 금액은 1원 이상이어야 합니다.")
+    @Min(value = 0, message = "결제 금액은 0원 이상이어야 합니다.")
     private int amount;
 }

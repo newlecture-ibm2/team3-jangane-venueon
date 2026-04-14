@@ -332,33 +332,99 @@ public class OrderService {
      * API 스펙: GET /orders/me
      */
     public Page<OrderSummaryResponse> getMyOrders(Long userId, String tab, Pageable pageable) {
-        return orderRepository.findValidOrdersByUserId(userId, tab, pageable)
-                .map(order -> {
-                    List<Order> relatedOrders = orderRepository.findAllByTossOrderId(order.getTossOrderId());
+        List<Order> allValidOrders = orderRepository.findAllValidOrdersByUserId(userId);
 
-                    int totalAmount = relatedOrders.stream().mapToInt(Order::getAmount).sum();
-                    int totalQuantity = relatedOrders.stream().mapToInt(Order::getQuantity).sum();
+        List<OrderSummaryResponse> mapped = allValidOrders.stream().map(order -> {
+            List<Order> relatedOrders = orderRepository.findAllByTossOrderId(order.getTossOrderId());
 
-                    String baseTitle = eventRepository.findById(order.getEventId())
-                            .map(Event::getTitle)
-                            .orElse("알 수 없는 이벤트");
+            int totalAmount = relatedOrders.stream().mapToInt(Order::getAmount).sum();
+            int totalQuantity = relatedOrders.stream().mapToInt(Order::getQuantity).sum();
 
-                    String orderName = baseTitle;
-                    if (relatedOrders.size() > 1) {
-                        orderName += " 외 " + (relatedOrders.size() - 1) + "건";
+            Event orderEvent = eventRepository.findById(order.getEventId()).orElse(null);
+
+            String baseTitle = orderEvent != null ? orderEvent.getTitle() : "알 수 없는 이벤트";
+
+            String orderName = baseTitle;
+            if (relatedOrders.size() > 1) {
+                orderName += " 외 " + (relatedOrders.size() - 1) + "건";
+            }
+
+            com.venueon.common.dto.CodeDto dtoStatus = null;
+            String primaryLocation = "장소 미정";
+            LocalDateTime targetDate = null;
+            String organizer = "알 수 없는 호스트";
+
+            if (orderEvent != null) {
+                User eventCreator = userRepository.findById(orderEvent.getCreatorId()).orElse(null);
+                if (eventCreator != null) {
+                    organizer = eventCreator.getNickname();
+                }
+
+                List<com.venueon.event.domain.model.Session> allSessions = sessionPort.findByEventId(orderEvent.getId());
+                List<com.venueon.event.domain.model.Session> targetSessions = allSessions;
+                
+                if (order.getTicketId() != null) {
+                    Ticket ticket = ticketRepositoryPort.findById(order.getTicketId()).orElse(null);
+                    if (ticket != null) {
+                        targetSessions = resolveTicketSessions(ticket);
                     }
+                }
+                
+                com.venueon.common.model.DomainCode effectiveStatus = orderEvent.getEffectiveStatus(targetSessions);
+                if (effectiveStatus != null) {
+                    dtoStatus = com.venueon.common.dto.CodeDto.of(effectiveStatus.id(), effectiveStatus.label());
+                }
 
-                    return OrderSummaryResponse.builder()
-                            .orderId(order.getId())
-                            .tossOrderId(order.getTossOrderId())
-                            .orderName(orderName)
-                            .totalAmount(totalAmount)
-                            .totalQuantity(totalQuantity)
-                            .status(order.getStatus().name())
-                            .orderedAt(order.getOrderedAt())
-                            .paidAt(order.getPaidAt())
-                            .build();
-                });
+                primaryLocation = targetSessions.stream()
+                        .filter(s -> !s.getIsOnline() && s.getLocation() != null && !s.getLocation().isBlank())
+                        .map(com.venueon.event.domain.model.Session::getLocation)
+                        .findFirst()
+                        .orElse(targetSessions.stream().allMatch(com.venueon.event.domain.model.Session::getIsOnline) && !targetSessions.isEmpty() ? "온라인" : "장소 미정");
+
+                targetDate = targetSessions.stream()
+                        .map(com.venueon.event.domain.model.Session::getEndTime)
+                        .filter(t -> t != null)
+                        .max(LocalDateTime::compareTo)
+                        .orElse(null);
+            }
+
+            return OrderSummaryResponse.builder()
+                    .orderId(order.getId())
+                    .tossOrderId(order.getTossOrderId())
+                    .orderName(orderName)
+                    .totalAmount(totalAmount)
+                    .totalQuantity(totalQuantity)
+                    .status(order.getStatus().name())
+                    .orderedAt(order.getOrderedAt())
+                    .paidAt(order.getPaidAt())
+                    .eventId(order.getEventId())
+                    .eventTitle(baseTitle)
+                    .eventStatus(dtoStatus)
+                    .organizer(organizer)
+                    .location(primaryLocation)
+                    .eventStartDate(targetDate)
+                    .amount(order.getAmount())
+                    .build();
+        }).collect(Collectors.toList());
+
+        List<OrderSummaryResponse> filtered = mapped.stream().filter(o -> {
+            if (tab == null || tab.isEmpty()) return true;
+            Long statusId = o.getEventStatus() != null ? o.getEventStatus().id() : 1L; // 1 = DRAFT
+            if ("upcoming".equals(tab)) {
+                return statusId == 1L || statusId == 2L; // DRAFT or PUBLISHED
+            } else if ("enrolled".equals(tab)) {
+                return statusId == 3L; // ONGOING
+            } else if ("completed".equals(tab)) {
+                return statusId == 4L || statusId == 5L; // ENDED or CANCELLED
+            }
+            return true;
+        }).collect(Collectors.toList());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), filtered.size());
+        List<OrderSummaryResponse> pageContent = start <= end ? filtered.subList(start, end) : java.util.Collections.emptyList();
+
+        return new org.springframework.data.domain.PageImpl<>(pageContent, pageable, filtered.size());
     }
 
     /**
@@ -384,12 +450,12 @@ public class OrderService {
             if (o.getStatus() == OrderStatus.REFUNDED || o.getStatus() == OrderStatus.CANCELLED) {
                 throw new BusinessException(ErrorCode.ALREADY_REFUNDED);
             }
-            if (o.getStatus() != OrderStatus.PAID) {
+            if (o.getStatus() != OrderStatus.PAID && o.getStatus() != OrderStatus.REGISTERED) {
                 throw new BusinessException(ErrorCode.REFUND_NOT_ALLOWED);
             }
         }
 
-        // 5. 토스 결제 취소 API 호출
+        // 5. 토스 결제 취소 API 호출 (결제키가 있고 결제된건만)
         if (order.getTossPaymentKey() != null && !"dummy_key".equals(order.getTossPaymentKey())) {
             tossPaymentClient.cancelPayment(order.getTossPaymentKey(), reason);
         }

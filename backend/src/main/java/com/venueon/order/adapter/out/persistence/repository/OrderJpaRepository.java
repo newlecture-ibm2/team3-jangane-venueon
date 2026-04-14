@@ -30,7 +30,16 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
             @Param("statuses") List<String> statuses,
             Pageable pageable);
 
+    @Query("SELECT o FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
+           "o.id IN (SELECT MIN(o2.id) FROM OrderJpaEntity o2 WHERE o2.user.id = :userId GROUP BY o2.tossOrderId) AND " +
+           "(o.status != 'PENDING' OR (o.status = 'PENDING' AND o.paymentMethod = 'VIRTUAL_ACCOUNT')) " +
+           "ORDER BY o.orderedAt DESC")
+    List<OrderJpaEntity> findAllValidOrdersByUserId(@Param("userId") Long userId);
+
     List<OrderJpaEntity> findByEventId(Long eventId);
+
+    /** 뱃지 발급 시 사용자의 유효 주문 조회용 */
+    List<OrderJpaEntity> findByUserIdAndStatusIn(Long userId, List<OrderStatus> statuses);
 
     List<OrderJpaEntity> findByUserIdAndEventId(Long userId, Long eventId);
 

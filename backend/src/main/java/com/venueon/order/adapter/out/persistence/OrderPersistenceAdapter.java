@@ -159,6 +159,13 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
         return orderJpaRepository.countCompletedByUserId(userId);
     }
 
+    @Override
+    public List<Order> findAllValidOrdersByUserId(Long userId) {
+        return orderJpaRepository.findAllValidOrdersByUserId(userId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+
     // --- Mapper ---
     private Order toDomain(OrderJpaEntity entity) {
         return new Order(
