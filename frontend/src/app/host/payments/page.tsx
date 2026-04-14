@@ -128,7 +128,7 @@ export default function HostPaymentsPage() {
   };
 
   return (
-    <div className="container-sidebar">
+    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
       <div className="sidebar">
         <Sidebar role="host" />
       </div>
@@ -208,8 +208,8 @@ export default function HostPaymentsPage() {
                       </tr>
                     ))
                   ) : (
-                    <tr>
-                      <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                    <tr className={styles.emptyRow}>
+                      <td colSpan={6}>
                         주문 내역이 없습니다.
                       </td>
                     </tr>

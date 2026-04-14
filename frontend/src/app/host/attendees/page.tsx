@@ -71,7 +71,7 @@ export default function HostAttendeesPage() {
   }, [selectedEventId, searchName]);
 
   return (
-    <div className="container-sidebar">
+    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
       <div className={styles.sidebarWrapper}>
          <Sidebar role="host" />
       </div>
@@ -116,7 +116,7 @@ export default function HostAttendeesPage() {
             </div>
 
             <div className={styles.tableContainer}>
-              <table className={styles.table}>
+              <table className={`${styles.table} ${styles.attendeeTable}`}>
                 <thead>
                   <tr>
                     <th>이름</th>

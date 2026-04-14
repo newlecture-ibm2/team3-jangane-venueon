@@ -18,6 +18,11 @@ public class HostEventPersistenceAdapter implements HostEventQueryPort {
 
     private final HostEventJpaRepository hostEventJpaRepository;
     private final HostEventMapper hostEventMapper;
+    private final com.venueon.event.adapter.out.persistence.repository.SessionJpaRepository sessionJpaRepository;
+    private final com.venueon.ticket.adapter.out.persistence.repository.TicketJpaRepository ticketJpaRepository;
+    private final com.venueon.host.order.adapter.out.persistence.repository.HostOrderQueryRepository orderQueryRepository;
+    private final com.venueon.event.adapter.out.persistence.EventMapper eventMapper;
+    private final com.venueon.event.adapter.out.persistence.SessionMapper sessionMapper;
 
     @Override
     public Page<HostEventResponse> findByHostId(Long hostId, String status, Pageable pageable) {
@@ -27,12 +32,57 @@ public class HostEventPersistenceAdapter implements HostEventQueryPort {
         } else {
             page = hostEventJpaRepository.findByCreatorIdAndStatus(hostId, status.toUpperCase(), pageable);
         }
-        return page.map(hostEventMapper::toResponse);
+        return enrichAndMap(page);
     }
 
     @Override
     public Page<HostEventResponse> findDraftsByHostId(Long hostId, Pageable pageable) {
-        return hostEventJpaRepository.findByCreatorIdAndStatus(hostId, "DRAFT", pageable)
-                .map(hostEventMapper::toResponse);
+        Page<EventJpaEntity> page = hostEventJpaRepository.findByCreatorIdAndStatus(hostId, "DRAFT", pageable);
+        return enrichAndMap(page);
+    }
+
+    private Page<HostEventResponse> enrichAndMap(Page<EventJpaEntity> page) {
+        java.util.List<Long> eventIds = page.getContent().stream().map(EventJpaEntity::getId).toList();
+
+        java.util.Map<Long, java.util.List<com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity>> sessionsMap =
+                sessionJpaRepository.findByEventIdIn(eventIds).stream()
+                        .collect(java.util.stream.Collectors.groupingBy(s -> s.getEvent().getId()));
+
+        java.util.Map<Long, java.util.List<com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity>> ticketsMap =
+                ticketJpaRepository.findByEventIdIn(eventIds).stream()
+                        .collect(java.util.stream.Collectors.groupingBy(t -> t.getEvent().getId()));
+
+        return page.map(entity -> {
+            var eventSessions = sessionsMap.getOrDefault(entity.getId(), java.util.Collections.emptyList());
+            var eventTickets = ticketsMap.getOrDefault(entity.getId(), java.util.Collections.emptyList());
+
+            // 도메인 로직 활용을 위한 변환
+            var eventDomain = eventMapper.toDomain(entity);
+            var sessionDomains = eventSessions.stream().map(sessionMapper::toDomain).toList();
+
+            return hostEventMapper.toResponse(
+                    entity,
+                    eventSessions,
+                    eventTickets,
+                    eventDomain.getEffectiveStatus(sessionDomains),
+                    eventDomain.getRecruitmentStatus(sessionDomains)
+            );
+        });
+    }
+
+    @Override
+    public com.venueon.host.event.adapter.in.web.dto.HostEventDetailResponse getEventDetail(Long hostId, Long eventId) {
+        EventJpaEntity event = hostEventJpaRepository.findByIdWithDetails(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("강의를 찾을 수 없습니다. ID: " + eventId));
+
+        if (!event.getCreator().getId().equals(hostId)) {
+            throw new org.springframework.security.access.AccessDeniedException("본인의 강의 정보만 조회할 수 있습니다.");
+        }
+
+        var sessions = sessionJpaRepository.findByEventIdOrderBySortOrder(eventId);
+        long totalRevenue = orderQueryRepository.sumRevenueByEventId(eventId);
+        long totalAttendees = orderQueryRepository.countAttendeesByEventId(eventId);
+        
+        return hostEventMapper.toDetailResponse(event, sessions, totalRevenue, totalAttendees);
     }
 }

@@ -93,7 +93,7 @@ export default function HostDashboardPage() {
   }, []);
 
   return (
-    <div className="container-sidebar">
+    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
       <div className={styles.sidebarWrapper}>
         <button
           className={styles.mobileMenuButton}
@@ -149,7 +149,7 @@ export default function HostDashboardPage() {
               </div>
 
               <div className={styles.tableContainer}>
-                <table className={styles.table}>
+                <table className={`${styles.table} ${styles.recentOrderTable}`}>
                   <thead>
                     <tr>
                       <th>주문번호</th>

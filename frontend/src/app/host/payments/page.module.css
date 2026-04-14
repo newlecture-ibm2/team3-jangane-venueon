@@ -1,4 +1,5 @@
 .container {
+  width: 100%; /* 부모 너비를 가득 채우도록 변경 */
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
@@ -41,7 +42,7 @@
   font-size: 0.875rem;
   background-color: white;
   color: #1e293b;
-  min-width: 150px;
+  width: 180px; /* 너비를 고정하여 텍스트 변경 시 레이아웃 흔들림 방지 */
 }
 
 .selectBox:focus {
@@ -53,12 +54,28 @@
 .tableContainer {
   overflow-x: auto;
   margin-bottom: 32px;
+  /* min-height를 제거하여 내용에 따라 높이가 조절되도록 설정 */
+}
+
+/* 데이터가 없을 때의 높이를 최소한으로 유지 */
+.emptyRow {
+  padding: 100px 0; /* 고정 높이 대신 여백으로 변경 */
+  text-align: center;
+  color: #64748b;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed; /* 내용에 상관없이 셀 너비를 고정 */
 }
+
+.table th:nth-child(1) { width: 100px; } /* 주문번호 */
+.table th:nth-child(2) { width: 120px; } /* 주문자 */
+.table th:nth-child(3) { width: auto; }  /* 강의명 (유동적) */
+.table th:nth-child(4) { width: 150px; } /* 주문금액 */
+.table th:nth-child(5) { width: 180px; } /* 주문일시 */
+.table th:nth-child(6) { width: 120px; } /* 상태 */
 
 .table th {
   text-align: left;

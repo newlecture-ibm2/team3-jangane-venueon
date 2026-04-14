@@ -11,13 +11,13 @@ interface EventData {
   title: string;
   thumbnailUrl: string | null;
   type: string;
-  status: string;
+  status: { id: number; label: string };
+  recruitmentStatus: { id: number; label: string };
   price: number;
-  discountedPrice?: number;
+  originalPrice: number;
+  hasDiscount: boolean;
   startDate: string;
   endDate: string;
-  maxAttendees: number;
-  currentAttendees: number;
   location: string;
   hostName?: string;
 }
@@ -110,7 +110,16 @@ export default function HostEventsPage() {
             ) : eventsData?.content && eventsData.content.length > 0 ? (
               eventsData.content.map((event) => (
                 <div key={event.id} className={styles.eventCard}>
-                  <span className={styles.cardBadge}>모집 중</span>
+                  <div className={styles.cardBadges}>
+                    {event.status?.label === '진행중' || event.status?.label === '종료됨' ? (
+                      <span className={`${styles.cardBadge} ${event.status.label === '종료됨' ? styles.badgeEnded : styles.badgeOngoing}`}>
+                        {event.status.label}
+                      </span>
+                    ) : null}
+                    <span className={`${styles.cardBadge} ${event.recruitmentStatus?.label === '모집마감' ? styles.badgeClosed : ''}`}>
+                      {event.recruitmentStatus?.label || '상태 미정'}
+                    </span>
+                  </div>
                   <h3 className={styles.cardTitle}>{event.title}</h3>
                   <div className={styles.thumbnailPlaceholder}></div>
                   
@@ -130,7 +139,10 @@ export default function HostEventsPage() {
                   </div>
 
                   <div className={styles.cardPrice}>
-                    ₩{event.price.toLocaleString()}
+                    {event.hasDiscount && (
+                      <span className={styles.originalPrice}>₩{event.originalPrice?.toLocaleString()}</span>
+                    )}
+                    <span className={styles.currentPrice}>₩{event.price?.toLocaleString() || '0'}</span>
                   </div>
 
                   <Link href={`/host/events/${event.id}`} className={styles.manageBtn}>

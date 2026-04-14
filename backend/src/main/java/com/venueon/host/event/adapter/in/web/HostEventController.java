@@ -138,7 +138,22 @@ public class HostEventController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<HostEventResponse> result = getHostEventsUseCase.getHostDraftEvents(hostId, pageable);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
 
+    /**
+     * 내 이벤트 상세 조회
+     * GET /host/events/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<com.venueon.host.event.adapter.in.web.dto.HostEventDetailResponse>> getMyEventDetail(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        Long hostId = hostAuthSupport.extractUserId(authentication);
+        log.debug("GET /host/events/{} — hostId={}", id, hostId);
+
+        var result = getHostEventsUseCase.getHostEventDetail(hostId, id);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 }

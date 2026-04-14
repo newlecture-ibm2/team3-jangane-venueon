@@ -1,4 +1,5 @@
 .dashboardWrapper {
+  width: 100%; /* 부모 너비를 가득 채우도록 고정 */
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -137,7 +138,23 @@
 .table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed; /* 내용에 상관없이 셀 너비를 고정 */
 }
+
+/* 수강생 관리 테이블 전용 */
+.attendeeTable th:nth-child(1) { width: 100px; } /* 이름 */
+.attendeeTable th:nth-child(2) { width: 220px; } /* 이메일 */
+.attendeeTable th:nth-child(3) { width: auto; }  /* 수강 강의 */
+.attendeeTable th:nth-child(4) { width: 120px; } /* 결제금액 */
+.attendeeTable th:nth-child(5) { width: 120px; } /* 신청일 */
+.attendeeTable th:nth-child(6) { width: 100px; } /* 상태 */
+
+/* 대시보드 최근 주문 테이블 전용 */
+.recentOrderTable th:nth-child(1) { width: 80px; }  /* 주문번호 */
+.recentOrderTable th:nth-child(2) { width: auto; }  /* 강의명 */
+.recentOrderTable th:nth-child(3) { width: 110px; } /* 주문금액 */
+.recentOrderTable th:nth-child(4) { width: 100px; } /* 주문일 */
+.recentOrderTable th:nth-child(5) { width: 100px; } /* 상태 */
 
 .table th {
   text-align: left;

@@ -14,4 +14,7 @@ public interface GetHostEventsUseCase {
 
     /** 호스트 본인의 임시저장(DRAFT) 이벤트 목록 */
     Page<HostEventResponse> getHostDraftEvents(Long hostId, Pageable pageable);
+
+    /** 호스트 본인의 특정 이벤트 상세 내역 */
+    com.venueon.host.event.adapter.in.web.dto.HostEventDetailResponse getHostEventDetail(Long hostId, Long eventId);
 }
