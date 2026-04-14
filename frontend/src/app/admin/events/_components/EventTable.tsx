@@ -79,7 +79,7 @@ export default function EventTable() {
         keyword: debouncedKeyword || undefined,
         isHidden: showHiddenOnly || undefined,
         page: currentPage - 1,
-        size: 10,
+        size: 6,
       });
 
       if (response.success) {
