@@ -67,7 +67,10 @@ public class UserJpaEntity {
     )
     @Builder.Default
     private java.util.List<com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity> categories = new java.util.ArrayList<>();
-    
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private HostProfileJpaEntity hostProfile;
+
     public void updateProfile(String nickname, String profileImg) {
         this.nickname = nickname;
         this.profileImg = profileImg;
@@ -93,5 +96,9 @@ public class UserJpaEntity {
         if (newEmail != null) {
             this.email = newEmail;
         }
+    }
+
+    public void updateActiveStatus(boolean isActive) {
+        this.isActive = isActive;
     }
 }

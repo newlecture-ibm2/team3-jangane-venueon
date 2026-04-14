@@ -21,6 +21,7 @@ public class HostProfileJpaEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private UserJpaEntity user;
 
     @Column(name = "org_name", nullable = false)
