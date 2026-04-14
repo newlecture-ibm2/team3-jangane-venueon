@@ -161,19 +161,24 @@ export const adminReportAPI = {
     api.patch<ApiResponse<void>>(`/admin/reports/${id}`, { action, status }),
 };
 
+export interface CodeDto {
+  id: number;
+  label: string;
+}
+
 export interface AdminEventListItem {
   id: number;
   title: string;
   currentAttendees: number;
   createdAt: string;
-  status: string;
+  status: CodeDto;
   displayStatus: 'READY' | 'RECRUITING' | 'CLOSED';
   isHidden: boolean;
 }
 
 export interface AdminEventDetail extends AdminEventListItem {
   description: string;
-  type: string;
+  type: CodeDto;
   categoryId: number;
   categoryName: string;
   location: string;
@@ -184,10 +189,21 @@ export interface AdminEventDetail extends AdminEventListItem {
   startDate: string;
   endDate: string;
   hasSession: boolean;
-  purchaseType: string;
+  purchaseType: CodeDto;
   updatedAt: string;
   host: AdminHostInfo;
   sessions: AdminEventSession[];
+  tickets: AdminTicketInfo[];
+}
+
+export interface AdminTicketInfo {
+  id: number;
+  name: string;
+  price: number;
+  originalPrice: number;
+  maxQuantity: number | null;
+  soldCount: number;
+  isActive: boolean;
 }
 
 export interface AdminHostInfo {
@@ -245,5 +261,17 @@ export const adminEventAPI = {
   /** 강의 삭제 */
   deleteEvent: (id: number) =>
     api.delete<ApiResponse<void>>(`/admin/events/${id}`),
+
+  /** 강의 정보 수정 */
+  updateEvent: (id: number, data: any) =>
+    api.put<ApiResponse<void>>(`/admin/events/${id}`, data),
+
+  /** 세션 정보 수정 */
+  updateSession: (eventId: number, sessionId: number, data: any) =>
+    api.put<ApiResponse<void>>(`/admin/events/${eventId}/sessions/${sessionId}`, data),
+
+  /** 티켓 정보 수정 */
+  updateTicket: (eventId: number, ticketId: number, data: any) =>
+    api.put<ApiResponse<void>>(`/admin/events/${eventId}/tickets/${ticketId}`, data),
 };
 

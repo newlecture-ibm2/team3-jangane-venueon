@@ -2,9 +2,7 @@ package com.venueon.admin.event.adapter.in.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.venueon.event.adapter.in.web.dto.SessionResponse;
-import com.venueon.event.domain.model.EventStatus;
-import com.venueon.event.domain.model.EventType;
-import com.venueon.event.domain.model.PurchaseType;
+import com.venueon.common.dto.CodeDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,8 +16,8 @@ public class EventAdminDetailResponse {
     private Long id;
     private String title;
     private String description;
-    private EventType type;
-    private EventStatus status;
+    private CodeDto type;
+    private CodeDto status;
     private String displayStatus;
     private Long categoryId;
     private String categoryName;
@@ -31,7 +29,7 @@ public class EventAdminDetailResponse {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private boolean hasSession;
-    private PurchaseType purchaseType;
+    private CodeDto purchaseType;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -43,6 +41,21 @@ public class EventAdminDetailResponse {
 
     // 세션 리스트
     private List<SessionResponse> sessions;
+
+    // 티켓 리스트 (가격 정보 포함)
+    private List<TicketInfo> tickets;
+
+    @Getter
+    @Builder
+    public static class TicketInfo {
+        private Long id;
+        private String name;
+        private int price;
+        private int originalPrice;
+        private Integer maxQuantity;
+        private int soldCount;
+        private boolean isActive;
+    }
 
     @Getter
     @Builder

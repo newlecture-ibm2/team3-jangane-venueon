@@ -1,15 +1,18 @@
 package com.venueon.admin.event.application.service;
 
-import com.venueon.admin.event.adapter.in.web.dto.EventAdminDetailResponse;
-import com.venueon.admin.event.adapter.in.web.dto.EventAdminResponse;
+import com.venueon.admin.event.adapter.in.web.dto.*;
+import com.venueon.common.dto.CodeDto;
 import com.venueon.event.adapter.in.web.dto.SessionResponse;
-import com.venueon.event.adapter.out.persistence.EventSessionMapper;
+import com.venueon.event.adapter.out.persistence.SessionMapper;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.adapter.out.persistence.entity.EventSessionJpaEntity;
+import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
-import com.venueon.event.adapter.out.persistence.repository.EventSessionJpaRepository;
+import com.venueon.event.adapter.out.persistence.repository.SessionJpaRepository;
 import com.venueon.admin.event.application.port.in.AdminEventUseCase;
-import com.venueon.event.domain.model.EventStatus;
+import com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity;
+import com.venueon.category.adapter.out.persistence.repository.CategoryJpaRepository;
+import com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity;
+import com.venueon.ticket.adapter.out.persistence.repository.TicketJpaRepository;
 import com.venueon.user.adapter.out.persistence.entity.HostProfileJpaEntity;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository;
@@ -32,9 +35,11 @@ import java.util.List;
 public class AdminEventService implements AdminEventUseCase {
 
     private final EventJpaRepository eventRepository;
-    private final EventSessionJpaRepository sessionRepository;
+    private final SessionJpaRepository sessionRepository;
     private final HostProfileJpaRepository hostProfileRepository;
-    private final EventSessionMapper sessionMapper;
+    private final CategoryJpaRepository categoryRepository;
+    private final TicketJpaRepository ticketRepository;
+    private final SessionMapper sessionMapper;
 
     @Override
     public Page<EventAdminResponse> getEvents(String status, Long categoryId, String keyword, Boolean isHidden, Pageable pageable) {
@@ -44,7 +49,7 @@ public class AdminEventService implements AdminEventUseCase {
             List<Predicate> predicates = new ArrayList<>();
 
             if (status != null && !status.equals("ALL") && !status.isEmpty()) {
-                predicates.add(root.get("status").in(mapToInternalStatuses(status)));
+                predicates.add(root.get("status").get("code").in(mapToInternalStatuses(status)));
             }
 
             if (categoryId != null && categoryId > 0) {
@@ -55,12 +60,9 @@ public class AdminEventService implements AdminEventUseCase {
                 predicates.add(cb.like(cb.lower(root.get("title")), "%" + keyword.toLowerCase() + "%"));
             }
 
-            // 숨김 처리된 강의 필터링 로직 개선
             if (isHidden != null && isHidden) {
-                // 체크됨: 숨겨진 강의만 보기
                 predicates.add(cb.isTrue(root.get("isHidden")));
             } else {
-                // 체크 안 됨: 노출 중인 강의만 보기 (기본 상태)
                 predicates.add(cb.isFalse(root.get("isHidden")));
             }
 
@@ -71,20 +73,20 @@ public class AdminEventService implements AdminEventUseCase {
         return eventPage.map(this::convertToResponse);
     }
 
-    private List<EventStatus> mapToInternalStatuses(String displayStatus) {
+    private List<String> mapToInternalStatuses(String displayStatus) {
         return switch (displayStatus) {
-            case "READY" -> List.of(EventStatus.DRAFT, EventStatus.PREPARING);
-            case "RECRUITING" -> List.of(EventStatus.PUBLISHED, EventStatus.ONGOING);
-            case "CLOSED" -> List.of(EventStatus.ENDED, EventStatus.CANCELLED);
+            case "READY" -> List.of("DRAFT", "PREPARING");
+            case "RECRUITING" -> List.of("PUBLISHED", "ONGOING");
+            case "CLOSED" -> List.of("ENDED", "CANCELLED");
             default -> List.of();
         };
     }
 
-    private String mapToDisplayStatus(EventStatus status) {
-        return switch (status) {
-            case DRAFT, PREPARING -> "READY";
-            case PUBLISHED, ONGOING -> "RECRUITING";
-            case ENDED, CANCELLED -> "CLOSED";
+    private String mapToDisplayStatus(String statusCode) {
+        return switch (statusCode) {
+            case "DRAFT", "PREPARING" -> "READY";
+            case "PUBLISHED", "ONGOING" -> "RECRUITING";
+            case "ENDED", "CANCELLED" -> "CLOSED";
             default -> "UNKNOWN";
         };
     }
@@ -94,7 +96,6 @@ public class AdminEventService implements AdminEventUseCase {
     public void toggleVisibility(Long id) {
         EventJpaEntity event = eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다. ID: " + id));
-        
         event.toggleHidden();
     }
 
@@ -108,21 +109,56 @@ public class AdminEventService implements AdminEventUseCase {
     }
 
     @Override
-    public EventAdminDetailResponse getEventDetail(Long id) {
-        log.info("AdminEventService.getEventDetail - id: {}", id);
-        
+    @Transactional
+    public void updateEvent(Long id, UpdateEventRequest request) {
+        log.info("AdminEventService.updateEvent - id: {}", id);
         EventJpaEntity event = eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다. ID: " + id));
-        
-        List<EventSessionJpaEntity> sessions = sessionRepository.findByEventIdOrderBySortOrder(id);
-        
-        UserJpaEntity creator = event.getCreator();
-        HostProfileJpaEntity hostProfile = hostProfileRepository.findByUserId(creator.getId()).orElse(null);
-        
-        return convertToDetailResponse(event, sessions, hostProfile);
+        CategoryJpaEntity category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다. ID: " + request.getCategoryId()));
+        event.updateBasicInfo(request.getTitle(), request.getDescription(), category, request.getThumbnailUrl());
     }
 
-    private EventAdminDetailResponse convertToDetailResponse(EventJpaEntity entity, List<EventSessionJpaEntity> sessions, HostProfileJpaEntity hostProfile) {
+    @Override
+    @Transactional
+    public void updateSession(Long eventId, Long sessionId, UpdateSessionRequest request) {
+        log.info("AdminEventService.updateSession - eventId: {}, sessionId: {}", eventId, sessionId);
+        SessionJpaEntity session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 세션입니다. ID: " + sessionId));
+        if (!session.getEvent().getId().equals(eventId)) {
+            throw new IllegalArgumentException("해당 세션은 요청한 강의에 속해있지 않습니다.");
+        }
+        session.updateInfo(request.getTitle(), request.getDescription(), request.getStartTime(), request.getEndTime(),
+                request.getLocation(), request.isOnline(), request.getMaxAttendees());
+    }
+
+    @Override
+    @Transactional
+    public void updateTicket(Long eventId, Long ticketId, UpdateTicketRequest request) {
+        log.info("AdminEventService.updateTicket - eventId: {}, ticketId: {}", eventId, ticketId);
+        TicketJpaEntity ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 티켓입니다. ID: " + ticketId));
+        if (!ticket.getEvent().getId().equals(eventId)) {
+            throw new IllegalArgumentException("해당 티켓은 요청한 강의에 속해있지 않습니다.");
+        }
+        ticket.update(request.getName(), request.getDescription(), request.getPrice(), request.getOriginalPrice(),
+                request.getMaxQuantity(), ticket.getSoldCount(), ticket.isAllSessions(), ticket.getSortOrder(),
+                request.isActive(), ticket.getSalesStart(), ticket.getSalesEnd());
+    }
+
+    @Override
+    public EventAdminDetailResponse getEventDetail(Long id) {
+        log.info("AdminEventService.getEventDetail - id: {}", id);
+        EventJpaEntity event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다. ID: " + id));
+        List<SessionJpaEntity> sessions = sessionRepository.findByEventIdOrderBySortOrder(id);
+        List<TicketJpaEntity> tickets = ticketRepository.findByEventIdOrderBySortOrder(id);
+        UserJpaEntity creator = event.getCreator();
+        HostProfileJpaEntity hostProfile = hostProfileRepository.findByUserId(creator.getId()).orElse(null);
+        return convertToDetailResponse(event, sessions, tickets, hostProfile);
+    }
+
+    private EventAdminDetailResponse convertToDetailResponse(EventJpaEntity entity, List<SessionJpaEntity> sessions, List<TicketJpaEntity> tickets, HostProfileJpaEntity hostProfile) {
         List<SessionResponse> sessionResponses = sessions.stream()
                 .map(sessionMapper::toDomain)
                 .map(SessionResponse::from)
@@ -143,41 +179,44 @@ public class AdminEventService implements AdminEventUseCase {
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
-                .type(entity.getType())
-                .status(entity.getStatus())
-                .displayStatus(mapToDisplayStatus(entity.getStatus()))
+                .type(entity.getType() != null ? CodeDto.of(entity.getType().getId(), entity.getType().getName()) : null)
+                .status(entity.getStatus() != null ? CodeDto.of(entity.getStatus().getId(), entity.getStatus().getLabel()) : null)
+                .displayStatus(mapToDisplayStatus(entity.getStatus().getCode()))
                 .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
                 .categoryName(entity.getCategory() != null ? entity.getCategory().getName() : "미지정")
-                .location(entity.getLocation())
-                .isOnline(entity.isOnline())
-                .price(entity.getPrice())
-                .maxAttendees(entity.getMaxAttendees())
-                .thumbnailUrl(entity.getThumbnailUrl())
-                .startDate(entity.getStartDate())
-                .endDate(entity.getEndDate())
-                .hasSession(entity.isHasSession())
-                .purchaseType(entity.getPurchaseType())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .isHidden(entity.isHidden())
                 .host(hostInfo)
                 .sessions(sessionResponses)
+                .tickets(tickets.stream().map(this::convertToTicketInfo).toList())
+                .build();
+    }
+
+    private EventAdminDetailResponse.TicketInfo convertToTicketInfo(TicketJpaEntity ticket) {
+        return EventAdminDetailResponse.TicketInfo.builder()
+                .id(ticket.getId())
+                .name(ticket.getName())
+                .price(ticket.getPrice())
+                .originalPrice(ticket.getOriginalPrice())
+                .maxQuantity(ticket.getMaxQuantity())
+                .soldCount(ticket.getSoldCount())
+                .isActive(ticket.isActive())
                 .build();
     }
 
     private EventAdminResponse convertToResponse(EventJpaEntity entity) {
-        List<EventSessionJpaEntity> sessions = sessionRepository.findByEventIdOrderBySortOrder(entity.getId());
+        List<SessionJpaEntity> sessions = sessionRepository.findByEventIdOrderBySortOrder(entity.getId());
         int totalCurrentAttendees = sessions.stream()
-                .mapToInt(EventSessionJpaEntity::getCurrentAttendees)
+                .mapToInt(SessionJpaEntity::getCurrentAttendees)
                 .sum();
-
         return EventAdminResponse.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .currentAttendees(totalCurrentAttendees)
                 .createdAt(entity.getCreatedAt())
-                .status(entity.getStatus())
-                .displayStatus(mapToDisplayStatus(entity.getStatus()))
+                .status(entity.getStatus() != null ? CodeDto.of(entity.getStatus().getId(), entity.getStatus().getLabel()) : null)
+                .displayStatus(mapToDisplayStatus(entity.getStatus().getCode()))
                 .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
                 .categoryName(entity.getCategory() != null ? entity.getCategory().getName() : "미지정")
                 .isHidden(entity.isHidden())

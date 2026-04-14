@@ -36,6 +36,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 24px;
   margin-top: var(--space-16);
 }
 
@@ -44,6 +45,47 @@
   font-weight: 700;
   color: var(--color-text-gray-900);
   margin: 0;
+  flex: 1;
+}
+
+.titleInput {
+  flex: 1;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-text-gray-300);
+  font: var(--text-body-regular);
+  resize: vertical;
+  background-color: var(--color-bg);
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-text-gray-300);
+  font: var(--text-body-regular);
+  background-color: var(--color-bg);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }
 
 .thumbnailWrapper {
@@ -168,6 +210,35 @@
   background-size: 400% 100%;
   animation: skeleton-loading 1.5s infinite;
   border-radius: var(--radius-sm);
+}
+
+.manageTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-8);
+}
+
+.manageTable th {
+  padding: 12px;
+  background: var(--color-text-gray-50);
+  border-bottom: 1px solid var(--color-text-gray-200);
+  font: var(--text-label-small);
+  color: var(--color-text-gray-600);
+  text-align: left;
+}
+
+.manageTable td {
+  padding: 12px;
+  border-bottom: 1px solid var(--color-text-gray-100);
+  font: var(--text-body-small);
+}
+
+.inlineInput {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--color-text-gray-300);
+  border-radius: 4px;
+  font-size: 14px;
 }
 
 @media screen and (max-width: 768px) {

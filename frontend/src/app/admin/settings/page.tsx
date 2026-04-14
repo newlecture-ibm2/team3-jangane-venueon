@@ -262,7 +262,6 @@ export default function AdminSettingsPage() {
           <div className={styles.listHeader}>
             <span className={`${styles.headerText} ${styles.colName}`}>카테고리명</span>
             <span className={`${styles.headerText} ${styles.colExposure}`}>노출</span>
-            <span className={`${styles.headerText} ${styles.colStatus}`}>상태</span>
             <div className={styles.colActions}></div>
           </div>
 

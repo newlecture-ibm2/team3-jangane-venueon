@@ -139,20 +139,22 @@
 .colVisibility { width: 100px; text-align: center; }
 .colAction { width: 120px; text-align: right; }
 
-.eventTitleLink {
+.clickableRow {
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.clickableRow:hover {
+  background: var(--color-text-gray-50);
+}
+
+.eventTitleText {
   font: var(--text-body-bold);
-  color: var(--color-text-gray-900);
+  color: var(--color-text-gray-900, #111827);
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.eventTitleLink:hover {
-  text-decoration: underline;
-  color: var(--color-primary-main, #333d4b);
 }
 
 /* 액션 영역 */

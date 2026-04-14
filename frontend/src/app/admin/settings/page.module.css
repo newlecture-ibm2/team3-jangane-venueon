@@ -75,7 +75,7 @@
 
 .colName { flex: 1; }
 .colExposure { width: 60px; text-align: center; }
-.colStatus { width: 100px; text-align: center; }
+
 .colActions { width: 100px; }
 
 .categoryList {

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from './EventTable.module.css';
 import { DeleteIcon, MoreIcon } from '@/components/icons';
 import { Checkbox, Pagination, Tag, Toggle, InputField, PopoverMenu } from '@/components/ui';
@@ -137,7 +138,7 @@ export default function EventTable() {
         setHideModal({ isOpen: true, eventId: event.id }); // 숨김 처리 시에만 모달
       }
     } else if (value === 'edit') {
-      showToast('강의 편집 페이지로 이동합니다. (준비 중)', 'info');
+      router.push(`/admin/events/${event.id}`);
     }
   };
 
@@ -157,6 +158,8 @@ export default function EventTable() {
       default: return null;
     }
   };
+
+  const router = useRouter();
 
   return (
     <div className={styles.tableWrapper}>
@@ -242,11 +245,15 @@ export default function EventTable() {
               <tr><td colSpan={6} className={styles.emptyTd}>데이터가 없습니다.</td></tr>
             ) : (
               events.map((event) => (
-                <tr key={event.id}>
+                <tr 
+                  key={event.id} 
+                  onClick={() => router.push(`/admin/events/${event.id}`)}
+                  className={styles.clickableRow}
+                >
                     <td className={styles.colTitle}>
-                      <Link href={`/admin/events/${event.id}`} className={styles.eventTitleLink}>
+                      <span className={styles.eventTitleText}>
                         {event.title}
-                      </Link>
+                      </span>
                     </td>
                     <td className={styles.colAttendees}>{event.currentAttendees}명</td>
                     <td className={styles.colDate}>
@@ -255,13 +262,13 @@ export default function EventTable() {
                     <td className={styles.colStatus}>
                       {getStatusTag(event.displayStatus)}
                     </td>
-                    <td className={styles.colVisibility}>
+                    <td className={styles.colVisibility} onClick={(e) => e.stopPropagation()}>
                       <Toggle
                         checked={!event.isHidden}
                         onChange={() => handleToggleVisibility(event.id)}
                       />
                     </td>
-                    <td className={styles.colAction}>
+                    <td className={styles.colAction} onClick={(e) => e.stopPropagation()}>
                       <div className={styles.actionGroup}>
                         <button className={styles.deleteBtn} onClick={() => handleDeleteClick(event)}>
                           <DeleteIcon />
@@ -277,7 +284,6 @@ export default function EventTable() {
                             <PopoverMenu
                               items={[
                                 { value: 'edit', label: '편집' },
-                                { value: 'hide', label: event.isHidden ? '숨김 해제' : '숨김 처리' },
                                 { value: 'delete', label: '삭제' },
                               ]}
                               onSelect={(v) => handlePopoverSelect(v, event)}
