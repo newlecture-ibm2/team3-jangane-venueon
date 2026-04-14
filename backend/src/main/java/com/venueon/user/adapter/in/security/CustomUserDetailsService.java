@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole()
+                user.getRole() != null ? user.getRole().getCode() : null
         );
     }
 }

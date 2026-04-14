@@ -1,7 +1,6 @@
 package com.venueon.event.application.port.in;
 
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventType;
 import com.venueon.event.adapter.in.web.dto.SessionCreateRequest;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public interface CreateEventUseCase {
             Long categoryId,
             String title,
             String description,
-            EventType type,
+            Long typeId,
             String thumbnailUrl,
             boolean hasSession,
             List<SessionCreateRequest> sessions

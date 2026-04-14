@@ -47,7 +47,7 @@ export async function POST(req: Request) {
         id: userData.id,
         email: userData.email,
         nickname: userData.nickname,
-        role: userData.role,
+        role: userData.role, // { id: number, label: string }
       },
       success: true
     });

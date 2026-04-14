@@ -31,7 +31,7 @@ public record MyOrderResponse(
         String ticketLabel = ticket != null ? ticket.getName() : "-";
         int ticketPrice = ticket != null ? ticket.getPrice() : 0;
 
-        String statusLabel = mapStatus(order.getStatus().name(), event.getStatus().name());
+        String statusLabel = mapStatus(order.getStatus().name(), event.getStatus() != null ? event.getStatus().getId() : com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID);
 
         return new MyOrderResponse(
                 order.getId(),
@@ -51,15 +51,16 @@ public record MyOrderResponse(
      * 수강 중  : 주문 유효 + 이벤트 진행 중(ONGOING)
      * 수강 완료: 주문 유효 + 이벤트 종료(ENDED) 또는 주문 취소/환불
      */
-    private static String mapStatus(String orderStatus, String eventStatus) {
+    private static String mapStatus(String orderStatus, Long eventStatusId) {
         return switch (orderStatus) {
             case "CANCELLED", "REFUNDED" -> "종료";
-            default -> switch (eventStatus) {
-                case "DRAFT", "PUBLISHED" -> "모집 중";
-                case "ONGOING" -> "진행 중";
-                case "ENDED", "CANCELLED" -> "종료";
-                default -> "준비 중";
-            };
+            default -> {
+                if (eventStatusId == null) yield "준비 중";
+                if (eventStatusId.equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID) || eventStatusId.equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_PUBLISHED_ID)) yield "모집 중";
+                if (eventStatusId.equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_ONGOING_ID)) yield "진행 중";
+                if (eventStatusId.equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_ENDED_ID) || eventStatusId.equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_CANCELLED_ID)) yield "종료";
+                yield "준비 중";
+            }
         };
     }
 }

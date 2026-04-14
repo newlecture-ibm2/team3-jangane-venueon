@@ -1,7 +1,6 @@
 package com.venueon.host.adapter.out.persistence.repository;
 
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
-import com.venueon.event.domain.model.EventStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,5 +15,6 @@ public interface HostEventJpaRepository extends JpaRepository<EventJpaEntity, Lo
     Page<EventJpaEntity> findByCreatorId(Long creatorId, Pageable pageable);
 
     /** 호스트 본인의 이벤트 — 상태 필터 (페이지네이션) */
-    Page<EventJpaEntity> findByCreatorIdAndStatus(Long creatorId, EventStatus status, Pageable pageable);
+    @org.springframework.data.jpa.repository.Query("SELECT e FROM EventJpaEntity e WHERE e.creator.id = :creatorId AND e.status.code = :status")
+    Page<EventJpaEntity> findByCreatorIdAndStatus(@org.springframework.data.repository.query.Param("creatorId") Long creatorId, @org.springframework.data.repository.query.Param("status") String status, Pageable pageable);
 }

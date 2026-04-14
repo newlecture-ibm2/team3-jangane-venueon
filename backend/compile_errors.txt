@@ -1,0 +1,102 @@
+
+> Task :compileJava
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/ticket/adapter/in/web/dto/TicketResponse.java:123: error: incompatible types: DomainCode cannot be converted to String
+            String status = session.getRecruitmentStatus();
+                                                        ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/admin/user/adapter/in/web/dto/response/AdminUserListResponse.java:23: error: incompatible types: DomainCode cannot be converted to String
+                user.getRole(),
+                            ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/admin/user/adapter/in/web/dto/response/AdminUserDetailResponse.java:26: error: incompatible types: DomainCode cannot be converted to String
+                user.getRole(),
+                            ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/admin/user/application/service/AdminUserService.java:59: error: incompatible types: String cannot be converted to DomainCode
+            user.changeRole(command.role());
+                                        ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/adapter/out/persistence/SessionMapper.java:96: error: incompatible types: DomainCode cannot be converted to String
+            recruitEntity = recruitmentStatusJpaRepository.findByCode(domain.getForcedRecruitmentStatus()).orElse(null);
+                                                                                                       ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/event/adapter/out/persistence/SessionMapper.java:100: error: incompatible types: DomainCode cannot be converted to String
+            statusEntity = eventStatusJpaRepository.findByCode(domain.getForcedSessionStatus()).orElse(null);
+                                                                                            ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/adapter/in/web/UserController.java:51: error: incompatible types: DomainCode cannot be converted to String
+                updatedUser.getRole(),
+                                   ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/adapter/in/web/AuthController.java:49: error: incompatible types: DomainCode cannot be converted to String
+                user.getRole(),
+                            ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/adapter/in/web/AuthController.java:78: error: incompatible types: DomainCode cannot be converted to String
+                user.getRole(),
+                            ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/adapter/in/web/AuthController.java:148: error: incompatible types: DomainCode cannot be converted to String
+                user.getRole(),
+                            ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/adapter/in/web/AuthController.java:171: error: incompatible types: DomainCode cannot be converted to String
+                user.getRole(),
+                            ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/application/service/AuthService.java:71: error: incompatible types: String cannot be converted to DomainCode
+        User user = new User(null, email, encodedPassword, nickname, userRole,
+                                                                     ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/application/service/AuthService.java:93: error: incompatible types: String cannot be converted to DomainCode
+        User user = new User(null, email, encodedPassword, managerName, "HOST",
+                                                                        ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/application/service/AuthService.java:133: error: incompatible types: DomainCode cannot be converted to String
+        String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole());
+                                                                                   ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/application/service/AuthService.java:136: error: incompatible types: DomainCode cannot be converted to String
+        return new LoginResult(token, user.getEmail(), user.getNickname(), user.getRole());
+                                                                                       ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/application/service/AuthService.java:168: error: incompatible types: String cannot be converted to DomainCode
+            user = new User(null, email, randomPassword, nickname, "USER",
+                                                                   ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/application/service/AuthService.java:176: error: incompatible types: DomainCode cannot be converted to String
+        String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole());
+                                                                                   ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/application/service/AuthService.java:178: error: incompatible types: DomainCode cannot be converted to String
+        return new LoginResult(token, user.getEmail(), user.getNickname(), user.getRole());
+                                                                                       ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/application/service/AuthService.java:191: error: incomparable types: DomainCode and String
+        if (user.getRole() == "HOST") {
+                           ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/user/application/service/AuthService.java:198: error: incompatible types: String cannot be converted to DomainCode
+                "HOST", user.getProvider(),
+                ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/wishlist/adapter/in/web/dto/WishlistResponse.java:21: error: incompatible types: bad type in conditional expression
+        String eventStatus = event.getStatus() != null ? event.getStatus() : "ONGOING";
+                                                                        ^
+    DomainCode cannot be converted to String
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/order/application/service/OrderService.java:112: error: incomparable types: DomainCode and String
+                if (session.getRecruitmentStatus() != "OPEN") {
+                                                   ^
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/order/application/service/OrderService.java:499: error: cannot find symbol
+                .eventStatus(event != null && event.getStatus() != null ? com.venueon.common.dto.CodeDto.of(event.getStatus().id(), event.getStatus().label()) : com.venueon.common.dto.CodeDto.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID, "임시저장"))
+                                                                                                                             ^
+  symbol:   method id()
+  location: class EventStatusJpaEntity
+/home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/order/application/service/OrderService.java:499: error: cannot find symbol
+                .eventStatus(event != null && event.getStatus() != null ? com.venueon.common.dto.CodeDto.of(event.getStatus().id(), event.getStatus().label()) : com.venueon.common.dto.CodeDto.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID, "임시저장"))
+                                                                                                                                                     ^
+  symbol:   method label()
+  location: class EventStatusJpaEntity
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+24 errors
+
+> Task :compileJava FAILED
+
+[Incubating] Problems report is available at: file:///home/young/workspace/team3-jangane-venueon/backend/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler output below.
+  /home/young/workspace/team3-jangane-venueon/backend/src/main/java/com/venueon/ticket/adapter/in/web/dto/TicketResponse.java:123: error: incompatible types: DomainCode cannot be converted to String
+              String status = session.getRecruitmentStatus();
+                                                          ^
+  24 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 5s
+1 actionable task: 1 executed

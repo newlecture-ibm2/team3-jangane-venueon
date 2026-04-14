@@ -13,13 +13,13 @@ public class UserMapper {
     /**
      * 도메인 모델 → JPA Entity
      */
-    public UserJpaEntity toEntity(User user) {
+    public UserJpaEntity toEntity(User user, com.venueon.user.adapter.out.persistence.entity.UserRoleJpaEntity roleEntity) {
         return UserJpaEntity.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
-                .role(user.getRole())
+                .role(roleEntity)
                 .provider(user.getProvider())
                 .profileImg(user.getProfileImg())
                 .phone(user.getPhone())
@@ -37,7 +37,7 @@ public class UserMapper {
                 entity.getEmail(),
                 entity.getPassword(),
                 entity.getNickname(),
-                entity.getRole(),
+                entity.getRole() != null ? com.venueon.common.model.DomainCode.of(entity.getRole().getId(), entity.getRole().getName()) : null,
                 entity.getProvider(),
                 entity.getProfileImg(),
                 entity.getPhone(),

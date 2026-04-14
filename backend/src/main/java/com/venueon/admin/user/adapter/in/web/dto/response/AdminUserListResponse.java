@@ -11,7 +11,7 @@ public record AdminUserListResponse(
         Long id,
         String email,
         String nickname,
-        String role,
+        com.venueon.common.dto.CodeDto role,
         boolean active,
         LocalDateTime createdAt
 ) {
@@ -20,7 +20,7 @@ public record AdminUserListResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getNickname(),
-                user.getRole().name(),
+                user.getRole() != null ? com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()) : null,
                 user.isActive(),
                 user.getCreatedAt()
         );

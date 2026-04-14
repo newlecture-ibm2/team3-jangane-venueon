@@ -21,7 +21,7 @@ export default function EventActionMenu({ eventId, creatorId }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
 
   // 현재 유저가 작성자거나 ADMIN인지 확인
-  const isAuthorized = user && (user.id === creatorId || user.role === 'ADMIN');
+  const isAuthorized = user && (user.id === creatorId || user.role?.id === 1);
 
   if (!isAuthorized) {
     return null;

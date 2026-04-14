@@ -32,7 +32,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // 관리자 권한이 필요한 경로의 권한 체크
-  if (req.nextUrl.pathname.startsWith("/admin") && session.role !== "ADMIN") {
+  if (req.nextUrl.pathname.startsWith("/admin") && session.role?.id !== 1) {
     // 권한이 없으면 메인 페이지로 리다이렉트
     return NextResponse.redirect(new URL("/", req.url));
   }

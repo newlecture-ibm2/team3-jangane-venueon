@@ -48,7 +48,7 @@ public class UserController {
                 updatedUser.getId(),
                 updatedUser.getEmail(),
                 updatedUser.getNickname(),
-                updatedUser.getRole().name(),
+                updatedUser.getRole() != null ? com.venueon.common.dto.CodeDto.of(updatedUser.getRole().id(), updatedUser.getRole().label()) : null,
                 updatedUser.getProfileImg(),
                 updatedUser.getCategories(),
                 updatedUser.isBadgeVisible()

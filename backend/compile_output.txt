@@ -1,0 +1,9 @@
+> Task :clean
+
+> Task :compileJava
+
+[Incubating] Problems report is available at: file:///home/young/workspace/team3-jangane-venueon/backend/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 35s
+2 actionable tasks: 2 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.4.1/userguide/configuration_cache_enabling.html

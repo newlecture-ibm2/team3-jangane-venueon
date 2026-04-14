@@ -37,7 +37,9 @@ export async function PUT(
     const cookieStore = await cookies();
     const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
     const userId = session.userId || 5;
-    const userRole = session.role || 'HOST';
+    let userRoleStr = "HOST";
+    if (session.role?.id === 1) userRoleStr = "ADMIN";
+    else if (session.role?.id === 2) userRoleStr = "USER";
 
     const body = await request.json();
 
@@ -46,7 +48,7 @@ export async function PUT(
       headers: {
         "Content-Type": "application/json",
         "X-User-Id": userId.toString(),
-        "X-User-Role": userRole,
+        "X-User-Role": userRoleStr,
       },
       body: JSON.stringify(body),
     });
@@ -76,13 +78,15 @@ export async function DELETE(
     const cookieStore = await cookies();
     const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
     const userId = session.userId || 5;
-    const userRole = session.role || 'HOST';
+    let userRoleStr = "HOST";
+    if (session.role?.id === 1) userRoleStr = "ADMIN";
+    else if (session.role?.id === 2) userRoleStr = "USER";
 
     const response = await fetch(`${BACKEND_URL}/host/events/${id}`, {
       method: "DELETE",
       headers: {
         "X-User-Id": userId.toString(),
-        "X-User-Role": userRole,
+        "X-User-Role": userRoleStr,
       },
     });
 

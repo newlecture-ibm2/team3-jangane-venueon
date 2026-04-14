@@ -1,8 +1,6 @@
 package com.venueon.event.adapter.out.persistence.entity;
 
 import com.venueon.category.adapter.out.persistence.entity.CategoryJpaEntity;
-import com.venueon.event.domain.model.EventStatus;
-import com.venueon.event.domain.model.EventType;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,14 +39,13 @@ public class EventJpaEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EventType type;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_id", nullable = false)
+    private EventTypeJpaEntity type;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private EventStatus status = EventStatus.DRAFT;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "status_id", nullable = false)
+    private EventStatusJpaEntity status;
 
     @Column(name = "thumbnail_url")
     private String thumbnailUrl;

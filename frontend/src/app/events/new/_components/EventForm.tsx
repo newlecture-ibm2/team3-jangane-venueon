@@ -201,7 +201,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         categoryId: parseInt(formData.categoryId, 10) || 1,
         title: formData.title || '새 이벤트',
         description: formData.description,
-        type: initialData?.type || 'SEMINAR',
+        typeId: initialData?.type?.id || 4, // 4 = SEMINAR default
         thumbnailUrl: thumbnailUrl,
         hasSession,
       };
@@ -374,7 +374,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         const publishRes = await fetch(`/api/events/${targetId}/status`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: 'PUBLISHED' })
+          body: JSON.stringify({ status: 2 }) // 2 = PUBLISHED
         });
         if (!publishRes.ok) throw new Error('상태 변경 실패');
       }

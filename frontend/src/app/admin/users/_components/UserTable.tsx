@@ -49,7 +49,7 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
 
   // 주최자 관리/수강생 관리에 따라 헤더가 다를 수 있지만, 
   // 요청하신 디자인 사양(이미지) 기준으로 주최자 헤더를 구현합니다.
-  const isHostView = users.length > 0 && users[0].role === 'HOST';
+  const isHostView = users.length > 0 && users[0].role?.id === 3;
 
   const handleMoreClick = (e: React.MouseEvent, userId: number) => {
     e.stopPropagation();
@@ -104,7 +104,8 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
                 {user.nickname}
               </td>
               <td className={styles.bizNumCol}>
-                {user.role === 'HOST' ? '000-00-00000' : user.email}
+                {/* 사업자 번호가 별도로 없으므로 수강생인 경우 이메일을, 호스트인 경우 더미를 표시합니다. */}
+                {user.role?.id === 3 ? '000-00-00000' : user.email}
               </td>
               <td className={styles.dateCol}>
                 {formatDate(user.createdAt)}

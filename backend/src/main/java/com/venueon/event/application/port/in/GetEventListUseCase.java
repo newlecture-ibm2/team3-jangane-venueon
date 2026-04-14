@@ -1,7 +1,6 @@
 package com.venueon.event.application.port.in;
 
 import com.venueon.event.domain.model.Event;
-import com.venueon.event.domain.model.EventType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,7 +19,7 @@ public interface GetEventListUseCase {
     record EventSearchCondition(
             String keyword,
             Long categoryId,
-            EventType type,
+            String type,
             Boolean isOnline,       // 세션 기반 필터 (향후 JOIN)
             String sort
     ) {

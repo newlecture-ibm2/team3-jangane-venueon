@@ -1,6 +1,5 @@
 package com.venueon.ticket.adapter.in.web.dto;
 
-import com.venueon.event.domain.model.RecruitmentStatus;
 import com.venueon.event.domain.model.Session;
 import com.venueon.ticket.domain.model.Ticket;
 
@@ -121,14 +120,14 @@ public record TicketResponse(
 
         // 4. 모집 상태 검증
         for (Session session : linkedSessions) {
-            RecruitmentStatus status = session.getRecruitmentStatus();
-            if (status == RecruitmentStatus.PENDING) {
+            Long statusId = session.getRecruitmentStatus() != null ? session.getRecruitmentStatus().id() : com.venueon.common.model.CodeConstants.RECRUIT_STATUS_CLOSED_ID;
+            if (statusId.equals(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_PENDING_ID)) {
                 return "아직 모집이 시작되지 않았습니다" +
                         (session.getRecruitStartDate() != null
                                 ? " (시작: " + session.getRecruitStartDate().toLocalDate() + ")"
                                 : "");
             }
-            if (status == RecruitmentStatus.CLOSED) {
+            if (statusId.equals(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_CLOSED_ID)) {
                 return "모집이 마감되었습니다";
             }
         }
