@@ -2,7 +2,7 @@ package com.venueon.post.adapter.in.web;
 
 import com.venueon.post.application.port.in.CreatePostUseCase;
 import com.venueon.post.application.port.in.GetPostQuery;
-import com.venueon.post.application.port.in.PostAdminUseCase;
+import com.venueon.manager.post.application.port.in.PostManagerUseCase;
 import com.venueon.post.application.port.in.PostBookmarkUseCase;
 import com.venueon.post.application.port.in.PostLikeUseCase;
 import com.venueon.post.application.port.in.UpdatePostUseCase;
@@ -33,7 +33,7 @@ public class PostController {
     private final GetPostQuery getPostQuery;
     private final PostLikeUseCase postLikeUseCase;
     private final PostBookmarkUseCase postBookmarkUseCase;
-    private final PostAdminUseCase postAdminUseCase;
+    private final PostManagerUseCase postManagerUseCase;
     private final UpdatePostUseCase updatePostUseCase;
     private final DeletePostUseCase deletePostUseCase;
 
@@ -167,7 +167,7 @@ public class PostController {
      */
     @PatchMapping("/{id}/pin")
     public ResponseEntity<Void> togglePin(@PathVariable Long id) {
-        postAdminUseCase.togglePin(id);
+        postManagerUseCase.togglePin(id);
         return ResponseEntity.ok().build();
     }
 
@@ -177,7 +177,7 @@ public class PostController {
      */
     @PatchMapping("/{id}/notice")
     public ResponseEntity<Void> toggleNotice(@PathVariable Long id) {
-        postAdminUseCase.toggleNotice(id);
+        postManagerUseCase.toggleNotice(id);
         return ResponseEntity.ok().build();
     }
 }

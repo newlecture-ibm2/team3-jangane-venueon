@@ -3,7 +3,7 @@ package com.venueon.admin.contact.application.service;
 import com.venueon.admin.contact.application.port.in.ApproveContactUseCase;
 import com.venueon.admin.contact.application.port.in.GetContactsUseCase;
 import com.venueon.admin.contact.application.port.in.RejectContactUseCase;
-import com.venueon.admin.contact.application.port.in.UserContactUseCase;
+import com.venueon.contact.application.port.in.UserContactUseCase;
 import com.venueon.admin.contact.application.port.out.ContactRepositoryPort;
 import com.venueon.admin.contact.domain.model.Contact;
 import com.venueon.admin.contact.domain.model.ContactCategory;

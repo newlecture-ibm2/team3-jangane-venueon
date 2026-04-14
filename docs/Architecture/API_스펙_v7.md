@@ -286,17 +286,17 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 }
 ```
 
-### 2-3. 이벤트 CRUD API (호스트)
+### 2-3. 호스트 이벤트 CRUD API
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
-| 33 | `POST` | `/events` | 🔑 HOST | 이벤트 생성 | `400` |
-| 34 | `PUT` | `/events/{id}` | 🔑 HOST | 이벤트 수정 | `403`, `404` |
-| 35 | `DELETE` | `/events/{id}` | 🔑 HOST | 이벤트 삭제 | `403`, `422` 수강생 존재 |
-| 36 | `PATCH` | `/events/{id}/status` | 🔑 HOST | 상태 변경 (statusId 기반) | `403`, `422` 잘못된 전이 |
-| 37 | `POST` | `/events/{id}/thumbnail` | 🔑 HOST | 썸네일 업로드 | `400` |
+| 33 | `POST` | `/host/events` | 🔑 HOST | 이벤트 생성 | `400` |
+| 34 | `PUT` | `/host/events/{id}` | 🔑 HOST | 이벤트 수정 | `403`, `404` |
+| 35 | `DELETE` | `/host/events/{id}` | 🔑 HOST | 이벤트 삭제 | `403`, `422` 수강생 존재 |
+| 36 | `PATCH` | `/host/events/{id}/status` | 🔑 HOST | 상태 변경 (statusId 기반) | `403`, `422` 잘못된 전이 |
+| 37 | `POST` | `/host/events/{id}/thumbnail` | 🔑 HOST | 썸네일 업로드 | `400` |
 
-#### 상세: `PATCH /events/{id}/status` (v7 변경)
+#### 상세: `PATCH /host/events/{id}/status` (v7 변경)
 
 ```json
 // Request — ID 기반
@@ -304,17 +304,22 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 // status: 2 = PUBLISHED, 4 = ENDED, 5 = CANCELLED
 ```
 
-### 2-4. 이벤트 세션 API
+### 2-4. 세션 조회 API (공개)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
 | 38 | `GET` | `/events/{eventId}/sessions` | ❌ | 세션 목록 | `404` |
-| 39 | `POST` | `/events/{eventId}/sessions` | 🔑 HOST | 세션 추가 | `403` |
-| 40 | `PUT` | `/events/{eventId}/sessions/{sessionId}` | 🔑 HOST | 세션 수정 | `403`, `404` |
-| 41 | `DELETE` | `/events/{eventId}/sessions/{sessionId}` | 🔑 HOST | 세션 삭제 | `403`, `404` |
-| 42 | `PATCH` | `/events/{eventId}/sessions/reorder` | 🔑 HOST | 세션 순서 변경 | `403` |
 
-### 2-5. 이벤트 상태 관리 API (v7 변경)
+### 2-5. 호스트 세션 관리 API
+
+| # | Method | Path | Auth | 설명 | 에러 |
+|---|--------|------|------|------|------|
+| 39 | `POST` | `/host/events/{eventId}/sessions` | 🔑 HOST | 세션 추가 | `403` |
+| 40 | `PUT` | `/host/events/{eventId}/sessions/{sessionId}` | 🔑 HOST | 세션 수정 | `403`, `404` |
+| 41 | `DELETE` | `/host/events/{eventId}/sessions/{sessionId}` | 🔑 HOST | 세션 삭제 | `403`, `404` |
+| 42 | `PATCH` | `/host/events/{eventId}/sessions/reorder` | 🔑 HOST | 세션 순서 변경 | `403` |
+
+### 2-6. 호스트 세션 상태 관리 API (v7 변경)
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -329,7 +334,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 // statusId: 3 → ONGOING 강제 / statusId: 4 → ENDED 강제 (진행)
 ```
 
-### 2-6. 티켓 API
+### 2-7. 티켓 API
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -338,7 +343,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 | 47 | `PUT` | `/host/tickets/{ticketId}` | 🔑 HOST | 티켓 수정 | `403`, `404` |
 | 48 | `DELETE` | `/host/tickets/{ticketId}` | 🔑 HOST | 티켓 삭제 | `403`, `422` 판매된 티켓 |
 
-### 2-7. 호스트 이벤트 관리 API
+### 2-8. 호스트 이벤트 조회 API
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -346,7 +351,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 | 50 | `GET` | `/host/events/drafts?page=&size=` | 🔑 HOST | 임시저장 목록 | — |
 | 51 | `GET` | `/host/events/{id}/attendees?page=&size=` | 🔑 HOST | 수강생 목록 | `403` |
 
-### 2-8. 리뷰 API
+### 2-9. 리뷰 API
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -355,7 +360,7 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 | 54 | `PUT` | `/events/{eventId}/reviews/{reviewId}` | 🔑 USER | 리뷰 수정 | `403` |
 | 55 | `DELETE` | `/events/{eventId}/reviews/{reviewId}` | 🔑 USER | 리뷰 삭제 | `403` |
 
-### 2-9. 카테고리 API
+### 2-10. 카테고리 API
 
 | # | Method | Path | Auth | 설명 | 에러 |
 |---|--------|------|------|------|------|
@@ -377,7 +382,8 @@ RECEIVED → REVIEWING → ACTIONED → COMPLETED
 
 ## 📌 3~12. 나머지 모듈
 
-Community (#57~82), Order (#83~94), Wishlist/Cart (#95~103), Badge (#104~107), Notification (#108~111), Report (#112~115), Admin (#116~156), Notice (#157~168), Mypage (#169~175), Upload (#176) 모듈은 **API 경로와 요청/응답 구조는 v6과 동일**합니다.
+Community (#57~82), Order (#83~94), Wishlist/Cart (#95~103), Badge (#104~107), Notification (#108~111), Report (#112~115), Admin (#116~156), Notice (#157~168), Mypage (#169~175), Upload (#176) 모듈의 경우 **API 경로와 요청/응답 구조는 기본적으로 v6과 동일**합니다. 
+(단, 기존 `/admin/communities` 하위에 있던 일부 커뮤니티 전용 관리 기능은 `/manager/communities` 하위로 분리되었습니다.)
 
 단, 모든 응답에서 상태/유형/역할 관련 필드는 `{id, label}` 객체로 반환됨에 주의합니다.
 
@@ -395,7 +401,8 @@ Community (#57~82), Order (#83~94), Wishlist/Cart (#95~103), Badge (#104~107), N
 | **Badge** (뱃지) | #104~107 | 4개 | 뱃지 조회, 검색/초대 |
 | **Notification** (알림) | #108~111 | 4개 | 알림 5종, 읽음 |
 | **Report** (신고) | #112~115 | 4개 | 신고, 이의 제기 |
-| **Admin** (관리자) | #116~156 | 41개 | 전체 관리 |
+| **Admin** (관리자) | #116~156 | 41개 | 사이트 전체 관리 |
+| **Manager** (매니저) | (에 포함) | - | 커뮤니티 내부 한정 관리 (`/manager/...`) |
 | **Notice** (공지) | #157~168 | 12개 | 공지, 요청 게시판 |
 | **Mypage** | #169~175 | 7개 | 탭별 통합 조회 |
 | **Upload** | #176 | 1개 | 이미지 업로드 |

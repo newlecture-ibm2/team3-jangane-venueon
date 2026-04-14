@@ -24,8 +24,8 @@ public class Member {
         this.joinedAt = joinedAt;
     }
 
-    public boolean isAdmin() {
-        return this.role == MemberRole.ADMIN;
+    public boolean isManager() {
+        return this.role == MemberRole.MANAGER;
     }
 
     // --- Getters ---
