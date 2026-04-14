@@ -26,6 +26,7 @@ public class TicketJpaEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private EventJpaEntity event;
 
     @Column(nullable = false, length = 100)
@@ -76,5 +77,19 @@ public class TicketJpaEntity {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void update(String name, String description, int price, int originalPrice, Integer maxQuantity, int soldCount, boolean isAllSessions, int sortOrder, boolean isActive, LocalDateTime salesStart, LocalDateTime salesEnd) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.originalPrice = originalPrice;
+        this.maxQuantity = maxQuantity;
+        this.soldCount = soldCount;
+        this.isAllSessions = isAllSessions;
+        this.sortOrder = sortOrder;
+        this.isActive = isActive;
+        this.salesStart = salesStart;
+        this.salesEnd = salesEnd;
     }
 }
