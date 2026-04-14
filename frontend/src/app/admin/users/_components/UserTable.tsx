@@ -11,6 +11,7 @@ interface UserTableProps {
   isLoading: boolean;
   onViewDetail: (id: number) => void;
   onDeleteClick: (user: AdminUserListItem) => void;
+  onToggleStatus: (user: AdminUserListItem) => void;
 }
 
 /** 날짜 포맷 */
@@ -35,7 +36,7 @@ const POPOVER_ITEMS = [
   { value: 'report', label: '경고' },
 ];
 
-export default function UserTable({ users, isLoading, onViewDetail, onDeleteClick }: UserTableProps) {
+export default function UserTable({ users, isLoading, onViewDetail, onDeleteClick, onToggleStatus }: UserTableProps) {
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
 
   if (isLoading) {
@@ -90,15 +91,16 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.id}>
+            <tr key={user.id} onClick={() => onViewDetail(user.id)} style={{ cursor: 'pointer' }}>
               <td className={styles.hostCol}>
                 <div className={styles.userProfile}>
                   <div className={styles.avatar}></div>
-                  <span className={styles.userName}>{user.nickname}</span>
+                  <span className={styles.userName} title={user.nickname}>
+                    {user.nickname}
+                  </span>
                 </div>
               </td>
-              <td className={styles.managerCol}>
-                {/* 담당자명이 별도로 없으므로 닉네임을 활용하거나 더미 데이터를 표시합니다. */}
+              <td className={styles.managerCol} title={user.nickname}>
                 {user.nickname}
               </td>
               <td className={styles.bizNumCol}>
@@ -109,13 +111,17 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
                 {formatDate(user.createdAt)}
               </td>
               <td className={styles.statusCol}>
-                <span className={styles.statusBadge}>
-                  {user.active ? '활성' : '승인 대기'}
-                </span>
+                <button
+                  className={`${styles.statusToggleBtn} ${user.active ? styles.statusActive : styles.statusInactive}`}
+                  onClick={(e) => { e.stopPropagation(); onToggleStatus(user); }}
+                >
+                  {user.active ? '활성' : '승인대기/정지'}
+                </button>
               </td>
               <td className={styles.actionCol}>
                 <div
                   className={styles.moreWrapper}
+                  onClick={(e) => e.stopPropagation()} /* 행 클릭 이벤트로 전파되지 않도록 차단 */
                   style={{ zIndex: openPopoverId === user.id ? 50 : 1 }}
                 >
                   <button

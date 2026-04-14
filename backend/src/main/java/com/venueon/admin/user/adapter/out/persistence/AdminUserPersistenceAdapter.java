@@ -3,7 +3,11 @@ package com.venueon.admin.user.adapter.out.persistence;
 import com.venueon.admin.user.application.port.out.AdminUserRepositoryPort;
 import com.venueon.user.adapter.out.persistence.UserMapper;
 import com.venueon.user.adapter.out.persistence.entity.UserJpaEntity;
+import com.venueon.user.adapter.out.persistence.entity.UserRoleJpaEntity;
 import com.venueon.user.adapter.out.persistence.repository.UserJpaRepository;
+import com.venueon.user.adapter.out.persistence.repository.UserRoleJpaRepository;
+import com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository;
+import com.venueon.user.domain.model.HostProfile;
 import com.venueon.user.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +26,8 @@ import java.util.Optional;
 public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
 
     private final UserJpaRepository userJpaRepository;
-    private final com.venueon.user.adapter.out.persistence.repository.UserRoleJpaRepository userRoleJpaRepository;
+    private final UserRoleJpaRepository userRoleJpaRepository;
+    private final HostProfileJpaRepository hostProfileJpaRepository;
     private final UserMapper userMapper;
 
     @Override
@@ -56,7 +61,7 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
 
     @Override
     public User save(User user) {
-        com.venueon.user.adapter.out.persistence.entity.UserRoleJpaEntity roleEntity = user.getRole() != null ? userRoleJpaRepository.findById(user.getRole().id()).orElse(null) : null;
+        UserRoleJpaEntity roleEntity = user.getRole() != null ? userRoleJpaRepository.findById(user.getRole().id()).orElse(null) : null;
         UserJpaEntity entity = userMapper.toEntity(user, roleEntity);
         UserJpaEntity saved = userJpaRepository.save(entity);
         return userMapper.toDomain(saved);
@@ -65,6 +70,21 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
     @Override
     public boolean existsById(Long id) {
         return userJpaRepository.existsById(id);
+    }
+
+    @Override
+    public Optional<HostProfile> findHostProfileByUserId(Long userId) {
+        return hostProfileJpaRepository.findByUserId(userId)
+                .map(entity -> new HostProfile(
+                        entity.getId(),
+                        entity.getUser().getId(),
+                        entity.getOrgName(),
+                        entity.getOrgNumber(),
+                        entity.getManagerName(),
+                        entity.getOrgDescription(),
+                        entity.getCreatedAt(),
+                        entity.getUpdatedAt()
+                ));
     }
 
     @Override

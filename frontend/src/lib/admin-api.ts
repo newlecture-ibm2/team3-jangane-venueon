@@ -24,6 +24,10 @@ export interface AdminUserDetail {
   active: boolean;
   createdAt: string;
   updatedAt: string;
+  // 호스트 전용
+  orgName?: string;
+  orgNumber?: string;
+  orgDescription?: string;
 }
 
 export interface PageResponse<T> {
@@ -72,10 +76,13 @@ export const adminUserAPI = {
     page?: string;
     size?: string;
   }) => {
-    // 빈 값 제거
     const cleanParams: Record<string, string> = {};
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') cleanParams[key] = String(value);
+      if (key === 'role') {
+        if (value !== undefined && value !== '') cleanParams['roleId'] = String(value);
+      } else if (value !== undefined && value !== '') {
+        cleanParams[key] = String(value);
+      }
     });
     return api.get<ApiResponse<PageResponse<AdminUserListItem>>>('/admin/users', { params: cleanParams });
   },

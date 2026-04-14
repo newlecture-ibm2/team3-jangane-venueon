@@ -35,8 +35,8 @@ export default function UserFilter({
         <Tabs
           variant="line"
           options={[
-            { value: 'HOST', label: '주최자 관리' },
-            { value: 'USER', label: '수강생 관리' },
+            { value: '3', label: '주최자 관리' },
+            { value: '2', label: '수강생 관리' },
           ]}
           activeValue={role}
           onChange={onRoleChange}
