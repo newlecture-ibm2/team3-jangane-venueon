@@ -74,15 +74,16 @@ export default function HostManagementPanel({ eventId, status, sessions: initial
         const data = await res.json().catch(() => null);
         const updated = data?.data;
         setSessionStates(prev =>
-          prev.map(s =>
-            s.id === sessionId
-              ? {
-                  ...s,
-                  sessionStatus: updated?.sessionStatus ?? (newStatus === 'AUTO' ? s.sessionStatus : newStatus),
-                  forcedSessionStatus: updated?.forcedSessionStatus ?? (newStatus === 'AUTO' ? null : newStatus),
-                }
-              : s
-          )
+          prev.map(s => {
+            if (s.id === sessionId) {
+              return {
+                ...s,
+                sessionStatus: updated ? getCode(updated.sessionStatus) : (newStatus === 'AUTO' ? s.sessionStatus : newStatus),
+                forcedSessionStatus: updated ? getCode(updated.forcedSessionStatus) : (newStatus === 'AUTO' ? null : newStatus),
+              };
+            }
+            return s;
+          })
         );
       } else {
         alert('진행 상태 변경 실패');
@@ -108,16 +109,17 @@ export default function HostManagementPanel({ eventId, status, sessions: initial
         const data = await res.json().catch(() => null);
         const updated = data?.data;
         setSessionStates(prev =>
-          prev.map(s =>
-            s.id === sessionId
-              ? {
-                  ...s,
-                  isRecruitmentClosed: updated?.isRecruitmentClosed ?? (newStatus === 3), // CLOSED (3)
-                  recruitmentStatus: getCode(updated?.recruitmentStatus) ?? newStatus,
-                  forcedRecruitmentStatus: getCode(updated?.forcedRecruitmentStatus) ?? (newStatus === 'AUTO' ? null : newStatus),
-                }
-              : s
-          )
+          prev.map(s => {
+            if (s.id === sessionId) {
+              return {
+                ...s,
+                isRecruitmentClosed: updated ? updated.isRecruitmentClosed : (newStatus === 3),
+                recruitmentStatus: updated ? getCode(updated.recruitmentStatus) : newStatus,
+                forcedRecruitmentStatus: updated ? getCode(updated.forcedRecruitmentStatus) : (newStatus === 'AUTO' ? null : newStatus),
+              };
+            }
+            return s;
+          })
         );
       } else {
         alert('모집 상태 변경 실패');

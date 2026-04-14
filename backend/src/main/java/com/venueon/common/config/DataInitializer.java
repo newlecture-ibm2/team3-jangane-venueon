@@ -40,6 +40,8 @@ import com.venueon.community.adapter.out.persistence.repository.CommunityJpaRepo
 import com.venueon.post.adapter.out.persistence.entity.PostJpaEntity;
 import com.venueon.post.adapter.out.persistence.repository.PostJpaRepository;
 import com.venueon.post.domain.model.PostType;
+import com.venueon.badge.adapter.out.persistence.entity.BadgeJpaEntity;
+import com.venueon.badge.adapter.out.persistence.repository.BadgeJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -76,6 +78,7 @@ public class DataInitializer implements ApplicationRunner {
     private final TicketSessionJpaRepository ticketSessionRepository;
     private final CommunityJpaRepository communityRepository;
     private final PostJpaRepository postRepository;
+    private final BadgeJpaRepository badgeRepository;
     private final JdbcTemplate jdbcTemplate;
     private final PasswordEncoder passwordEncoder;
 
@@ -122,6 +125,7 @@ public class DataInitializer implements ApplicationRunner {
         List<ReportJpaEntity> reports = createReports(users, events, posts);
         List<RefundJpaEntity> refunds = createRefunds(users, orders);
         createInitialCartItems();
+        createBadges(users, events);
 
         log.info("=== 개발용 초기 데이터 생성 완료 ===");
         log.info("Admin: 1명, User: {}명, Host: {}명", users.size(), hosts.size());
@@ -799,5 +803,24 @@ public class DataInitializer implements ApplicationRunner {
         log.info("관리자용 장바구니 임시 데이터 생성 완료.");
     }
 
+    /**
+     * 뱃지 샘플 데이터 — 종료된 이벤트(마음챙김 요가 클래스)에 대해 수동 뱃지 생성
+     */
+    private void createBadges(List<UserJpaEntity> users, List<EventJpaEntity> events) {
+        // 이벤트 index 3 (마음챙김 요가 클래스)은 ENDED 상태
+        EventJpaEntity endedEvent = events.get(3);
+
+        // user1(김참여)에게 뱃지 발급
+        badgeRepository.save(BadgeJpaEntity.builder()
+                .user(users.get(0))
+                .event(endedEvent)
+                .badgeName(endedEvent.getTitle())
+                .badgeImageUrl(endedEvent.getThumbnailUrl())
+                .isVisible(true)
+                .earnedAt(LocalDateTime.of(2026, 5, 17, 11, 30))
+                .build());
+
+        log.info("뱃지 샘플 데이터 생성 완료: 1개");
+    }
 
 }

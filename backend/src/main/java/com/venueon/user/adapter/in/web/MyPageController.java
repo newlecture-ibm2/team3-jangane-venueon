@@ -23,7 +23,8 @@ public class MyPageController {
      */
     @GetMapping("/summary")
     public ResponseEntity<ApiResponse<MyPageSummaryResponse>> getMyPageSummary(Authentication authentication) {
-        String email = authentication.getName();
+        // 인증 정보가 없는 경우(JWT 미제공) 개발용 기본 이메일 사용
+        String email = (authentication != null) ? authentication.getName() : "user1@example.com";
         MyPageSummaryResponse response = getMyPageSummaryUseCase.getSummary(email);
         return ResponseEntity.ok(ApiResponse.success(response));
     }

@@ -20,4 +20,13 @@ public class OrderSummaryResponse {
     private String status; // 주문 상태
     private LocalDateTime orderedAt; // 주문 일시
     private LocalDateTime paidAt; // 결제 일시
+    
+    // UI 렌더링에 필요한 이벤트 상세 정보 복구
+    private Long eventId;
+    private String eventTitle;
+    private com.venueon.common.dto.CodeDto eventStatus;
+    private String organizer;
+    private String location;
+    private LocalDateTime eventStartDate;
+    private int amount; // 단일 금액 (UI 역호환성)
 }

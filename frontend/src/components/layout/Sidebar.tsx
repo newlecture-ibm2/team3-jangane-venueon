@@ -21,7 +21,8 @@ import {
   OrderIcon,
   WishlistIcon,
   RequestIcon,
-  ContactIcon
+  ContactIcon,
+  BadgeIcon
 } from '@/components/icons';
 
 export interface SidebarProps {
@@ -121,6 +122,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
           { label: '결제 내역', href: '/mypage/orders', icon: OrderIcon },
           { label: '찜 목록', href: '/mypage/wishlist', icon: WishlistIcon },
           { label: '내 커뮤니티', href: '/mypage/community', icon: CommunityIcon },
+          { label: '내 뱃지', href: '/mypage/badges', icon: BadgeIcon },
           { label: '프로필 설정', href: '/mypage/profile', icon: ProfileIcon },
           { label: '계정 보안', href: '/mypage/security', icon: SecurityIcon },
           { label: '1:1 문의', href: '/mypage/contact', icon: ContactIcon },

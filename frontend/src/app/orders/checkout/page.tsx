@@ -92,6 +92,11 @@ function CheckoutContent() {
           customerEmail: data.customerEmail,
           tossClientKey: data.tossClientKey,
         });
+
+        // 무료 결제(0원)인 경우 위젯을 띄우지 않고 성공 페이지로 즉시 이동
+        if ((data.totalAmount ?? data.amount ?? 0) === 0) {
+          window.location.replace(`/orders/checkout/success?paymentKey=dummy_key&orderId=${data.tossOrderId}&amount=0&backendOrderId=${data.orderIds ? data.orderIds[0] : data.orderId}`);
+        }
       } catch (err: any) {
         console.error('주문 생성 에러:', err);
         setError(err.message || '주문을 생성하는 중 오류가 발생했습니다.');

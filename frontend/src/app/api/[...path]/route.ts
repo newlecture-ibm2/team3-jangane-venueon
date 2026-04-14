@@ -37,17 +37,15 @@ async function proxyRequest(req: NextRequest) {
     headers["Authorization"] = `Bearer ${session.jwt}`;
   }
 
-  // ✅ /host/ 경로 API는 X-User-Id / X-Host-Id / X-User-Role 헤더 필요
-  if (backendPath.startsWith("/host/")) {
-    const userId = session.userId || 5; // 임시 기본값 (추후 인증 완성 시 수정)
-    let userRoleStr = "HOST";
-    if (session.role?.id === 1) userRoleStr = "ADMIN";
-    else if (session.role?.id === 2) userRoleStr = "USER";
-    
-    headers["X-User-Id"] = userId.toString();
-    headers["X-Host-Id"] = userId.toString();
-    headers["X-User-Role"] = userRoleStr;
-  }
+  // ✅ 모든 API 호출 시 User ID 및 Role 헤더 전달 (백엔드 인증용)
+  const userId = session.userId || 2; // 임시 기본값 (로그인 연동 전용)
+  let userRoleStr = "USER";
+  if (session.role?.id === 1) userRoleStr = "ADMIN";
+  else if (session.role?.id === 3) userRoleStr = "HOST";
+  
+  headers["X-User-Id"] = userId.toString();
+  headers["X-Host-Id"] = userId.toString();
+  headers["X-User-Role"] = userRoleStr;
 
   // ✅ 요청 본문(Body) 안전하게 전달
   let body: BodyInit | null | undefined = undefined;

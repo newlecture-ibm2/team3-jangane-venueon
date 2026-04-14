@@ -34,4 +34,6 @@ public interface OrderRepositoryPort {
     long countOngoingByUserId(Long userId);
 
     long countCompletedByUserId(Long userId);
+
+    List<Order> findAllValidOrdersByUserId(Long userId);
 }

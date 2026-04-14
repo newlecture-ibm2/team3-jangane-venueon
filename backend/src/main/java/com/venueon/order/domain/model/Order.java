@@ -67,9 +67,10 @@ public class Order {
     }
 
     public void refund() {
-        if (this.status != OrderStatus.PAID) {
-            throw new IllegalStateException("결제 완료 상태에서만 환불 가능합니다.");
+        if (this.status != OrderStatus.PAID && this.status != OrderStatus.REGISTERED) {
+            throw new IllegalStateException("결제 완료 혹는 등록 완료 상태에서만 취소/환불 가능합니다.");
         }
+        // 0원 티켓(REGISTERED)은 환불금액이 없으므로 '취소'와 동일하게 취급되지만 통계 목적으로 REFUNDED 상태를 사용합니다
         this.status = OrderStatus.REFUNDED;
     }
 
