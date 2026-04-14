@@ -4,6 +4,7 @@ import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { InputField, TextareaField, Dropdown, Button } from '@/components/ui';
 import { useUIStore } from '@/store/useUIStore';
+import styles from '../../../../components/CommunityForm.module.css';
 
 interface Props {
   params: Promise<{ id: string; postId: string }>;
@@ -86,29 +87,21 @@ export default function PostEditPage({ params }: Props) {
 
   if (isLoading) {
     return (
-      <div className="container-single">
+      <div className={styles.formContainer}>
         <div style={{ textAlign: 'center', padding: '100px' }}>게시글 로딩 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="container-single">
+    <div className={styles.formContainer}>
       
       <section style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
         <Button variant="secondary" onClick={() => router.back()}>← 뒤로가기</Button>
         <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>게시글 수정</h1>
       </section>
 
-      <section style={{ 
-        background: '#F9FAFB', 
-        padding: '32px', 
-        borderRadius: '16px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: '24px',
-        border: '1px solid #E5E7EB'
-      }}>
+      <section className={styles.formSection}>
         <Dropdown
           label="말머리 (필수)"
           value={type}
