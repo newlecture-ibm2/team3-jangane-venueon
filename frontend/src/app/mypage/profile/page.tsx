@@ -68,7 +68,11 @@ export default function ProfileSettingsPage() {
           const fetchedEmail = data.email || '';
           const fetchedName = data.nickname || '';
           // DB에 null이면 기본 아바타 아이콘이 뜨도록 undefined 로 세팅
-          const fetchedImg = data.profileImg || undefined;
+          // 서버에 저장된 상대경로(profile/2026/04/uuid.jpg)에 /upload/ prefix 추가
+          const rawImg = data.profileImg;
+          const fetchedImg = rawImg
+            ? (rawImg.startsWith('/') || rawImg.startsWith('http') ? rawImg : `/upload/${rawImg}`)
+            : undefined;
 
           setBaseEmail(fetchedEmail);
           setBaseName(fetchedName);
@@ -150,7 +154,37 @@ export default function ProfileSettingsPage() {
   // 저장(확인) 클릭 - 실제 백엔드 연동 부분
   const handleSave = async () => {
     try {
-      // BFF 프록시 경로 (Route Handler가 /api 제거 후 백엔드로 전달, JWT 자동 포함)
+      // 1) 새로 선택한 파일이 있으면 먼저 서버에 업로드
+      let finalProfileImg: string | null = null;
+
+      if (selectedFile) {
+        // FormData로 파일 업로드 (category=profile)
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('category', 'profile');
+
+        const uploadRes = await fetch('/api/files/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          showToast('이미지 업로드에 실패했습니다.', 'error');
+          return;
+        }
+
+        const uploadData = await uploadRes.json();
+        // 백엔드 반환: { data: { filePath: "profile/2026/04/uuid.jpg" } }
+        finalProfileImg = uploadData.data?.filePath || uploadData.filePath || null;
+      } else if (profileImage && !profileImage.startsWith('blob:')) {
+        // 기존 이미지 유지 — /upload/ prefix 제거 후 상대경로만 저장
+        finalProfileImg = profileImage.replace(/^\/upload\//, '');
+      } else {
+        // 이미지 삭제 (profileImage === undefined)
+        finalProfileImg = null;
+      }
+
+      // 2) 프로필 정보 저장 (실제 서버 경로를 전송)
       const res = await fetch('/api/users/me/profile', {
         method: 'PUT',
         headers: {
@@ -158,23 +192,35 @@ export default function ProfileSettingsPage() {
         },
         body: JSON.stringify({
           nickname: userName,
-          profileImg: profileImage,
+          profileImg: finalProfileImg,
           categories: categories,
           showBadge: showBadge,
         }),
       });
 
       if (res.ok) {
-        setBaseImage(profileImage);
+        // 저장된 이미지 경로에 /upload/ prefix 붙여서 화면에 표시
+        const displayImg = finalProfileImg ? `/upload/${finalProfileImg}` : undefined;
+
+        setBaseImage(displayImg);
+        setProfileImage(displayImg);
+        setSelectedFile(null);
         setBaseEmail(userEmail);
         setBaseName(userName);
         setBaseCategories(categories);
         setBaseBadge(showBadge);
         showToast('내 정보 수정이 완료되었습니다.', 'success');
 
-        // 헤더 갱신 (저장 성공 시) - 강제로 로컬 스토어의 유저 정보 동기화
+        // 3) Zustand 스토어 갱신 (Header 즉시 반영)
         const { updateUser } = useAuth.getState();
-        updateUser({ nickname: userName, profileImg: profileImage });
+        updateUser({ nickname: userName, profileImg: displayImg });
+
+        // 4) iron-session 동기화 (새로고침 후에도 유지)
+        await fetch('/api/auth/session', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nickname: userName, profileImg: finalProfileImg }),
+        });
       } else {
         const errorText = await res.text();
         try {
@@ -221,7 +267,7 @@ export default function ProfileSettingsPage() {
               <div className={styles.imageRow}>
                 {/* 공용 UserProfile 을 사용하되, CSS로 사진 크기 72px 변경 및 텍스트 숨김 처리 */}
                 <UserProfile
-                  name="장회원"
+                  name={userName || '사용자'}
                   imageUrl={profileImage}
                   className={styles.customProfile}
                 />

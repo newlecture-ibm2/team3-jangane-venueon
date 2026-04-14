@@ -5,7 +5,7 @@ import { apiFetch } from './api';
 
 // ── 타입 정의 ──
 
-export type ContactCategory = 'BUSINESS_LICENSE' | 'HOST_INQUIRY' | 'USER_INQUIRY' | 'OTHER';
+export type ContactCategory = 'BUSINESS_LICENSE' | 'HOST_INQUIRY' | 'USER_INQUIRY' | 'PAYMENT' | 'ACCOUNT' | 'SYSTEM_ERROR' | 'OBJECTION' | 'BILLING' | 'EVENT_MANAGEMENT' | 'OTHER';
 export type ContactStatus = 'PENDING' | 'REVIEWING' | 'COMPLETED' | 'REJECTED' | 'CANCELLED';
 
 export interface ContactListItem {
@@ -13,6 +13,7 @@ export interface ContactListItem {
   requesterId: number;
   requesterNickname: string | null;
   requesterEmail: string | null;
+  requesterProfileImg: string | null;
   category: ContactCategory;
   status: ContactStatus;
   title: string;
@@ -26,6 +27,7 @@ export interface ContactDetail {
   requesterId: number;
   requesterNickname: string | null;
   requesterEmail: string | null;
+  requesterProfileImg: string | null;
   category: ContactCategory;
   status: ContactStatus;
   title: string;
@@ -57,6 +59,12 @@ export const CATEGORY_LABELS: Record<ContactCategory, string> = {
   BUSINESS_LICENSE: '사업자등록증 확인',
   HOST_INQUIRY: '호스트 문의',
   USER_INQUIRY: '참석자 문의',
+  PAYMENT: '결제/환불',
+  ACCOUNT: '계정 문제',
+  SYSTEM_ERROR: '시스템 오류',
+  OBJECTION: '이의 제기',
+  BILLING: '정산 문의',
+  EVENT_MANAGEMENT: '이벤트 관리',
   OTHER: '기타',
 };
 

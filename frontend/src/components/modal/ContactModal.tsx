@@ -8,19 +8,19 @@ import { CancelIcon } from '@/components/icons';
 import { Tabs, TextareaField, InputField, Button, UploadField } from '@/components/ui';
 
 const USER_CATEGORIES = [
-  { value: 'payment', label: '결제/환불' },
-  { value: 'account', label: '계정 문제' },
-  { value: 'error', label: '시스템 오류' },
-  { value: 'objection', label: '이의 제기' },
-  { value: 'etc', label: '기타' },
+  { value: 'PAYMENT', label: '결제/환불' },
+  { value: 'ACCOUNT', label: '계정 문제' },
+  { value: 'SYSTEM_ERROR', label: '시스템 오류' },
+  { value: 'OBJECTION', label: '이의 제기' },
+  { value: 'OTHER', label: '기타' },
 ];
 
 const HOST_CATEGORIES = [
-  { value: 'auth', label: '사업자 인증' },
-  { value: 'billing', label: '정산 문의' },
-  { value: 'event', label: '이벤트 관리' },
-  { value: 'error', label: '시스템 오류' },
-  { value: 'etc', label: '기타' },
+  { value: 'BUSINESS_LICENSE', label: '사업자 인증' },
+  { value: 'BILLING', label: '정산 문의' },
+  { value: 'EVENT_MANAGEMENT', label: '이벤트 관리' },
+  { value: 'SYSTEM_ERROR', label: '시스템 오류' },
+  { value: 'OTHER', label: '기타' },
 ];
 
 export interface ContactModalProps {

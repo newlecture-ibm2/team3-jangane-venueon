@@ -160,6 +160,11 @@ export default function ContactDetailModal({
                   <div className={styles.metaValue}>
                     <UserProfile
                       name={detail.requesterNickname || detail.requesterEmail || '알 수 없음'}
+                      imageUrl={detail.requesterProfileImg
+                        ? (detail.requesterProfileImg.startsWith('/') || detail.requesterProfileImg.startsWith('http')
+                          ? detail.requesterProfileImg
+                          : `/upload/${detail.requesterProfileImg}`)
+                        : undefined}
                       size="medium"
                     />
                   </div>

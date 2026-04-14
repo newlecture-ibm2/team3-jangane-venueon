@@ -18,6 +18,7 @@ public class Contact {
     private Long requesterId;
     private String requesterNickname;
     private String requesterEmail;
+    private String requesterProfileImg;
     private ContactCategory category;
     private ContactStatus status;
     private String title;

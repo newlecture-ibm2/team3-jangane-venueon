@@ -11,9 +11,13 @@ import org.springframework.stereotype.Component;
 public class ContactMapper {
 
     public Contact toDomain(ContactJpaEntity entity) {
+        var requester = entity.getRequester();
         return Contact.builder()
                 .id(entity.getId())
                 .requesterId(entity.getRequesterId())
+                .requesterNickname(requester != null ? requester.getNickname() : null)
+                .requesterEmail(requester != null ? requester.getEmail() : null)
+                .requesterProfileImg(requester != null ? requester.getProfileImg() : null)
                 .category(entity.getCategory())
                 .status(entity.getStatus())
                 .title(entity.getTitle())

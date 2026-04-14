@@ -128,6 +128,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
                 o.id,
                 u.nickname,
                 u.email,
+                u.profileImg,
                 e.title,
                 o.amount,
                 coalesce(o.displayOrderedAt, o.orderedAt),
