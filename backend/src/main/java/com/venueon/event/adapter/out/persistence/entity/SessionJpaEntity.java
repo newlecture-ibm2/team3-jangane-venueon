@@ -26,6 +26,7 @@ public class SessionJpaEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private EventJpaEntity event;
 
     @Column(nullable = false)

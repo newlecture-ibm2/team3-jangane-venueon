@@ -43,13 +43,18 @@ export async function PUT(
 
     const body = await request.json();
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "X-User-Id": userId.toString(),
+      "X-User-Role": userRoleStr,
+    };
+    if (session.jwt) {
+      headers["Authorization"] = `Bearer ${session.jwt}`;
+    }
+
     const response = await fetch(`${BACKEND_URL}/host/events/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "X-User-Id": userId.toString(),
-        "X-User-Role": userRoleStr,
-      },
+      headers,
       body: JSON.stringify(body),
     });
 
@@ -82,12 +87,17 @@ export async function DELETE(
     if (session.role?.id === 1) userRoleStr = "ADMIN";
     else if (session.role?.id === 2) userRoleStr = "USER";
 
+    const headers: Record<string, string> = {
+      "X-User-Id": userId.toString(),
+      "X-User-Role": userRoleStr,
+    };
+    if (session.jwt) {
+      headers["Authorization"] = `Bearer ${session.jwt}`;
+    }
+
     const response = await fetch(`${BACKEND_URL}/host/events/${id}`, {
       method: "DELETE",
-      headers: {
-        "X-User-Id": userId.toString(),
-        "X-User-Role": userRoleStr,
-      },
+      headers,
     });
 
     if (!response.ok) {

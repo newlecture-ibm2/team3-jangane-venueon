@@ -42,25 +42,17 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
             // 수정
             entity = ticketJpaRepository.findById(ticket.getId())
                     .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다. ID: " + ticket.getId()));
-            // 기존 매핑 삭제
+            
+            // 기존 매핑 삭제 (orphanRemoval = true 에 의해 동작)
             entity.getTicketSessions().clear();
+            
             // 엔티티 필드 업데이트
-            entity = TicketJpaEntity.builder()
-                    .id(entity.getId())
-                    .event(event)
-                    .name(ticket.getName())
-                    .description(ticket.getDescription())
-                    .price(ticket.getPrice())
-                    .originalPrice(ticket.getOriginalPrice())
-                    .maxQuantity(ticket.getMaxQuantity())
-                    .soldCount(ticket.getSoldCount())
-                    .isAllSessions(ticket.getIsAllSessions())
-                    .sortOrder(ticket.getSortOrder())
-                    .isActive(ticket.getIsActive())
-                    .salesStart(ticket.getSalesStart())
-                    .salesEnd(ticket.getSalesEnd())
-                    .createdAt(ticket.getCreatedAt())
-                    .build();
+            entity.update(
+                    ticket.getName(), ticket.getDescription(), ticket.getPrice(),
+                    ticket.getOriginalPrice(), ticket.getMaxQuantity(), ticket.getSoldCount(),
+                    ticket.getIsAllSessions(), ticket.getSortOrder(), ticket.getIsActive(),
+                    ticket.getSalesStart(), ticket.getSalesEnd()
+            );
         } else {
             // 신규 생성
             entity = TicketJpaEntity.builder()
@@ -79,25 +71,22 @@ public class TicketPersistenceAdapter implements TicketRepositoryPort {
                     .build();
         }
 
-        TicketJpaEntity saved = ticketJpaRepository.save(entity);
-
-        // 세션 매핑 저장 (isAllSessions=false인 경우에만)
+        // 세션 매핑 추가 (isAllSessions=false인 경우에만)
         if (!ticket.getIsAllSessions() && sessionIds != null && !sessionIds.isEmpty()) {
             for (Long sessionId : sessionIds) {
                 SessionJpaEntity session = sessionJpaRepository.findById(sessionId)
                         .orElseThrow(() -> new IllegalArgumentException("세션을 찾을 수 없습니다. ID: " + sessionId));
-                ticketSessionJpaRepository.save(
-                        TicketSessionJpaEntity.builder()
-                                .ticket(saved)
-                                .session(session)
-                                .build()
-                );
+                TicketSessionJpaEntity ticketSession = TicketSessionJpaEntity.builder()
+                        .ticket(entity)
+                        .session(session)
+                        .build();
+                entity.getTicketSessions().add(ticketSession);
             }
         }
 
-        return ticketMapper.toDomain(
-                ticketJpaRepository.findById(saved.getId()).orElseThrow()
-        );
+        TicketJpaEntity saved = ticketJpaRepository.save(entity);
+
+        return ticketMapper.toDomain(saved);
     }
 
     @Override
