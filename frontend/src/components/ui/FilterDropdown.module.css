@@ -1,0 +1,44 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: max-content;
+}
+
+.triggerButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--transition);
+  border-radius: var(--radius-md);
+}
+
+.triggerButton:hover {
+  background-color: var(--color-surface); /* #F3F4F6 */
+}
+
+.textSelected {
+  font: var(--text-body-medium);
+  font-weight: 500;
+  color: var(--color-text-gray-700);
+}
+
+.iconWrapper {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text-gray-500);
+  transition: transform var(--transition);
+}
+
+.iconExpanded {
+  transform: rotate(180deg);
+}

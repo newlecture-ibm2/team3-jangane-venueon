@@ -61,19 +61,38 @@
 
 .filterSection {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.filterBar {
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  gap: var(--space-16);
 }
 
 .searchBox {
   width: 400px;
+  flex-shrink: 0;
 }
 
-.tagGroup {
+.dropdownGroup {
   display: flex;
+  flex-direction: row;
   gap: var(--space-8);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.activeFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  min-height: 38px;
 }
 
 .content {
@@ -109,10 +128,16 @@
     height: 250px;
   }
 
-  .filterSection {
+  .filterBar {
     flex-direction: column;
-    gap: var(--space-16);
     align-items: flex-start;
+  }
+
+  .dropdownGroup {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
   }
 
   .searchBox {

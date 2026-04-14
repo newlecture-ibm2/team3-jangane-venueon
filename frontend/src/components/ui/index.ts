@@ -20,4 +20,6 @@ export { default as CommentInput } from './CommentInput';
 export { default as ReviewItem } from './ReviewItem';
 export { default as PopoverMenu } from './PopoverMenu';
 export { default as FilePreviewList } from './FilePreviewList';
+export { default as FilterChip } from './FilterChip';
+export { default as FilterDropdown } from './FilterDropdown';
 export * from './Table';

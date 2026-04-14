@@ -169,6 +169,12 @@
   gap: var(--space-8);
 }
 
+.discountRate {
+  font: var(--text-h2-bold);
+  color: var(--color-error);
+  margin: 0;
+}
+
 .originalPrice {
   font: var(--text-body-regular);
   color: var(--color-text-gray-500);

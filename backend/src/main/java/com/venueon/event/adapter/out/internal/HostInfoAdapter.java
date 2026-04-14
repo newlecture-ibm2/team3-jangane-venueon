@@ -39,4 +39,25 @@ public class HostInfoAdapter implements LoadHostInfoPort {
                 hostProfileOpt.map(HostProfileJpaEntity::getOrgDescription).orElse(null)
         ));
     }
+    @Override
+    public java.util.List<HostInfo> findByUserIds(java.util.List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) return java.util.List.of();
+        
+        java.util.List<UserJpaEntity> users = userJpaRepository.findAllById(userIds);
+        java.util.List<HostProfileJpaEntity> hostProfiles = hostProfileJpaRepository.findByUserIdIn(userIds);
+        
+        java.util.Map<Long, HostProfileJpaEntity> profileMap = hostProfiles.stream()
+                .collect(java.util.stream.Collectors.toMap(p -> p.getUser().getId(), p -> p));
+                
+        return users.stream().map(user -> {
+            HostProfileJpaEntity profile = profileMap.get(user.getId());
+            return new HostInfo(
+                    user.getId(),
+                    user.getNickname(),
+                    user.getProfileImg(),
+                    (profile != null && profile.getOrgName() != null) ? profile.getOrgName() : user.getNickname(),
+                    profile != null ? profile.getOrgDescription() : null
+            );
+        }).toList();
+    }
 }

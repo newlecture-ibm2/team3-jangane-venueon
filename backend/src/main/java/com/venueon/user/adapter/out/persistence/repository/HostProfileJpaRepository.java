@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface HostProfileJpaRepository extends JpaRepository<HostProfileJpaEntity, Long> {
 
     Optional<HostProfileJpaEntity> findByUserId(Long userId);
+    java.util.List<HostProfileJpaEntity> findByUserIdIn(java.util.List<Long> userIds);
 }

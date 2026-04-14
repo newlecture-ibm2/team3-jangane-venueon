@@ -38,4 +38,8 @@ public class EventQueryService implements GetEventListUseCase, GetEventDetailUse
     public HostInfo getHostInfoByCreatorId(Long creatorId) {
         return loadHostInfoPort.findByUserId(creatorId).orElse(null);
     }
+    
+    public java.util.List<HostInfo> getHostInfosByCreatorIds(java.util.List<Long> creatorIds) {
+        return loadHostInfoPort.findByUserIds(creatorIds);
+    }
 }
