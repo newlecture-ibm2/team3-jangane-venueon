@@ -31,7 +31,13 @@ export default function Header({
 
   // 실제 세션의 정보가 있으면 우선적으로 보여주고, 없으면 기존 prop/기본값 사용
   const displayUserName = user?.nickname || userName;
-  const displayUserImage = user?.profileImg || userImageUrl;
+  const rawUserImage = user?.profileImg || userImageUrl;
+  // 서버 상대경로(profile/2026/04/uuid.jpg)에 /upload/ prefix 추가
+  const displayUserImage = rawUserImage
+    ? (rawUserImage.startsWith('/') || rawUserImage.startsWith('http') || rawUserImage.startsWith('blob:')
+      ? rawUserImage
+      : `/upload/${rawUserImage}`)
+    : undefined;
 
   // /mypage 경로일 때는 항상 'myPage' 해더(세션 목록 + 프로필)를 보여주도록 강제
   const isMyPage = pathname?.startsWith('/mypage');

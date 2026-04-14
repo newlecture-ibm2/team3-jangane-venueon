@@ -12,6 +12,7 @@ public record HostAttendeeResponse(
         Long orderId,           // 주문 ID (고유 식별)
         String userName,        // 수강생 이름 (nickname)
         String userEmail,       // 수강생 이메일
+        String userProfileImg,  // 수강생 프로필 이미지
         String eventTitle,      // 수강 강의명
         int amount,             // 결제 금액
         LocalDateTime orderedAt,// 신청일시

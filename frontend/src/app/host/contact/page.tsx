@@ -24,12 +24,7 @@ function formatDate(dateStr: string | null): string {
   });
 }
 
-/** ContactModal 카테고리 → 백엔드 ContactCategory 매핑 */
-function mapCategoryToBackend(category: string): ContactCategory {
-  if (category === 'auth') return 'BUSINESS_LICENSE';
-  if (category === 'etc') return 'OTHER';
-  return 'HOST_INQUIRY';
-}
+/** ContactModal 카테고리 값은 백엔드 ContactCategory와 동일 */
 
 export default function HostContactPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,7 +74,7 @@ export default function HostContactPage() {
   }) => {
     try {
       await userContactAPI.createContact({
-        category: mapCategoryToBackend(data.category),
+        category: data.category as ContactCategory,
         title: data.title,
         content: data.content,
         attachmentUrl: undefined, // TODO: 파일 업로드 후 URL 연동

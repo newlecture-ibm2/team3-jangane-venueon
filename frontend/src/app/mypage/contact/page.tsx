@@ -24,16 +24,7 @@ function formatDate(dateStr: string | null): string {
   });
 }
 
-/** ContactModal 카테고리 → 백엔드 ContactCategory 매핑 */
-function mapCategoryToBackend(category: string, role: 'user' | 'host'): ContactCategory {
-  if (role === 'host') {
-    if (category === 'auth') return 'BUSINESS_LICENSE';
-    if (category === 'etc') return 'OTHER';
-    return 'HOST_INQUIRY';
-  }
-  if (category === 'etc') return 'OTHER';
-  return 'USER_INQUIRY';
-}
+/** ContactModal 카테고리 값은 백엔드 ContactCategory와 동일 */
 
 export default function UserContactPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,7 +81,7 @@ export default function UserContactPage() {
   }) => {
     try {
       await userContactAPI.createContact({
-        category: mapCategoryToBackend(data.category, 'user'),
+        category: data.category as ContactCategory,
         title: data.title,
         content: data.content,
         attachmentUrl: undefined, // TODO: 파일 업로드 후 URL 연동
@@ -125,7 +116,10 @@ export default function UserContactPage() {
                   variant="line"
                   options={[
                     { value: '', label: '전체' },
-                    { value: 'USER_INQUIRY', label: '일반 문의' },
+                    { value: 'PAYMENT', label: '결제/환불' },
+                    { value: 'ACCOUNT', label: '계정 문제' },
+                    { value: 'SYSTEM_ERROR', label: '시스템 오류' },
+                    { value: 'OBJECTION', label: '이의 제기' },
                     { value: 'OTHER', label: '기타' },
                   ]}
                   activeValue={categoryFilter}

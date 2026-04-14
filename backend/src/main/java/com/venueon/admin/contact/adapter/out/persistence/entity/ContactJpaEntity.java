@@ -26,6 +26,10 @@ public class ContactJpaEntity {
     @Column(name = "requester_id", nullable = false)
     private Long requesterId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requester_id", insertable = false, updatable = false)
+    private com.venueon.user.adapter.out.persistence.entity.UserJpaEntity requester;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false, length = 30)
     private ContactCategory category;

@@ -18,6 +18,7 @@ public class ReportResponse {
     private Long id;
     private Long reporterId;
     private String reporterNickname;
+    private String reporterProfileImg;
     private ReportTargetType targetType;
     private Long targetId;
     private String reason;
@@ -28,12 +29,14 @@ public class ReportResponse {
     private LocalDateTime resolvedAt;
 
     @Builder
-    private ReportResponse(Long id, Long reporterId, String reporterNickname, ReportTargetType targetType, 
+    private ReportResponse(Long id, Long reporterId, String reporterNickname, String reporterProfileImg,
+                           ReportTargetType targetType, 
                            Long targetId, String reason, String detail, ReportStatus status, 
                            AdminAction adminAction, LocalDateTime createdAt, LocalDateTime resolvedAt) {
         this.id = id;
         this.reporterId = reporterId;
         this.reporterNickname = reporterNickname;
+        this.reporterProfileImg = reporterProfileImg;
         this.targetType = targetType;
         this.targetId = targetId;
         this.reason = reason;
@@ -49,6 +52,7 @@ public class ReportResponse {
                 .id(entity.getId())
                 .reporterId(entity.getReporter().getId())
                 .reporterNickname(entity.getReporter().getNickname())
+                .reporterProfileImg(entity.getReporter().getProfileImg())
                 .targetType(entity.getTargetType())
                 .targetId(entity.getTargetId())
                 .reason(entity.getReason())

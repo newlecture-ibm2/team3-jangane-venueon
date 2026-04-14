@@ -50,6 +50,7 @@ export interface AdminReportListItem {
   id: number;
   reporterId: number;
   reporterNickname: string;
+  reporterProfileImg: string | null;
   targetType: 'EVENT' | 'POST' | 'COMMENT' | 'USER';
   targetId: number;
   reason: string;
