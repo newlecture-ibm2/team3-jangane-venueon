@@ -23,6 +23,7 @@ public class HostEventPersistenceAdapter implements HostEventQueryPort {
     private final com.venueon.host.order.adapter.out.persistence.repository.HostOrderQueryRepository orderQueryRepository;
     private final com.venueon.event.adapter.out.persistence.EventMapper eventMapper;
     private final com.venueon.event.adapter.out.persistence.SessionMapper sessionMapper;
+    private final com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository hostProfileJpaRepository;
 
     @Override
     public Page<HostEventResponse> findByHostId(Long hostId, String status, Pageable pageable) {
@@ -80,9 +81,37 @@ public class HostEventPersistenceAdapter implements HostEventQueryPort {
         }
 
         var sessions = sessionJpaRepository.findByEventIdOrderBySortOrder(eventId);
+        var tickets = ticketJpaRepository.findByEventIdIn(java.util.List.of(eventId));
         long totalRevenue = orderQueryRepository.sumRevenueByEventId(eventId);
         long totalAttendees = orderQueryRepository.countAttendeesByEventId(eventId);
         
-        return hostEventMapper.toDetailResponse(event, sessions, totalRevenue, totalAttendees);
+        var hostProfileOpt = hostProfileJpaRepository.findByUserId(hostId);
+
+        // 도메인 로직을 활용한 상태 계산 추가
+        var eventDomain = eventMapper.toDomain(event);
+        var sessionDomains = sessions.stream().map(sessionMapper::toDomain).toList();
+        
+        return hostEventMapper.toDetailResponse(
+                event, 
+                sessions, 
+                tickets,
+                totalRevenue, 
+                totalAttendees,
+                eventDomain.getEffectiveStatus(sessionDomains),
+                eventDomain.getRecruitmentStatus(sessionDomains),
+                hostProfileOpt.orElse(null)
+        );
+    }
+
+    @Override
+    public java.util.List<com.venueon.host.event.adapter.in.web.dto.AttendeeResponse> findAttendees(Long hostId, Long eventId) {
+        EventJpaEntity event = hostEventJpaRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("강의를 찾을 수 없습니다. ID: " + eventId));
+
+        if (!event.getCreator().getId().equals(hostId)) {
+            throw new org.springframework.security.access.AccessDeniedException("본인의 강의 수강생 명단만 조회할 수 있습니다.");
+        }
+
+        return orderQueryRepository.findAttendeesByEventId(eventId);
     }
 }

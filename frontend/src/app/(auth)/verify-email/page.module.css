@@ -1,0 +1,96 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: var(--space-24);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+  padding: var(--space-48) var(--space-32);
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--color-text-gray-300);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--space-24);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.iconSuccess {
+  font-size: 56px;
+  margin-bottom: var(--space-16);
+}
+
+.iconError {
+  font-size: 56px;
+  margin-bottom: var(--space-16);
+}
+
+.title {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+  margin: 0 0 var(--space-12);
+}
+
+.description {
+  font: var(--text-body-regular);
+  color: var(--color-text-gray-500);
+  margin: 0 0 var(--space-8);
+  line-height: var(--main-line-height);
+}
+
+.subDescription {
+  font: var(--text-caption-regular);
+  color: var(--color-gray-disabled-text);
+  margin: 0 0 var(--space-24);
+}
+
+.loginButton {
+  display: inline-block;
+  padding: var(--space-12) var(--space-48);
+  background: var(--color-primary);
+  color: var(--color-text-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font: var(--text-body-bold);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.loginButton:hover {
+  background: var(--color-primary-hover);
+}
+
+.retryButton {
+  display: inline-block;
+  padding: var(--space-12) var(--space-48);
+  background: var(--color-bg);
+  color: var(--color-text-gray-700);
+  border: 1px solid var(--color-text-gray-300);
+  border-radius: var(--radius-md);
+  font: var(--text-body-bold);
+  cursor: pointer;
+  margin-top: var(--space-16);
+  transition: background var(--transition);
+}
+
+.retryButton:hover {
+  background: var(--color-surface);
+}

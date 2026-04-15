@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import EventActionMenu from './_components/EventActionMenu';
 import TicketList from './_components/TicketList';
 import EventReviewSection from './_components/EventReviewSection';
+import BackButton from './_components/BackButton';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -91,7 +92,7 @@ export default async function EventDetailPage({ params }: Props) {
   // 모집 기간 도출
   const validRecruitStartDates = sessions.map((s: any) => s.recruitStartDate).filter(Boolean).map((d: string) => new Date(d).getTime());
   const validRecruitEndDates = sessions.map((s: any) => s.recruitEndDate).filter(Boolean).map((d: string) => new Date(d).getTime());
-  
+
   const recruitStartDate = validRecruitStartDates.length > 0 ? new Date(Math.min(...validRecruitStartDates)).toISOString() : null;
   const recruitEndDate = validRecruitEndDates.length > 0 ? new Date(Math.max(...validRecruitEndDates)).toISOString() : null;
 
@@ -106,9 +107,7 @@ export default async function EventDetailPage({ params }: Props) {
 
       {/* 뒤로 가기 바 */}
       <div className={styles.topBar}>
-        <Link href="/" className={styles.backButton}>
-          ← 이벤트 목록 보기
-        </Link>
+        <BackButton />
       </div>
 
 
@@ -150,6 +149,12 @@ export default async function EventDetailPage({ params }: Props) {
         <div className={styles.description}>
           {event.description}
         </div>
+        {event.detailContent && (
+          <div
+            className={styles.richContent}
+            dangerouslySetInnerHTML={{ __html: event.detailContent }}
+          />
+        )}
 
         <div className={styles.infoGrid}>
           <div className={styles.infoItem}>
@@ -250,7 +255,7 @@ export default async function EventDetailPage({ params }: Props) {
       </section>
 
       {/* 수강생 후기 섹션 */}
-      <section className={styles.section}>
+      <section id="review-section" className={styles.section}>
         <EventReviewSection eventId={Number(event.id)} eventTitle={event.title} />
       </section>
 

@@ -83,9 +83,12 @@ public class AdminUserService implements
         User user = findUserOrThrow(id);
 
         if (active) {
-            user.activate();
+            user.setStatusOnly(true);
+            // 만약 이메일이 deleted_... 로 되어 있다면 복구
+            restoreEmailIfDeleted(user);
         } else {
-            user.deactivate();
+            // 어드민에서 비활성화 시에는 로그인 안내를 위해 이메일을 변경하지 않고 상태값만 변경
+            user.setStatusOnly(false);
         }
 
         adminUserRepositoryPort.save(user);
@@ -104,11 +107,26 @@ public class AdminUserService implements
             throw new BusinessException(ErrorCode.CANNOT_DELETE_ADMIN, "관리자 계정은 삭제할 수 없습니다.");
         }
 
-        adminUserRepositoryPort.deleteById(id);
-        log.info("회원 삭제 완료: id={}, email={}", id, user.getEmail());
+        // 어드민에서 삭제 시에도 로그인 시 "탈퇴 회원" 안내를 위해 소프트 삭제(상태값만 변경) 처리
+        user.setStatusOnly(false);
+        adminUserRepositoryPort.save(user);
+        log.info("회원 소프트 삭제 완료: id={}, email={}", id, user.getEmail());
     }
 
     // ── private 헬퍼 ──
+
+    private void restoreEmailIfDeleted(User user) {
+        String email = user.getEmail();
+        if (email != null && email.startsWith("deleted_")) {
+            // "deleted_1713102047000_원래이메일" 형식에서 이메일 부분만 추출
+            int secondUnderscoreIdx = email.indexOf("_", "deleted_".length());
+            if (secondUnderscoreIdx != -1 && secondUnderscoreIdx + 1 < email.length()) {
+                String originalEmail = email.substring(secondUnderscoreIdx + 1);
+                user.restoreEmail(originalEmail);
+                log.info("회원 이메일 복구 완료: id={}, restoredEmail={}", user.getId(), originalEmail);
+            }
+        }
+    }
 
     private User findUserOrThrow(Long id) {
         return adminUserRepositoryPort.findById(id)

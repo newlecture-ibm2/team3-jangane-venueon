@@ -28,6 +28,7 @@ public class EventMapper {
                 entity.getCategory() != null ? entity.getCategory().getId() : null,
                 entity.getTitle(),
                 entity.getDescription(),
+                entity.getDetailContent(),
                 entity.getType() != null ? com.venueon.common.model.DomainCode.of(entity.getType().getId(), entity.getType().getName()) : null,
                 entity.getStatus() != null ? com.venueon.common.model.DomainCode.of(entity.getStatus().getId(), entity.getStatus().getLabel()) : null,
                 entity.getThumbnailUrl(),
@@ -55,6 +56,7 @@ public class EventMapper {
                 .category(categoryRef)
                 .title(domain.getTitle())
                 .description(domain.getDescription())
+                .detailContent(domain.getDetailContent())
                 .type(typeEntity)
                 .status(statusEntity)
                 .thumbnailUrl(domain.getThumbnailUrl())

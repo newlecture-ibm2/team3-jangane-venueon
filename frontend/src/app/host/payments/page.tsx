@@ -133,7 +133,7 @@ export default function HostPaymentsPage() {
         <Sidebar role="host" />
       </div>
 
-      <div className="main-content">
+      <div className="sidebar-content">
         <div className={styles.container}>
           <header className={styles.header}>
             <h1 className={styles.pageTitle}>전체 주문 내역</h1>

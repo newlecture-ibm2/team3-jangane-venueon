@@ -14,9 +14,17 @@ public record HostEventDetailResponse(
         String thumbnailUrl,
         CodeDto category,
         CodeDto status,
+        CodeDto recruitmentStatus,
         LocalDateTime createdAt,
         Long totalRevenue,
         Long totalAttendees,
+        Long price,
+        Long originalPrice,
+        boolean hasDiscount,
+        String location,
+        String hostName,
+        String hostDescription,
+        String hostProfileImg,
         List<SessionDetail> sessions
 ) {
     public record SessionDetail(
@@ -27,6 +35,7 @@ public record HostEventDetailResponse(
             String location,
             int maxAttendees,
             int currentAttendees,
-            CodeDto status
+            CodeDto status,
+            Long communityId
     ) {}
 }

@@ -39,6 +39,9 @@ public class EventJpaEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "detail_content", columnDefinition = "TEXT")
+    private String detailContent;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id", nullable = false)
     private EventTypeJpaEntity type;
@@ -77,4 +80,17 @@ public class EventJpaEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void toggleHidden() {
+        this.isHidden = !this.isHidden;
+    }
+
+    public void updateBasicInfo(String title, String description, CategoryJpaEntity category, String thumbnailUrl) {
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        if (thumbnailUrl != null) {
+            this.thumbnailUrl = thumbnailUrl;
+        }
+    }
 }

@@ -7,6 +7,7 @@ import com.venueon.user.domain.model.User;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class ReviewController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     public ResponseEntity<?> getReviews(@PathVariable Long eventId) {
         List<Review> reviews = getReviewsUseCase.getReviewsByEventId(eventId);
         List<ReviewResponse> responses = reviews.stream().map(r -> {
@@ -48,6 +50,7 @@ public class ReviewController {
             String profileUrl = reviewer != null ? (reviewer.getProfileImg() != null ? "/upload/" + reviewer.getProfileImg() : null) : null;
             return ReviewResponse.builder()
                     .id(r.getId())
+                    .authorId(r.getReviewerId())
                     .authorName(authorName)
                     .authorProfileUrl(profileUrl)
                     .rating(r.getRating())
@@ -70,3 +73,4 @@ public class ReviewController {
         return ResponseEntity.ok(Map.of("success", true, "data", eligible));
     }
 }
+

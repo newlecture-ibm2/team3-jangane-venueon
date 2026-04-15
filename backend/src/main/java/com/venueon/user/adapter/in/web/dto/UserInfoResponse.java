@@ -10,5 +10,6 @@ public record UserInfoResponse(
         com.venueon.common.dto.CodeDto role,
         String profileImg,
         java.util.List<String> categories,
-        Boolean showBadge
+        Boolean showBadge,
+        String provider       // LOCAL | GOOGLE
 ) {}

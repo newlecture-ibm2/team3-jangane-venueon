@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ReviewItem, Button } from '@/components/ui';
-import { ReviewModal } from '@/components/modal';
+import { ReviewItem } from '@/components/ui';
 import { useUIStore } from '@/store/useUIStore';
 
 interface EventReviewSectionProps {
@@ -11,7 +10,6 @@ interface EventReviewSectionProps {
 }
 
 export default function EventReviewSection({ eventId, eventTitle }: EventReviewSectionProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { showToast } = useUIStore();
 
   const [reviews, setReviews] = useState<any[]>([]);
@@ -33,30 +31,12 @@ export default function EventReviewSection({ eventId, eventTitle }: EventReviewS
     fetchReviews();
   }, [eventId]);
 
-  const handleWriteClick = async () => {
-    try {
-      const res = await fetch(`/api/events/${eventId}/reviews/can-review`);
-      const data = await res.json();
-      if (data.success && data.data === true) {
-        setIsModalOpen(true);
-      } else {
-        showToast("이벤트를 수강하신 분들만 리뷰를 작성할 수 있어요!", "error");
-      }
-    } catch (e) {
-      console.error('Failed to check eligibility', e);
-      showToast("권한 확인에 실패했습니다.", "error");
-    }
-  };
-
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <h3 style={{ font: 'var(--text-h2-bold)', color: 'var(--color-text-gray-900)', margin: 0 }}>
-          수강생 후기 <span style={{ color: 'var(--color-primary)' }}>{reviews.length}</span>
+          참석자 후기 <span style={{ color: 'var(--color-primary)' }}>{reviews.length}</span>
         </h3>
-        <Button variant="outlined" size="medium" onClick={handleWriteClick}>
-          내 후기 작성하기 ✎
-        </Button>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -70,19 +50,6 @@ export default function EventReviewSection({ eventId, eventTitle }: EventReviewS
           </div>
         )}
       </div>
-
-      {/* 후기 작성 모달 */}
-      <ReviewModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        eventId={eventId}
-        eventTitle={eventTitle}
-        onSubmitSuccess={() => {
-          setIsModalOpen(false);
-          showToast('성공적으로 후기가 등록되었습니다!', 'success');
-          fetchReviews();
-        }}
-      />
     </>
   );
 }

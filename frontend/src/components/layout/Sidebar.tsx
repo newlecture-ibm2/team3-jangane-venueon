@@ -87,12 +87,15 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
   const router = useRouter();
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const handleLogoutConfirm = async () => {
     setIsLogoutModalOpen(false);
     await logout();
   };
+
+  // Google 소셜 로그인 유저 여부
+  const isSocialUser = user?.provider === 'GOOGLE';
 
   const getMenus = () => {
     if (pathname.startsWith('/community')) {
@@ -108,17 +111,16 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
           { label: '대시보드', href: '/admin/dashboard', icon: DashboardIcon },
           { label: '사용자 관리', href: '/admin/users', icon: ProfileIcon },
           { label: '시스템 설정', href: '/admin/settings', icon: SettingIcon },
-          { label: '세션 관리', href: '/admin/events', icon: SeminarSettingIcon },
+          { label: '이벤트 관리', href: '/admin/events', icon: SeminarSettingIcon },
           { label: '커뮤니티 관리', href: '/admin/community', icon: CommunityIcon },
           { label: '신고 관리', href: '/admin/reports', icon: ReportIcon },
-          { label: '환불 모니터링', href: '/admin/refunds', icon: DelayedRefundIcon },
           { label: '문의 관리', href: '/admin/contact', icon: RequestIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
       case 'host':
         return [
           { label: '대시보드', href: '/host', icon: DashboardIcon },
-          { label: '내 강의 목록', href: '/host/events', icon: SeminarIcon },
+          { label: '내 이벤트 목록', href: '/host/events', icon: SeminarIcon },
           { label: '프로필 설정', href: '/host/profile', icon: ProfileIcon },
           { label: '1:1 문의', href: '/host/contact', icon: ContactIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
@@ -127,13 +129,14 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
       default:
         return [
           { label: '대시보드', href: '/mypage', icon: DashboardIcon },
-          { label: '내 세션 목록', href: '/mypage/events', icon: SeminarIcon },
+          { label: '내 이벤트 목록', href: '/mypage/events', icon: SeminarIcon },
           { label: '결제 내역', href: '/mypage/orders', icon: OrderIcon },
           { label: '찜 목록', href: '/mypage/wishlist', icon: WishlistIcon },
           { label: '내 커뮤니티', href: '/mypage/community', icon: CommunityIcon },
           { label: '내 뱃지', href: '/mypage/badges', icon: BadgeIcon },
           { label: '프로필 설정', href: '/mypage/profile', icon: ProfileIcon },
-          { label: '계정 보안', href: '/mypage/security', icon: SecurityIcon },
+          // 소셜 로그인 유저는 비밀번호가 없으므로 계정 보안 메뉴 숨김
+          ...(!isSocialUser ? [{ label: '계정 보안', href: '/mypage/security', icon: SecurityIcon }] : []),
           { label: '1:1 문의', href: '/mypage/contact', icon: ContactIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];

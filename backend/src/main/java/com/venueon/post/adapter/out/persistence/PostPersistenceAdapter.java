@@ -92,6 +92,12 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
     }
 
     @Override
+    public Page<Post> findByKeyword(Long communityId, PostType type, String keyword, Pageable pageable) {
+        return postJpaRepository.searchByKeyword(communityId, type, keyword, pageable)
+                .map(this::mapToDomain);
+    }
+
+    @Override
     public boolean existsLike(Long postId, Long userId) {
         return postLikeJpaRepository.existsByPostIdAndUserId(postId, userId);
     }

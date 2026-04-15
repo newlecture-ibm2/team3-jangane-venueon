@@ -51,7 +51,8 @@ public class UserController {
                 updatedUser.getRole() != null ? com.venueon.common.dto.CodeDto.of(updatedUser.getRole().id(), updatedUser.getRole().label()) : null,
                 updatedUser.getProfileImg(),
                 updatedUser.getCategories(),
-                updatedUser.isBadgeVisible()
+                updatedUser.isBadgeVisible(),
+                updatedUser.getProvider() != null ? updatedUser.getProvider().name() : "LOCAL"
         );
 
         return ResponseEntity.ok(ApiResponse.success(response));

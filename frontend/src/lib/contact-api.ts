@@ -89,7 +89,7 @@ export const adminContactAPI = {
     const filtered = Object.fromEntries(
       Object.entries(params).filter(([, v]) => v !== undefined && v !== '')
     );
-    return apiFetch<ApiResponse<PageResponse<ContactListItem>>>('/admin/contacts', { params: filtered });
+    console.log("[DEBUG API CALL] getContacts params:", filtered); return apiFetch<ApiResponse<PageResponse<ContactListItem>>>('/admin/contacts', { params: filtered });
   },
 
   /** 어드민: 요청 상세 조회 */
@@ -127,7 +127,7 @@ export const userContactAPI = {
     const filtered = Object.fromEntries(
       Object.entries(params).filter(([, v]) => v !== undefined && v !== '')
     );
-    return apiFetch<ApiResponse<PageResponse<ContactListItem>>>('/contacts', { params: filtered });
+    console.log("[DEBUG API CALL] getContacts params:", filtered); return apiFetch<ApiResponse<PageResponse<ContactListItem>>>('/contacts', { params: filtered });
   },
 
   /** 요청 작성 */

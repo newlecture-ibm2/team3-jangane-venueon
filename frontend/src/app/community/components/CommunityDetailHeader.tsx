@@ -20,8 +20,8 @@ export default function CommunityDetailHeader({ name, description, canManage }: 
   return (
     <>
       <div className={styles.topBar}>
-        <button className={styles.backButton} onClick={() => router.push('/community')}>
-          <span>←</span> 커뮤니티 목록
+        <button className={styles.backButton} onClick={() => router.back()}>
+          <span>←</span> 뒤로 가기
         </button>
       </div>
 

@@ -1,6 +1,6 @@
 .container {
-  width: 100%; /* 부모 너비를 가득 채우도록 고정 */
-  max-width: 1200px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 40px 20px;
 }

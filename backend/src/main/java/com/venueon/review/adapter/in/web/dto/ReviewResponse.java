@@ -6,6 +6,7 @@ import java.util.List;
 @Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor
 public class ReviewResponse {
     private Long id;
+    private Long authorId;
     private String authorName;
     private String authorProfileUrl;
     private int rating;

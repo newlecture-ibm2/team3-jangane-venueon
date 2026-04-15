@@ -20,13 +20,13 @@ const CATEGORY_TABS = [
   { value: 'ACCOUNT', label: '계정 문제' },
   { value: 'SYSTEM_ERROR', label: '시스템 오류' },
   { value: 'OBJECTION', label: '이의 제기' },
-  { value: 'BUSINESS_LICENSE', label: '사업자 인증' },
   { value: 'BILLING', label: '정산 문의' },
   { value: 'EVENT_MANAGEMENT', label: '이벤트 관리' },
   { value: 'OTHER', label: '기타' },
 ];
 
 const STATUS_TABS = [
+  { value: '', label: '전체' },
   { value: 'PENDING', label: '대기 중' },
   { value: 'REVIEWING', label: '검토 중' },
   { value: 'COMPLETED', label: '처리 완료' },

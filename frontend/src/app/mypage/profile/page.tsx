@@ -306,7 +306,7 @@ export default function ProfileSettingsPage() {
           <div className={styles.sectionBlock}>
             <div className={styles.headerGroup}>
               <h1 className={styles.pageTitle}>관심 카테고리 설정</h1>
-              <p className={styles.subtitle}>관심있는 카테고리를 선택해주세요. 맞춤 세션을 추천해 드립니다.</p>
+              <p className={styles.subtitle}>관심있는 카테고리를 선택해주세요. 맞춤 이벤트를 추천해 드립니다.</p>
             </div>
             <div className={styles.categoryPills}>
               {availableCategories.map(cat => (

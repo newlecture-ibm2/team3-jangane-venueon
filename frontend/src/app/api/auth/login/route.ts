@@ -38,6 +38,7 @@ export async function POST(req: Request) {
     session.profileImg = userData.profileImg;
     session.role = userData.role;
     session.userId = userData.id;
+    session.provider = userData.provider || 'LOCAL';
     session.isLoggedIn = true;
     await session.save();
 
@@ -49,6 +50,7 @@ export async function POST(req: Request) {
         nickname: userData.nickname,
         role: userData.role, // { id: number, label: string }
       },
+      tempPassword: loginData.tempPassword || false,
       success: true
     });
   } catch (error) {

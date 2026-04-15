@@ -5,19 +5,34 @@ import styles from './UploadField.module.css';
 import { UploadIcon } from '@/components/icons';
 import FilePreviewList from './FilePreviewList';
 
-export interface UploadFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface UploadFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'multiple'> {
   /** 라벨 텍스트 */
   label?: string;
-  /** 파일이 선택되거나 제거될 때 실행될 콜백 */
+  /** 단일 파일 선택 콜백 (하위호환) */
   onFileSelect?: (file: File | null) => void;
+  /** 다중 파일 변경 콜백 */
+  onFilesChange?: (files: File[]) => void;
+  /** 다중 파일 허용 여부 */
+  multiple?: boolean;
 }
 
-export default function UploadField({ label, onFileSelect, className = '', ...props }: UploadFieldProps) {
+export default function UploadField({ label, onFileSelect, onFilesChange, multiple = false, className = '', ...props }: UploadFieldProps) {
   const [isDragOver, setIsDragOver] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 드래그 앤 드롭 세션 핸들러
+  const addFiles = (newFiles: FileList | File[]) => {
+    const filesArray = Array.from(newFiles);
+    const updated = multiple ? [...selectedFiles, ...filesArray] : filesArray.slice(0, 1);
+    setSelectedFiles(updated);
+    onFilesChange?.(updated);
+    // 하위호환: 단일 파일 콜백
+    if (onFileSelect) {
+      onFileSelect(updated.length > 0 ? updated[0] : null);
+    }
+  };
+
+  // 드래그 앤 드롭 핸들러
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(true);
@@ -30,28 +45,28 @@ export default function UploadField({ label, onFileSelect, className = '', ...pr
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      setSelectedFile(file);
-      if (onFileSelect) onFileSelect(file);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      addFiles(e.dataTransfer.files);
     }
   };
 
-  // 탐색기 창 선택 세션 핸들러
+  // 탐색기 창 선택 핸들러
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSelectedFile(file);
-      if (onFileSelect) onFileSelect(file);
+    if (e.target.files && e.target.files.length > 0) {
+      addFiles(e.target.files);
     }
   };
 
-  const handleRemove = () => {
-    setSelectedFile(null);
+  const handleRemove = (index: number) => {
+    const updated = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updated);
+    onFilesChange?.(updated);
+    if (onFileSelect) {
+      onFileSelect(updated.length > 0 ? updated[0] : null);
+    }
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    if (onFileSelect) onFileSelect(null);
   };
 
   return (
@@ -77,6 +92,7 @@ export default function UploadField({ label, onFileSelect, className = '', ...pr
           className={styles.hiddenInput} 
           ref={fileInputRef}
           onChange={handleFileChange}
+          multiple={multiple}
           {...props}
         />
         
@@ -89,9 +105,9 @@ export default function UploadField({ label, onFileSelect, className = '', ...pr
         </span>
       </div>
 
-      {selectedFile && (
+      {selectedFiles.length > 0 && (
         <FilePreviewList
-          files={[{ name: selectedFile.name, size: selectedFile.size }]}
+          files={selectedFiles.map(f => ({ name: f.name, size: f.size }))}
           onRemove={handleRemove}
         />
       )}

@@ -44,6 +44,7 @@ export async function POST(req: Request) {
     session.profileImg = userData.profileImg;
     session.role = userData.role;
     session.userId = userData.id;
+    session.provider = userData.provider || 'GOOGLE';
     session.isLoggedIn = true;
     await session.save();
 

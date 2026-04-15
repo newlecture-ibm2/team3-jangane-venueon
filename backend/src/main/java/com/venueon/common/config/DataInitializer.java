@@ -289,6 +289,7 @@ public class DataInitializer implements ApplicationRunner {
                         .creator(hosts.get(0)).category(categories.get(0))
                         .title("AI & Cloud Bootcamp")
                         .description("현직 개발자와 함께하는 2일 집중 부트캠프. AI 모델 배포부터 클라우드 인프라 설계까지, 실무에서 바로 쓸 수 있는 기술을 배웁니다.")
+                        .detailContent("<h2>🚀 AI & Cloud Bootcamp 커리큘럼</h2><p>실제 프로덕션 환경의 AI 모델 배포부터 마이크로서비스 아키텍처까지 <strong>단 이틀만에</strong> 마스터하세요.</p><ul><li>Day 1: TensorFlow/PyTorch 활용 모델 서빙 설계</li><li>Day 2: AWS 기반 클라우드 인프라 파이프라인 (CI/CD) 구축</li></ul><p><br></p><blockquote><p>\"실무에 바로 적용할 수 있는 코드를 얻어가는 것이 이 캠프의 가장 큰 장점입니다.\" - 1기 수료생</p></blockquote><h3>💡 준비물</h3><p>개인 노트북 (Mac을 권장합니다), AWS 프리티어 계정 생성이 완료되어 있어야 합니다.</p>")
                         .type(eventTypeRepository.findById(4L).orElseThrow()).status(eventStatusRepository.findById(2L).orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/NC_thumbnail.jpg")
                         .hasSession(true)
@@ -297,6 +298,7 @@ public class DataInitializer implements ApplicationRunner {
                         .creator(hosts.get(1)).category(categories.get(1))
                         .title("UX Design Workshop")
                         .description("사용자 리서치부터 프로토타이핑까지, UX 디자인의 전 과정을 실습합니다.")
+                        .detailContent("<h2>🎨 완벽한 사용자 경험을 설계하는 법</h2><p>현직 시니어 디자이너가 진행하는 <strong>UX Design 실무 워크숍</strong>입니다.</p><p><br></p><h3>주요 내용</h3><ol><li>사용자 여정 지도(Use Journey Map) 그리기</li><li>Figma를 활용한 인터랙티브 프로토타이핑</li><li>A/B 테스트 설계 및 데이터 분석</li></ol><p><br></p><p>디자인 브릿지의 전용 스튜디오에서 창의적인 영감을 얻어가세요!</p>")
                         .type(eventTypeRepository.findById(2L).orElseThrow()).status(eventStatusRepository.findById(2L).orElseThrow())
                         .thumbnailUrl("event-thumbnail/2026/04/DB_thumbnail.jpg")
                         .build(),

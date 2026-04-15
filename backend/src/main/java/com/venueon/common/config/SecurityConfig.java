@@ -33,7 +33,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 // 인증 불필요 경로
-                .requestMatchers("/auth/signup", "/auth/host/signup", "/auth/login", "/auth/google").permitAll()
+                .requestMatchers("/auth/signup", "/auth/host/signup", "/auth/login", "/auth/google", "/auth/verify-email", "/auth/reset-password").permitAll()
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                 // Actuator
@@ -60,6 +60,9 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.PUT, "/communities/**", "/posts/**", "/comments/**").authenticated()
                 .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/communities/**", "/posts/**", "/comments/**").authenticated()
                 .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/communities/**", "/posts/**", "/comments/**").authenticated()
+
+                // 리뷰 작성 — 인증 필요
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/events/*/reviews").authenticated()
 
                 // 그 외 기존 경로는 일단 허용
                 .anyRequest().permitAll()

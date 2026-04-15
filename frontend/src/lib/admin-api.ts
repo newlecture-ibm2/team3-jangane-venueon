@@ -160,3 +160,118 @@ export const adminReportAPI = {
   processReport: (id: number, action: string, status: string) =>
     api.patch<ApiResponse<void>>(`/admin/reports/${id}`, { action, status }),
 };
+
+export interface CodeDto {
+  id: number;
+  label: string;
+}
+
+export interface AdminEventListItem {
+  id: number;
+  title: string;
+  currentAttendees: number;
+  createdAt: string;
+  status: CodeDto;
+  displayStatus: 'READY' | 'RECRUITING' | 'CLOSED';
+  isHidden: boolean;
+}
+
+export interface AdminEventDetail extends AdminEventListItem {
+  description: string;
+  type: CodeDto;
+  categoryId: number;
+  categoryName: string;
+  location: string;
+  isOnline: boolean;
+  price: number;
+  maxAttendees: number;
+  thumbnailUrl: string;
+  startDate: string;
+  endDate: string;
+  hasSession: boolean;
+  purchaseType: CodeDto;
+  updatedAt: string;
+  host: AdminHostInfo;
+  sessions: AdminEventSession[];
+  tickets: AdminTicketInfo[];
+}
+
+export interface AdminTicketInfo {
+  id: number;
+  name: string;
+  price: number;
+  originalPrice: number;
+  maxQuantity: number | null;
+  soldCount: number;
+  isActive: boolean;
+}
+
+export interface AdminHostInfo {
+  userId: number;
+  email: string;
+  nickname: string;
+  profileImg: string;
+  orgName: string;
+  orgNumber: string;
+  managerName: string;
+  orgDescription: string;
+}
+
+export interface AdminEventSession {
+  id: number;
+  title: string;
+  description: string;
+  sortOrder: number;
+  startTime: string;
+  endTime: string;
+  location: string;
+  isOnline: boolean;
+  onlineLink: string;
+  price: number;
+  maxAttendees: number;
+  currentAttendees: number;
+  isDefault: boolean;
+}
+
+export const adminEventAPI = {
+  /** 강의 목록 조회 */
+  getEvents: (params: { 
+    status?: string; 
+    categoryId?: number;
+    keyword?: string;
+    isHidden?: boolean;
+    page?: number; 
+    size?: number 
+  }) => {
+    const cleanParams: Record<string, string> = {};
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') cleanParams[key] = String(value);
+    });
+    return api.get<ApiResponse<PageResponse<AdminEventListItem>>>('/admin/events', { params: cleanParams });
+  },
+
+  /** 강의 상세 조회 */
+  getEvent: (id: number) =>
+    api.get<ApiResponse<AdminEventDetail>>(`/admin/events/${id}`),
+
+  /** 노출 상태 토글 */
+  toggleVisibility: (id: number) =>
+    api.patch<ApiResponse<void>>(`/admin/events/${id}/visibility`),
+
+  /** 강의 삭제 */
+  deleteEvent: (id: number) =>
+    api.delete<ApiResponse<void>>(`/admin/events/${id}`),
+
+  /** 강의 정보 수정 */
+  updateEvent: (id: number, data: any) =>
+    api.put<ApiResponse<void>>(`/admin/events/${id}`, data),
+
+  /** 세션 정보 수정 */
+  updateSession: (eventId: number, sessionId: number, data: any) =>
+    api.put<ApiResponse<void>>(`/admin/events/${eventId}/sessions/${sessionId}`, data),
+
+  /** 티켓 정보 수정 */
+  updateTicket: (eventId: number, ticketId: number, data: any) =>
+    api.put<ApiResponse<void>>(`/admin/events/${eventId}/tickets/${ticketId}`, data),
+};
+
