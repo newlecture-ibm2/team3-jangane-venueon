@@ -20,7 +20,6 @@ const CATEGORY_TABS = [
   { value: 'ACCOUNT', label: '계정 문제' },
   { value: 'SYSTEM_ERROR', label: '시스템 오류' },
   { value: 'OBJECTION', label: '이의 제기' },
-  { value: 'BUSINESS_LICENSE', label: '사업자 인증' },
   { value: 'BILLING', label: '정산 문의' },
   { value: 'EVENT_MANAGEMENT', label: '이벤트 관리' },
   { value: 'OTHER', label: '기타' },

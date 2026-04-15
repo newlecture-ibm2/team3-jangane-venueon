@@ -7,6 +7,8 @@
   background: var(--color-bg);
   border-radius: var(--radius-lg);
   box-sizing: border-box;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
 }
 
 .sizeSm {
