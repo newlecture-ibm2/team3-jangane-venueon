@@ -4,6 +4,7 @@ import com.venueon.common.dto.ApiResponse;
 import com.venueon.user.adapter.in.web.dto.*;
 import com.venueon.user.application.port.in.*;
 import com.venueon.user.domain.model.User;
+import com.venueon.user.application.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class AuthController {
     private final GoogleLoginUseCase googleLoginUseCase;
     private final GetUserInfoUseCase getUserInfoUseCase;
     private final UpgradeToHostUseCase upgradeToHostUseCase;
+    private final AuthService authService;
 
     /**
      * POST /auth/signup — 일반 회원가입
@@ -175,5 +177,15 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * GET /auth/verify-email?token=... — 이메일 인증
+     */
+    @GetMapping("/verify-email")
+    public ResponseEntity<ApiResponse<String>> verifyEmail(@RequestParam String token) {
+        log.debug("이메일 인증 요청: token={}", token);
+        authService.verifyEmail(token);
+        return ResponseEntity.ok(ApiResponse.success("이메일 인증이 완료되었습니다."));
     }
 }

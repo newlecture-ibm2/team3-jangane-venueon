@@ -120,7 +120,7 @@ export default function HostSignupPage() {
         orgDescription: "",
       });
 
-      showToast("호스트 가입 신청이 완료되었습니다.", "success");
+      showToast("인증 메일이 발송되었습니다. 이메일을 확인해 주세요!", "success");
       router.push("/login");
     } catch (err: any) {
       const msg = err.message || "호스트 가입에 실패했습니다.";

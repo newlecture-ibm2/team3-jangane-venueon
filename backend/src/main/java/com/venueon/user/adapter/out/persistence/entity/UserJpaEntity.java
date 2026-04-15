@@ -98,6 +98,8 @@ public class UserJpaEntity {
         }
     }
 
+    public void activate() {
+        this.isActive = true;
     public void updateActiveStatus(boolean isActive) {
         this.isActive = isActive;
     }

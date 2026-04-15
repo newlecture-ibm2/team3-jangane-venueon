@@ -34,6 +34,9 @@ jobs:
       TOSS_SECRET_KEY: ${{ secrets.TOSS_SECRET_KEY }}
       GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
       DATA_GO_KR_API_KEY: ${{ secrets.DATA_GO_KR_API_KEY }}
+      SPRING_MAIL_USERNAME: ${{ vars.SPRING_MAIL_USERNAME }}
+      SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
+      APP_FRONTEND_URL: ${{ vars.APP_FRONTEND_URL }}
 
     steps:
       # 1. ✅ 소스코드 체크아웃 (GitHub Actions 표준 방식)
@@ -67,6 +70,9 @@ jobs:
           TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}
           GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
           DATA_GO_KR_API_KEY=${{ secrets.DATA_GO_KR_API_KEY }}
+          SPRING_MAIL_USERNAME=${{ vars.SPRING_MAIL_USERNAME }}
+          SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}
+          APP_FRONTEND_URL=${{ vars.APP_FRONTEND_URL }}
           ENVEOF
           # 앞쪽 공백 제거
           sed -i 's/^[[:space:]]*//' .env

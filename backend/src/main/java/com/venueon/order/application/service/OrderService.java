@@ -55,6 +55,7 @@ public class OrderService {
     private final SessionPort sessionPort;
     private final CartRepositoryPort cartRepositoryPort;
     private final TicketRepositoryPort ticketRepositoryPort;
+    private final com.venueon.user.application.service.MailService mailService;
 
     @Value("${toss.client-key}")
     private String tossClientKey;
@@ -250,7 +251,7 @@ public class OrderService {
             orderName = orderName + " 외 " + (relatedOrders.size() - 1) + "건";
         }
 
-        return ConfirmPaymentResponse.builder()
+        ConfirmPaymentResponse response = ConfirmPaymentResponse.builder()
                 .orderId(confirmedOrder.getId())
                 .orderName(orderName)
                 .status(confirmedOrder.getStatus().name())
@@ -258,6 +259,48 @@ public class OrderService {
                 .paymentMethod(confirmedOrder.getPaymentMethod())
                 .paidAt(confirmedOrder.getPaidAt())
                 .build();
+
+        // 8. 결제 확인 메일 발송 (실패해도 결제에 영향 없음)
+        try {
+            User payerUser = userRepository.findById(order.getUserId()).orElse(null);
+            if (payerUser != null && payerUser.getEmail() != null) {
+                // 첫 번째 주문의 세션 일시/장소 정보 수집 (Google Calendar용)
+                LocalDateTime sessionStart = null;
+                LocalDateTime sessionEnd = null;
+                String sessionLocation = null;
+
+                if (confirmedOrder.getTicketId() != null) {
+                    Ticket firstTicket = ticketRepositoryPort.findById(confirmedOrder.getTicketId()).orElse(null);
+                    if (firstTicket != null) {
+                        List<Session> sessions = resolveTicketSessions(firstTicket);
+                        if (!sessions.isEmpty()) {
+                            Session earliest = sessions.stream()
+                                    .filter(s -> s.getStartTime() != null)
+                                    .min((a, b) -> a.getStartTime().compareTo(b.getStartTime()))
+                                    .orElse(sessions.get(0));
+                            sessionStart = earliest.getStartTime();
+                            sessionEnd = earliest.getEndTime();
+                            sessionLocation = earliest.getLocation();
+                        }
+                    }
+                }
+
+                mailService.sendPaymentConfirmationEmail(
+                        payerUser.getEmail(),
+                        payerUser.getNickname(),
+                        orderName,
+                        totalAmount,
+                        relatedOrders.size(),
+                        sessionStart,
+                        sessionEnd,
+                        sessionLocation
+                );
+            }
+        } catch (Exception e) {
+            log.warn("결제 확인 메일 발송 중 오류 (결제는 정상 처리됨): {}", e.getMessage());
+        }
+
+        return response;
     }
 
     /**
