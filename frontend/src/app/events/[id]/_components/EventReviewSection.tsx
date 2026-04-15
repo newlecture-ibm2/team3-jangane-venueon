@@ -52,7 +52,7 @@ export default function EventReviewSection({ eventId, eventTitle }: EventReviewS
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <h3 style={{ font: 'var(--text-h2-bold)', color: 'var(--color-text-gray-900)', margin: 0 }}>
-          수강생 후기 <span style={{ color: 'var(--color-primary)' }}>{reviews.length}</span>
+          참석자 후기 <span style={{ color: 'var(--color-primary)' }}>{reviews.length}</span>
         </h3>
         <Button variant="outlined" size="medium" onClick={handleWriteClick}>
           내 후기 작성하기 ✎

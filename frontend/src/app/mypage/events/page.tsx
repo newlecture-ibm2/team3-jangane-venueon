@@ -16,6 +16,8 @@ interface LectureItem {
   location: string;
   price: number;
   eventId: number;
+  thumbnailUrl?: string;
+  categoryId?: number;
 }
 
 const ITEMS_PER_PAGE = 8; // 2열 × 4줄
@@ -25,6 +27,12 @@ const TAB_OPTIONS = [
   { value: 'enrolled', label: '진행 중' },
   { value: 'completed', label: '종료' },
 ];
+
+const CATEGORY_MAP: Record<number, string> = {
+  1: '디자인',
+  2: '개발',
+  3: '마케팅',
+};
 
 export default function MyPage() {
   const router = useRouter();
@@ -39,6 +47,9 @@ export default function MyPage() {
   // 리뷰 모달 상태
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [reviewTarget, setReviewTarget] = useState<{ eventId: number; title: string } | null>(null);
+
+  // 이미 리뷰를 작성한 이벤트 ID 추적
+  const [reviewedSet, setReviewedSet] = useState<Set<number>>(new Set());
 
   // 백엔드 API 호출
   const fetchOrders = useCallback(async (tab: string, page: number) => {
@@ -57,16 +68,37 @@ export default function MyPage() {
           orderId: item.orderId,
           eventId: item.eventId,
           title: item.eventTitle,
-          status: item.eventStatus || item.status, // 주문 상태 대신 세션(세션) 상태를 카드에 매핑
+          status: item.eventStatus?.label || item.status,
           organizer: item.organizer || "알 수 없는 호스트",
           dateTime: item.eventStartDate ? new Date(item.eventStartDate).toLocaleString('ko-KR', {
             year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
           }) : "-",
           location: item.location || "-",
-          price: item.amount
+          price: item.amount,
+          thumbnailUrl: item.thumbnailUrl || undefined,
+          categoryId: item.categoryId || undefined,
         }));
         setLectures(mappedLectures);
         setTotalPages(data.totalPages || 1);
+
+        // 종료 탭일 때 각 이벤트의 리뷰 작성 여부 확인
+        if (tab === 'completed') {
+          const eventIds = [...new Set(mappedLectures.map(l => l.eventId))];
+          const reviewed = new Set<number>();
+          await Promise.all(
+            eventIds.map(async (eid) => {
+              try {
+                const rRes = await fetch(`/api/events/${eid}/reviews/can-review`);
+                const rData = await rRes.json();
+                // can-review가 false면 이미 리뷰를 작성한 것
+                if (rData.success && rData.data === false) {
+                  reviewed.add(eid);
+                }
+              } catch { /* ignore */ }
+            })
+          );
+          setReviewedSet(reviewed);
+        }
 
         // Fetch wishlist IDs
         try {
@@ -109,6 +141,11 @@ export default function MyPage() {
     setCurrentPage(1);
   };
 
+  // 리뷰 작성 가능 여부 판단
+  const canWriteReview = (eventId: number) => {
+    return activeTab === 'completed' && !reviewedSet.has(eventId);
+  };
+
   return (
     <div className="container-sidebar">
       <Sidebar role="user" />
@@ -135,21 +172,25 @@ export default function MyPage() {
               {lectures.map((lecture) => (
                 <Card
                   key={lecture.orderId}
+                  variant="landing"
+                  category={lecture.categoryId ? (CATEGORY_MAP[lecture.categoryId] || '기타') : undefined}
                   status={lecture.status}
                   title={lecture.title}
+                  imageUrl={lecture.thumbnailUrl ? `/upload/${lecture.thumbnailUrl}` : undefined}
                   eventId={lecture.eventId}
                   isWishlistedProp={wishlistSet.has(lecture.eventId)}
                   organizer={lecture.organizer}
                   dateTime={lecture.dateTime}
                   location={lecture.location}
                   price={lecture.price}
+                  onCardClick={() => router.push(`/events/${lecture.eventId}`)}
                   actionButtonText={
-                    activeTab === 'completed' ? '리뷰 작성하기' :
+                    canWriteReview(lecture.eventId) ? '리뷰 작성하기' :
                       activeTab === 'enrolled' ? '입장하기' :
                         '상세 보기'
                   }
                   onActionClick={() => {
-                    if (activeTab === 'completed') {
+                    if (canWriteReview(lecture.eventId)) {
                       setReviewTarget({ eventId: lecture.eventId, title: lecture.title });
                       setReviewModalOpen(true);
                     } else {
@@ -191,6 +232,8 @@ export default function MyPage() {
           eventTitle={reviewTarget.title}
           onSubmitSuccess={() => {
             setReviewModalOpen(false);
+            // 리뷰 작성 완료 → 해당 이벤트를 reviewedSet에 추가하여 버튼 숨김
+            setReviewedSet(prev => new Set(prev).add(reviewTarget.eventId));
             setReviewTarget(null);
           }}
         />

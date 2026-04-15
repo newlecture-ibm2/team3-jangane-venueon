@@ -26,6 +26,7 @@ export interface CardProps {
   eventId?: number;
   isWishlistedProp?: boolean;
   recruitmentStatus?: string;  // 모집상태 (OPEN, PENDING, CLOSED)
+  onCardClick?: () => void;  // 카드 영역 클릭 핸들러 (버튼 제외)
 }
 
 export default function Card({
@@ -47,7 +48,8 @@ export default function Card({
   onSecondaryActionClick,
   eventId,
   isWishlistedProp = false,
-  recruitmentStatus
+  recruitmentStatus,
+  onCardClick
 }: CardProps) {
 
 
@@ -70,7 +72,7 @@ export default function Card({
     : null;
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={onCardClick} style={onCardClick ? { cursor: 'pointer' } : undefined}>
       <div className={styles.header}>
         <div className={styles.topRow}>
           {variant === 'landing' ? (
@@ -91,12 +93,12 @@ export default function Card({
           )}
 
           <div className={styles.topRight}>
-            {/* 모집상태 뱃지 (있으면 표시) */}
-            {recruitmentStatus && (
+            {/* 모집상태 뱃지 (default variant에서만 표시) */}
+            {variant === 'default' && recruitmentStatus && (
               <StatusTag domain="recruitment" status={recruitmentStatus} />
             )}
-            {/* 강의상태 뱃지 (DRAFT/PUBLISHED는 리스트에서 숨김) */}
-            {status && status !== 'DRAFT' && status !== 'PUBLISHED' && (
+            {/* 강의상태 뱃지 (default variant에서만, DRAFT/PUBLISHED 제외) */}
+            {variant === 'default' && status && status !== 'DRAFT' && status !== 'PUBLISHED' && (
               <StatusTag domain="course" status={status} />
             )}
             {variant === 'default' && category && (
@@ -170,7 +172,7 @@ export default function Card({
       </div>
 
       {actionButtonText && (
-        <div className={styles.actionWrapper}>
+        <div className={styles.actionWrapper} onClick={(e) => e.stopPropagation()}>
           {secondaryActionText && (
             <Button variant="secondary" style={{ flex: 1, height: '48px', padding: 0 }} onClick={onSecondaryActionClick}>
               {secondaryActionText}

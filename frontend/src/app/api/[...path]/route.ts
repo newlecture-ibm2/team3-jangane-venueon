@@ -51,8 +51,15 @@ async function proxyRequest(req: NextRequest) {
   let body: BodyInit | null | undefined = undefined;
   if (req.method !== "GET" && req.method !== "HEAD") {
     if (contentType?.includes("multipart/form-data")) {
-      // 이미지/파일 등 멀티파트의 경우 원본 스트림 전달
-      body = req.body as unknown as BodyInit;
+      // 멀티파트: FormData로 재파싱하여 전달 (boundary 자동 생성)
+      // Content-Type 헤더를 제거하여 fetch가 올바른 boundary를 설정하도록 함
+      const formData = await req.formData();
+      const newFormData = new FormData();
+      for (const [key, value] of formData.entries()) {
+        newFormData.append(key, value);
+      }
+      body = newFormData;
+      delete headers["Content-Type"]; // fetch가 multipart boundary를 자동 설정
     } else {
       // JSON 형태는 텍스트로 읽어서 전달
       body = await req.text();
