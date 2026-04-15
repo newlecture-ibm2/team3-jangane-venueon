@@ -26,6 +26,7 @@ const CATEGORY_TABS = [
 ];
 
 const STATUS_TABS = [
+  { value: '', label: '전체' },
   { value: 'PENDING', label: '대기 중' },
   { value: 'REVIEWING', label: '검토 중' },
   { value: 'COMPLETED', label: '처리 완료' },
