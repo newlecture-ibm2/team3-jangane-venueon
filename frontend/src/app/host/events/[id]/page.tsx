@@ -107,7 +107,11 @@ export default function HostEventDetailPage() {
           />
           
           {activeTab === 'BASIC' && (
-            <HostProfile hostName={event.hostName} />
+            <HostProfile 
+              hostName={event.hostName} 
+              hostDescription={event.hostDescription} 
+              hostProfileImg={event.hostProfileImg} 
+            />
           )}
         </div>
       </main>

@@ -23,6 +23,8 @@ public record HostEventDetailResponse(
         boolean hasDiscount,
         String location,
         String hostName,
+        String hostDescription,
+        String hostProfileImg,
         List<SessionDetail> sessions
 ) {
     public record SessionDetail(
