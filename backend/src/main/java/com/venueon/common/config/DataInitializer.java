@@ -119,7 +119,7 @@ public class DataInitializer implements ApplicationRunner {
         List<EventJpaEntity> events = createEvents(hosts, categories);
         createSessions(events);
         createTickets(events);
-        List<CommunityJpaEntity> communities = createCommunities(admin);
+        List<CommunityJpaEntity> communities = createCommunities(admin, events);
         List<PostJpaEntity> posts = createPosts(users, communities);
         List<OrderJpaEntity> orders = createOrders(users, events);
         List<ReportJpaEntity> reports = createReports(users, events, posts);
@@ -661,10 +661,24 @@ public class DataInitializer implements ApplicationRunner {
     }
 
 
-    private List<CommunityJpaEntity> createCommunities(UserJpaEntity admin) {
+    private List<CommunityJpaEntity> createCommunities(UserJpaEntity admin, List<EventJpaEntity> events) {
         return communityRepository.saveAll(List.of(
-                CommunityJpaEntity.builder().name("자유게시판").description("누구나 자유롭게 이야기하는 공간").creator(admin).build(),
-                CommunityJpaEntity.builder().name("질문답변").description("서로 돕고 배우는 공간").creator(admin).build()
+                CommunityJpaEntity.builder()
+                        .name("마음챙김 요가 수료자 전용")
+                        .description("마음챙김 요가 클래스 수료자들만 이용 가능한 프라이빗 게시판입니다.")
+                        .creator(admin)
+                        .event(events.get(3)) // 요가 클래스 이벤트 연결
+                        .isPublic(true)
+                        .type(com.venueon.community.domain.model.CommunityType.BADGE_CREATED)
+                        .build(),
+                CommunityJpaEntity.builder()
+                        .name("AI & Cloud Bootcamp 구매자 게시판")
+                        .description("AI & Cloud Bootcamp 구매자들을 위한 소통 공간입니다.")
+                        .creator(admin)
+                        .event(events.get(0))
+                        .isPublic(true)
+                        .type(com.venueon.community.domain.model.CommunityType.HOST_AUTO)
+                        .build()
         ));
     }
 

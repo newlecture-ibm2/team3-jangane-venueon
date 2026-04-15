@@ -12,6 +12,9 @@ import com.venueon.comment.application.port.out.CommentRepositoryPort;
 import com.venueon.comment.domain.model.Comment;
 import com.venueon.user.application.port.out.UserRepositoryPort;
 import com.venueon.user.domain.model.User;
+import com.venueon.post.application.port.out.PostRepositoryPort;
+import com.venueon.post.domain.model.Post;
+import com.venueon.community.application.service.CommunityPermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import com.venueon.common.annotation.UseCase;
@@ -24,12 +27,22 @@ public class CommentCommandService
 
     private final CommentRepositoryPort commentRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
+    private final PostRepositoryPort postRepositoryPort;
+    private final CommunityPermissionService communityPermissionService;
 
     @Override
     @Transactional
     public CommentResponse createComment(CreateCommentRequest request, String email) {
         User author = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+
+        // 커뮤니티 권한 체크 (CommunityPermissionService 활용)
+        Post post = postRepositoryPort.findById(request.postId())
+                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + request.postId()));
+
+        if (!communityPermissionService.canWrite(post.getCommunityId(), author)) {
+            throw new IllegalArgumentException("Permission denied: You do not have permission to comment in this community.");
+        }
 
         Comment comment = Comment.builder()
                 .postId(request.postId())

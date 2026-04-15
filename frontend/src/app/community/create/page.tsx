@@ -5,19 +5,52 @@ import { useRouter } from 'next/navigation';
 import { InputField, TextareaField, Dropdown, Button } from '@/components/ui';
 import Sidebar from '@/components/layout/Sidebar';
 import { useUIStore } from '@/store/useUIStore';
+import { useAuth } from '@/store/useAuthStore';
 
 export default function CommunityCreatePage() {
   const router = useRouter();
   const { showToast } = useUIStore();
 
+  const { user, isLoggedIn } = useAuth();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState('true');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [badges, setBadges] = useState<any[]>([]);
+  const [selectedEventId, setSelectedEventId] = useState<string>('');
+  const [isLoadingBadges, setIsLoadingBadges] = useState(true);
+
+  React.useEffect(() => {
+    const fetchBadges = async () => {
+      try {
+        const response = await fetch('/api/badges/me');
+        if (response.ok) {
+          const result = await response.json();
+          setBadges(result.data || []);
+          if (result.data && result.data.length > 0) {
+            setSelectedEventId(result.data[0].eventId.toString());
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch badges:', e);
+      } finally {
+        setIsLoadingBadges(false);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchBadges();
+    }
+  }, [isLoggedIn]);
 
   const handleSubmit = async () => {
     if (!name.trim()) {
       showToast('입력 오류', 'error', '커뮤니티 이름은 필수입니다.');
+      return;
+    }
+
+    if (!selectedEventId) {
+      showToast('선택 오류', 'error', '커뮤니티를 개설할 이벤트를 선택해주세요.');
       return;
     }
 
@@ -28,6 +61,8 @@ export default function CommunityCreatePage() {
         name,
         description,
         isPublic: isPublic === 'true',
+        type: 'BADGE_CREATED',
+        eventId: parseInt(selectedEventId)
       };
 
       const response = await fetch('/api/communities', {
@@ -69,7 +104,8 @@ export default function CommunityCreatePage() {
           display: 'flex', 
           flexDirection: 'column', 
           gap: '24px',
-          maxWidth: '800px'
+          maxWidth: '1000px',
+          width: '100%'
         }}>
           <InputField
             label="커뮤니티 이름 (필수)"
@@ -84,6 +120,17 @@ export default function CommunityCreatePage() {
             defaultValue={description}
             onChange={(e) => setDescription(e.target.value)}
             showCount={true}
+          />
+
+          <Dropdown
+            label="대상 이벤트 선택 (수료한 이벤트)"
+            value={selectedEventId}
+            onChange={(val) => setSelectedEventId(val)}
+            options={
+              badges.length > 0 
+                ? badges.map(b => ({ value: b.eventId.toString(), label: b.badgeName }))
+                : [{ value: '', label: isLoadingBadges ? '로딩 중...' : '개설 가능한 이벤트가 없습니다.' }]
+            }
           />
 
           <Dropdown

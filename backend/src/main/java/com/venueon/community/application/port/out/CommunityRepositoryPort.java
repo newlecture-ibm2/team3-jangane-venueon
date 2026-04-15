@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface CommunityRepositoryPort {
     Community save(Community community);
     Page<Community> findPublicCommunities(Pageable pageable);
+    Page<Community> findByIdIn(java.util.List<Long> ids, Pageable pageable);
     Optional<Community> findById(Long id);
 }

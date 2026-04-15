@@ -46,6 +46,10 @@ public class CommunityJpaEntity {
     @Builder.Default
     private boolean isPublic = true;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = true)
+    private com.venueon.community.domain.model.CommunityType type;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

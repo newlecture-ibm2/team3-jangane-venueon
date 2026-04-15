@@ -157,4 +157,6 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
             @Param("name") String name,
             Pageable pageable
     );
+
+    boolean existsByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);
 }

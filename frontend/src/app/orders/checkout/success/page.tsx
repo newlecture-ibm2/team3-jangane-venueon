@@ -128,7 +128,7 @@ function CheckoutSuccessContent() {
             variant="primary"
             size="large"
             style={{ flex: 1, backgroundColor: 'var(--color-gray-900, #111827)', color: 'white', border: 'none' }}
-            onClick={() => window.location.href = '/community'}
+            onClick={() => window.location.href = '/community?tab=joined'}
           >
             커뮤니티 탐색
           </Button>

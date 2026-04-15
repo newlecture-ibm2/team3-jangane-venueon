@@ -49,9 +49,10 @@ interface PageData {
 interface Props {
   communityId: string;
   canManage: boolean;
+  canWrite: boolean;
 }
 
-export default function CommunityPostContainer({ communityId, canManage }: Props) {
+export default function CommunityPostContainer({ communityId, canManage, canWrite }: Props) {
   const router = useRouter();
   const { showToast } = useUIStore();
   const { user, isLoggedIn } = useAuth();
@@ -407,6 +408,10 @@ export default function CommunityPostContainer({ communityId, canManage }: Props
                 router.push('/login');
                 return;
               }
+              if (!canWrite) {
+                showToast('권한이 없습니다.', 'error', '해당 이벤트를 수료한 사용자만 글을 작성할 수 있습니다.');
+                return;
+              }
               router.push(`/community/${communityId}/write`);
             }}
           >
@@ -572,8 +577,8 @@ export default function CommunityPostContainer({ communityId, canManage }: Props
               <div className={styles.commentInputWrapper}>
                 <CommentInput
                   onSubmit={(v) => handleCommentSubmit(v)}
-                  disabled={!isLoggedIn || isCommentSubmitting}
-                  placeholder={!isLoggedIn ? "로그인 후 댓글을 작성할 수 있습니다." : (isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요..")}
+                  disabled={!isLoggedIn || isCommentSubmitting || !canWrite}
+                  placeholder={!isLoggedIn ? "로그인 후 댓글을 작성할 수 있습니다." : (!canWrite ? "이벤트 수료자만 댓글을 작성할 수 있습니다." : (isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요.."))}
                 />
               </div>
 

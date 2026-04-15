@@ -43,6 +43,7 @@ public class CommunityPersistenceAdapter implements CommunityRepositoryPort {
                 .isPublic(community.isPublic())
                 .thumbnailUrl(community.getThumbnailUrl())
                 .memberCount(community.getMemberCount())
+                .type(community.getType())
                 .build();
                 
         // 만약 업데이트라면 ID를 유지
@@ -57,6 +58,15 @@ public class CommunityPersistenceAdapter implements CommunityRepositoryPort {
     @Override
     public Page<Community> findPublicCommunities(Pageable pageable) {
         return communityJpaRepository.findByIsPublicTrue(pageable)
+                .map(this::mapToDomain);
+    }
+
+    @Override
+    public Page<Community> findByIdIn(java.util.List<Long> ids, Pageable pageable) {
+        if (ids == null || ids.isEmpty()) {
+            return Page.empty(pageable);
+        }
+        return communityJpaRepository.findByIdIn(ids, pageable)
                 .map(this::mapToDomain);
     }
 
@@ -76,6 +86,7 @@ public class CommunityPersistenceAdapter implements CommunityRepositoryPort {
                 .thumbnailUrl(entity.getThumbnailUrl())
                 .memberCount(entity.getMemberCount())
                 .isPublic(entity.isPublic())
+                .type(entity.getType())
                 .createdAt(entity.getCreatedAt())
                 .build();
     }

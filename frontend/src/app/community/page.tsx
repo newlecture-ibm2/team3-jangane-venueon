@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button, Pagination, CardGrid, Tabs } from '@/components/ui';
 import Sidebar from '@/components/layout/Sidebar';
 import { useUIStore } from '@/store/useUIStore';
+import { useAuth } from '@/store/useAuthStore';
 import CommunityListCard from './components/CommunityListCard';
 import styles from './page.module.css';
 
@@ -24,18 +26,41 @@ interface PageData {
   number: number;
 }
 
-export default function CommunityListPage() {
+function CommunityListContent() {
   const { showToast } = useUIStore();
+  const { user, isLoggedIn } = useAuth();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+
   const [communities, setCommunities] = useState<CommunityItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState(tabParam === 'joined' ? 'joined' : 'all');
+  const [hasBadges, setHasBadges] = useState(false);
+
+  useEffect(() => {
+    setActiveTab(tabParam === 'joined' ? 'joined' : 'all');
+  }, [tabParam]);
+
+  const checkBadges = async () => {
+    if (!isLoggedIn || !user?.id) return;
+    try {
+      const response = await fetch('/api/badges/me');
+      if (response.ok) {
+        const result = await response.json();
+        setHasBadges(result.data && result.data.length > 0);
+      }
+    } catch (e) {
+      console.error('Failed to fetch badges:', e);
+    }
+  };
 
   const fetchCommunities = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/communities?page=${currentPage - 1}&size=12`);
+      const endpoint = activeTab === 'joined' ? '/api/communities/me' : '/api/communities';
+      const response = await fetch(`${endpoint}?page=${currentPage - 1}&size=12`);
       if (!response.ok) throw new Error('커뮤니티 목록을 불러오는데 실패했습니다.');
       const data: PageData = await response.json();
       setCommunities(data.content);
@@ -50,58 +75,59 @@ export default function CommunityListPage() {
 
   useEffect(() => {
     fetchCommunities();
-  }, [currentPage]);
+  }, [currentPage, activeTab]);
 
-  const tabOptions = [
-    { value: 'all', label: '전체' },
-    { value: 'study', label: '학습' },
-    { value: 'qna', label: '질의응답' },
-    { value: 'networking', label: '네트워킹' },
-    { value: 'etc', label: '기타' },
-  ];
+  useEffect(() => {
+    if (isLoggedIn) {
+      checkBadges();
+    }
+  }, [isLoggedIn, user?.id]);
+
+  const handleCreateClick = () => {
+    if (!isLoggedIn) {
+      showToast('로그인 필요', 'error', '커뮤니티를 만들려면 로그인이 필요합니다.');
+      return;
+    }
+    const isAdmin = user?.role?.id === 1;
+    const isHost = user?.role?.id === 3;
+    if (isAdmin || isHost || hasBadges) {
+      window.location.href = '/community/create';
+    } else {
+      showToast('기능 제한', 'info', '커뮤니티 생성은 뱃지 보유자만 가능합니다.');
+    }
+  };
 
   return (
     <div className="container-sidebar">
-      {/* 기존 Sidebar 컴포넌트 활용 */}
       <Sidebar role="user" />
-
-      {/* 메인 콘텐츠 영역 (사이드바 내부 main 역할) */}
       <main className="sidebar" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
         <section style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>커뮤니티 탐색</h1>
-          <Button variant="primary" onClick={() => window.location.href = '/community/create'}>
+          <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>
+            {activeTab === 'joined' ? '내가 참여한 커뮤니티' : '전체 커뮤니티 탐색'}
+          </h1>
+          <Button variant="primary" onClick={handleCreateClick}>
             커뮤니티 만들기
           </Button>
         </section>
 
         <section style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* 기존 Tabs 컴포넌트 활용 */}
-          <Tabs 
-            variant="line" 
-            options={tabOptions} 
-            activeValue={activeTab} 
-            onChange={setActiveTab} 
-          />
-
           {isLoading ? (
             <div className={styles.loadingOrEmpty}>커뮤니티 목록을 불러오는 중...</div>
           ) : communities.length === 0 ? (
             <div className={styles.loadingOrEmpty}>아직 표시할 커뮤니티가 없습니다.</div>
           ) : (
-            /* 기존 CardGrid 컴포넌트 활용 */
             <CardGrid layout="2-cols">
               {communities.map((community) => (
-                /* 기존 Card 컴포넌트 활용 (프라퍼티 매핑) */
                 <CommunityListCard
                   key={community.id}
-                  status="PUBLISHED" // '모집 중' 배지 효과
-                  tagText="활발함"
-                  tagVariant="green"
+                  status="PUBLISHED"
+                  tagText={community.memberCount > 5 ? "인기" : "신규"}
+                  tagVariant={community.memberCount > 5 ? "purple" : "green"}
                   title={community.name}
                   organizer={`주최자: ${community.creatorNickname}`}
                   dateTime={`생성일: ${new Date(community.createdAt).toLocaleDateString()}`}
                   location={`멤버: ${community.memberCount}명 참여 중`}
-                  price={0} // '무료 참여' 표시
+                  price={0}
                   actionButtonText="커뮤니티 입장하기"
                   onActionClick={() => window.location.href = `/community/${community.id}`}
                   onEditClick={community.canManage ? () => window.location.href = `/community/${community.id}/edit` : undefined}
@@ -122,5 +148,13 @@ export default function CommunityListPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function CommunityListPage() {
+  return (
+    <Suspense fallback={<div className="container-sidebar"><Sidebar role="user" /><main className="sidebar">로딩 중...</main></div>}>
+      <CommunityListContent />
+    </Suspense>
   );
 }
