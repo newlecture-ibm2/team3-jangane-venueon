@@ -27,6 +27,14 @@
   flex: 1;
 }
 
+.searchButton {
+  flex-shrink: 0;
+}
+
+.writeRow {
+  margin-bottom: 24px;
+}
+
 .postList {
   display: flex;
   flex-direction: column;
