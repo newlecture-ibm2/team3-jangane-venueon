@@ -39,6 +39,9 @@ public class EventJpaEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "detail_content", columnDefinition = "TEXT")
+    private String detailContent;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id", nullable = false)
     private EventTypeJpaEntity type;

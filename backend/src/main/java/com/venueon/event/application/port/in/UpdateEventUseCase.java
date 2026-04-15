@@ -16,6 +16,7 @@ public interface UpdateEventUseCase {
             Long categoryId,
             String title,
             String description,
+            String detailContent,
             Long typeId,
             String thumbnailUrl,
             boolean hasSession

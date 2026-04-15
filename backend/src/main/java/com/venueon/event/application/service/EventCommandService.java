@@ -33,6 +33,7 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                 command.categoryId(),
                 command.title(),
                 command.description(),
+                command.detailContent(),
                 com.venueon.common.model.DomainCode.of(command.typeId(), "이벤트타입"), // DB 맵핑용
                 com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID, "임시저장"),          // 최초 생성 시 항상 DRAFT
                 command.thumbnailUrl(),
@@ -108,6 +109,7 @@ public class EventCommandService implements CreateEventUseCase, UpdateEventStatu
                 command.categoryId(),
                 command.title(),
                 command.description(),
+                command.detailContent(),
                 com.venueon.common.model.DomainCode.of(command.typeId(), "이벤트타입"),
                 command.thumbnailUrl(),
                 command.hasSession()

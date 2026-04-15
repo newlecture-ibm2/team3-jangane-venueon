@@ -17,6 +17,8 @@ public record EventCreateRequest(
         String title,
 
         String description,
+        
+        String detailContent,
 
         Long typeId,
 
@@ -34,6 +36,7 @@ public record EventCreateRequest(
                 categoryId,
                 title,
                 description,
+                detailContent,
                 typeId,
                 thumbnailUrl,
                 hasSession,
