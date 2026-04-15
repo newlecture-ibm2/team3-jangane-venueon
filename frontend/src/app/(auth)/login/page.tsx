@@ -40,8 +40,16 @@ function LoginContent() {
     setLoading(true);
 
     try {
-      await authAPI.login(email, password);
+      const result = await authAPI.login(email, password);
       await checkSession();
+
+      // 임시 비밀번호로 로그인한 경우 비밀번호 변경 페이지로 이동
+      if (result.tempPassword) {
+        showToast("임시 비밀번호로 로그인되었습니다. 새 비밀번호를 설정해 주세요.", "info");
+        router.push("/reset-password");
+        return;
+      }
+
       showToast("로그인 성공!", "success");
       const redirectTo = searchParams.get("redirect") || "/";
       router.push(redirectTo);
@@ -66,7 +74,7 @@ function LoginContent() {
       error={error}
       footerText="비밀번호를 잊으셨나요?"
       footerLinkText="비밀번호 찾기"
-      footerLinkHref="#"
+      footerLinkHref="/forgot-password"
       bottomSlot={<GoogleLoginButton position="bottom" />}
     >
       <InputField

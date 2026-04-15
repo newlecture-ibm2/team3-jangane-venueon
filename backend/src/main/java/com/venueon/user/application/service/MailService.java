@@ -111,6 +111,91 @@ public class MailService {
     }
 
     /**
+     * 임시 비밀번호 메일을 발송합니다.
+     */
+    public void sendTempPasswordEmail(String toEmail, String tempPassword) {
+        String subject = "[VenueOn] 임시 비밀번호 안내";
+        String loginUrl = frontendUrl + "/login";
+        String htmlContent = buildTempPasswordHtml(tempPassword, loginUrl);
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+            log.info("임시 비밀번호 메일 발송 완료: to={}", toEmail);
+        } catch (MessagingException e) {
+            log.error("임시 비밀번호 메일 발송 실패: to={}", toEmail, e);
+            throw new RuntimeException("임시 비밀번호 메일 발송에 실패했습니다.", e);
+        }
+    }
+
+    private String buildTempPasswordHtml(String tempPassword, String loginUrl) {
+        return """
+            <!DOCTYPE html>
+            <html lang="ko">
+            <head><meta charset="UTF-8"></head>
+            <body style="margin:0;padding:0;background:#F3F4F6;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+              <table width="100%%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+                <tr><td align="center">
+                  <table width="480" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.3);overflow:hidden;">
+                    <!-- Header -->
+                    <tr>
+                      <td style="background:#374151;padding:32px 40px;text-align:center;">
+                        <h1 style="margin:0;color:#FFFFFF;font-size:24px;font-weight:700;">VenueOn</h1>
+                        <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">임시 비밀번호 안내</p>
+                      </td>
+                    </tr>
+                    <!-- Body -->
+                    <tr>
+                      <td style="padding:40px;">
+                        <h2 style="margin:0 0 16px;font-size:20px;color:#111827;">임시 비밀번호가 발급되었습니다 🔑</h2>
+                        <p style="margin:0 0 24px;font-size:15px;color:#6B7280;line-height:1.6;">
+                          아래 임시 비밀번호로 로그인하신 후,<br>
+                          새 비밀번호로 변경해 주세요.
+                        </p>
+                        <table width="100%%" cellpadding="0" cellspacing="0" style="background:#F9FAFB;border-radius:8px;margin-bottom:24px;">
+                          <tr>
+                            <td style="padding:20px;text-align:center;">
+                              <p style="margin:0 0 8px;font-size:13px;color:#6B7280;">임시 비밀번호</p>
+                              <p style="margin:0;font-size:28px;font-weight:700;color:#111827;letter-spacing:4px;">%s</p>
+                            </td>
+                          </tr>
+                        </table>
+                        <table width="100%%" cellpadding="0" cellspacing="0">
+                          <tr><td align="center" style="padding:8px 0 24px;">
+                            <a href="%s"
+                               style="display:inline-block;padding:14px 48px;background:#374151;
+                                      color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:16px;font-weight:600;">
+                              로그인하러 가기
+                            </a>
+                          </td></tr>
+                        </table>
+                        <p style="margin:0;font-size:13px;color:#9CA3AF;line-height:1.5;">
+                          보안을 위해 로그인 후 반드시 비밀번호를 변경해 주세요.<br>
+                          본인이 요청하지 않으셨다면, 이 메일을 무시해 주세요.
+                        </p>
+                      </td>
+                    </tr>
+                    <!-- Footer -->
+                    <tr>
+                      <td style="padding:20px 40px;background:#F3F4F6;text-align:center;border-top:1px solid #D1D5DB;">
+                        <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 VenueOn. All rights reserved.</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td></tr>
+              </table>
+            </body>
+            </html>
+            """.formatted(tempPassword, loginUrl);
+    }
+
+    /**
      * 결제 확인 메일을 발송합니다.
      *
      * @param toEmail      수신자 이메일

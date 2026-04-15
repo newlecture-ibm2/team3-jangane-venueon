@@ -54,8 +54,18 @@ public class UserService implements UpdateUserProfileUseCase, UpdateUserPassword
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "탈퇴 처리된 사용자입니다.");
         }
 
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "현재 비밀번호가 일치하지 않습니다.");
+        // {TEMP} 접두사가 붙은 임시 비밀번호인 경우 현재 비밀번호 검증 건너뛰기
+        String storedPassword = user.getPassword();
+        if (storedPassword.startsWith("{TEMP}")) {
+            // 임시 비밀번호 → 새 비밀번호로 변경 (현재 비밀번호 검증 불필요, 이미 로그인 인증됨)
+            log.info("임시 비밀번호 → 새 비밀번호 변경: email={}", email);
+        } else {
+            if (currentPassword == null || currentPassword.isBlank()) {
+                throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "현재 비밀번호는 필수입니다.");
+            }
+            if (!passwordEncoder.matches(currentPassword, storedPassword)) {
+                throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "현재 비밀번호가 일치하지 않습니다.");
+            }
         }
 
         user.updatePassword(passwordEncoder.encode(newPassword));

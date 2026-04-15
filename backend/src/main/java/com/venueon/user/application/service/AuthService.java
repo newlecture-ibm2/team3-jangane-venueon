@@ -145,17 +145,27 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "구글 소셜 로그인으로 가입된 계정입니다. 구글 로그인을 이용해 주세요.");
         }
 
-        // 비밀번호 검증
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.");
+        // 비밀번호 검증 — {TEMP} 접두사가 붙은 임시 비밀번호도 지원
+        String storedPassword = user.getPassword();
+        boolean isTempPassword = false;
+        if (storedPassword.startsWith("{TEMP}")) {
+            String actualHash = storedPassword.substring(6);
+            if (!passwordEncoder.matches(password, actualHash)) {
+                throw new BusinessException(ErrorCode.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.");
+            }
+            isTempPassword = true;
+        } else {
+            if (!passwordEncoder.matches(password, storedPassword)) {
+                throw new BusinessException(ErrorCode.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.");
+            }
         }
 
         // JWT 토큰 생성 (Security 계층과 일관되게 code 문자열 사용)
         String roleCode = resolveRoleCode(user.getRole().id());
         String token = jwtTokenProvider.generateToken(user.getEmail(), roleCode);
 
-        log.info("로그인 성공: email={}", email);
-        return new LoginResult(token, user.getEmail(), user.getNickname(), com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()));
+        log.info("로그인 성공: email={}, tempPassword={}", email, isTempPassword);
+        return new LoginResult(token, user.getEmail(), user.getNickname(), com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()), isTempPassword);
     }
 
     @Override
@@ -199,7 +209,7 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         String roleCode = resolveRoleCode(user.getRole().id());
         String token = jwtTokenProvider.generateToken(user.getEmail(), roleCode);
 
-        return new LoginResult(token, user.getEmail(), user.getNickname(), com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()));
+        return new LoginResult(token, user.getEmail(), user.getNickname(), com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()), false);
     }
 
     @Override
@@ -321,6 +331,46 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         tokenRepository.delete(tokenEntity);
 
         log.info("이메일 인증 완료: email={}", tokenEntity.getEmail());
+    }
+
+    /**
+     * 비밀번호 찾기: 임시 비밀번호를 생성하여 메일로 발송합니다.
+     */
+    @Transactional
+    public void resetPassword(String email) {
+        User user = userRepositoryPort.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "등록되지 않은 이메일입니다."));
+
+        if (!user.isActive()) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "비활성 계정입니다. 관리자에게 문의해 주세요.");
+        }
+
+        if (user.isGoogleUser()) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "구글 소셜 로그인 계정입니다. 구글 로그인을 이용해 주세요.");
+        }
+
+        // 8자리 임시 비밀번호 생성
+        String tempPassword = generateTempPassword();
+        // {TEMP} 접두사를 붙여 임시 비밀번호임을 표시
+        String encodedPassword = "{TEMP}" + passwordEncoder.encode(tempPassword);
+        user.updatePassword(encodedPassword);
+        userRepositoryPort.save(user);
+
+        mailService.sendTempPasswordEmail(email, tempPassword);
+        log.info("임시 비밀번호 발급 완료: email={}", email);
+    }
+
+    /**
+     * 8자리 영문+숫자 임시 비밀번호를 생성합니다.
+     */
+    private String generateTempPassword() {
+        String chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+        StringBuilder sb = new StringBuilder();
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        for (int i = 0; i < 8; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
     /**
