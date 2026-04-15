@@ -8,7 +8,6 @@ import { format } from 'date-fns';
 import EventActionMenu from './_components/EventActionMenu';
 import TicketList from './_components/TicketList';
 import EventReviewSection from './_components/EventReviewSection';
-import BackButton from './_components/BackButton';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -107,7 +106,9 @@ export default async function EventDetailPage({ params }: Props) {
 
       {/* 뒤로 가기 바 */}
       <div className={styles.topBar}>
-        <BackButton />
+        <Link href="/" className={styles.backButton}>
+          ← 이벤트 목록 보기
+        </Link>
       </div>
 
 
