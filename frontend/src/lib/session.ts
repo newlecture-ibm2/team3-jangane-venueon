@@ -11,6 +11,7 @@ export interface SessionData {
   nickname?: string;
   profileImg?: string;
   role?: { id: number; label: string };
+  provider?: string;    // LOCAL | GOOGLE
   isLoggedIn: boolean;
 }
 

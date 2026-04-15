@@ -51,7 +51,8 @@ public class AuthController {
                 user.getRole() != null ? com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()) : null,
                 user.getProfileImg(),
                 user.getCategories(),
-                user.isBadgeVisible()
+                user.isBadgeVisible(),
+                user.getProvider() != null ? user.getProvider().name() : "LOCAL"
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
@@ -80,7 +81,8 @@ public class AuthController {
                 user.getRole() != null ? com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()) : null,
                 user.getProfileImg(),
                 user.getCategories(),
-                user.isBadgeVisible()
+                user.isBadgeVisible(),
+                user.getProvider() != null ? user.getProvider().name() : "LOCAL"
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
@@ -152,7 +154,8 @@ public class AuthController {
                 user.getRole() != null ? com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()) : null,
                 user.getProfileImg(),
                 user.getCategories(),
-                user.isBadgeVisible()
+                user.isBadgeVisible(),
+                user.getProvider() != null ? user.getProvider().name() : "LOCAL"
         );
 
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -175,7 +178,8 @@ public class AuthController {
                 user.getRole() != null ? com.venueon.common.dto.CodeDto.of(user.getRole().id(), user.getRole().label()) : null,
                 user.getProfileImg(),
                 user.getCategories(),
-                user.isBadgeVisible()
+                user.isBadgeVisible(),
+                user.getProvider() != null ? user.getProvider().name() : "LOCAL"
         );
 
         return ResponseEntity.ok(response);
