@@ -83,7 +83,7 @@ export default function WishlistPage() {
 
             {!loading && lectures.length === 0 && (
               <p style={{ color: 'var(--color-text-gray-500)', textAlign: 'center', width: '100%', padding: 'var(--space-48) 0' }}>
-                아직 찜한 세션이 없습니다.
+                아직 찜한 이벤트가 없습니다.
               </p>
             )}
 

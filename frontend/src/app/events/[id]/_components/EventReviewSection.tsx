@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ReviewItem, Button } from '@/components/ui';
 import { ReviewModal } from '@/components/modal';
+import { useAuth } from '@/store/useAuthStore';
 import { useUIStore } from '@/store/useUIStore';
 
 interface EventReviewSectionProps {
@@ -13,6 +14,7 @@ interface EventReviewSectionProps {
 export default function EventReviewSection({ eventId, eventTitle }: EventReviewSectionProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { showToast } = useUIStore();
+  const { user } = useAuth(); // 로그인 유저 정보 가져오기
 
   const [reviews, setReviews] = useState<any[]>([]);
 
@@ -22,7 +24,16 @@ export default function EventReviewSection({ eventId, eventTitle }: EventReviewS
       const res = await fetch(`/api/events/${eventId}/reviews`);
       const data = await res.json();
       if (data.success && data.data) {
-        setReviews(data.data);
+        let fetchedReviews = data.data;
+        if (user && user.id) {
+            // 본인이 작성한 후기를 최상단으로 올리는 정렬 로직
+            fetchedReviews.sort((a: any, b: any) => {
+                if (a.authorId === user.id && b.authorId !== user.id) return -1;
+                if (b.authorId === user.id && a.authorId !== user.id) return 1;
+                return 0; // 본인 후기가 아니면 기존 순서(최신순 등) 유지
+            });
+        }
+        setReviews(fetchedReviews);
       }
     } catch (e) {
       console.error('Failed to fetch reviews', e);
