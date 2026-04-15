@@ -183,7 +183,7 @@ export const EventTabSection = ({
                   <th>세션 명</th>
                   <th>일시</th>
                   <th>상태</th>
-                  <th>커뮤니티</th>
+                  <th>스터디 룸</th>
                 </tr>
               </thead>
               <tbody>
@@ -203,9 +203,9 @@ export const EventTabSection = ({
                           fontWeight: '600',
                           cursor: 'pointer'
                         }}
-                        onClick={() => alert(`세션 [${s.title}]의 커뮤니티 관리 페이지로 이동합니다.`)}
+                        onClick={() => alert(`세션 [${s.title}]의 스터디 룸 관리 페이지로 이동합니다.`)}
                       >
-                        커뮤니티 관리
+                        스터디 룸 관리
                       </button>
                     </td>
                   </tr>

@@ -26,6 +26,8 @@ export interface HostEventDetail {
   hasDiscount: boolean;
   location: string;
   hostName: string;
+  hostDescription: string | null;
+  hostProfileImg: string | null;
   sessions: SessionDetail[];
 }
 
