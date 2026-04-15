@@ -40,4 +40,4 @@ out/
 application-prod.properties
 
 ### Upload (로컬 개발용 이미지) ###
-# upload/
+upload/
