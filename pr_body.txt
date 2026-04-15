@@ -1,0 +1,15 @@
+## 🚀 목적
+프론트엔드의 `orders` 폴더 내부 코드를 최신 도메인 주도 설계(Component + Hooks 분리) 규칙에 맞추어 완전 리팩토링했습니다.
+
+## 🛠️ 작업 내역
+1. **CSS 파일 구조 통일화 (page.module.css)**
+   - 공유되던 CSS 의존성을 전부 끊어내고 각각의 폴더 내부로 밀봉시켰습니다.
+2. **뷰-로직 분리 (Custom Hooks)**
+   - `fetch` 로직, TOSSPayment 등 상태와 사이드이펙트 로직을 해당 폴더 내부의 `useCheckout.ts`, `usePaymentConfirm.ts`, `useRefund.ts` 로 전면 추출했습니다.
+3. **컴포넌트 책무 분할**
+   - 방대한 양의 `page.tsx` 코드 라인을 줄이기 위해, 기능 구역 단위(예: `CancelDialog`, `CheckoutContent`)를 `_components/` 로 분할시켰습니다.
+4. **리팩토링 규칙 정리**
+   - 향후 다른 피처 개발 시에도 동일한 룰을 따를 수 있도록 `/docs/Architecture/Order_FE_Refactoring_Rules.md` 규칙 문서를 작성해 추가했습니다.
+
+## 🔍 테스트 결과
+`npm run build` - Exit code 0 완료 확인

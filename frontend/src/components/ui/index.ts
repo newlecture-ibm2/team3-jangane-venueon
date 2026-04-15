@@ -1,4 +1,5 @@
 export { default as Button } from './Button';
+export { default as BackButton } from './BackButton/BackButton';
 export { default as Checkbox } from './Checkbox';
 export { default as Toggle } from './Toggle';
 export { default as Toast } from './Toast';

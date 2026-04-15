@@ -1,0 +1,195 @@
+# Raw `fetch()` → `api` 래퍼 통일 마이그레이션 계획
+
+프로젝트 전역에서 클라이언트 컴포넌트의 API 호출을 `@/lib/api` 래퍼로 통일합니다.
+
+## 현황 요약
+
+| 구분 | 표준 (`api.*`) | 비표준 (`fetch`) | 비고 |
+|---|---|---|---|
+| `host/page.tsx` | ✅ | — | 완료 |
+| `host/payments/page.tsx` | ✅ | — | 완료 |
+| `host/attendees/page.tsx` | ✅ | — | 완료 |
+| `host/events/page.tsx` | ✅ | — | 완료 (useHostEvents) |
+| `host/profile/` | ✅ | — | 완료 (host-api.ts) |
+| `host/contact/page.tsx` | ✅ (대부분) | ❌ 1건 (파일 업로드) | 부분 비표준 |
+| **EventForm.tsx** | — | ❌ **15건** | 핵심 수정 대상 |
+| **StatusPanel.tsx** | — | ❌ **2건** | 수정 대상 |
+| **edit/page.tsx** | — | ❌ **2건** | ⚠️ 서버 컴포넌트 (예외) |
+| **events/[id]/page.tsx** | — | ❌ **2건** | ⚠️ 서버 컴포넌트 (예외) |
+| **useEvents.ts** | — | ❌ **1건** | 수정 대상 |
+| **ActionMenu.tsx** | — | ❌ **1건** | 수정 대상 |
+| **useEventReviews.ts** | — | ❌ **1건** | 수정 대상 |
+| **useTicketCart.ts** | — | ❌ **2건** | 수정 대상 |
+| **useCheckout.ts** | — | ❌ **1건** | 수정 대상 |
+| **useRefund.ts** | — | ❌ **2건** | 수정 대상 |
+| **usePaymentConfirm.ts** | — | ❌ **1건** | 수정 대상 |
+| **useCart.ts** | — | ❌ **3건** | 수정 대상 |
+| **mypage/orders/page.tsx** | — | ❌ **1건** | 수정 대상 |
+| **mypage/orders/[id]/page.tsx** | — | ❌ **2건** | 수정 대상 |
+| **ProfileForm.tsx** | — | ❌ **1건** (파일 업로드) | 특수 케이스 |
+
+---
+
+## 수정 대상 제외 (서버 컴포넌트)
+
+> [!IMPORTANT]
+> 아래 2개 파일은 **Next.js 서버 컴포넌트**(SSR)입니다.
+> 서버 컴포넌트에서는 `@/lib/api` 래퍼(브라우저 전용)를 사용할 수 없으며, `BACKEND_URL`로 직접 `fetch`하는 것이 **정상적인 패턴**입니다.
+
+- `host/events/[id]/edit/page.tsx` — 서버에서 이벤트/티켓 데이터 프리페치
+- `events/[id]/page.tsx` — 서버에서 이벤트 상세 데이터 프리페치
+
+이 파일들은 수정하지 않습니다.
+
+---
+
+## 수정 대상 제외 (파일 업로드)
+
+> [!WARNING]
+> 파일 업로드(`FormData`)는 `api` 래퍼가 기본적으로 `Content-Type: application/json`을 설정하므로 직접 사용이 불가능합니다.
+> `api` 래퍼에 `upload` 메서드를 추가하거나, 이 케이스만 `fetch`를 유지할 수 있습니다.
+
+해당 파일 (3건):
+- `host/contact/page.tsx` (L88) — 문의 첨부파일 업로드
+- `host/profile/_components/ProfileForm.tsx` (L43) — 프로필 이미지 업로드
+- `EventForm.tsx` (L150) — 썸네일 이미지 업로드
+
+### 제안: `api.upload()` 메서드 추가
+
+```typescript
+// @/lib/api.ts 에 추가
+upload: <T>(endpoint: string, formData: FormData, options?: FetchOptions) =>
+  apiFetch<T>(endpoint, {
+    ...options,
+    method: 'POST',
+    body: formData,
+    headers: {}, // Content-Type을 브라우저가 자동 설정하도록 비움
+  }),
+```
+
+---
+
+## Proposed Changes
+
+### 1단계: `api` 래퍼 확장
+
+#### [MODIFY] [api.ts](file:///home/young/workspace/team3-jangane-venueon/frontend/src/lib/api.ts)
+- `api.upload()` 메서드 추가 (FormData 전송용, Content-Type 헤더 제거)
+
+---
+
+### 2단계: `host/` 도메인 (클라이언트 컴포넌트)
+
+#### [MODIFY] [EventForm.tsx](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/host/events/[id]/_components/EventForm/EventForm.tsx)
+총 15건의 `fetch` → `api.*` 변환:
+- L99: `fetch('/api/categories')` → `api.get('/categories')`
+- L150: `fetch('/api/files/upload')` → `api.upload('/files/upload', formData)`
+- L219: `fetch('/api/events', POST)` → `api.post('/events', payload)`
+- L225: `fetch('/api/events/${eventId}', PUT)` → `api.put('/events/${eventId}', payload)`
+- L293: 세션 PUT → `api.put()`
+- L303: 세션 POST → `api.post()`
+- L319: 세션 GET → `api.get()`
+- L354: 기본세션 PUT → `api.put()`
+- L370: 세션 DELETE → `api.delete()`
+- L380: 티켓 DELETE → `api.delete()`
+- L417: 티켓 PUT → `api.put()`
+- L426: 티켓 POST → `api.post()`
+- L440: 게시 PATCH → `api.patch()`
+
+#### [MODIFY] [StatusPanel.tsx](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/host/events/[id]/_components/StatusPanel/StatusPanel.tsx)
+- L68: 세션 상태 변경 PATCH → `api.patch()`
+- L103: 세션 모집 상태 변경 PATCH → `api.patch()`
+
+#### [MODIFY] [contact/page.tsx](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/host/contact/page.tsx)
+- L88: 파일 업로드 → `api.upload()` (api 래퍼 확장 후)
+
+#### [MODIFY] [ProfileForm.tsx](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/host/profile/_components/ProfileForm.tsx)
+- L43: 파일 업로드 → `api.upload()` (api 래퍼 확장 후)
+
+---
+
+### 3단계: `events/` 도메인 (클라이언트 컴포넌트)
+
+#### [MODIFY] [useEvents.ts](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/events/useEvents.ts)
+- L38: `fetch(url)` → `api.get()`
+
+#### [MODIFY] [ActionMenu.tsx](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/events/[id]/_components/ActionMenu/ActionMenu.tsx)
+- L41: 이벤트 삭제 DELETE → `api.delete()`
+
+#### [MODIFY] [useEventReviews.ts](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/events/[id]/_components/ReviewSection/useEventReviews.ts)
+- L9: 리뷰 조회 GET → `api.get()`
+
+#### [MODIFY] [useTicketCart.ts](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/events/[id]/_components/TicketList/useTicketCart.ts)
+- L15: 장바구니 추가 POST → `api.post()`
+- L35: 장바구니 조회 GET → `api.get()`
+
+---
+
+### 4단계: `orders/` 도메인
+
+#### [MODIFY] [useCheckout.ts](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/orders/checkout/useCheckout.ts)
+- L40: 주문 생성 POST → `api.post()`
+
+#### [MODIFY] [useRefund.ts](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/orders/refund/useRefund.ts)
+- L24: 내 주문 조회 GET → `api.get()`
+- L45: 환불 요청 POST → `api.post()`
+
+#### [MODIFY] [usePaymentConfirm.ts](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/orders/checkout/success/usePaymentConfirm.ts)
+- L31: 결제 확인 POST → `api.post()`
+
+---
+
+### 5단계: `cart/` 도메인
+
+#### [MODIFY] [useCart.ts](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/cart/useCart.ts)
+- L47: 장바구니 조회 GET → `api.get()`
+- L88: 수량 변경 PATCH → `api.patch()`
+- L108: 항목 삭제 DELETE → `api.delete()`
+
+---
+
+### 6단계: `mypage/orders/` 도메인
+
+#### [MODIFY] [mypage/orders/page.tsx](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/mypage/orders/page.tsx)
+- L37: 내 주문 조회 GET → `api.get()`
+
+#### [MODIFY] [mypage/orders/[id]/page.tsx](file:///home/young/workspace/team3-jangane-venueon/frontend/src/app/mypage/orders/[id]/page.tsx)
+- L39: 주문 상세 조회 GET → `api.get()`
+- L61: 환불 신청 POST → `api.post()`
+
+---
+
+## 주의사항
+
+> [!CAUTION]
+> `api` 래퍼는 에러 시 자동으로 `throw new Error()`를 합니다.
+> 기존 `fetch` 코드에서 `res.ok` 체크 후 커스텀 에러 메시지를 만들고 있는 부분은, `try/catch`에서 에러를 받아 처리하는 방식으로 바꿔야 합니다.
+>
+> 또한, 기존 `fetch` 코드에서 `.json()` 호출 후 `resData.success`를 체크하는 부분은 `api` 래퍼가 자동으로 `.json()` 변환을 해주므로, 반환된 객체를 직접 사용하면 됩니다.
+
+## 변환 패턴 요약
+
+```typescript
+// Before (비표준)
+const res = await fetch('/api/events', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(payload),
+});
+if (!res.ok) throw new Error('실패');
+const data = await res.json();
+
+// After (표준)
+const data = await api.post('/events', payload);
+```
+
+## Verification Plan
+
+### Automated Tests
+- `npm run build`로 TypeScript 컴파일 에러 확인
+- 실제 브라우저에서 이벤트 생성/수정/삭제, 장바구니, 주문 흐름 확인
+
+### Manual Verification
+- 이벤트 CRUD 전체 플로우 테스트
+- 장바구니 → 결제 → 환불 플로우 테스트
+- 파일 업로드(썸네일, 프로필 이미지) 동작 확인
