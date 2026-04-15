@@ -6,5 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface GetCommunityQuery {
     Page<CommunityResponse> getPublicCommunities(Pageable pageable, String email);
+    Page<CommunityResponse> getJoinedCommunities(Pageable pageable, String email);
     CommunityResponse getCommunityById(Long id, String email);
 }

@@ -4,6 +4,7 @@ public record CreateCommunityRequest(
         Long eventId,
         String name,
         String description,
-        Boolean isPublic
+        Boolean isPublic,
+        com.venueon.community.domain.model.CommunityType type
 ) {
 }

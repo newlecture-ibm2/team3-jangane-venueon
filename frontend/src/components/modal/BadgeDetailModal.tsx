@@ -129,7 +129,7 @@ export default function BadgeDetailModal({ isOpen, onClose, badgeId }: BadgeDeta
                 variant="secondary" 
                 style={{ flex: 1 }} 
                 disabled={isDeletedEvent}
-                onClick={() => detail.eventId && router.push(`/community/events/${detail.eventId}`)}
+                onClick={() => router.push('/community?tab=joined')}
               >
                 커뮤니티 이동
               </Button>

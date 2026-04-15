@@ -166,6 +166,11 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean existsByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses) {
+        return orderJpaRepository.existsByUserIdAndEventIdAndStatusIn(userId, eventId, statuses);
+    }
+
     // --- Mapper ---
     private Order toDomain(OrderJpaEntity entity) {
         return new Order(

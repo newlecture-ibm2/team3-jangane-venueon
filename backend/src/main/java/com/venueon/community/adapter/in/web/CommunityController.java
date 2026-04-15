@@ -74,6 +74,27 @@ public class CommunityController {
                     .body("Error retrieving communities: " + e.getMessage() + "\n" + sw.toString());
         }
     }
+    
+    /**
+     * 내가 참여한 커뮤니티 목록 조회
+     * GET /communities/me
+     */
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyCommunities(
+            @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = null;
+            if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+                email = ((UserDetails) authentication.getPrincipal()).getUsername();
+            }
+            Page<CommunityResponse> communities = getCommunityQuery.getJoinedCommunities(pageable, email);
+            return ResponseEntity.ok(communities);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving joined communities: " + e.getMessage());
+        }
+    }
 
     /**
      * 커뮤니티 단건 조회

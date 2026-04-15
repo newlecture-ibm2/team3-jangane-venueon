@@ -4,6 +4,7 @@ import React, { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { InputField, TextareaField, Dropdown, Button } from '@/components/ui';
 import { useUIStore } from '@/store/useUIStore';
+import styles from './page.module.css';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -61,23 +62,14 @@ export default function CommunityWritePage({ params }: Props) {
   };
 
   return (
-    /* 사이드바 없이 중앙 800px 레이아웃 적용 */
-    <div className="container-single">
+    <div className={styles.container}>
       
-      <section style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+      <section className={styles.headerSection}>
         <Button variant="secondary" onClick={() => router.back()}>← 뒤로가기</Button>
-        <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>새 게시글 작성</h1>
+        <h1 className={styles.title}>새 게시글 작성</h1>
       </section>
 
-      <section style={{ 
-        background: '#F9FAFB', 
-        padding: '32px', 
-        borderRadius: '16px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: '24px',
-        border: '1px solid #E5E7EB'
-      }}>
+      <section className={styles.formSection}>
         <Dropdown
           label="말머리 (필수)"
           value={type}
@@ -103,7 +95,7 @@ export default function CommunityWritePage({ params }: Props) {
           defaultValue={content}
           onChange={(e) => setContent(e.target.value)}
           showCount={true}
-          rows={12}
+          rows={15}
         />
 
         <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
