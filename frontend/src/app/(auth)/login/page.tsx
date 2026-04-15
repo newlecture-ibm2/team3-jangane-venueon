@@ -51,7 +51,11 @@ function LoginContent() {
       }
 
       showToast("로그인 성공!", "success");
-      const redirectTo = searchParams.get("redirect") || "/";
+      const explicitRedirect = searchParams.get("redirect");
+      // 명시적 redirect가 없으면 role에 따라 분기
+      const roleId = result.user?.role?.id;
+      const defaultRedirect = roleId === 1 ? "/admin/dashboard" : roleId === 3 ? "/host" : "/";
+      const redirectTo = explicitRedirect || defaultRedirect;
       router.push(redirectTo);
       router.refresh(); // 리프레시를 통해 헤더 등 업데이트
     } catch (err: any) {
