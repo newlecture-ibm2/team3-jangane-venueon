@@ -34,10 +34,13 @@ function GoogleLoginButtonContent({ position = "bottom", redirectTo }: GoogleLog
   const handleGoogleCallback = useCallback(
     async (response: { credential: string }) => {
       try {
-        await authAPI.googleLogin(response.credential);
+        const result = await authAPI.googleLogin(response.credential);
         await checkSession();
         showToast("구글 로그인 성공!", "success");
-        const nextUrl = redirectTo || searchParams.get("redirect") || "/";
+        const explicitRedirect = redirectTo || searchParams.get("redirect");
+        const roleId = result.user?.role?.id;
+        const defaultRedirect = roleId === 1 ? "/admin/dashboard" : roleId === 3 ? "/host" : "/";
+        const nextUrl = explicitRedirect || defaultRedirect;
         router.push(nextUrl);
         router.refresh();
       } catch (err: any) {
