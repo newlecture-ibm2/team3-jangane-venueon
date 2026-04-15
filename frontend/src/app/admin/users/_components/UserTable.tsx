@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import styles from './UserTable.module.css';
 import { MoreIcon } from '@/components/icons';
 import { PopoverMenu } from '@/components/ui';
-import type { AdminUserListItem } from '@/lib/admin-api';
+import { AdminUserListItem, formatImageUrl } from '@/lib/admin-api';
 import Tag from '@/components/ui/Tag';
 
 interface UserTableProps {
@@ -95,7 +95,13 @@ export default function UserTable({ users, isLoading, onViewDetail, onDeleteClic
             <tr key={user.id} onClick={() => onViewDetail(user.id)} style={{ cursor: 'pointer' }}>
               <td className={styles.hostCol}>
                 <div className={styles.userProfile}>
-                  <div className={styles.avatar}></div>
+                  <div className={styles.avatar}>
+                    {user.profileImg ? (
+                      <img src={formatImageUrl(user.profileImg)} alt={user.nickname} className={styles.avatarImg} />
+                    ) : (
+                      <div className={styles.avatarPlaceholder} />
+                    )}
+                  </div>
                   <span className={styles.userName} title={user.nickname}>
                     {user.nickname}
                   </span>

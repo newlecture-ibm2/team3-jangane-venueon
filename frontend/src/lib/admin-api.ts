@@ -3,12 +3,24 @@
  */
 import { api } from './api';
 
+/**
+ * 프로필 이미지 등 업로드된 이미지 경로를 절대 경로로 전환 (Admin 전용 가공)
+ */
+export function formatImageUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith("http") || path.startsWith("/")) {
+    return path;
+  }
+  return `/upload/${path}`;
+}
+
 // ── 타입 정의 ──
 
 export interface AdminUserListItem {
   id: number;
   email: string;
   nickname: string;
+  profileImg: string | null;
   role: { id: number; label: string };
   active: boolean;
   createdAt: string;

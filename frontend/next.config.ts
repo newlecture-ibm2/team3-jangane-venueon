@@ -1,17 +1,21 @@
 import type { NextConfig } from "next";
 
-const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-
 const nextConfig: NextConfig = {
   output: "standalone", // ⭐ Docker 이미지 최적화
+  images: {
+    unoptimized: true,
+  },
   async rewrites() {
     return [
-      // 로컬 개발: /upload/* → 백엔드 프록시 (Spring이 서빙)
-      // 배포: Nginx가 /upload/* 를 먼저 가로채므로 이 rewrite 무시됨
       {
+        // 핵심: /upload/ 경로를 바로 백엔드로 보내지 않고 BFF(/api/upload)를 거치게 하여 JWT를 주입함
         source: "/upload/:path*",
-        destination: `${backendUrl}/upload/:path*`,
-      }
+        destination: "/api/upload/:path*",
+      },
+      {
+        source: "/images/:path*",
+        destination: "/api/upload/:path*",
+      },
     ];
   },
 };

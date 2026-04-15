@@ -1,8 +1,20 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
   width: 100%;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .chartCard {
@@ -171,4 +183,65 @@
   font-size: 11px;
   font-weight: 600;
   color: #10B981;
+}
+
+/* 도넛 차트 전용 스타일 */
+.donutWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.donutCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.donutValue {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1;
+}
+
+.donutLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-top: 4px;
+}
+
+.donutLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #F3F4F6;
+}
+
+.donutLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.donutDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.donutText {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4B5563;
 }

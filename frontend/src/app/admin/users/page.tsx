@@ -13,7 +13,7 @@ import UserDetailModal from './_components/UserDetailModal';
 export default function AdminUsersPage() {
   // ── 검색/필터 상태 ──
   const [keyword, setKeyword] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
+  const [roleFilter, setRoleFilter] = useState('3');
   const [activeFilter, setActiveFilter] = useState(''); // '', 'true', 'false'
   const [currentPage, setCurrentPage] = useState(1);
 

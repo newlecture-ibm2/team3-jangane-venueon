@@ -152,7 +152,7 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
     >
       {menus.map((menu) => {
         let isActive = false;
-        
+
         // 커뮤니티 페이지 특수 활성화 로직
         if (pathname === '/community') {
           if (menu.href === '/community?tab=joined') {
@@ -162,7 +162,13 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
           }
         } else {
           // 일반 활성화 로직
-          isActive = pathname === menu.href || (menu.href !== '/' && pathname.startsWith(`${menu.href}/`));
+          isActive = pathname === menu.href || (
+            menu.href !== '/' && 
+            menu.href !== '/admin' && 
+            menu.href !== '/host' && 
+            menu.href !== '/mypage' && 
+            pathname.startsWith(`${menu.href}/`)
+          );
         }
 
         const isLogout = menu.href === '/logout';
