@@ -13,9 +13,10 @@ interface TiptapEditorProps {
   content: string;
   onChange: (html: string) => void;
   placeholder?: string;
+  category?: string;
 }
 
-export default function TiptapEditor({ content, onChange, placeholder }: TiptapEditorProps) {
+export default function TiptapEditor({ content, onChange, placeholder, category = 'event-detail' }: TiptapEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
@@ -56,7 +57,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('category', 'event-detail');
+      formData.append('category', category);
 
       const response = await fetch('/api/files/upload', {
         method: 'POST',
