@@ -1,0 +1,22 @@
+.formContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-24);
+}
+
+.formSection {
+  background: #F9FAFB;
+  padding: 32px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border: 1px solid #E5E7EB;
+}
+
+@media (max-width: 768px) {
+  .formContainer {
+    max-width: 100%;
+    padding: var(--space-16);
+  }
+}

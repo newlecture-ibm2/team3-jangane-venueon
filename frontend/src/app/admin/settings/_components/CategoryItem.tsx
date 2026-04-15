@@ -2,7 +2,7 @@
 
 import React from 'react';
 import styles from '../page.module.css';
-import { Toggle, StatusTag } from '@/components/ui';
+import { Toggle } from '@/components/ui';
 import { 
   DeleteIcon, 
   DragIcon,
@@ -63,11 +63,6 @@ export default function CategoryItem({
           onChange={() => onToggleVisibility(item.id, !isVisible)} 
         />
       </div>
-
-      <div className={styles.colStatus}>
-        <StatusTag domain="payment" status={isVisible ? '결제 완료' : '취소됨'} />
-      </div>
-
       <div className={styles.itemActions}>
         <button className={styles.iconButton} onClick={() => onEdit(item)}>
           <EditIcon width={18} height={18} />

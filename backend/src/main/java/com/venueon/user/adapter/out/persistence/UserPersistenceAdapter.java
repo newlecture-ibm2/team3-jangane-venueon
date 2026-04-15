@@ -33,6 +33,7 @@ public class UserPersistenceAdapter implements UserRepositoryPort {
             entity.updateProfile(user.getNickname(), user.getProfileImg());
             entity.updatePassword(user.getPassword());
             entity.updateBadgeVisibility(user.isBadgeVisible());
+            entity.updateActiveStatus(user.isActive());
             if (!user.isActive()) {
                 entity.softDelete(user.getEmail());
             } else {

@@ -64,6 +64,6 @@ public class CategoryPersistenceAdapter implements CategoryPort {
 
     @Override
     public boolean isCategoryInUse(Long id) {
-        return eventRepository.existsByCategoryId(id);
+        return eventRepository.existsByCategory_Id(id);
     }
 }

@@ -44,7 +44,8 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePost(@PathVariable Long id, @RequestBody UpdatePostRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();
@@ -69,7 +70,8 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();
@@ -108,15 +110,17 @@ public class PostController {
     public ResponseEntity<Page<PostListResponse>> getPostList(
             @RequestParam Long communityId,
             @RequestParam(required = false) PostType type,
+            @RequestParam(required = false) String keyword,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = null;
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
             email = ((UserDetails) authentication.getPrincipal()).getUsername();
         }
 
-        Page<PostListResponse> posts = getPostQuery.getPostsByCommunityId(communityId, type, pageable, email);
+        Page<PostListResponse> posts = getPostQuery.getPostsByCommunityId(communityId, type, keyword, pageable, email);
         return ResponseEntity.ok(posts);
     }
 
@@ -145,7 +149,8 @@ public class PostController {
     public ResponseEntity<Void> toggleBookmark(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = null;
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
             email = ((UserDetails) authentication.getPrincipal()).getUsername();
         }
 
@@ -160,9 +165,10 @@ public class PostController {
     @GetMapping("/bookmarks/me")
     public ResponseEntity<Page<PostListResponse>> getMyBookmarks(
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -178,7 +184,8 @@ public class PostController {
     @PatchMapping("/{id}/pin")
     public ResponseEntity<Void> togglePin(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();
@@ -193,7 +200,8 @@ public class PostController {
     @PatchMapping("/{id}/notice")
     public ResponseEntity<Void> toggleNotice(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();

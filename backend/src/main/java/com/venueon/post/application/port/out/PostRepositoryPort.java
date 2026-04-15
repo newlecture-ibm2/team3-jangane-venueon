@@ -15,6 +15,8 @@ public interface PostRepositoryPort {
     Page<Post> findByCommunityId(Long communityId, Pageable pageable);
 
     Page<Post> findByCommunityIdAndType(Long communityId, PostType type, Pageable pageable);
+    
+    Page<Post> findByKeyword(Long communityId, PostType type, String keyword, Pageable pageable);
 
     boolean existsLike(Long postId, Long userId);
 

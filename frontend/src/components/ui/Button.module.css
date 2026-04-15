@@ -59,3 +59,7 @@
 .outlined:hover:not(:disabled) {
   filter: brightness(0.95);
 }
+
+.fullWidth {
+  width: 100%;
+}

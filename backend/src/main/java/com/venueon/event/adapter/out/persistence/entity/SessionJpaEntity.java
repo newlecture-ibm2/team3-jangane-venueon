@@ -119,4 +119,14 @@ public class SessionJpaEntity {
     public boolean isDefault() {
         return isDefault != null && isDefault;
     }
+
+    public void updateInfo(String title, String description, LocalDateTime startTime, LocalDateTime endTime, String location, boolean isOnline, int maxAttendees) {
+        this.title = title;
+        this.description = description;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.location = location;
+        this.isOnline = isOnline;
+        this.maxAttendees = maxAttendees;
+    }
 }
