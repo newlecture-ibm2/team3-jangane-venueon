@@ -49,6 +49,7 @@ export async function POST(req: Request) {
         nickname: userData.nickname,
         role: userData.role, // { id: number, label: string }
       },
+      tempPassword: loginData.tempPassword || false,
       success: true
     });
   } catch (error) {
