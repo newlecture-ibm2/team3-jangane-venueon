@@ -15,4 +15,5 @@ public interface CommunityJpaRepository extends JpaRepository<CommunityJpaEntity
     Page<CommunityJpaEntity> findByIsPublicTrue(Pageable pageable);
 
     List<CommunityJpaEntity> findByCreatorId(Long creatorId);
+    Page<CommunityJpaEntity> findByIdIn(List<Long> ids, Pageable pageable);
 }

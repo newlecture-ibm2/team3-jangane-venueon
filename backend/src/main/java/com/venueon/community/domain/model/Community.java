@@ -19,5 +19,6 @@ public class Community {
     private String thumbnailUrl;
     private int memberCount;
     private boolean isPublic;
+    private CommunityType type;
     private LocalDateTime createdAt;
 }

@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import styles from './Sidebar.module.css';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useAuth } from '@/store/useAuthStore';
@@ -78,21 +79,32 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
   );
 }
 
-export default function Sidebar({ role = 'user', className = '', fakePathname }: SidebarProps) {
+function SidebarContent({ role = 'user', className = '', fakePathname }: SidebarProps) {
   const actualPathname = usePathname() || '';
   const pathname = fakePathname || actualPathname;
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
   const router = useRouter();
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
-  // 로그아웃 확인 클릭 시 동작
   const handleLogoutConfirm = async () => {
     setIsLogoutModalOpen(false);
     await logout();
   };
 
+  // Google 소셜 로그인 유저 여부
+  const isSocialUser = user?.provider === 'GOOGLE';
+
   const getMenus = () => {
+    if (pathname.startsWith('/community')) {
+      return [
+        { label: '전체 커뮤니티', href: '/community', icon: CommunityIcon },
+        { label: '내가 참여한 커뮤니티', href: '/community?tab=joined', icon: WishlistIcon },
+      ];
+    }
+
     switch (role) {
       case 'admin':
         return [
@@ -108,6 +120,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
         return [
           { label: '대시보드', href: '/host', icon: DashboardIcon },
           { label: '내 이벤트 목록', href: '/host/events', icon: SeminarIcon },
+          { label: '전체 주문 내역', href: '/host/payments', icon: OrderIcon },
           { label: '프로필 설정', href: '/host/profile', icon: ProfileIcon },
           { label: '1:1 문의', href: '/host/contact', icon: ContactIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
@@ -122,7 +135,8 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
           { label: '내 커뮤니티', href: '/mypage/community', icon: CommunityIcon },
           { label: '내 뱃지', href: '/mypage/badges', icon: BadgeIcon },
           { label: '프로필 설정', href: '/mypage/profile', icon: ProfileIcon },
-          { label: '계정 보안', href: '/mypage/security', icon: SecurityIcon },
+          // 소셜 로그인 유저는 비밀번호가 없으므로 계정 보안 메뉴 숨김
+          ...(!isSocialUser ? [{ label: '계정 보안', href: '/mypage/security', icon: SecurityIcon }] : []),
           { label: '1:1 문의', href: '/mypage/contact', icon: ContactIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
@@ -131,24 +145,26 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
 
   const menus = getMenus();
 
-  // 현재 pathname에 대해 가장 구체적으로 일치하는(가장 긴) 메뉴를 찾습니다.
-  // 예: /mypage/profile 이면 /mypage 보다는 /mypage/profile 이 선택되도록 합니다.
-  const activeMenu = menus.reduce((bestMatch, menu) => {
-    if (pathname === menu.href || pathname.startsWith(`${menu.href}/`)) {
-      if (!bestMatch || menu.href.length > bestMatch.href.length) {
-        return menu;
-      }
-    }
-    return bestMatch;
-  }, null as any);
-
   return (
     <aside
       className={`${styles.sidebar} ${className}`.trim()}
       style={{ height: 'calc(100vh - 40px)' }}
     >
       {menus.map((menu) => {
-        const isActive = activeMenu?.href === menu.href;
+        let isActive = false;
+        
+        // 커뮤니티 페이지 특수 활성화 로직
+        if (pathname === '/community') {
+          if (menu.href === '/community?tab=joined') {
+            isActive = (tab === 'joined');
+          } else if (menu.href === '/community') {
+            isActive = (tab !== 'joined');
+          }
+        } else {
+          // 일반 활성화 로직
+          isActive = pathname === menu.href || (menu.href !== '/' && pathname.startsWith(`${menu.href}/`));
+        }
+
         const isLogout = menu.href === '/logout';
         return (
           <SidebarItem
@@ -172,5 +188,13 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
         confirmText="로그아웃"
       />
     </aside>
+  );
+}
+
+export default function Sidebar(props: SidebarProps) {
+  return (
+    <Suspense fallback={<aside className={`${styles.sidebar} ${props.className || ''}`.trim()} style={{ height: 'calc(100vh - 40px)' }} />}>
+      <SidebarContent {...props} />
+    </Suspense>
   );
 }

@@ -190,7 +190,7 @@ export default function HostDashboardPage() {
                 <h3 className={styles.sectionTitle}>빠른 작업</h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <Link href="/host/events/new" className="button" style={{
+                <Link href="/events/new" className="button" style={{
                   background: '#1e293b', color: 'white', padding: '16px', borderRadius: '8px',
                   textAlign: 'center', textDecoration: 'none', fontWeight: '600'
                 }}>

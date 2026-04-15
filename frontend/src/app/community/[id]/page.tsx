@@ -18,6 +18,7 @@ export default async function CommunityDetailPage({ params }: Props) {
   let communityName = '커뮤니티';
   let communityDesc = '';
   let canManage = false;
+  let canWrite = true;
 
   try {
     const headers: Record<string, string> = {};
@@ -39,6 +40,7 @@ export default async function CommunityDetailPage({ params }: Props) {
       communityName = data.name;
       communityDesc = data.description || '';
       canManage = data.canManage || false;
+      canWrite = data.canWrite !== undefined ? data.canWrite : true;
     } else {
       console.error(`[Frontend-Server] Fetch failed: status=${res.status}`);
     }
@@ -52,7 +54,7 @@ export default async function CommunityDetailPage({ params }: Props) {
       <CommunityDetailHeader name={communityName} description={communityDesc} canManage={canManage} />
 
       {/* 2단 분할: 좌측 리스트 + 우측 상세 */}
-      <CommunityPostContainer communityId={id} canManage={canManage} />
+      <CommunityPostContainer communityId={id} canManage={canManage} canWrite={canWrite} />
     </div>
   );
 }

@@ -13,7 +13,9 @@ public record CommunityResponse(
         boolean isPublic,
         String creatorNickname,
         LocalDateTime createdAt,
-        boolean canManage // 관리 권한 여부
+        boolean canManage, // 관리 권한 여부
+        boolean canWrite,   // 글쓰기 권한 여부
+        com.venueon.community.domain.model.CommunityType type
 ) {
     public static CommunityResponse from(CommunityJpaEntity entity) {
         return new CommunityResponse(
@@ -25,7 +27,9 @@ public record CommunityResponse(
                 entity.isPublic(),
                 entity.getCreator().getNickname(),
                 entity.getCreatedAt(),
-                false // 기본값
+                false, // canManage 기본값
+                true,   // canWrite 기본값
+                entity.getType()
         );
     }
 }

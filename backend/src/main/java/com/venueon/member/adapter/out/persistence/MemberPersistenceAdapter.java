@@ -50,6 +50,13 @@ public class MemberPersistenceAdapter implements MemberRepositoryPort {
         return memberJpaRepository.existsByCommunityIdAndUserId(communityId, userId);
     }
 
+    @Override
+    public java.util.List<Long> findCommunityIdsByUserId(Long userId) {
+        return memberJpaRepository.findByUserId(userId).stream()
+                .map(m -> m.getCommunity().getId())
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     private Member mapToDomain(MemberJpaEntity entity) {
         return new Member(
                 entity.getId(),
