@@ -6,6 +6,12 @@ import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Pagination, InputField } from '@/components/ui';
 import styles from '../events/page.module.css';
 
+const CATEGORY_MAP: Record<number, string> = {
+  1: '디자인',
+  2: '개발',
+  3: '마케팅',
+};
+
 export default function WishlistPage() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,23 +64,26 @@ export default function WishlistPage() {
               {lectures.map((lecture) => (
                 <Card
                   key={lecture.wishlistId}
+                  variant="landing"
                   eventId={lecture.id}
                   isWishlistedProp={true}
-                  status={lecture.status}
+                  category={lecture.categoryId ? (CATEGORY_MAP[lecture.categoryId] || '기타') : undefined}
+                  status={lecture.status?.label || lecture.status}
+                  recruitmentStatus={lecture.recruitmentStatus?.label || lecture.recruitmentStatus}
                   title={lecture.title}
+                  imageUrl={lecture.thumbnailUrl ? `/upload/${lecture.thumbnailUrl}` : undefined}
                   organizer={lecture.organizer}
                   dateTime={lecture.dateTime}
                   location={lecture.location}
                   price={lecture.price}
-                  actionButtonText="장바구니 담기"
-                  onActionClick={() => router.push(`/events/${lecture.id}`)}
+                  onCardClick={() => router.push(`/events/${lecture.id}`)}
                 />
               ))}
             </CardGrid>
 
             {!loading && lectures.length === 0 && (
               <p style={{ color: 'var(--color-text-gray-500)', textAlign: 'center', width: '100%', padding: 'var(--space-48) 0' }}>
-                아직 찜한 세션이 없습니다.
+                아직 찜한 이벤트가 없습니다.
               </p>
             )}
 

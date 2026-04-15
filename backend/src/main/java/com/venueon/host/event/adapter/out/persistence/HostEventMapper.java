@@ -75,7 +75,8 @@ public class HostEventMapper {
             Long totalRevenue,
             Long totalAttendees,
             com.venueon.common.model.DomainCode effectiveStatus,
-            com.venueon.common.model.DomainCode recruitmentStatus
+            com.venueon.common.model.DomainCode recruitmentStatus,
+            com.venueon.user.adapter.out.persistence.entity.HostProfileJpaEntity hostProfile
     ) {
         var firstSession = sessions != null && !sessions.isEmpty() ? sessions.get(0) : null;
         
@@ -101,6 +102,12 @@ public class HostEventMapper {
             }
         }
 
+        String hostName = (hostProfile != null && hostProfile.getOrgName() != null) 
+                            ? hostProfile.getOrgName() 
+                            : (entity.getCreator() != null ? entity.getCreator().getNickname() : "알 수 없는 호스트");
+        String hostDescription = hostProfile != null ? hostProfile.getOrgDescription() : null;
+        String hostProfileImg = (entity.getCreator() != null) ? entity.getCreator().getProfileImg() : null;
+
         return new HostEventDetailResponse(
                 entity.getId(),
                 entity.getTitle(),
@@ -116,7 +123,9 @@ public class HostEventMapper {
                 originalPrice,
                 hasDiscount,
                 firstSession != null ? firstSession.getLocation() : "장소 미정",
-                entity.getCreator() != null ? entity.getCreator().getNickname() : "알 수 없는 호스트",
+                hostName,
+                hostDescription,
+                hostProfileImg,
                 sessions != null ? sessions.stream().map(this::toSessionDetail).toList() : Collections.emptyList()
         );
     }

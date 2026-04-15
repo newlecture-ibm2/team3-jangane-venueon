@@ -23,6 +23,7 @@ public class HostEventPersistenceAdapter implements HostEventQueryPort {
     private final com.venueon.host.order.adapter.out.persistence.repository.HostOrderQueryRepository orderQueryRepository;
     private final com.venueon.event.adapter.out.persistence.EventMapper eventMapper;
     private final com.venueon.event.adapter.out.persistence.SessionMapper sessionMapper;
+    private final com.venueon.user.adapter.out.persistence.repository.HostProfileJpaRepository hostProfileJpaRepository;
 
     @Override
     public Page<HostEventResponse> findByHostId(Long hostId, String status, Pageable pageable) {
@@ -83,6 +84,8 @@ public class HostEventPersistenceAdapter implements HostEventQueryPort {
         var tickets = ticketJpaRepository.findByEventIdIn(java.util.List.of(eventId));
         long totalRevenue = orderQueryRepository.sumRevenueByEventId(eventId);
         long totalAttendees = orderQueryRepository.countAttendeesByEventId(eventId);
+        
+        var hostProfileOpt = hostProfileJpaRepository.findByUserId(hostId);
 
         // 도메인 로직을 활용한 상태 계산 추가
         var eventDomain = eventMapper.toDomain(event);
@@ -95,7 +98,8 @@ public class HostEventPersistenceAdapter implements HostEventQueryPort {
                 totalRevenue, 
                 totalAttendees,
                 eventDomain.getEffectiveStatus(sessionDomains),
-                eventDomain.getRecruitmentStatus(sessionDomains)
+                eventDomain.getRecruitmentStatus(sessionDomains),
+                hostProfileOpt.orElse(null)
         );
     }
 

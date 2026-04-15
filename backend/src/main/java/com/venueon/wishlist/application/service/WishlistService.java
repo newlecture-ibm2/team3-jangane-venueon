@@ -46,7 +46,9 @@ public class WishlistService implements ToggleWishlistUseCase, GetWishlistUseCas
                 .map(item -> {
                     Event event = loadEventPort.loadEvent(item.getEventId());
                     HostInfo host = loadEventPort.loadHost(event.getCreatorId());
-                    return WishlistResponse.of(item, event, host);
+                    java.util.List<com.venueon.event.domain.model.Session> sessions = loadEventPort.loadSessions(event.getId());
+                    java.util.List<com.venueon.ticket.domain.model.Ticket> tickets = loadEventPort.loadTickets(event.getId());
+                    return WishlistResponse.of(item, event, host, sessions, tickets);
                 });
     }
 
