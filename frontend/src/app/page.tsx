@@ -43,7 +43,7 @@ export default function Home() {
   const [activeRecruitmentStatus, setActiveRecruitmentStatus] = useState('all');
   const [activeEventStatus, setActiveEventStatus] = useState('all');
 
-  const [categoryOptions, setCategoryOptions] = useState<{value: string, label: string}[]>([
+  const [categoryOptions, setCategoryOptions] = useState<{ value: string, label: string }[]>([
     { value: 'all', label: '카테고리: 전체' }
   ]);
 
@@ -87,13 +87,13 @@ export default function Home() {
   }, []);
 
   const fetchEvents = async (
-      page: number, 
-      keyword: string = '', 
-      categoryId: string = 'all',
-      isOnline: string = 'all',
-      recruitmentStatusId: string = 'all',
-      eventStatusId: string = 'all'
-    ) => {
+    page: number,
+    keyword: string = '',
+    categoryId: string = 'all',
+    isOnline: string = 'all',
+    recruitmentStatusId: string = 'all',
+    eventStatusId: string = 'all'
+  ) => {
     setLoading(true);
     try {
       // Backend pagination is 0-indexed, UI is 1-indexed
@@ -217,27 +217,27 @@ export default function Home() {
 
           <div className={styles.activeFilters}>
             {activeCategory !== 'all' && (
-              <FilterChip 
-                label={categoryOptions.find(o => o.value === activeCategory)?.label || ''} 
-                onClose={() => setActiveCategory('all')} 
+              <FilterChip
+                label={categoryOptions.find(o => o.value === activeCategory)?.label || ''}
+                onClose={() => setActiveCategory('all')}
               />
             )}
             {activeIsOnline !== 'all' && (
-              <FilterChip 
-                label={isOnlineOptions.find(o => o.value === activeIsOnline)?.label || ''} 
-                onClose={() => setActiveIsOnline('all')} 
+              <FilterChip
+                label={isOnlineOptions.find(o => o.value === activeIsOnline)?.label || ''}
+                onClose={() => setActiveIsOnline('all')}
               />
             )}
             {activeRecruitmentStatus !== 'all' && (
-              <FilterChip 
-                label={recruitmentOptions.find(o => o.value === activeRecruitmentStatus)?.label || ''} 
-                onClose={() => setActiveRecruitmentStatus('all')} 
+              <FilterChip
+                label={recruitmentOptions.find(o => o.value === activeRecruitmentStatus)?.label || ''}
+                onClose={() => setActiveRecruitmentStatus('all')}
               />
             )}
             {activeEventStatus !== 'all' && (
-              <FilterChip 
-                label={eventStatusOptions.find(o => o.value === activeEventStatus)?.label || ''} 
-                onClose={() => setActiveEventStatus('all')} 
+              <FilterChip
+                label={eventStatusOptions.find(o => o.value === activeEventStatus)?.label || ''}
+                onClose={() => setActiveEventStatus('all')}
               />
             )}
           </div>
@@ -258,7 +258,7 @@ export default function Home() {
                 if (event.startDate) {
                   try {
                     dateTimeStr = format(new Date(event.startDate), 'yyyy년 M월 d일 a h시');
-                  } catch(e) {}
+                  } catch (e) { }
                 }
 
                 // 모집상태별 D-Day 기준 분기
@@ -273,13 +273,13 @@ export default function Home() {
                   dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
                 }
                 // 모집마감(id===3)이면 D-Day 표시 안 함
-                
+
                 // 간단한 카테고리 맵핑 (프론트에서 관리하는 카테고리가 있다면 가져옴)
                 const categoryLabel = categoryOptions.find(c => c.value === String(event.categoryId))?.label || '기타';
 
                 return (
-                  <div 
-                    key={event.id} 
+                  <div
+                    key={event.id}
                     style={{ cursor: 'pointer' }}
                     onClick={() => router.push(`/events/${event.id}`)}
                   >

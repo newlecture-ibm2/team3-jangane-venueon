@@ -20,3 +20,15 @@
     padding: var(--space-16);
   }
 }
+
+.editorWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
