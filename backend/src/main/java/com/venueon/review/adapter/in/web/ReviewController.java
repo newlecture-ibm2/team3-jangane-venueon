@@ -50,6 +50,7 @@ public class ReviewController {
             String profileUrl = reviewer != null ? (reviewer.getProfileImg() != null ? "/upload/" + reviewer.getProfileImg() : null) : null;
             return ReviewResponse.builder()
                     .id(r.getId())
+                    .authorId(r.getReviewerId())
                     .authorName(authorName)
                     .authorProfileUrl(profileUrl)
                     .rating(r.getRating())

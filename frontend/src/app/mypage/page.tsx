@@ -52,11 +52,11 @@ export default function MyPageDashboard() {
           {/* 요약 박스 (3개 가로 배치) */}
           <div className={styles.summaryContainer}>
             <div className={styles.summaryBox}>
-              <span className={styles.summaryTitle}>참여 중인 세션</span>
+              <span className={styles.summaryTitle}>참여 중인 이벤트</span>
               <span className={styles.summaryContent}>{summaryData.ongoingCourseCount}개</span>
             </div>
             <div className={styles.summaryBox}>
-              <span className={styles.summaryTitle}>리뷰를 기다리는 세션</span>
+              <span className={styles.summaryTitle}>리뷰를 기다리는 이벤트</span>
               <span className={styles.summaryContent}>{summaryData.pendingReviewCount}개</span>
             </div>
             <div className={styles.summaryBox}>
@@ -106,7 +106,7 @@ export default function MyPageDashboard() {
             {activeTab === 'schedule' && (
               <Table columns="1fr 120px 180px 88px">
                 <TableHeader>
-                  <TableCell header>세션 일정 명</TableCell>
+                  <TableCell header>이벤트 명</TableCell>
                   <TableCell header>호스트</TableCell>
                   <TableCell header>일시</TableCell>
                   <TableCell header>상태</TableCell>

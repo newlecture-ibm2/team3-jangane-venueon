@@ -99,7 +99,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
           { label: '대시보드', href: '/admin/dashboard', icon: DashboardIcon },
           { label: '사용자 관리', href: '/admin/users', icon: ProfileIcon },
           { label: '시스템 설정', href: '/admin/settings', icon: SettingIcon },
-          { label: '세션 관리', href: '/admin/events', icon: SeminarSettingIcon },
+          { label: '이벤트 관리', href: '/admin/events', icon: SeminarSettingIcon },
           { label: '커뮤니티 관리', href: '/admin/community', icon: CommunityIcon },
           { label: '신고 관리', href: '/admin/reports', icon: ReportIcon },
           { label: '문의 관리', href: '/admin/contact', icon: RequestIcon },
@@ -108,7 +108,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
       case 'host':
         return [
           { label: '대시보드', href: '/host', icon: DashboardIcon },
-          { label: '내 강의 목록', href: '/host/events', icon: SeminarIcon },
+          { label: '내 이벤트 목록', href: '/host/events', icon: SeminarIcon },
           { label: '프로필 설정', href: '/host/profile', icon: ProfileIcon },
           { label: '1:1 문의', href: '/host/contact', icon: ContactIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
@@ -117,7 +117,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
       default:
         return [
           { label: '대시보드', href: '/mypage', icon: DashboardIcon },
-          { label: '내 세션 목록', href: '/mypage/events', icon: SeminarIcon },
+          { label: '내 이벤트 목록', href: '/mypage/events', icon: SeminarIcon },
           { label: '결제 내역', href: '/mypage/orders', icon: OrderIcon },
           { label: '찜 목록', href: '/mypage/wishlist', icon: WishlistIcon },
           { label: '내 커뮤니티', href: '/mypage/community', icon: CommunityIcon },
