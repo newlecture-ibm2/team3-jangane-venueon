@@ -192,11 +192,17 @@ export default function ContactDetailModal({
               <div className={styles.attachmentSection}>
                 <span className={styles.metaLabel}>첨부파일</span>
                 <FilePreviewList
-                  files={detail.attachmentUrl.split(',').map((url) => ({
-                    name: url.split('/').pop() || '첨부파일',
-                    size: 0,
-                    url: url.trim(),
-                  }))}
+                  files={detail.attachmentUrl.split(',').map((url) => {
+                    const trimmedUrl = url.trim();
+                    const fullUrl = (trimmedUrl.startsWith('/') || trimmedUrl.startsWith('http')) 
+                      ? trimmedUrl 
+                      : `/upload/${trimmedUrl}`;
+                    return {
+                      name: trimmedUrl.split('/').pop() || '첨부파일',
+                      size: 0,
+                      url: fullUrl,
+                    };
+                  })}
                   onClickFile={(file) => window.open(file.url, '_blank')}
                 />
               </div>
