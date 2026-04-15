@@ -72,6 +72,7 @@ services:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - API_BASE_URL=${API_BASE_URL}
       - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - DATA_GO_KR_API_KEY=${DATA_GO_KR_API_KEY}
     depends_on:
       - backend
     restart: unless-stopped

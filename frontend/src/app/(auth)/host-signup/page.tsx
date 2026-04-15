@@ -39,6 +39,48 @@ export default function HostSignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // 사업자번호 인증 상태
+  const [isBusinessVerified, setIsBusinessVerified] = useState(false);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+
+  const verifyBusinessNumber = async () => {
+    if (!businessNumber || businessNumber.length < 10) {
+      showToast("유효한 사업자등록번호 10자리를 입력해 주세요.", "error");
+      return;
+    }
+    setVerifyLoading(true);
+    try {
+      const res = await fetch('/api/business/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessNumber })
+      });
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || "인증 요청에 실패했습니다.");
+
+      const statusData = data.data?.[0];
+      if (!statusData) throw new Error("인증 결과를 확인할 수 없습니다.");
+
+      if (statusData.tax_type === "국세청에 등록되지 않은 사업자등록번호입니다") {
+        setIsBusinessVerified(false);
+        showToast("국세청에 등록되지 않은 번호입니다.", "error");
+      } else if (statusData.b_stt_cd === "01" || statusData.b_stt === "계속사업자") {
+        setIsBusinessVerified(true);
+        showToast("정상 사업자로 확인되었습니다.", "success");
+      } else {
+        setIsBusinessVerified(false);
+        showToast(`휴/폐업 상태입니다: ${statusData.b_stt}`, "error");
+      }
+    } catch (err: any) {
+      setIsBusinessVerified(false);
+      showToast(err.message, "error");
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -47,6 +89,12 @@ export default function HostSignupPage() {
     if (!isHostRequiredAgreed(agreements)) {
       setError("필수 약관에 모두 동의해 주세요.");
       showToast("필수 약관에 모두 동의해 주세요.", "error");
+      return;
+    }
+
+    if (!isBusinessVerified) {
+      setError("사업자등록번호 인증을 완료해 주세요.");
+      showToast("사업자등록번호 인증을 완료해 주세요.", "error");
       return;
     }
 
@@ -150,15 +198,31 @@ export default function HostSignupPage() {
         onChange={(e) => setManagerName(e.target.value)}
         placeholder="담당자 이름을 입력하세요."
       />
-      <InputField
-        id="businessNumber"
-        label="사업자등록번호"
-        type="text"
-        required
-        value={businessNumber}
-        onChange={(e) => setBusinessNumber(e.target.value)}
-        placeholder="사업자등록번호를 입력하세요."
-      />
+      <div className={styles.businessInputWrapper}>
+        <div className={styles.businessInputContainer}>
+          <InputField
+            id="businessNumber"
+            label="사업자등록번호"
+            type="text"
+            required
+            value={businessNumber}
+            onChange={(e) => {
+              setBusinessNumber(e.target.value);
+              setIsBusinessVerified(false);
+            }}
+            placeholder="숫자만 10자리 입력하세요."
+            disabled={isBusinessVerified}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={verifyBusinessNumber}
+          disabled={verifyLoading || isBusinessVerified || businessNumber.length < 10}
+          className={`${styles.verifyBtn} ${isBusinessVerified ? styles.verifyBtnVerified : styles.verifyBtnDefault}`}
+        >
+          {verifyLoading ? "확인 중..." : isBusinessVerified ? "인증 완료" : "인증하기"}
+        </button>
+      </div>
       <UploadField
         label="사업자등록증 (선택)"
         accept="image/*,.pdf"
