@@ -1,5 +1,5 @@
-import CommunityPostContainer from '@/app/community/components/CommunityPostContainer';
-import CommunityDetailHeader from '@/app/community/components/CommunityDetailHeader';
+import CommunityPostContainer from '@/app/community/_components/CommunityPostContainer';
+import CommunityDetailHeader from '@/app/community/_components/CommunityDetailHeader';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 import { sessionOptions, SessionData } from '@/lib/session';

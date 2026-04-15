@@ -1,0 +1,71 @@
+.topBar {
+  margin-bottom: 24px;
+}
+
+.backButton {
+  padding: 8px 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  background-color: #F9FAFB;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #4B5563;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.badge {
+  background-color: #F3F4F6;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #4B5563;
+  font-weight: 600;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  width: fit-content;
+}
+
+.editButtonDetail {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9CA3AF;
+  transition: all 0.2s;
+  border-radius: 6px;
+}
+
+.editButtonDetail:hover {
+  background-color: #F3F4F6;
+  color: var(--color-primary);
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.025em;
+}
+
+.descriptionText {
+  margin-top: 12px;
+  font-size: 16px;
+  color: #6B7280;
+  line-height: 1.6;
+}

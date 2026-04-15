@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Sidebar } from '@/components/layout';
 import { useUIStore } from '@/store/useUIStore';
 import { Pagination, InputField, Tabs, CardGrid } from '@/components/ui';
-import CommunityCard from '@/app/community/components/CommunityCard';
+import CommunityCard from '@/app/community/_components/CommunityCard';
 import { api } from '@/lib/api';
 import { ApiResponse } from '@/lib/admin-api';
 import { format } from 'date-fns';

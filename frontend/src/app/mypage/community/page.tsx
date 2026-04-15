@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import { CardGrid, Pagination, InputField, Tabs } from '@/components/ui';
-import CommunityCard from '@/app/community/components/CommunityCard';
+import CommunityCard from '@/app/community/_components/CommunityCard';
 import styles from './page.module.css';
 
 const TAB_OPTIONS = [

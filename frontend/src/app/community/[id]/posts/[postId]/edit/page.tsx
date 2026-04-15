@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 import { InputField, Dropdown, Button } from '@/components/ui';
-import { useUIStore } from '@/store/useUIStore';
 import dynamic from 'next/dynamic';
-import styles from '../../../../components/CommunityForm.module.css';
+import styles from './page.module.css';
+import { usePostEdit } from './usePostEdit';
 
 const TiptapEditor = dynamic(() => import('@/components/editor/TiptapEditor'), { ssr: false });
 
@@ -14,79 +13,18 @@ interface Props {
 }
 
 export default function PostEditPage({ params }: Props) {
-  const router = useRouter();
-  const { showToast } = useUIStore();
-  
-  const resolvedParams = use(params);
-  const communityId = resolvedParams.id;
-  const postId = resolvedParams.postId;
-
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [type, setType] = useState('GENERAL');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // 기존 게시글 정보 불러오기
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await fetch(`/api/posts/${postId}`);
-        if (!response.ok) throw new Error('게시글을 불러올 수 없습니다.');
-        
-        const data = await response.json();
-        setTitle(data.title);
-        setContent(data.content);
-        setType(data.type);
-      } catch (error) {
-        console.error(error);
-        showToast('로딩 실패', 'error', '게시글 정보를 가져오지 못했습니다.');
-        router.back();
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPost();
-  }, [postId, router, showToast]);
-
-  const handleSubmit = async () => {
-    if (!title.trim() || !content.trim() || content === '<p></p>') {
-      showToast('입력 오류', 'error', '제목과 내용을 모두 입력해주세요.');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const payload = {
-        title,
-        content,
-        type,
-      };
-
-      const response = await fetch(`/api/posts/${postId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error('게시글 수정에 실패했습니다.');
-      }
-
-      showToast('게시글 수정 완료', 'success', '성공적으로 글을 수정했습니다.');
-      
-      router.push(`/community/${communityId}`);
-    } catch (error) {
-      console.error(error);
-      showToast('수정 실패', 'error', '서버 오류가 발생했습니다.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    title,
+    setTitle,
+    content,
+    setContent,
+    type,
+    setType,
+    isLoading,
+    isSubmitting,
+    handleSubmit,
+    router
+  } = usePostEdit({ params });
 
   if (isLoading) {
     return (
