@@ -99,7 +99,8 @@ public class AuthController {
                 result.token(),
                 result.email(),
                 result.nickname(),
-                result.role()
+                result.role(),
+                result.tempPassword()
         );
 
         return ResponseEntity.ok(response);
@@ -118,7 +119,8 @@ public class AuthController {
                 result.token(),
                 result.email(),
                 result.nickname(),
-                result.role()
+                result.role(),
+                result.tempPassword()
         );
 
         return ResponseEntity.ok(response);
@@ -187,5 +189,16 @@ public class AuthController {
         log.debug("이메일 인증 요청: token={}", token);
         authService.verifyEmail(token);
         return ResponseEntity.ok(ApiResponse.success("이메일 인증이 완료되었습니다."));
+    }
+
+    /**
+     * POST /auth/reset-password — 임시 비밀번호 발급 (비밀번호 찾기)
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody java.util.Map<String, String> request) {
+        String email = request.get("email");
+        log.debug("비밀번호 찾기 요청: email={}", email);
+        authService.resetPassword(email);
+        return ResponseEntity.ok(ApiResponse.success("임시 비밀번호가 메일로 발송되었습니다."));
     }
 }

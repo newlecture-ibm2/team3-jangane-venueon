@@ -152,7 +152,7 @@ export default function MyPage() {
       <div className="sidebar-content">
         <div className={styles.content}>
           {/* 페이지 타이틀 */}
-          <h1 className={styles.pageTitle}>내 세션 목록</h1>
+          <h1 className={styles.pageTitle}>내 이벤트 목록</h1>
 
           {/* 탭 + 카드 + 페이지네이션 */}
           <div className={styles.listSection}>
@@ -185,9 +185,11 @@ export default function MyPage() {
                   price={lecture.price}
                   onCardClick={() => router.push(`/events/${lecture.eventId}`)}
                   actionButtonText={
-                    canWriteReview(lecture.eventId) ? '리뷰 작성하기' :
-                      activeTab === 'enrolled' ? '입장하기' :
-                        '상세 보기'
+                    canWriteReview(lecture.eventId) 
+                      ? '리뷰 작성하기' 
+                      : activeTab === 'enrolled' 
+                        ? '입장하기' 
+                        : '상세 보기'
                   }
                   onActionClick={() => {
                     if (canWriteReview(lecture.eventId)) {
@@ -210,7 +212,7 @@ export default function MyPage() {
 
             {!loading && lectures.length === 0 && (
               <p style={{ color: 'var(--color-text-gray-500)', textAlign: 'center', width: '100%', padding: 'var(--space-48) 0' }}>
-                해당 탭에 세션이 없습니다.
+                해당 탭에 이벤트가 없습니다.
               </p>
             )}
 

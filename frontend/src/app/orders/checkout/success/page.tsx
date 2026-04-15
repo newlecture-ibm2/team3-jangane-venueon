@@ -120,17 +120,17 @@ function CheckoutSuccessContent() {
             variant="outlined"
             size="large"
             style={{ flex: 1, backgroundColor: '#FFFFFF', borderColor: 'var(--color-gray-200, #E5E7EB)' }}
-            onClick={() => window.location.href = '/mypage/orders'}
+            onClick={() => window.location.href = '/mypage/events'}
           >
-            내 세션 목록
+            내 이벤트 목록
           </Button>
           <Button
             variant="primary"
             size="large"
             style={{ flex: 1, backgroundColor: 'var(--color-gray-900, #111827)', color: 'white', border: 'none' }}
-            onClick={() => window.location.href = '/'}
+            onClick={() => window.location.href = '/community'}
           >
-            커뮤니티 입장
+            커뮤니티 탐색
           </Button>
         </div>
 

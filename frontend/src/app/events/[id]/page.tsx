@@ -255,7 +255,7 @@ export default async function EventDetailPage({ params }: Props) {
       </section>
 
       {/* 수강생 후기 섹션 */}
-      <section className={styles.section}>
+      <section id="review-section" className={styles.section}>
         <EventReviewSection eventId={Number(event.id)} eventTitle={event.title} />
       </section>
 
