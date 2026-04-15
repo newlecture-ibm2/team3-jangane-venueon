@@ -2,10 +2,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-48); /* 탭 영역과 검색 영역 사이 간격 확대 (48px) */
+  gap: var(--space-48);
+  /* 탭 영역과 검색 영역 사이 간격 확대 (48px) */
   flex: 1 0 0;
   align-self: stretch;
-  margin-bottom: var(--space-32); /* 아래 테이블과의 여백 확보 (32px) */
+  margin-bottom: var(--space-32);
+  /* 아래 테이블과의 여백 확보 (32px) */
 }
 
 .tabArea {

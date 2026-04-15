@@ -1,0 +1,10 @@
+.filterContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.searchBar {
+  margin-top: var(--space-48);
+  margin-bottom: var(--space-32);
+  max-width: 400px;
+}

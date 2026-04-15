@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import styles from '../page.module.css';
+import styles from './CategoryItem.module.css';
 import { Toggle } from '@/components/ui';
 import { 
   DeleteIcon, 

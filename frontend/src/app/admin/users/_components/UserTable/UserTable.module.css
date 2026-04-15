@@ -2,7 +2,8 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: var(--space-48); /* 하단 페이지네이션과의 여백 확보 (48px) */
+  margin-bottom: var(--space-48);
+  /* 하단 페이지네이션과의 여백 확보 (48px) */
 }
 
 .table {
@@ -20,7 +21,8 @@
   width: 100%;
   padding: 16px 24px;
   align-items: center;
-  gap: var(--space-24); /* 컬럼 간 확실한 여백 확보 (24px) */
+  gap: var(--space-24);
+  /* 컬럼 간 확실한 여백 확보 (24px) */
   border-bottom: 1px solid var(--Gray-300, #D1D5DB);
   background: var(--Gray-white, #FFF);
 }
@@ -36,7 +38,8 @@
   line-height: 1.5;
   padding: 0;
   border: none;
-  text-align: left; /* 왼쪽 정렬로 변경하여 데이터와 시작점 일치 */
+  text-align: left;
+  /* 왼쪽 정렬로 변경하여 데이터와 시작점 일치 */
 }
 
 .table tbody tr {
@@ -44,7 +47,8 @@
   width: 100%;
   padding: 16px 24px;
   align-items: center;
-  gap: var(--space-24); /* 컬럼 간 확실한 여백 확보 (24px) */
+  gap: var(--space-24);
+  /* 컬럼 간 확실한 여백 확보 (24px) */
   border-bottom: 1px solid #F3F4F6;
   background: #fff;
 }
@@ -59,23 +63,27 @@
   font-family: var(--font-sans);
   font-size: 14px;
   color: var(--Gray-700, #374151);
-  min-width: 0; 
-  text-align: left; /* 왼쪽 정렬 복구 */
+  min-width: 0;
+  text-align: left;
+  /* 왼쪽 정렬 복구 */
 }
 
 /* ── 컬럼 비율 조정 (전체 합: flex-grow의 합이 분배 비율) ── */
 .hostCol {
-  flex: 2.8; /* 주최자/사용자 영역 */
+  flex: 2.8;
+  /* 주최자/사용자 영역 */
   min-width: 160px;
 }
 
 .managerCol {
-  flex: 1.8; /* 담당자/닉네임 영역 */
+  flex: 1.8;
+  /* 담당자/닉네임 영역 */
   min-width: 120px;
 }
 
 .bizNumCol {
-  flex: 2.2; /* 사업자번호/이메일 영역 */
+  flex: 2.2;
+  /* 사업자번호/이메일 영역 */
   min-width: 140px;
 }
 
@@ -91,7 +99,8 @@
 
 .table td.actionCol,
 .table th.actionCol {
-  flex: 0 0 32px; /* ⋮ 버튼은 고정 대칭 */
+  flex: 0 0 32px;
+  /* ⋮ 버튼은 고정 대칭 */
   display: flex;
   justify-content: flex-end;
   overflow: visible;
@@ -102,7 +111,8 @@
 .userProfile {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* 왼쪽 정렬 복구 */
+  justify-content: flex-start;
+  /* 왼쪽 정렬 복구 */
   gap: 12px;
   cursor: pointer;
   min-width: 0;

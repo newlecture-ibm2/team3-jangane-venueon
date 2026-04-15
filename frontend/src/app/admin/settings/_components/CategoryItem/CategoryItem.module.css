@@ -1,0 +1,88 @@
+.categoryItem {
+  display: flex;
+  height: 80px;
+  padding: 16px 24px;
+  align-items: center;
+  gap: 24px;
+  align-self: stretch;
+  border-radius: 12px;
+  background: var(--Brand-surface, #F3F4F6);
+}
+
+.itemInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.nameContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.categoryName {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eventCount {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900);
+}
+
+.categoryDesc {
+  font: var(--text-caption-regular);
+  color: var(--color-text-gray-500);
+}
+
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: var(--color-text-gray-500);
+}
+
+.dragging {
+  opacity: 0.5;
+  background: var(--color-surface-hover, #E5E7EB);
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-gray-500);
+  padding: 4px;
+}
+
+.iconButton:disabled {
+  color: var(--color-text-gray-300);
+  cursor: not-allowed;
+}
+
+.deleteIcon {
+  color: var(--color-error);
+}
+
+.colExposure {
+  width: 60px;
+  text-align: center;
+}
