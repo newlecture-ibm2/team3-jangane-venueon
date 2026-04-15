@@ -7,6 +7,7 @@ interface User {
   nickname?: string;
   profileImg?: string;
   role?: { id: number; label: string };
+  provider?: string;   // LOCAL | GOOGLE
 }
 
 interface AuthState {

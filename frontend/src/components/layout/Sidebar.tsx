@@ -84,13 +84,16 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
   const router = useRouter();
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   // 로그아웃 확인 클릭 시 동작
   const handleLogoutConfirm = async () => {
     setIsLogoutModalOpen(false);
     await logout();
   };
+
+  // Google 소셜 로그인 유저 여부
+  const isSocialUser = user?.provider === 'GOOGLE';
 
   const getMenus = () => {
     switch (role) {
@@ -123,7 +126,8 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
           { label: '내 커뮤니티', href: '/mypage/community', icon: CommunityIcon },
           { label: '내 뱃지', href: '/mypage/badges', icon: BadgeIcon },
           { label: '프로필 설정', href: '/mypage/profile', icon: ProfileIcon },
-          { label: '계정 보안', href: '/mypage/security', icon: SecurityIcon },
+          // 소셜 로그인 유저는 비밀번호가 없으므로 계정 보안 메뉴 숨김
+          ...(!isSocialUser ? [{ label: '계정 보안', href: '/mypage/security', icon: SecurityIcon }] : []),
           { label: '1:1 문의', href: '/mypage/contact', icon: ContactIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];

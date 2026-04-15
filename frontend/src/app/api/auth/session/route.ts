@@ -16,6 +16,7 @@ export async function GET() {
         nickname: session.nickname,
         profileImg: session.profileImg,
         role: session.role,
+        provider: session.provider || 'LOCAL',
       },
     });
   } else {
