@@ -4,6 +4,8 @@ import com.venueon.badge.application.port.in.IssueBadgesUseCase;
 import com.venueon.badge.application.port.out.BadgeRepositoryPort;
 import com.venueon.badge.domain.model.Badge;
 import com.venueon.common.annotation.UseCase;
+import com.venueon.common.model.CodeConstants;
+import com.venueon.event.adapter.out.persistence.entity.EventStatusJpaEntity;
 import com.venueon.event.adapter.out.persistence.entity.EventJpaEntity;
 import com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity;
 import com.venueon.event.adapter.out.persistence.repository.EventJpaRepository;
@@ -26,7 +28,10 @@ import java.util.stream.Collectors;
  * 뱃지 발급 서비스 (Lazy Issuance)
  * 사용자가 뱃지 조회 시 미발급 뱃지를 그 자리에서 발급
  *
- * 발급 조건: 사용자가 구매한 티켓에 포함된 세션이 모두 종료(endTime < now)되면 발급
+ * 발급 조건: 사용자가 구매한 티켓에 포함된 세션이 모두 종료되면 발급
+ * 세션 종료 판별:
+ *   1. forcedSessionStatus가 "종료됨"(ID=4) 또는 "취소됨"(ID=5)이면 종료로 간주 (수동 종료)
+ *   2. endTime이 현재 시각 이전이면 종료로 간주 (자동 종료)
  * - isAllSessions=true 티켓: 해당 이벤트의 전체 세션이 종료되어야 함
  * - isAllSessions=false 티켓: ticket_sessions에 매핑된 세션만 종료되면 됨
  */
@@ -112,14 +117,15 @@ public class BadgeIssueService implements IssueBadgesUseCase {
                 }
             }
 
-            // 모든 대상 세션의 endTime이 존재하고, 현재 시각보다 이전인지 확인
+            // 모든 대상 세션이 종료되었는지 확인 (endTime 자동 만료 또는 forcedSessionStatus 수동 종료)
             boolean allSessionsEnded = targetSessions.stream()
-                    .allMatch(s -> s.getEndTime() != null && s.getEndTime().isBefore(now));
+                    .allMatch(s -> isSessionEnded(s, now));
 
             if (allSessionsEnded) {
-                // 뱃지 취득일 = 마지막 세션 종료 시각
+                // 뱃지 취득일 = 마지막 세션 종료 시각 (endTime이 null이면 현재 시각 사용)
                 LocalDateTime earnedAt = targetSessions.stream()
                         .map(SessionJpaEntity::getEndTime)
+                        .filter(Objects::nonNull)
                         .max(LocalDateTime::compareTo)
                         .orElse(now);
 
@@ -146,5 +152,24 @@ public class BadgeIssueService implements IssueBadgesUseCase {
         }
 
         return issuedCount;
+    }
+
+    /**
+     * 세션 종료 여부 판별
+     * 1. 호스트가 수동으로 종료 상태(forcedSessionStatus)를 세팅한 경우 → 종료
+     *    (취소됨은 뱃지 발급 대상이 아님)
+     * 2. endTime이 존재하고 현재 시각을 지난 경우 → 종료 (자동)
+     */
+    private boolean isSessionEnded(SessionJpaEntity session, LocalDateTime now) {
+        // 1. forcedSessionStatus가 "종료됨"(ID=4)이면 종료로 간주
+        EventStatusJpaEntity forcedStatus = session.getForcedSessionStatus();
+        if (forcedStatus != null) {
+            Long statusId = forcedStatus.getId();
+            if (CodeConstants.EVENT_STATUS_ENDED_ID.equals(statusId)) {
+                return true;
+            }
+        }
+        // 2. endTime 기반 자동 판별 (기존 로직)
+        return session.getEndTime() != null && session.getEndTime().isBefore(now);
     }
 }

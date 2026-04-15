@@ -73,9 +73,15 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     description: initialData?.description || '',
     detailContent: initialData?.detailContent || '',
     price: initialData?.price !== undefined ? initialData.price.toString() : '',
-    date: initialData?.startDate ? initialData.startDate.substring(0, 10) : '',
-    isOnlineStr: initialData?.isOnline !== undefined ? String(initialData.isOnline) : '',
     location: initialData?.location || '',
+    isOnlineStr: initialData?.isOnline !== undefined ? String(initialData.isOnline) : '',
+    startDate: initialData?.startDate ? initialData.startDate.substring(0, 10) : '',
+    startTimeOnly: initialData?.startDate ? initialData.startDate.substring(11, 16) : '10:00',
+    endDate: initialData?.endDate ? initialData.endDate.substring(0, 10) : '',
+    endTimeOnly: initialData?.endDate ? initialData.endDate.substring(11, 16) : '18:00',
+    useRecruitPeriod: initialData?.useRecruitPeriod || false,
+    recruitStartDate: initialData?.recruitStartDate ? initialData.recruitStartDate.substring(0, 10) : '',
+    recruitEndDate: initialData?.recruitEndDate ? initialData.recruitEndDate.substring(0, 10) : '',
     addressRoad: '',
     addressDetail: '',
     regionSido: '',
@@ -193,13 +199,8 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     try {
       const isOnline = formData.isOnlineStr === 'true';
 
-      // 날짜 파싱 (임시로 시작일 10시, 종료일 18시 셋팅)
-      let startDateStr = new Date().toISOString();
-      let endDateStr = new Date().toISOString();
-      if (formData.date) {
-        startDateStr = `${formData.date}T10:00:00`;
-        endDateStr = `${formData.date}T18:00:00`;
-      }
+      // (날짜 계산은 이제 단일/복합 분기 후 페이로드에 합쳐서 발송되므로 이벤트 생성 자체에는 불필요하지만,
+      // 과거 하위 호환을 대비해 그대로 더미값으로 진행하거나 제거해도 무방합니다.)
 
       // API 요청 분기 (create / edit)
       const payload = {
@@ -311,6 +312,55 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             const sessData = await sessRes.json();
             if (sessData?.data?.id) {
               savedSessionIds.push(sessData.data.id);
+            }
+          }
+        }
+      } else {
+        // 단일 이벤트인 경우, 백엔드가 자동 생성한 default 세션을 조회해서 날짜/시간 업데이트
+        const defaultSessRes = await fetch(`/api/events/${targetId}/sessions`);
+        if (defaultSessRes.ok) {
+          const dsData = await defaultSessRes.json();
+          const defaultSession = dsData.data && dsData.data[0];
+          if (defaultSession) {
+            let startTime = null;
+            let endTime = null;
+            if (formData.startDate) startTime = `${formData.startDate}T${formData.startTimeOnly || '10:00'}:00`;
+            if (formData.endDate) endTime = `${formData.endDate}T${formData.endTimeOnly || '18:00'}:00`;
+
+            let recruitStartDate = null;
+            let recruitEndDate = null;
+            if (formData.useRecruitPeriod) {
+              if (formData.recruitStartDate) recruitStartDate = `${formData.recruitStartDate}T00:00:00`;
+              if (formData.recruitEndDate) recruitEndDate = `${formData.recruitEndDate}T23:59:00`;
+            }
+
+            const sessionPayload = {
+              title: formData.title,
+              description: formData.description,
+              sortOrder: 0,
+              startTime,
+              endTime,
+              location: formData.isOnlineStr === 'true' ? '온라인 진행' : formData.location || '',
+              regionSido: formData.regionSido || '서울',
+              regionSigungu: formData.regionSigungu || '강남구',
+              addressRoad: formData.addressRoad || '',
+              addressDetail: formData.addressDetail || '',
+              isOnline: formData.isOnlineStr === 'true',
+              onlineLink: '', // 단일 폼엔 현재 필드가 별도 없음
+              maxAttendees: 0,
+              recruitStartDate,
+              recruitEndDate,
+            };
+
+            const putRes = await fetch(`/api/host/events/${targetId}/sessions/${defaultSession.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(sessionPayload)
+            });
+            if (putRes.ok) {
+              savedSessionIds.push(defaultSession.id);
+            } else {
+               console.error(`[DEBUG] Default Session PUT failed:`, putRes.status, await putRes.text().catch(() => ''));
             }
           }
         }
@@ -470,7 +520,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>세션 제목</label>
+        <label className={styles.label}>이벤트 제목</label>
         <input
           type="text"
           name="title"
@@ -482,7 +532,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>세션 이미지</label>
+        <label className={styles.label}>이벤트 메인배너(썸네일)</label>
         {previewUrl ? (
           <div className={styles.previewWrapper}>
             <img src={previewUrl} alt="미리보기" className={styles.previewImage} />
@@ -526,13 +576,13 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
       <div className={styles.formGroup}>
         <div className={styles.labelRow}>
-          <label className={styles.label}>세션 정보</label>
+          <label className={styles.label}>이벤트 정보</label>
           <span className={styles.charCount}>{formData.description.length}/300</span>
         </div>
         <textarea
           name="description"
           className={styles.textarea}
-          placeholder="세션 정보를 입력하세요."
+          placeholder="이벤트 정보를 입력하세요."
           maxLength={300}
           value={formData.description}
           onChange={handleChange}
@@ -581,14 +631,14 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
         <div className={styles.grid2}>
 
-          <div className={styles.formGroup}>
+          <div className={styles.formGroup} style={{ visibility: hasSession ? 'visible' : 'hidden', display: hasSession ? 'block' : 'none' }}>
             <label className={styles.label}>{hasSession ? '기본 날짜' : '날짜'}</label>
             <input
               type="date"
               name="date"
               className={styles.dateInput}
-              value={formData.date}
-              onChange={handleChange}
+              value={formData.startDate}
+              onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
             />
           </div>
 
@@ -597,7 +647,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             <select
               name="isOnlineStr"
               className={styles.selectInput}
-              value={formData.isOnlineStr}
+              value={formData.isOnlineStr || ''}
               onChange={handleChange}
             >
               <option value="">옵션을 선택하세요.</option>
@@ -670,6 +720,97 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           </div>
         )}
 
+        {/* ── 단일 이벤트 세션 기간 설정 (복합세션과 동일 패턴) ── */}
+        {!hasSession && (
+          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid #ddd' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#333', marginBottom: '0.75rem' }}>📅 이벤트 기간 <span style={{ fontWeight: 'normal', color: '#999', fontSize: '0.75rem' }}>미설정 시 호스트가 수동으로 시작/종료 관리</span></div>
+            <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '1.5rem', background: '#fff', padding: '1rem', borderRadius: '4px', border: '1px solid #e5e5e5' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>시작 날짜</label>
+                <input
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  className={styles.dateInput}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>시작 시간</label>
+                <input
+                  type="time"
+                  name="startTimeOnly"
+                  value={formData.startTimeOnly}
+                  onChange={handleChange}
+                  className={styles.dateInput}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>종료 날짜</label>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  className={styles.dateInput}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>종료 시간</label>
+                <input
+                  type="time"
+                  name="endTimeOnly"
+                  value={formData.endTimeOnly}
+                  onChange={handleChange}
+                  className={styles.dateInput}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+
+            {/* 단일 모집 기간 섹션 */}
+            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#333', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>📋 모집 기간 세부 설정</span>
+              <label className={styles.checkboxLabel} style={{ fontSize: '0.75rem', fontWeight: 'normal' }}>
+                <input
+                  type="checkbox"
+                  checked={formData.useRecruitPeriod}
+                  onChange={(e) => setFormData(prev => ({ ...prev, useRecruitPeriod: e.target.checked }))}
+                />
+                모집 기간 별도 설정하기
+              </label>
+            </div>
+            {formData.useRecruitPeriod && (
+              <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(2, 1fr)', background: '#fff', padding: '1rem', borderRadius: '4px', border: '1px solid #e5e5e5' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>모집 시작일</label>
+                  <input
+                    type="date"
+                    name="recruitStartDate"
+                    value={formData.recruitStartDate}
+                    onChange={handleChange}
+                    className={styles.dateInput}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>모집 마감일</label>
+                  <input
+                    type="date"
+                    name="recruitEndDate"
+                    value={formData.recruitEndDate}
+                    onChange={handleChange}
+                    className={styles.dateInput}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
       </div>
 
