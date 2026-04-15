@@ -26,7 +26,9 @@ import java.util.stream.Collectors;
  * 뱃지 발급 서비스 (Lazy Issuance)
  * 사용자가 뱃지 조회 시 미발급 뱃지를 그 자리에서 발급
  *
- * 발급 조건: 사용자가 구매한 티켓에 포함된 세션이 모두 종료(endTime < now)되면 발급
+ * 발급 조건: 사용자가 구매한 티켓에 포함된 세션이 모두 종료되면 발급
+ * - 세션 종료 판정: endTime < now (자동) 또는 forcedSessionStatus = "Ended" (수동)
+ * - 취소된 세션(forcedSessionStatus = "Cancelled")은 발급 대상에서 제외
  * - isAllSessions=true 티켓: 해당 이벤트의 전체 세션이 종료되어야 함
  * - isAllSessions=false 티켓: ticket_sessions에 매핑된 세션만 종료되면 됨
  */
@@ -112,9 +114,24 @@ public class BadgeIssueService implements IssueBadgesUseCase {
                 }
             }
 
-            // 모든 대상 세션의 endTime이 존재하고, 현재 시각보다 이전인지 확인
+            // 취소된 세션은 뱃지 발급 대상에서 제외
+            Long CANCELLED_STATUS_ID = 5L;
+            targetSessions = targetSessions.stream()
+                    .filter(s -> {
+                        if (s.getForcedSessionStatus() != null && s.getForcedSessionStatus().getId().equals(CANCELLED_STATUS_ID)) {
+                            return false; // 취소된 세션 제외
+                        }
+                        return true;
+                    })
+                    .collect(Collectors.toList());
+
+            if (targetSessions.isEmpty()) {
+                continue; // 모든 세션이 취소된 경우 뱃지 미발급
+            }
+
+            // 모든 대상 세션이 종료되었는지 확인 (자동 + 수동 종료 모두 고려)
             boolean allSessionsEnded = targetSessions.stream()
-                    .allMatch(s -> s.getEndTime() != null && s.getEndTime().isBefore(now));
+                    .allMatch(s -> isSessionEnded(s, now));
 
             if (allSessionsEnded) {
                 // 뱃지 취득일 = 마지막 세션 종료 시각
@@ -146,5 +163,24 @@ public class BadgeIssueService implements IssueBadgesUseCase {
         }
 
         return issuedCount;
+    }
+
+    /**
+     * 세션이 종료되었는지 판별
+     * - 자동 종료: endTime이 존재하고 현재 시각보다 이전
+     * - 수동 종료: forcedSessionStatus의 ID가 4(Ended)인 경우
+     */
+    private boolean isSessionEnded(SessionJpaEntity session, LocalDateTime now) {
+        // 1) 자동 종료: endTime 기반
+        if (session.getEndTime() != null && session.getEndTime().isBefore(now)) {
+            return true;
+        }
+        // 2) 수동 종료: forcedSessionStatus = Ended (ID=4)
+        Long ENDED_STATUS_ID = 4L;
+        if (session.getForcedSessionStatus() != null
+                && session.getForcedSessionStatus().getId().equals(ENDED_STATUS_ID)) {
+            return true;
+        }
+        return false;
     }
 }
