@@ -62,6 +62,9 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/communities/**", "/posts/**", "/comments/**").authenticated()
                 .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/communities/**", "/posts/**", "/comments/**").authenticated()
 
+                // 리뷰 작성 — 인증 필요
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/events/*/reviews").authenticated()
+
                 // 그 외 기존 경로는 일단 허용
                 .anyRequest().permitAll()
             )

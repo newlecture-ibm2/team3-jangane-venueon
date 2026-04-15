@@ -447,6 +447,8 @@ public class OrderService {
                     .location(primaryLocation)
                     .eventStartDate(targetDate)
                     .amount(order.getAmount())
+                    .thumbnailUrl(orderEvent != null ? orderEvent.getThumbnailUrl() : null)
+                    .categoryId(orderEvent != null ? orderEvent.getCategoryId() : null)
                     .build();
         }).collect(Collectors.toList());
 
