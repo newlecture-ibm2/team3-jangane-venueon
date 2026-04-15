@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { InputField, TextareaField, Dropdown, Button } from '@/components/ui';
+import { InputField, Dropdown, Button } from '@/components/ui';
 import { useUIStore } from '@/store/useUIStore';
+import dynamic from 'next/dynamic';
 import styles from '../../../../components/CommunityForm.module.css';
+
+const TiptapEditor = dynamic(() => import('@/components/editor/TiptapEditor'), { ssr: false });
 
 interface Props {
   params: Promise<{ id: string; postId: string }>;
@@ -48,7 +51,7 @@ export default function PostEditPage({ params }: Props) {
   }, [postId, router, showToast]);
 
   const handleSubmit = async () => {
-    if (!title.trim() || !content.trim()) {
+    if (!title.trim() || !content.trim() || content === '<p></p>') {
       showToast('입력 오류', 'error', '제목과 내용을 모두 입력해주세요.');
       return;
     }
@@ -121,14 +124,15 @@ export default function PostEditPage({ params }: Props) {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <TextareaField
-          label="본문 내용 (필수)"
-          placeholder="이곳에 내용을 자세히 적어주세요."
-          defaultValue={content}
-          onChange={(e) => setContent(e.target.value)}
-          showCount={true}
-          rows={12}
-        />
+        <div className={styles.editorWrapper}>
+          <label className={styles.label}>본문 내용 (필수)</label>
+          <TiptapEditor 
+            content={content} 
+            onChange={(html) => setContent(html)} 
+            placeholder="이곳에 내용을 자세히 적어주세요."
+            category="community-post"
+          />
+        </div>
 
         <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
           <Button 

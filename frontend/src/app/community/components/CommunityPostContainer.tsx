@@ -568,9 +568,16 @@ export default function CommunityPostContainer({ communityId, canManage, canWrit
 
               <div className={styles.bodySection}>
                 <div className={styles.contentWrapper}>
-                  {selectedPost.content?.split('\n').map((line, index) => (
-                    <React.Fragment key={index}>{line}<br /></React.Fragment>
-                  ))}
+                  {selectedPost.content && (
+                    <div
+                      className={styles.richContent}
+                      dangerouslySetInnerHTML={{ 
+                        __html: selectedPost.content.includes('<') && selectedPost.content.includes('>') 
+                          ? selectedPost.content 
+                          : selectedPost.content.replace(/\n/g, '<br />')
+                      }}
+                    />
+                  )}
                 </div>
               </div>
 

@@ -229,6 +229,74 @@
   min-height: 200px;
 }
 
+.richContent {
+  margin-top: var(--space-16, 16px);
+  font-size: 16px;
+  line-height: 1.6;
+  color: #111827;
+}
+
+.richContent h2 {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.richContent h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+}
+
+.richContent p {
+  margin-bottom: 1em;
+}
+
+.richContent ul,
+.richContent ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.richContent ul {
+  list-style-type: disc;
+}
+
+.richContent ol {
+  list-style-type: decimal;
+}
+
+.richContent blockquote {
+  border-left: 4px solid #4F46E5;
+  padding: 0.5em 1em;
+  margin: 0;
+  font-style: italic;
+  color: #4B5563;
+  background-color: #F9FAFB;
+}
+
+.richContent img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+  display: inline-block;
+}
+
+.richContent img[style*="text-align: center"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.richContent img[style*="text-align: right"] {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+
 .inlineReplyInput {
   position: relative;
   margin-top: 8px;
