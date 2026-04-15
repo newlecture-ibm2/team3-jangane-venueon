@@ -91,7 +91,7 @@ export default async function EventDetailPage({ params }: Props) {
   // 모집 기간 도출
   const validRecruitStartDates = sessions.map((s: any) => s.recruitStartDate).filter(Boolean).map((d: string) => new Date(d).getTime());
   const validRecruitEndDates = sessions.map((s: any) => s.recruitEndDate).filter(Boolean).map((d: string) => new Date(d).getTime());
-  
+
   const recruitStartDate = validRecruitStartDates.length > 0 ? new Date(Math.min(...validRecruitStartDates)).toISOString() : null;
   const recruitEndDate = validRecruitEndDates.length > 0 ? new Date(Math.max(...validRecruitEndDates)).toISOString() : null;
 
@@ -151,7 +151,7 @@ export default async function EventDetailPage({ params }: Props) {
           {event.description}
         </div>
         {event.detailContent && (
-          <div 
+          <div
             className={styles.richContent}
             dangerouslySetInnerHTML={{ __html: event.detailContent }}
           />

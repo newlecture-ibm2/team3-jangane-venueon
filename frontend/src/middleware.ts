@@ -6,15 +6,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getIronSession } from "iron-session";
 import { sessionOptions, SessionData } from "@/lib/session";
 
-// 인증이 필요한 경로 패턴
+// 인증이 필요한 경로 패턴 (상세 페이지 제외)
 const protectedPaths = ["/mypage", "/events/new", "/host", "/admin", "/cart"];
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
-  // 보호된 경로가 아니면 바로 통과
+  const { pathname } = req.nextUrl;
+
+  // 보호된 경로 여부 확인
   const isProtected = protectedPaths.some((path) =>
-    req.nextUrl.pathname.startsWith(path)
+    pathname.startsWith(path)
   );
 
   if (!isProtected) {
@@ -27,13 +29,13 @@ export async function middleware(req: NextRequest) {
   // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
   if (!session.isLoggedIn) {
     const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("redirect", req.nextUrl.pathname);
+    loginUrl.searchParams.set("redirect", pathname);
     loginUrl.searchParams.set("alert", "auth_required");
     return NextResponse.redirect(loginUrl);
   }
 
   // 관리자 권한이 필요한 경로의 권한 체크
-  if (req.nextUrl.pathname.startsWith("/admin") && session.role?.id !== 1) {
+  if (pathname.startsWith("/admin") && session.role?.id !== 1) {
     // 권한이 없으면 메인 페이지로 리다이렉트
     return NextResponse.redirect(new URL("/", req.url));
   }
@@ -47,5 +49,13 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/mypage/:path*", "/events/new", "/host", "/host/:path*", "/admin/:path*", "/cart", "/cart/:path*"],
+  matcher: [
+    "/mypage/:path*", 
+    "/events/new", 
+    "/host", 
+    "/host/:path*", 
+    "/admin/:path*", 
+    "/cart", 
+    "/cart/:path*"
+  ],
 };

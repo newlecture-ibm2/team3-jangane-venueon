@@ -138,7 +138,7 @@ export default function EventTable() {
         setHideModal({ isOpen: true, eventId: event.id }); // 숨김 처리 시에만 모달
       }
     } else if (value === 'edit') {
-      router.push(`/admin/events/${event.id}`);
+      router.push(`/events/${event.id}`);
     }
   };
 
@@ -247,7 +247,7 @@ export default function EventTable() {
               events.map((event) => (
                 <tr 
                   key={event.id} 
-                  onClick={() => router.push(`/admin/events/${event.id}`)}
+                  onClick={() => router.push(`/events/${event.id}`)}
                   className={styles.clickableRow}
                 >
                     <td className={styles.colTitle}>
