@@ -18,7 +18,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   justify-items: center;
-  gap: var(--space-32);
+  gap: var(--space-32) 0;
   width: 100%;
 }
 
