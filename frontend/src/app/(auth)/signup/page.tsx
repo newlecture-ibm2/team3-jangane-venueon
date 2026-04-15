@@ -46,7 +46,7 @@ export default function SignupPage() {
       }
       
       await authAPI.signup({ email, password, nickname, role: "USER" });
-      showToast("회원가입이 완료되었습니다. 로그인해주세요.", "success");
+      showToast("인증 메일이 발송되었습니다. 이메일을 확인해 주세요!", "success");
       router.push("/login");
     } catch (err: any) {
       const msg = err.message || "회원가입에 실패했습니다.";
@@ -74,12 +74,12 @@ export default function SignupPage() {
     >
       <InputField
         id="email"
-        label="아이디"
+        label="이메일"
         type="email"
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="아이디를 입력하세요."
+        placeholder="이메일을 입력하세요."
       />
       <InputField
         id="nickname"
