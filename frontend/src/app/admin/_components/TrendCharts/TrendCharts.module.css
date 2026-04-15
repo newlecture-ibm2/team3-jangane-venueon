@@ -1,80 +1,174 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-24);
+  gap: 24px;
   width: 100%;
 }
 
 .chartCard {
   background: white;
-  border-radius: 20px;
-  padding: var(--space-24);
   border: 1px solid #F3F4F6;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.chartTitle {
+  margin-bottom: 32px;
+}
+
+.titleBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #EEF2FF;
+  color: #6366F1;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 99px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .chartTitle h3 {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
   color: #111827;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .chartTitle p {
   font-size: 14px;
   color: #6B7280;
-  margin-bottom: var(--space-24);
 }
 
 .chartWrapper {
   width: 100%;
-  margin-left: -20px; /* Tick 정렬 최적화 */
+  margin-left: -10px;
 }
 
-.smallGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--space-24);
+/* 커스텀 툴팁 */
+.customTooltip {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-.smallCard {
-  background: white;
-  border-radius: 20px;
-  padding: var(--space-20);
-  border: 1px solid #F3F4F6;
-  position: relative;
-  overflow: hidden;
+.tooltipLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
 }
 
-.smallCard h4 {
-  font-size: 14px;
-  font-weight: 600;
-  color: #6B7280;
-  margin-bottom: var(--space-12);
+.tooltipDivider {
+  height: 1px;
+  background: #F3F4F6;
+  margin-bottom: 12px;
 }
 
-.smallChartWrapper {
-  height: 80px;
-  margin: 0 -10px;
-}
-
-.trendInfo {
+.tooltipItem {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
+  margin-bottom: 6px;
 }
 
-.trendUp {
+.tooltipItem:last-child {
+  margin-bottom: 0;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.itemLabel {
+  font-size: 12px;
+  color: #6B7280;
+  flex: 1;
+}
+
+.itemValue {
   font-size: 12px;
   font-weight: 700;
-  color: #10B981;
-  background: #ECFDF5;
-  padding: 2px 8px;
-  border-radius: 99px;
+  color: #111827;
 }
 
-.trendPeriod {
+/* 범례(Legend) 스타일 */
+.legendWrapper {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legendText {
   font-size: 12px;
-  color: #9CA3AF;
+  font-weight: 600;
+  color: #4B5563;
+}
+
+/* 로딩 애니메이션 */
+.loader {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #6366F1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 하단 미니 카드 */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.miniCard {
+  background: white;
+  border: 1px solid #F3F4F6;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.miniLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-bottom: 8px;
+}
+
+.miniValue {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.miniTrend {
+  font-size: 11px;
+  font-weight: 600;
+  color: #10B981;
 }

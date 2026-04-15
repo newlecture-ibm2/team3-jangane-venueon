@@ -2,43 +2,42 @@
 
 import React from 'react';
 import styles from './page.module.css';
-import { TrendCharts, NavigationGrid } from './_components';
+import { Sidebar } from '@/components/layout';
+import { StatsCards, TrendCharts } from './_components';
 
 /**
- * 신규 어드민 커맨드 센터 (대시보드)
- * - 사이드바 제거: 대시보드에서는 모든 기능을 카드 기반 네비게이션으로 제공
- * - 데이터 시각화: 유저, 호스트, 이벤트 추이를 한눈에 파악
- * - 직관적 UI: 큼직한 카드를 클릭하여 각 관리 페이지(Users, Events 등)로 이동
+ * 어드민 대시보드 리뉴얼 (기존 스타일 유지 버전)
+ * - 좌측 사이드바 레이아웃 유지
+ * - 상단 통계 카드 유지
+ * - 하단 테이블(ActivityTable)을 트렌드 차트(TrendCharts)로 교체
  */
 export default function AdminDashboardPage() {
   return (
-    <main className={styles.mainContainer}>
-      <div className={styles.content}>
+    <div className="container-sidebar">
+      {/* 1. 사이드바 복구 */}
+      <Sidebar role="admin" />
+
+      {/* 우측 메인 콘텐츠 */}
+      <section className="sidebar-content">
         
-        {/* 1. 상단 인트로 섹션 */}
-        <header className={styles.heroHeader}>
-          <div className={styles.badge}>ADMIN CENTER</div>
-          <h1 className={styles.pageTitle}>환영합니다, 관리자님</h1>
-          <p className={styles.subtitle}>
-            오늘의 서비스 한눈에 보기. 유입 및 활동 추이를 분석하고 시스템을 관리하세요.
-          </p>
-        </header>
+        {/* 대시보드 타이틀 */}
+        <h1 className={styles.pageTitle}>관리자 대시보드</h1>
 
-        {/* 2. 트렌드 분석 섹션 (그래프) */}
-        <section className={styles.analyticsSection}>
-          <TrendCharts />
-        </section>
+        {/* 요약 카드 섹션 (기존 스타일) */}
+        <div style={{ marginTop: '24px' }}>
+          <StatsCards />
+        </div>
 
-        {/* 3. 명렁 센터 섹션 (버튼형 네비게이션) */}
-        <section className={styles.navigationSection}>
+        {/* 트렌드 분석 섹션 (테이블 대신 차트 배치) */}
+        <div className={styles.chartSection}>
           <div className={styles.sectionHeader}>
-            <h2>시스템 제어판</h2>
-            <p>각 카테고리를 클릭하여 세부 관리 페이지로 이동합니다.</p>
+            <h3>서비스 성장 추이</h3>
+            <p>최근 7일간의 신규 유저 및 이벤트 데이터 분석</p>
           </div>
-          <NavigationGrid />
-        </section>
+          <TrendCharts />
+        </div>
         
-      </div>
-    </main>
+      </section>
+    </div>
   );
 }

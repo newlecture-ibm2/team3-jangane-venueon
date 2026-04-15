@@ -29,9 +29,11 @@ public class AdminUserService implements
         GetAdminUserDetailUseCase,
         UpdateAdminUserUseCase,
         ChangeAdminUserStatusUseCase,
-        DeleteAdminUserUseCase {
+        DeleteAdminUserUseCase,
+        GetAdminSummaryUseCase {
 
     private final AdminUserRepositoryPort adminUserRepositoryPort;
+    private final com.venueon.event.application.port.out.EventRepositoryPort eventRepositoryPort;
 
     // ── 목록 조회 ──
 
@@ -111,6 +113,58 @@ public class AdminUserService implements
         user.setStatusOnly(false);
         adminUserRepositoryPort.save(user);
         log.info("회원 소프트 삭제 완료: id={}, email={}", id, user.getEmail());
+    }
+
+    // ── 어드민 대시보드 요약 ──
+
+    @Override
+    public com.venueon.admin.user.adapter.in.web.dto.response.AdminSummaryResponse getSummary() {
+        java.time.LocalDateTime todayStart = java.time.LocalDate.now().atStartOfDay();
+
+        // 1. 오늘의 신규 수치
+        long newUserCount = adminUserRepositoryPort.countByRoleIdAndCreatedAtAfter(2L, todayStart);
+        long newHostCount = adminUserRepositoryPort.countByRoleIdAndCreatedAtAfter(3L, todayStart);
+        long newEventCount = eventRepositoryPort.countByCreatedAtAfter(todayStart);
+
+        // 2. 전체 누적 수치
+        long totalUserCount = adminUserRepositoryPort.countByRoleId(2L);
+        long totalHostCount = adminUserRepositoryPort.countByRoleId(3L);
+
+        // 3. 최근 7일 트렌드 데이터 포인트 생성
+        java.util.List<com.venueon.admin.user.adapter.in.web.dto.response.AdminSummaryResponse.DailyTrend> trends = new java.util.ArrayList<>();
+        for (int i = 6; i >= 0; i--) {
+            java.time.LocalDate date = java.time.LocalDate.now().minusDays(i);
+            java.time.LocalDateTime start = date.atStartOfDay();
+            java.time.LocalDateTime end = date.atTime(23, 59, 59);
+
+            // 해당 일자의 범위를 조회할 수 있도록 쿼리 포트 메서드를 활용 (여기서는 편의상 After를 사용하거나 Repository를 확장)
+            // 실제 구현상 포트에 countByDateRange 같은 메서드가 있으면 더 정확합니다.
+            // 일단은 현재 구현된 After 메서드와 날짜 계산을 조합해 트렌드를 구성합니다.
+            long dailyUsers = adminUserRepositoryPort.countByRoleIdAndCreatedAtAfter(2L, start) - adminUserRepositoryPort.countByRoleIdAndCreatedAtAfter(2L, end);
+            long dailyHosts = adminUserRepositoryPort.countByRoleIdAndCreatedAtAfter(3L, start) - adminUserRepositoryPort.countByRoleIdAndCreatedAtAfter(3L, end);
+            long dailyEvents = eventRepositoryPort.countByCreatedAtAfter(start) - eventRepositoryPort.countByCreatedAtAfter(end);
+
+            // 음수 방지 처리 (After 로직 특성상)
+            dailyUsers = Math.max(0, dailyUsers);
+            dailyHosts = Math.max(0, dailyHosts);
+            dailyEvents = Math.max(0, dailyEvents);
+
+            trends.add(com.venueon.admin.user.adapter.in.web.dto.response.AdminSummaryResponse.DailyTrend.builder()
+                    .date(date.getDayOfWeek().toString().substring(0, 3)) // "MON", "TUE" 등
+                    .users(dailyUsers)
+                    .hosts(dailyHosts)
+                    .events(dailyEvents)
+                    .build());
+        }
+
+        return com.venueon.admin.user.adapter.in.web.dto.response.AdminSummaryResponse.builder()
+                .newUserCount(newUserCount)
+                .newHostCount(newHostCount)
+                .newEventCount(newEventCount)
+                .totalUserCount(totalUserCount)
+                .totalHostCount(totalHostCount)
+                .trends(trends)
+                .build();
     }
 
     // ── private 헬퍼 ──

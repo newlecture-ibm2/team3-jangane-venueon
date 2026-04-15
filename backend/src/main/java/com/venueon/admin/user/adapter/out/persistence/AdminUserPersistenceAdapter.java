@@ -91,4 +91,14 @@ public class AdminUserPersistenceAdapter implements AdminUserRepositoryPort {
     public void deleteById(Long id) {
         userJpaRepository.deleteById(id);
     }
+
+    @Override
+    public long countByRoleId(Long roleId) {
+        return userJpaRepository.countByRoleId(roleId);
+    }
+
+    @Override
+    public long countByRoleIdAndCreatedAtAfter(Long roleId, java.time.LocalDateTime dateTime) {
+        return userJpaRepository.countByRoleIdAndCreatedAtAfter(roleId, dateTime);
+    }
 }

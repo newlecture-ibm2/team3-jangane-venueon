@@ -33,4 +33,6 @@ public interface EventJpaRepository extends JpaRepository<EventJpaEntity, Long>,
     Page<EventJpaEntity> findByCategory_Id(Long categoryId, Pageable pageable);
 
     boolean existsByCategory_Id(Long categoryId);
+
+    long countByCreatedAtAfter(java.time.LocalDateTime createdAt);
 }

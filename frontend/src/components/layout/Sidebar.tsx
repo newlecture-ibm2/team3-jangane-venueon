@@ -101,7 +101,6 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
           { label: '시스템 설정', href: '/admin/settings', icon: SettingIcon },
           { label: '이벤트 관리', href: '/admin/events', icon: SeminarSettingIcon },
           { label: '커뮤니티 관리', href: '/admin/community', icon: CommunityIcon },
-          { label: '신고 관리', href: '/admin/reports', icon: ReportIcon },
           { label: '문의 관리', href: '/admin/contact', icon: RequestIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];

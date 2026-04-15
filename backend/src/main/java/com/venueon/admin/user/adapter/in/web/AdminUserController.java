@@ -4,6 +4,7 @@ import com.venueon.admin.user.adapter.in.web.dto.request.AdminChangeUserStatusRe
 import com.venueon.admin.user.adapter.in.web.dto.request.AdminUpdateUserRequest;
 import com.venueon.admin.user.adapter.in.web.dto.response.AdminUserDetailResponse;
 import com.venueon.admin.user.adapter.in.web.dto.response.AdminUserListResponse;
+import com.venueon.admin.user.adapter.in.web.dto.response.AdminSummaryResponse;
 import com.venueon.admin.user.application.command.UpdateUserCommand;
 import com.venueon.admin.user.application.port.in.*;
 import com.venueon.common.dto.ApiResponse;
@@ -37,6 +38,7 @@ public class AdminUserController {
     private final UpdateAdminUserUseCase updateAdminUserUseCase;
     private final ChangeAdminUserStatusUseCase changeAdminUserStatusUseCase;
     private final DeleteAdminUserUseCase deleteAdminUserUseCase;
+    private final GetAdminSummaryUseCase getAdminSummaryUseCase;
 
     /**
      * GET /admin/users — 회원 목록 조회 (검색 + 역할 필터 + 페이징)
@@ -129,6 +131,16 @@ public class AdminUserController {
         deleteAdminUserUseCase.deleteUser(id);
 
         return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    /**
+     * GET /admin/summary — 어드민 대시보드 요약 정보 조회
+     */
+    @GetMapping("/summary")
+    public ResponseEntity<ApiResponse<AdminSummaryResponse>> getSummary() {
+        log.debug("어드민 대시보드 요약 정보 조회 시작 (통합 컨트롤러)");
+        AdminSummaryResponse summary = getAdminSummaryUseCase.getSummary();
+        return ResponseEntity.ok(ApiResponse.success(summary));
     }
 
     // ── private 헬퍼 ──
