@@ -7,7 +7,10 @@ import ConfirmModal from '@/components/modal/ConfirmModal';
 import styles from './EventForm.module.css';
 import { useUIStore } from '@/store/useUIStore';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import HostManagementPanel from '../../[id]/_components/HostManagementPanel';
+
+const TiptapEditor = dynamic(() => import('@/components/editor/TiptapEditor'), { ssr: false });
 
 export interface EventFormProps {
   mode?: 'create' | 'edit';
@@ -68,6 +71,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     categoryId: initialData?.categoryId ? String(initialData.categoryId) : '1',
     title: initialData?.title || '',
     description: initialData?.description || '',
+    detailContent: initialData?.detailContent || '',
     price: initialData?.price !== undefined ? initialData.price.toString() : '',
     date: initialData?.startDate ? initialData.startDate.substring(0, 10) : '',
     isOnlineStr: initialData?.isOnline !== undefined ? String(initialData.isOnline) : '',
@@ -202,6 +206,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         categoryId: parseInt(formData.categoryId, 10) || 1,
         title: formData.title || '새 이벤트',
         description: formData.description,
+        detailContent: formData.detailContent,
         typeId: initialData?.type?.id || 4, // 4 = SEMINAR default
         thumbnailUrl: thumbnailUrl,
         hasSession,
@@ -531,6 +536,17 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           maxLength={300}
           value={formData.description}
           onChange={handleChange}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <div className={styles.labelRow}>
+          <label className={styles.label}>상세 정보 (선택사항)</label>
+        </div>
+        <TiptapEditor 
+          content={formData.detailContent} 
+          onChange={(html) => setFormData(prev => ({ ...prev, detailContent: html }))} 
+          placeholder="이벤트 상세 정보를 자유롭게 입력하세요. (이미지 등록 가능)"
         />
       </div>
 

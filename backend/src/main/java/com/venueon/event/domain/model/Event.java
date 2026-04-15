@@ -17,6 +17,7 @@ public class Event {
     private Long categoryId;
     private String title;
     private String description;
+    private String detailContent;
     private com.venueon.common.model.DomainCode type;
     private com.venueon.common.model.DomainCode status;
     private String thumbnailUrl;
@@ -28,7 +29,7 @@ public class Event {
     protected Event() {}
 
     public Event(Long id, Long creatorId, Long categoryId, String title, String description,
-                 com.venueon.common.model.DomainCode type, com.venueon.common.model.DomainCode status, String thumbnailUrl,
+                 String detailContent, com.venueon.common.model.DomainCode type, com.venueon.common.model.DomainCode status, String thumbnailUrl,
                  boolean hasSession, boolean isHidden,
                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -36,6 +37,7 @@ public class Event {
         this.categoryId = categoryId;
         this.title = title;
         this.description = description;
+        this.detailContent = detailContent;
         this.type = type;
         this.status = status;
         this.thumbnailUrl = thumbnailUrl;
@@ -71,11 +73,12 @@ public class Event {
         return this.status != null && this.status.id().equals(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID);
     }
 
-    public void updateDetails(Long categoryId, String title, String description, com.venueon.common.model.DomainCode type,
+    public void updateDetails(Long categoryId, String title, String description, String detailContent, com.venueon.common.model.DomainCode type,
                               String thumbnailUrl, boolean hasSession) {
         this.categoryId = categoryId;
         this.title = title;
         this.description = description;
+        this.detailContent = detailContent;
         this.type = type;
         if (thumbnailUrl != null) {
             this.thumbnailUrl = thumbnailUrl;
@@ -176,6 +179,7 @@ public class Event {
     public Long getCategoryId() { return categoryId; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
+    public String getDetailContent() { return detailContent; }
     public com.venueon.common.model.DomainCode getType() { return type; }
     public com.venueon.common.model.DomainCode getStatus() { return status; }
     public String getThumbnailUrl() { return thumbnailUrl; }

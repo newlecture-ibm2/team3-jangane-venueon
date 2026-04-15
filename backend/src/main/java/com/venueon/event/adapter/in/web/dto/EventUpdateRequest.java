@@ -15,6 +15,8 @@ public record EventUpdateRequest(
         String title,
 
         String description,
+        
+        String detailContent,
 
         Long typeId,
 
@@ -29,6 +31,7 @@ public record EventUpdateRequest(
                 categoryId,
                 title,
                 description,
+                detailContent,
                 typeId,
                 thumbnailUrl,
                 hasSession

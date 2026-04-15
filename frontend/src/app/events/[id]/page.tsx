@@ -150,6 +150,12 @@ export default async function EventDetailPage({ params }: Props) {
         <div className={styles.description}>
           {event.description}
         </div>
+        {event.detailContent && (
+          <div 
+            className={styles.richContent}
+            dangerouslySetInnerHTML={{ __html: event.detailContent }}
+          />
+        )}
 
         <div className={styles.infoGrid}>
           <div className={styles.infoItem}>
