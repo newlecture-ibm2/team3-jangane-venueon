@@ -68,17 +68,55 @@ public class HostEventMapper {
         );
     }
 
-    public HostEventDetailResponse toDetailResponse(EventJpaEntity entity, List<com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity> sessions, Long totalRevenue, Long totalAttendees) {
+    public HostEventDetailResponse toDetailResponse(
+            EventJpaEntity entity,
+            List<com.venueon.event.adapter.out.persistence.entity.SessionJpaEntity> sessions,
+            List<com.venueon.ticket.adapter.out.persistence.entity.TicketJpaEntity> tickets,
+            Long totalRevenue,
+            Long totalAttendees,
+            com.venueon.common.model.DomainCode effectiveStatus,
+            com.venueon.common.model.DomainCode recruitmentStatus
+    ) {
+        var firstSession = sessions != null && !sessions.isEmpty() ? sessions.get(0) : null;
+        
+        // 티켓 기반 가격 정보 계산
+        Long finalMinPrice = 0L;
+        Long originalPrice = 0L;
+        boolean hasDiscount = false;
+
+        if (tickets != null && !tickets.isEmpty()) {
+            var activeTickets = tickets.stream().filter(t -> t.isActive()).toList();
+            if (!activeTickets.isEmpty()) {
+                finalMinPrice = activeTickets.stream().mapToLong(t -> (long) t.getPrice()).min().orElse(0L);
+                final Long currentMin = finalMinPrice;
+                var minTicket = activeTickets.stream()
+                        .filter(t -> (long) t.getPrice() == currentMin)
+                        .findFirst()
+                        .orElse(null);
+                
+                if (minTicket != null && minTicket.getOriginalPrice() > minTicket.getPrice()) {
+                    originalPrice = (long) minTicket.getOriginalPrice();
+                    hasDiscount = true;
+                }
+            }
+        }
+
         return new HostEventDetailResponse(
                 entity.getId(),
                 entity.getTitle(),
                 entity.getDescription(),
                 entity.getThumbnailUrl(),
                 entity.getCategory() != null ? com.venueon.common.dto.CodeDto.of(entity.getCategory().getId(), entity.getCategory().getName()) : null,
-                entity.getStatus() != null ? com.venueon.common.dto.CodeDto.of(entity.getStatus().getId(), entity.getStatus().getLabel()) : null,
+                effectiveStatus != null ? com.venueon.common.dto.CodeDto.of(effectiveStatus.id(), effectiveStatus.label()) : null,
+                recruitmentStatus != null ? com.venueon.common.dto.CodeDto.of(recruitmentStatus.id(), recruitmentStatus.label()) : null,
                 entity.getCreatedAt(),
                 totalRevenue,
                 totalAttendees,
+                finalMinPrice,
+                originalPrice,
+                hasDiscount,
+                firstSession != null ? firstSession.getLocation() : "장소 미정",
+                entity.getCreator() != null ? entity.getCreator().getNickname() : "알 수 없는 호스트",
                 sessions != null ? sessions.stream().map(this::toSessionDetail).toList() : Collections.emptyList()
         );
     }
@@ -92,7 +130,8 @@ public class HostEventMapper {
                 session.getLocation(),
                 session.getMaxAttendees(),
                 session.getCurrentAttendees(),
-                session.getForcedSessionStatus() != null ? com.venueon.common.dto.CodeDto.of(session.getForcedSessionStatus().getId(), session.getForcedSessionStatus().getLabel()) : null
+                session.getForcedSessionStatus() != null ? com.venueon.common.dto.CodeDto.of(session.getForcedSessionStatus().getId(), session.getForcedSessionStatus().getLabel()) : null,
+                null // communityId: (연결 틀 확보)
         );
     }
 }

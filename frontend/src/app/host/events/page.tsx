@@ -121,7 +121,15 @@ export default function HostEventsPage() {
                     </span>
                   </div>
                   <h3 className={styles.cardTitle}>{event.title}</h3>
-                  <div className={styles.thumbnailPlaceholder}></div>
+                  <div className={styles.thumbnailPlaceholder}>
+                    {event.thumbnailUrl ? (
+                      <img 
+                        src={event.thumbnailUrl.startsWith('/') || event.thumbnailUrl.startsWith('http') ? event.thumbnailUrl : `/upload/${event.thumbnailUrl}`} 
+                        alt="Thumbnail" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                      />
+                    ) : null}
+                  </div>
                   
                   <div className={styles.cardInfo}>
                     <div className={styles.infoItem}>

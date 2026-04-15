@@ -17,4 +17,7 @@ public interface GetHostEventsUseCase {
 
     /** 호스트 본인의 특정 이벤트 상세 내역 */
     com.venueon.host.event.adapter.in.web.dto.HostEventDetailResponse getHostEventDetail(Long hostId, Long eventId);
+
+    /** 특정 이벤트의 수강생 명단 조회 */
+    java.util.List<com.venueon.host.event.adapter.in.web.dto.AttendeeResponse> getAttendees(Long hostId, Long eventId);
 }
