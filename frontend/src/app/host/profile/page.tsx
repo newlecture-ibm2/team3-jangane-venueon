@@ -34,11 +34,8 @@ export default function HostProfilePage() {
   };
 
   return (
-    <div className="container-sidebar" style={{ scrollbarGutter: "stable" }}>
-      <div className="sidebar">
-        <Sidebar role="host" />
-      </div>
-
+    <div className="container-sidebar">
+      <Sidebar role="host" />
       <div className="sidebar-content">
         <div className={styles.pageContainer}>
           <header className={styles.pageHeader}>

@@ -163,7 +163,12 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
           }
         } else {
           // 일반 활성화 로직
-          isActive = pathname === menu.href || (menu.href !== '/' && pathname.startsWith(`${menu.href}/`));
+          // 대시보드 등 최상위 메뉴는 정확히 일치할 때만 활성화 (하위 경로 진입 시 중복 활성화 방지)
+          if (menu.href === '/host' || menu.href === '/mypage' || menu.href === '/admin/dashboard') {
+            isActive = pathname === menu.href;
+          } else {
+            isActive = pathname === menu.href || (menu.href !== '/' && pathname.startsWith(`${menu.href}/`));
+          }
         }
 
         const isLogout = menu.href === '/logout';

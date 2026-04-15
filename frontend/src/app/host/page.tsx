@@ -19,47 +19,9 @@ interface HostOrderSummary {
   totalAttendees: number;
 }
 
-function getOrderStatusLabel(status: string) {
-  switch (status) {
-    case 'PAID':
-      return '결제완료';
-    case 'REGISTERED':
-      return '신청완료';
-    case 'CANCELLED':
-      return '주문취소';
-    case 'REFUNDED':
-      return '환불완료';
-    case 'PENDING':
-      return '결제대기';
-    default:
-      return status;
-  }
-}
-
-function getOrderStatusClass(status: string) {
-  switch (status) {
-    case 'PAID':
-      return styles.orderStatusPaid;
-    case 'REGISTERED':
-      return styles.orderStatusRegistered;
-    case 'CANCELLED':
-      return styles.orderStatusCancelled;
-    case 'REFUNDED':
-      return styles.orderStatusRefunded;
-    case 'PENDING':
-      return styles.orderStatusPending;
-    default:
-      return styles.orderStatusDefault;
-  }
-}
-
-function formatOrderDate(isoDateTime: string) {
-  if (!isoDateTime) return '-';
-  return isoDateTime.slice(0, 10);
-}
+import { Table, TableHeader, TableRow, TableCell, StatusTag } from '@/components/ui';
 
 export default function HostDashboardPage() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [stats, setStats] = useState({
     publishedCount: 0,
     draftCount: 0,
@@ -93,21 +55,9 @@ export default function HostDashboardPage() {
   }, []);
 
   return (
-    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
-      <div className={styles.sidebarWrapper}>
-        <button
-          className={styles.mobileMenuButton}
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        >
-          {isSidebarOpen ? '닫기 ✕' : '메뉴 열기 ☰'}
-        </button>
-
-        <div className={`${styles.sidebarInner} ${isSidebarOpen ? styles.mobileOpen : styles.mobileClosed}`}>
-          <Sidebar role="host" className={styles.responsiveHostSidebar} />
-        </div>
-      </div>
-
-      <div className="sidebar">
+    <div className="container-sidebar">
+      <Sidebar role="host" />
+      <div className="sidebar-content">
         <div className={styles.dashboardWrapper}>
 
           <header className={styles.header}>
@@ -133,12 +83,6 @@ export default function HostDashboardPage() {
               <p className={styles.cardTitle}>총 누적 수강생</p>
               <h2 className={styles.cardValue}>{stats.totalAttendees}명</h2>
             </Link>
-
-            <div className={styles.summaryCard}>
-              <div className={`${styles.cardIcon} ${styles.refundIcon}`}>⚠️</div>
-              <p className={styles.cardTitle}>환불 요청 대기</p>
-              <h2 className={styles.cardValue}>{stats.pendingRefunds}건</h2>
-            </div>
           </section>
 
           <div className={styles.sectionsGrid}>
@@ -149,39 +93,33 @@ export default function HostDashboardPage() {
               </div>
 
               <div className={styles.tableContainer}>
-                <table className={`${styles.table} ${styles.recentOrderTable}`}>
-                  <thead>
-                    <tr>
-                      <th>주문번호</th>
-                      <th>강의명</th>
-                      <th>주문금액</th>
-                      <th>주문일</th>
-                      <th>상태</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentOrders.map(order => (
-                      <tr key={order.orderId}>
-                        <td>#{order.orderId}</td>
-                        <td>{order.eventTitle}</td>
-                        <td>{order.amount.toLocaleString()}원</td>
-                        <td>{formatOrderDate(order.orderedAt)}</td>
-                        <td>
-                          <span className={`${styles.orderStatus} ${getOrderStatusClass(order.status)}`}>
-                            {getOrderStatusLabel(order.status)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                    {recentOrders.length === 0 && (
-                      <tr>
-                        <td colSpan={5} style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>
-                          주문 내역이 없습니다.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                <Table columns="30px 90px 100px 80px 60px">
+                  <TableHeader>
+                    <TableCell header>#</TableCell>
+                    <TableCell header>강의명</TableCell>
+                    <TableCell header>주문금액</TableCell>
+                    <TableCell header>주문일</TableCell>
+                    <TableCell header>상태</TableCell>
+                  </TableHeader>
+                  {recentOrders.map(order => (
+                    <TableRow key={order.orderId}>
+                      <TableCell>#{order.orderId}</TableCell>
+                      <TableCell>{order.eventTitle}</TableCell>
+                      <TableCell>{order.amount.toLocaleString()}원</TableCell>
+                      <TableCell>{order.orderedAt ? order.orderedAt.slice(0, 10) : '-'}</TableCell>
+                      <TableCell>
+                        <StatusTag domain="payment" status={order.status} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {recentOrders.length === 0 && (
+                    <TableRow>
+                      <div style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#64748b' }}>
+                        주문 내역이 없습니다.
+                      </div>
+                    </TableRow>
+                  )}
+                </Table>
               </div>
             </section>
 
@@ -190,7 +128,7 @@ export default function HostDashboardPage() {
                 <h3 className={styles.sectionTitle}>빠른 작업</h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <Link href="/events/new" className="button" style={{
+                <Link href="/host/events/new" className="button" style={{
                   background: '#1e293b', color: 'white', padding: '16px', borderRadius: '8px',
                   textAlign: 'center', textDecoration: 'none', fontWeight: '600'
                 }}>

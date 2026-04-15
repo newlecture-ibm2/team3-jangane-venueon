@@ -1,73 +1,31 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { Card, CardGrid, InputField, Tabs, Pagination } from '@/components/ui';
 import { format } from 'date-fns';
 
 
-interface EventData {
-  id: number;
-  title: string;
-  thumbnailUrl: string;
-  type: { id: number; label: string };
-  status: { id: number; label: string };
-  recruitmentStatus: { id: number; label: string } | null;
-  location: string;
-  isOnline: boolean;
-  price: number;
-  maxAttendees: number;
-  startDate: string | null;
-  endDate: string | null;
-  categoryId: number;
-  creatorId: number;
-  recruitStartDate?: string;  // 모집 시작일
-  recruitEndDate?: string;    // 모집 마감일
-}
+import { useEvents } from './useEvents';
 
 export default function EventsPage() {
-  const [events, setEvents] = useState<EventData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState('all');
-
-  const categoryOptions = [
-    { value: 'all', label: '전체보기' },
-    { value: '1', label: '디자인' },
-    { value: '2', label: '개발' },
-    { value: '3', label: '마케팅' },
-  ];
-
-  const fetchEvents = async (page: number, keyword: string = '') => {
-    setLoading(true);
-    try {
-      let url = `/api/events?page=${page - 1}&size=12&sort=latest`;
-      if (keyword) {
-        url += `&keyword=${encodeURIComponent(keyword)}`;
-      }
-
-      const res = await fetch(url);
-      const resData = await res.json();
-
-      if (resData.success) {
-        setEvents(resData.data.content);
-        setTotalPages(resData.data.totalPages);
-      } else {
-        console.error('Failed to fetch events:', resData.message);
-      }
-    } catch (error) {
-      console.error('Error fetching events:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    events,
+    loading,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    searchQuery,
+    setSearchQuery,
+    activeCategory,
+    setActiveCategory,
+    fetchEvents
+  } = useEvents();
 
   useEffect(() => {
     fetchEvents(currentPage, searchQuery);
-  }, [currentPage]);
+  }, [currentPage, fetchEvents]);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -78,6 +36,13 @@ export default function EventsPage() {
 
   // 💡 최적화: 현재 시간은 카드 개수만큼 여러 번 계산할 필요 없이 한 번만 계산합니다.
   const nowTime = new Date().getTime();
+
+  const categoryOptions = [
+    { value: 'all', label: '전체보기' },
+    { value: '1', label: '디자인' },
+    { value: '2', label: '개발' },
+    { value: '3', label: '마케팅' },
+  ];
 
   return (
     <div className="container-full">

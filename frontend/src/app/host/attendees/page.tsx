@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/layout/Sidebar';
 import { api } from '@/lib/api';
-import styles from '../page.module.css';
+import { Table, TableHeader, TableRow, TableCell, StatusTag } from '@/components/ui';
+import styles from './page.module.css';
 
 interface Attendee {
   orderId: number;
@@ -71,24 +72,21 @@ export default function HostAttendeesPage() {
   }, [selectedEventId, searchName]);
 
   return (
-    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
-      <div className={styles.sidebarWrapper}>
-         <Sidebar role="host" />
-      </div>
-      
-      <div className="sidebar">
-        <div className={styles.dashboardWrapper}>
+    <div className="container-sidebar">
+      <Sidebar role="host" />
+      <div className="sidebar-content">
+        <div className={styles.container}>
           
           <header className={styles.header}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                <Link href="/host" style={{ textDecoration: 'none', color: '#64748b' }}>← 대시보드로 돌아가기</Link>
+            <div style={{ marginBottom: '8px' }}>
+              <Link href="/host" className={styles.backLink}>← 대시보드로 돌아가기</Link>
             </div>
             <h1 className={styles.pageTitle}>총 누적 수강생 관리</h1>
             <p className={styles.pageSubtitle}>현재까지 내 강의를 신청한 모든 수강생 목록입니다. (총 {totalCount}명)</p>
           </header>
 
-          <section className={styles.sectionBox}>
-            {/* 필터 바 추가 */}
+          <div className={styles.contentBox}>
+            {/* 필터 바 */}
             <div className={styles.filterBar}>
               <div className={styles.filterGroup}>
                 <label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#475569' }}>강의별 필터</label>
@@ -115,54 +113,43 @@ export default function HostAttendeesPage() {
               </div>
             </div>
 
-            <div className={styles.tableContainer}>
-              <table className={`${styles.table} ${styles.attendeeTable}`}>
-                <thead>
-                  <tr>
-                    <th>이름</th>
-                    <th>이메일</th>
-                    <th>수강 강의</th>
-                    <th>결제 금액</th>
-                    <th>신청일</th>
-                    <th>상태</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {attendees.map((item) => (
-                    <tr key={item.orderId}>
-                      <td style={{ fontWeight: '600' }}>{item.userName}</td>
-                      <td style={{ color: '#64748b' }}>{item.userEmail}</td>
-                      <td>{item.eventTitle}</td>
-                      <td>{item.amount.toLocaleString()}원</td>
-                      <td>{item.orderedAt.slice(0, 10)}</td>
-                      <td>
-                        <span className={styles.orderStatus} style={{ 
-                            background: item.status === 'PAID' ? '#dcfce7' : '#f1f5f9',
-                            color: item.status === 'PAID' ? '#16a34a' : '#64748b'
-                        }}>
-                          {item.status === 'PAID' ? '결제완료' : '신청완료'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                  {!isLoading && attendees.length === 0 && (
-                    <tr>
-                      <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                        검색 조건에 맞는 수강생 내역이 없습니다.
-                      </td>
-                    </tr>
-                  )}
-                  {isLoading && (
-                    <tr>
-                      <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                        수강생 목록을 불러오는 중입니다...
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </section>
+            <Table columns="80px 160px minmax(0, 1fr) 100px 100px 80px">
+              <TableHeader>
+                <TableCell header>이름</TableCell>
+                <TableCell header>이메일</TableCell>
+                <TableCell header>수강 강의</TableCell>
+                <TableCell header>결제 금액</TableCell>
+                <TableCell header>신청일</TableCell>
+                <TableCell header>상태</TableCell>
+              </TableHeader>
+              {isLoading ? (
+                <TableRow>
+                  <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                    수강생 목록을 불러오는 중입니다...
+                  </div>
+                </TableRow>
+              ) : attendees.length > 0 ? (
+                attendees.map((item) => (
+                  <TableRow key={item.orderId}>
+                    <TableCell>{item.userName}</TableCell>
+                    <TableCell>{item.userEmail}</TableCell>
+                    <TableCell>{item.eventTitle}</TableCell>
+                    <TableCell>{item.amount.toLocaleString()}원</TableCell>
+                    <TableCell>{item.orderedAt?.slice(0, 10)}</TableCell>
+                    <TableCell>
+                      <StatusTag domain="payment" status={item.status} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                    검색 조건에 맞는 수강생 내역이 없습니다.
+                  </div>
+                </TableRow>
+              )}
+            </Table>
+          </div>
 
         </div>
       </div>

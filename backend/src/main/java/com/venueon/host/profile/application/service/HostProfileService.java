@@ -28,17 +28,26 @@ public class HostProfileService implements GetHostProfileUseCase, UpdateHostProf
     private final UserRepositoryPort userRepositoryPort;
 
     @Override
+    @Transactional
     public HostProfileResponse getHostProfile(Long userId) {
         log.debug("호스트 프로필 조회 — userId={}", userId);
-
-        HostProfile profile = hostProfileRepositoryPort.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "호스트 프로필을 찾을 수 없습니다. userId=" + userId));
 
         // User에서 profileImg 조회
         User user = userRepositoryPort.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "사용자를 찾을 수 없습니다. userId=" + userId));
+
+        // 프로필이 없으면 기본 프로필 자동 생성
+        HostProfile profile = hostProfileRepositoryPort.findByUserId(userId)
+                .orElseGet(() -> {
+                    log.info("호스트 프로필이 없어 기본 프로필을 자동 생성합니다. userId={}", userId);
+                    HostProfile defaultProfile = new HostProfile(
+                            null, userId, user.getNickname(), "",
+                            user.getNickname(), "",
+                            java.time.LocalDateTime.now(), java.time.LocalDateTime.now()
+                    );
+                    return hostProfileRepositoryPort.save(defaultProfile);
+                });
 
         return HostProfileResponse.from(profile, user.getProfileImg());
     }
