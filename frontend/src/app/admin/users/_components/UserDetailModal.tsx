@@ -65,6 +65,26 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
     }
   };
 
+  const handleDeleteUser = async () => {
+    if (!userId || !user) return;
+    
+    if (!confirm(`${user.nickname} 회원을 삭제하시겠습니까?\n삭제된 회원은 로그인 시 '탈퇴한 회원'으로 안내되며, 복구 가능합니다.`)) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await adminUserAPI.deleteUser(userId);
+      onUpdated(); // 목록 새로고침
+      onClose();   // 모달 닫기
+    } catch (err) {
+      console.error('회원 삭제 실패:', err);
+      alert('회원 삭제에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const roleOptions = [
     { value: 'USER', label: '수강생' },
     { value: 'HOST', label: '주최자' },
@@ -188,15 +208,13 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
               ) : (
                 <>
                   <div className={styles.buttonRow}>
-                    {user.role?.id === 3 && (
-                      <Button 
-                        variant="danger" 
-                        style={{ flex: 1, padding: 0 }}
-                        onClick={() => alert('회원 삭제 기능은 아직 구현되지 않았습니다.')}
-                      >
-                        회원 삭제
-                      </Button>
-                    )}
+                    <Button 
+                      variant="danger" 
+                      style={{ flex: 1, padding: 0 }}
+                      onClick={handleDeleteUser}
+                    >
+                      회원 삭제
+                    </Button>
                     <Button 
                       variant="primary" 
                       style={{ flex: 1, padding: 0 }}

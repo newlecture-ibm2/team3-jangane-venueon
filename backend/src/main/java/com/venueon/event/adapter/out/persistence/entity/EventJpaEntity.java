@@ -77,4 +77,17 @@ public class EventJpaEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void toggleHidden() {
+        this.isHidden = !this.isHidden;
+    }
+
+    public void updateBasicInfo(String title, String description, CategoryJpaEntity category, String thumbnailUrl) {
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        if (thumbnailUrl != null) {
+            this.thumbnailUrl = thumbnailUrl;
+        }
+    }
 }

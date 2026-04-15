@@ -126,6 +126,21 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * 단순히 활성 상태 필드만 업데이트 (이메일 변경 없음)
+     */
+    public void setStatusOnly(boolean active) {
+        this.active = active;
+    }
+
+    /**
+     * 어드민 등에서 이메일 복구가 필요할 때 사용
+     */
+    public void restoreEmail(String originalEmail) {
+        this.email = originalEmail;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     // --- Getters ---
 
     public Long getId() { return id; }
