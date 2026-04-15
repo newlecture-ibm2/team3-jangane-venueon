@@ -94,4 +94,8 @@ public class UserJpaEntity {
             this.email = newEmail;
         }
     }
+
+    public void activate() {
+        this.isActive = true;
+    }
 }

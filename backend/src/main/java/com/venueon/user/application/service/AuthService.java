@@ -11,6 +11,8 @@ import com.venueon.user.adapter.in.security.JwtTokenProvider;
 import com.venueon.user.application.port.in.*;
 import com.venueon.user.application.port.out.HostProfileRepositoryPort;
 import com.venueon.user.application.port.out.UserRepositoryPort;
+import com.venueon.user.adapter.out.persistence.entity.EmailVerificationTokenJpaEntity;
+import com.venueon.user.adapter.out.persistence.repository.EmailVerificationTokenJpaRepository;
 
 import com.venueon.user.domain.model.AuthProvider;
 import com.venueon.user.domain.model.HostProfile;
@@ -19,7 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,6 +46,8 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
     private final HostProfileRepositoryPort hostProfileRepositoryPort;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MailService mailService;
+    private final EmailVerificationTokenJpaRepository tokenRepository;
 
 
     @Value("${google.client-id:}")
@@ -72,12 +78,15 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
 
         com.venueon.common.model.DomainCode userRole = com.venueon.common.model.DomainCode.of(roleId, roleLabel);
 
-        // 도메인 모델 생성 및 저장
+        // 도메인 모델 생성 및 저장 (active=false: 이메일 인증 전까지 비활성)
         User user = new User(null, email, encodedPassword, nickname, userRole,
-                AuthProvider.LOCAL, null, null, true, null, null);
+                AuthProvider.LOCAL, null, null, false, null, null);
         User savedUser = userRepositoryPort.save(user);
 
-        log.info("회원가입 완료: email={}, role={}", email, roleLabel);
+        // 이메일 인증 토큰 생성 및 메일 발송
+        sendVerificationToken(email);
+
+        log.info("회원가입 완료(인증 대기): email={}, role={}", email, roleLabel);
         return savedUser;
     }
 
@@ -94,10 +103,10 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(password);
 
-        // User 저장 (role=HOST)
+        // User 저장 (role=HOST, active=false: 이메일 인증 전까지 비활성)
         com.venueon.common.model.DomainCode hostRole = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.ROLE_HOST_ID, "호스트");
         User user = new User(null, email, encodedPassword, managerName, hostRole,
-                AuthProvider.LOCAL, null, null, true, null, null);
+                AuthProvider.LOCAL, null, null, false, null, null);
         User savedUser = userRepositoryPort.save(user);
 
         // HostProfile 저장
@@ -106,9 +115,10 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
                 managerName, orgDescription, null, null);
         hostProfileRepositoryPort.save(hostProfile);
 
+        // 이메일 인증 토큰 생성 및 메일 발송
+        sendVerificationToken(email);
 
-
-        log.info("호스트 회원가입 완료: email={}, orgName={}", email, orgName);
+        log.info("호스트 회원가입 완료(인증 대기): email={}, orgName={}", email, orgName);
         return savedUser;
     }
 
@@ -120,8 +130,13 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
         User user = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."));
 
-        // 탈퇴한 사용자 체크
+        // 비활성 사용자 체크 (탈퇴 또는 이메일 미인증)
         if (!user.isActive()) {
+            // 이메일 인증 토큰이 남아있으면 아직 인증 전인 계정
+            Optional<EmailVerificationTokenJpaEntity> pendingToken = tokenRepository.findByEmail(email);
+            if (pendingToken.isPresent()) {
+                throw new BusinessException(ErrorCode.UNAUTHORIZED, "이메일 인증이 완료되지 않았습니다. 메일함을 확인해 주세요.");
+            }
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "탈퇴 처리된 계정입니다.");
         }
 
@@ -262,6 +277,50 @@ public class AuthService implements SignUpUseCase, HostSignUpUseCase, LoginUseCa
             log.error("구글 토큰 검증 실패", e);
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "구글 토큰 검증에 실패했습니다.");
         }
+    }
+
+    /**
+     * 이메일 인증 토큰을 생성하고 인증 메일을 발송합니다.
+     */
+    @Transactional
+    private void sendVerificationToken(String email) {
+        // 기존 토큰 삭제 (재발송 대비)
+        tokenRepository.deleteByEmail(email);
+
+        String token = UUID.randomUUID().toString();
+        EmailVerificationTokenJpaEntity tokenEntity = EmailVerificationTokenJpaEntity.builder()
+                .token(token)
+                .email(email)
+                .expiresAt(LocalDateTime.now().plusMinutes(10))
+                .build();
+        tokenRepository.save(tokenEntity);
+
+        mailService.sendVerificationEmail(email, token);
+    }
+
+    /**
+     * 이메일 인증 토큰을 검증하고, 대상 계정을 활성화합니다.
+     */
+    @Transactional
+    public void verifyEmail(String token) {
+        EmailVerificationTokenJpaEntity tokenEntity = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "유효하지 않은 인증 링크입니다."));
+
+        if (tokenEntity.isExpired()) {
+            tokenRepository.delete(tokenEntity);
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "인증 링크가 만료되었습니다. 다시 회원가입해 주세요.");
+        }
+
+        User user = userRepositoryPort.findByEmail(tokenEntity.getEmail())
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
+
+        user.activate();
+        userRepositoryPort.save(user);
+
+        // 사용된 토큰 삭제
+        tokenRepository.delete(tokenEntity);
+
+        log.info("이메일 인증 완료: email={}", tokenEntity.getEmail());
     }
 
     /**

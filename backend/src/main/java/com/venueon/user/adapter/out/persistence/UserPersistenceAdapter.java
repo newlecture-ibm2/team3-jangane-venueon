@@ -35,6 +35,8 @@ public class UserPersistenceAdapter implements UserRepositoryPort {
             entity.updateBadgeVisibility(user.isBadgeVisible());
             if (!user.isActive()) {
                 entity.softDelete(user.getEmail());
+            } else {
+                entity.activate();
             }
         } else {
             entity = userMapper.toEntity(user, roleEntity);
