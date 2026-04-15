@@ -26,6 +26,8 @@ interface EventData {
   primaryLocation: string | null;
   isOnline: boolean;
   startDate?: string;
+  recruitStartDate?: string;  // 모집 시작일
+  recruitEndDate?: string;    // 모집 마감일
 }
 
 export default function Home() {
@@ -254,13 +256,23 @@ export default function Home() {
                 let dateTimeStr = '일정 미정';
 
                 if (event.startDate) {
-                  const startTime = new Date(event.startDate).getTime();
-                  const diffDays = Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24));
-                  dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
                   try {
                     dateTimeStr = format(new Date(event.startDate), 'yyyy년 M월 d일 a h시');
                   } catch(e) {}
                 }
+
+                // 모집상태별 D-Day 기준 분기
+                const recruitStatusId = event.recruitmentStatus?.id;
+                if (recruitStatusId === 1 && event.recruitStartDate) {
+                  // 모집 예정 → 모집 시작일까지 D-Day
+                  const diffDays = Math.ceil((new Date(event.recruitStartDate).getTime() - nowTime) / (1000 * 60 * 60 * 24));
+                  dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                } else if (recruitStatusId === 2 && event.recruitEndDate) {
+                  // 모집 중 → 모집 마감일까지 D-Day
+                  const diffDays = Math.ceil((new Date(event.recruitEndDate).getTime() - nowTime) / (1000 * 60 * 60 * 24));
+                  dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                }
+                // 모집마감(id===3)이면 D-Day 표시 안 함
                 
                 // 간단한 카테고리 맵핑 (프론트에서 관리하는 카테고리가 있다면 가져옴)
                 const categoryLabel = categoryOptions.find(c => c.value === String(event.categoryId))?.label || '기타';

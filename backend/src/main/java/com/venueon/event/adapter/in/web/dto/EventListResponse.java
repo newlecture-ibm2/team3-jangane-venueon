@@ -30,7 +30,9 @@ public record EventListResponse(
         boolean hasDiscount,                   // 할인 티켓 존재 여부
         Integer originalPrice,                 // 최저가 티켓의 원래 가격 (할인 시)
         String primaryLocation,                // 대표 세션 장소
-        boolean isOnline                       // 전체 세션이 온라인인지
+        boolean isOnline,                      // 전체 세션이 온라인인지
+        LocalDateTime recruitStartDate,        // 세션들 중 가장 빠른 모집 시작일
+        LocalDateTime recruitEndDate           // 세션들 중 가장 늦은 모집 마감일
 ) {
     /**
      * 세션 정보 없이 생성 (fallback)
@@ -56,6 +58,8 @@ public record EventListResponse(
         com.venueon.common.model.DomainCode recruitmentStatus = com.venueon.common.model.DomainCode.of(com.venueon.common.model.CodeConstants.RECRUIT_STATUS_CLOSED_ID, "모집마감");
         String primaryLocation = null;
         boolean isOnline = false;
+        LocalDateTime recruitStartDate = null;
+        LocalDateTime recruitEndDate = null;
 
         if (sessions != null && !sessions.isEmpty()) {
             startDate = sessions.stream()
@@ -84,6 +88,18 @@ public record EventListResponse(
 
             // 전체 온라인 여부 (모든 세션이 온라인이면 true)
             isOnline = sessions.stream().allMatch(Session::getIsOnline);
+
+            // 모집 시작일/마감일 (세션 종합)
+            recruitStartDate = sessions.stream()
+                    .map(Session::getRecruitStartDate)
+                    .filter(t -> t != null)
+                    .min(LocalDateTime::compareTo)
+                    .orElse(null);
+            recruitEndDate = sessions.stream()
+                    .map(Session::getRecruitEndDate)
+                    .filter(t -> t != null)
+                    .max(LocalDateTime::compareTo)
+                    .orElse(null);
         }
 
         // 티켓 기반 가격 계산 (활성 티켓만)
@@ -133,7 +149,9 @@ public record EventListResponse(
                 hasDiscount,
                 originalPrice,
                 primaryLocation,
-                isOnline
+                isOnline,
+                recruitStartDate,
+                recruitEndDate
         );
     }
 }
