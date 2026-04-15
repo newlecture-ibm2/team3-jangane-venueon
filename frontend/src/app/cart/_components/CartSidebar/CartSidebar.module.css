@@ -1,0 +1,96 @@
+/* CartSidebar Styles */
+/* Order Sidebar Styles */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-32);
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.sidebarTitle {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+  height: 36px;
+}
+
+.summary {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.summaryDetails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  height: 120px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summaryRow :global(.label) {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-500);
+}
+
+.summaryRow :global(.value) {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-900);
+}
+
+.summaryRow :global(.discount) {
+  color: var(--color-error);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-text-gray-500);
+  width: 100%;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total :global(.label) {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-900);
+}
+
+.total :global(.total) {
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-900);
+  font-weight: 700;
+}
+
+.orderButton {
+  width: 100%;
+  gap: var(--space-8);
+}
+
+.itemCount {
+  background-color: var(--color-surface);
+  color: var(--color-text-gray-900);
+  border-radius: var(--radius-full);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* Responsive Design */

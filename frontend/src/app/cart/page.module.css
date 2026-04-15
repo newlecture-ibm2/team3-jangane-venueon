@@ -1,0 +1,79 @@
+/* Cart Page Main Layout Styles */
+/* Cart Page Styles - Using global CSS variables */
+
+.container {
+  display: flex;
+  gap: var(--space-32);
+  align-items: flex-start;
+  padding: var(--space-100) var(--space-160);
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.content {
+  display: flex;
+  gap: var(--space-32);
+  width: 100%;
+  flex: 1;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-32);
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+  height: 36px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .container {
+    padding: var(--space-48) var(--space-24);
+  }
+  
+  .content {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
+  
+  .courseNameCell {
+    width: 250px;
+  }
+  
+  .scheduleCell {
+    width: 150px;
+  }
+  
+  .priceCell {
+    width: 100px;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: var(--space-32) var(--space-16);
+  }
+  
+  .row {
+    padding: var(--space-12) var(--space-16);
+  }
+  
+  .courseNameCell {
+    width: 200px;
+  }
+  
+  .pagination {
+    gap: var(--space-4);
+  }
+}

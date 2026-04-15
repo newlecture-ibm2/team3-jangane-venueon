@@ -2,8 +2,7 @@
 
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import styles from '../checkout.module.css';
-import failStyles from './fail.module.css';
+import styles from './page.module.css';
 import { Button } from '@/components/ui';
 
 function CheckoutFailContent() {
@@ -24,16 +23,16 @@ function CheckoutFailContent() {
   }
 
   return (
-    <div className={failStyles.pageContainer}>
-      <div className={failStyles.headerSection}>
-        <h1 className={failStyles.title}>결제에 실패했습니다</h1>
-        <p className={failStyles.subtitle}>
+    <div className={styles.pageContainer}>
+      <div className={styles.headerSection}>
+        <h1 className={styles.title}>결제에 실패했습니다</h1>
+        <p className={styles.subtitle}>
           {userFriendlyMessage}<br />
           아래 버튼을 눌러 다시 시도해주시거나 다른 결제 수단을 선택해주세요.
         </p>
       </div>
 
-      <div className={failStyles.buttonGroup}>
+      <div className={styles.buttonGroup}>
         <Button
           variant="outlined"
           size="large"
