@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +25,9 @@ import java.util.List;
 @Slf4j
 @UseCase
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class HostOrderService implements GetHostRecentOrdersUseCase {
+
 
     private final HostOrderQueryPort hostOrderQueryPort;
 

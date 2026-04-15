@@ -96,7 +96,7 @@ export default function HostOrderDetailPage() {
 
   if (loading) {
     return (
-      <div className="container-sidebar">
+    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
         <div className="sidebar"><Sidebar role="host" /></div>
         <div className="main-content">
           <div className={styles.loadingWrapper}>로딩 중...</div>
@@ -107,7 +107,7 @@ export default function HostOrderDetailPage() {
 
   if (error || !order) {
     return (
-      <div className="container-sidebar">
+    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
         <div className="sidebar"><Sidebar role="host" /></div>
         <div className="main-content">
           <div className={styles.errorWrapper}>
@@ -120,7 +120,7 @@ export default function HostOrderDetailPage() {
   }
 
   return (
-    <div className="container-sidebar">
+    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
       <div className="sidebar">
         <Sidebar role="host" />
       </div>

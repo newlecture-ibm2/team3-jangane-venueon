@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  * 호스트 이벤트 관리 서비스
@@ -16,7 +18,9 @@ import org.springframework.data.domain.Pageable;
 @Slf4j
 @UseCase
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class HostEventService implements GetHostEventsUseCase {
+
 
     private final HostEventQueryPort hostEventQueryPort;
 
@@ -30,5 +34,11 @@ public class HostEventService implements GetHostEventsUseCase {
     public Page<HostEventResponse> getHostDraftEvents(Long hostId, Pageable pageable) {
         log.debug("호스트 DRAFT 이벤트 목록 조회: hostId={}", hostId);
         return hostEventQueryPort.findDraftsByHostId(hostId, pageable);
+    }
+
+    @Override
+    public com.venueon.host.event.adapter.in.web.dto.HostEventDetailResponse getHostEventDetail(Long hostId, Long eventId) {
+        log.debug("호스트 이벤트 상세 조회: hostId={}, eventId={}", hostId, eventId);
+        return hostEventQueryPort.getEventDetail(hostId, eventId);
     }
 }

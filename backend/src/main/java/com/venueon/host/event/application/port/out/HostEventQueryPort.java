@@ -13,4 +13,6 @@ public interface HostEventQueryPort {
     Page<HostEventResponse> findByHostId(Long hostId, String status, Pageable pageable);
 
     Page<HostEventResponse> findDraftsByHostId(Long hostId, Pageable pageable);
+
+    com.venueon.host.event.adapter.in.web.dto.HostEventDetailResponse getEventDetail(Long hostId, Long eventId);
 }
