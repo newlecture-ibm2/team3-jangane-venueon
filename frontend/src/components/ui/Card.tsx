@@ -93,11 +93,11 @@ export default function Card({
           )}
 
           <div className={styles.topRight}>
-            {/* 모집상태 뱃지 (default variant에서만 표시) */}
-            {variant === 'default' && recruitmentStatus && (
+            {/* 모집상태 뱃지 */}
+            {recruitmentStatus && (
               <StatusTag domain="recruitment" status={recruitmentStatus} />
             )}
-            {/* 강의상태 뱃지 (default variant에서만, DRAFT/PUBLISHED 제외) */}
+            {/* 강의상태 뱃지 (DRAFT/PUBLISHED 제외) */}
             {variant === 'default' && status && status !== 'DRAFT' && status !== 'PUBLISHED' && (
               <StatusTag domain="course" status={status} />
             )}

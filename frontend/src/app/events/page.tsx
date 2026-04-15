@@ -22,6 +22,8 @@ interface EventData {
   endDate: string | null;
   categoryId: number;
   creatorId: number;
+  recruitStartDate?: string;  // 모집 시작일
+  recruitEndDate?: string;    // 모집 마감일
 }
 
 export default function EventsPage() {
@@ -110,9 +112,19 @@ export default function EventsPage() {
           ) : (
             <CardGrid layout="3-cols">
               {events.map((event) => {
-                const startTime = event.startDate ? new Date(event.startDate).getTime() : null;
-                const diffDays = startTime ? Math.ceil((startTime - nowTime) / (1000 * 60 * 60 * 24)) : undefined;
-                const dDayData = diffDays !== undefined && diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                // 모집상태별 D-Day 기준 분기
+                let dDayData: number | string | undefined = undefined;
+                const recruitStatusId = event.recruitmentStatus?.id;
+                if (recruitStatusId === 1 && event.recruitStartDate) {
+                  // 모집 예정 → 모집 시작일까지 D-Day
+                  const diffDays = Math.ceil((new Date(event.recruitStartDate).getTime() - nowTime) / (1000 * 60 * 60 * 24));
+                  dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                } else if (recruitStatusId === 2 && event.recruitEndDate) {
+                  // 모집 중 → 모집 마감일까지 D-Day
+                  const diffDays = Math.ceil((new Date(event.recruitEndDate).getTime() - nowTime) / (1000 * 60 * 60 * 24));
+                  dDayData = diffDays > 0 ? diffDays : (diffDays === 0 ? 'D-Day' : undefined);
+                }
+                // 모집마감(id===3)이면 D-Day 표시 안 함
                 
                 const categoryLabel = categoryOptions.find(c => c.value === String(event.categoryId))?.label || '기타';
 
