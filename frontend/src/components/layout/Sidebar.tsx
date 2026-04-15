@@ -96,7 +96,7 @@ export default function Sidebar({ role = 'user', className = '', fakePathname }:
     switch (role) {
       case 'admin':
         return [
-          { label: '대시보드', href: '/admin/dashboard', icon: DashboardIcon },
+          { label: '대시보드', href: '/admin', icon: DashboardIcon },
           { label: '사용자 관리', href: '/admin/users', icon: ProfileIcon },
           { label: '시스템 설정', href: '/admin/settings', icon: SettingIcon },
           { label: '이벤트 관리', href: '/admin/events', icon: SeminarSettingIcon },

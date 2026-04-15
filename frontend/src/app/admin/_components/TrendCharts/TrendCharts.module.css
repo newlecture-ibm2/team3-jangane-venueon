@@ -1,0 +1,80 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  width: 100%;
+}
+
+.chartCard {
+  background: white;
+  border-radius: 20px;
+  padding: var(--space-24);
+  border: 1px solid #F3F4F6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.chartTitle h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.chartTitle p {
+  font-size: 14px;
+  color: #6B7280;
+  margin-bottom: var(--space-24);
+}
+
+.chartWrapper {
+  width: 100%;
+  margin-left: -20px; /* Tick 정렬 최적화 */
+}
+
+.smallGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-24);
+}
+
+.smallCard {
+  background: white;
+  border-radius: 20px;
+  padding: var(--space-20);
+  border: 1px solid #F3F4F6;
+  position: relative;
+  overflow: hidden;
+}
+
+.smallCard h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-bottom: var(--space-12);
+}
+
+.smallChartWrapper {
+  height: 80px;
+  margin: 0 -10px;
+}
+
+.trendInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.trendUp {
+  font-size: 12px;
+  font-weight: 700;
+  color: #10B981;
+  background: #ECFDF5;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.trendPeriod {
+  font-size: 12px;
+  color: #9CA3AF;
+}
