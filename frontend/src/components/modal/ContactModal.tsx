@@ -16,7 +16,6 @@ const USER_CATEGORIES = [
 ];
 
 const HOST_CATEGORIES = [
-  { value: 'BUSINESS_LICENSE', label: '사업자 인증' },
   { value: 'BILLING', label: '정산 문의' },
   { value: 'EVENT_MANAGEMENT', label: '이벤트 관리' },
   { value: 'SYSTEM_ERROR', label: '시스템 오류' },
@@ -31,7 +30,7 @@ export interface ContactModalProps {
     category: string;
     title: string;
     content: string;
-    attachment?: File | null;
+    attachments?: File[];
   }) => void;
 }
 
@@ -46,7 +45,7 @@ export default function ContactModal({
   const [activeCategory, setActiveCategory] = useState(categories[0].value);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -54,7 +53,7 @@ export default function ContactModal({
     setActiveCategory(categories[0].value);
     setTitle('');
     setContent('');
-    setAttachment(null);
+    setAttachments([]);
     setError('');
     onClose();
   };
@@ -77,7 +76,7 @@ export default function ContactModal({
         category: activeCategory,
         title: title.trim(),
         content: content.trim(),
-        attachment,
+        attachments,
       });
       handleClose();
     } catch {
@@ -138,11 +137,12 @@ export default function ContactModal({
           showCount
         />
 
-        {/* 첨부파일 */}
+        {/* 첨부파일 (다중) */}
         <UploadField
           label="첨부파일 (선택)"
-          accept="image/*,.pdf"
-          onFileSelect={(file) => setAttachment(file)}
+          accept="image/*,.pdf,.doc,.docx,.hwp,.zip"
+          multiple
+          onFilesChange={(files) => setAttachments(files)}
         />
 
         {/* 에러 */}

@@ -77,14 +77,39 @@ export default function UserContactPage() {
     category: string;
     title: string;
     content: string;
-    attachment?: File | null;
+    attachments?: File[];
   }) => {
     try {
+      let attachmentUrl: string | undefined;
+
+      // 첨부파일이 있으면 각각 업로드 후 URL 합치기
+      if (data.attachments && data.attachments.length > 0) {
+        const uploadPromises = data.attachments.map(async (file) => {
+          const formData = new FormData();
+          formData.append('file', file);
+          const uploadRes = await fetch('/api/files/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            return uploadData.data?.filePath || uploadData.data;
+          }
+          return null;
+        });
+        
+        const urls = await Promise.all(uploadPromises);
+        const validUrls = urls.filter((url) => url != null);
+        if (validUrls.length > 0) {
+          attachmentUrl = validUrls.join(',');
+        }
+      }
+
       await userContactAPI.createContact({
         category: data.category as ContactCategory,
         title: data.title,
         content: data.content,
-        attachmentUrl: undefined, // TODO: 파일 업로드 후 URL 연동
+        attachmentUrl,
       });
       showToast('문의가 접수되었습니다.', 'success');
       setIsContactOpen(false);
@@ -111,21 +136,7 @@ export default function UserContactPage() {
           <div className={styles.tableSection}>
             {/* 필터 영역 */}
             <div className={styles.filterContainer}>
-              <div className={styles.tabArea}>
-                <Tabs
-                  variant="line"
-                  options={[
-                    { value: '', label: '전체' },
-                    { value: 'PAYMENT', label: '결제/환불' },
-                    { value: 'ACCOUNT', label: '계정 문제' },
-                    { value: 'SYSTEM_ERROR', label: '시스템 오류' },
-                    { value: 'OBJECTION', label: '이의 제기' },
-                    { value: 'OTHER', label: '기타' },
-                  ]}
-                  activeValue={categoryFilter}
-                  onChange={(val) => { setCategoryFilter(val); setCurrentPage(1); }}
-                />
-              </div>
+
               <div className={styles.searchFilterArea}>
                 <InputField
                   variant="search"

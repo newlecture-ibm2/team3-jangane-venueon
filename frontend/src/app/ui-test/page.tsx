@@ -707,7 +707,7 @@ export default function UITestPage() {
         role="user"
         onSubmit={(data) => {
           console.log('User Inquiry:', data);
-          alert(`문의 전송!\n- 유형: ${data.category}\n- 제목: ${data.title}\n- 내용: ${data.content}\n- 첨부: ${data.attachment?.name || '없음'}`);
+          alert(`문의 전송!\n- 유형: ${data.category}\n- 제목: ${data.title}\n- 내용: ${data.content}\n- 첨부: ${data.attachments?.length ? data.attachments.map(f => f.name).join(', ') : '없음'}`);
         }}
       />
 
@@ -718,7 +718,7 @@ export default function UITestPage() {
         role="host"
         onSubmit={(data) => {
           console.log('Host Inquiry:', data);
-          alert(`호스트 문의 전송!\n- 유형: ${data.category}\n- 제목: ${data.title}\n- 내용: ${data.content}\n- 첨부: ${data.attachment?.name || '없음'}`);
+          alert(`호스트 문의 전송!\n- 유형: ${data.category}\n- 제목: ${data.title}\n- 내용: ${data.content}\n- 첨부: ${data.attachments?.length ? data.attachments.map(f => f.name).join(', ') : '없음'}`);
         }}
       />
 
