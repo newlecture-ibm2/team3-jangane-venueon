@@ -121,6 +121,7 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
         return [
           { label: '대시보드', href: '/host', icon: DashboardIcon },
           { label: '내 이벤트 목록', href: '/host/events', icon: SeminarIcon },
+          { label: '전체 주문 내역', href: '/host/payments', icon: OrderIcon },
           { label: '프로필 설정', href: '/host/profile', icon: ProfileIcon },
           { label: '1:1 문의', href: '/host/contact', icon: ContactIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },

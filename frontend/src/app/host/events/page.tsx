@@ -94,7 +94,7 @@ export default function HostEventsPage() {
                 </button>
               ))}
             </div>
-            <Link href="/host/events/new" className={styles.createBtn}>
+            <Link href="/events/new" className={styles.createBtn}>
               + 새 강의 만들기
             </Link>
           </div>
