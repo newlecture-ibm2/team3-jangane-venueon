@@ -1,0 +1,47 @@
+.header {
+  margin-bottom: 32px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.backLink:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.statusBadgeWrapper {
+  margin-bottom: 12px;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.statusDRAFT { background: #f1f5f9; color: #64748b; }
+.statusPUBLISHED { background: #ecfdf5; color: #059669; }
+.statusENDED { background: #fef2f2; color: #dc2626; }
+
+.pageTitle {
+  font-size: 34px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.02em;
+}

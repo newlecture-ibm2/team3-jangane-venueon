@@ -41,4 +41,10 @@ public class HostEventService implements GetHostEventsUseCase {
         log.debug("호스트 이벤트 상세 조회: hostId={}, eventId={}", hostId, eventId);
         return hostEventQueryPort.getEventDetail(hostId, eventId);
     }
+
+    @Override
+    public java.util.List<com.venueon.host.event.adapter.in.web.dto.AttendeeResponse> getAttendees(Long hostId, Long eventId) {
+        log.debug("호스트 이벤트 수강생 명단 조회: hostId={}, eventId={}", hostId, eventId);
+        return hostEventQueryPort.findAttendees(hostId, eventId);
+    }
 }

@@ -98,7 +98,7 @@ export default function HostOrderDetailPage() {
     return (
     <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
         <div className="sidebar"><Sidebar role="host" /></div>
-        <div className="main-content">
+        <div className="sidebar-content">
           <div className={styles.loadingWrapper}>로딩 중...</div>
         </div>
       </div>
@@ -109,7 +109,7 @@ export default function HostOrderDetailPage() {
     return (
     <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
         <div className="sidebar"><Sidebar role="host" /></div>
-        <div className="main-content">
+        <div className="sidebar-content">
           <div className={styles.errorWrapper}>
             <p>{error || '주문을 찾을 수 없습니다.'}</p>
             <Link href="/host/payments">← 목록으로 돌아가기</Link>
@@ -125,7 +125,7 @@ export default function HostOrderDetailPage() {
         <Sidebar role="host" />
       </div>
 
-      <div className="main-content">
+      <div className="sidebar-content">
         <div className={styles.container}>
           <header className={styles.header}>
             <Link href="/host/payments" className={styles.backLink}>

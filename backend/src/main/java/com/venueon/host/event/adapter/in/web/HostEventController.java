@@ -156,4 +156,20 @@ public class HostEventController {
         var result = getHostEventsUseCase.getHostEventDetail(hostId, id);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
+
+    /**
+     * 특정 이벤트의 수강생 명단 조회
+     * GET /host/events/{id}/attendees
+     */
+    @GetMapping("/{id}/attendees")
+    public ResponseEntity<ApiResponse<java.util.List<com.venueon.host.event.adapter.in.web.dto.AttendeeResponse>>> getEventAttendees(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        Long hostId = hostAuthSupport.extractUserId(authentication);
+        log.debug("GET /host/events/{}/attendees — hostId={}", id, hostId);
+
+        var result = getHostEventsUseCase.getAttendees(hostId, id);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
 }

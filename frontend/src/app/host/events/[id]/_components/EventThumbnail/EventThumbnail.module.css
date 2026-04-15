@@ -1,0 +1,26 @@
+.thumbnailContainer {
+  width: 100%;
+  margin-bottom: 48px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.thumbnailPreviewLarge {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+.thumbnailPlaceholderLarge {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 18px;
+  font-weight: 500;
+}
