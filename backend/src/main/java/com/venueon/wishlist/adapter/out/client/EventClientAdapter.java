@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EventClientAdapter implements LoadEventPort {
     private final EventQueryService eventQueryService;
+    private final com.venueon.event.application.port.out.SessionPort sessionPort;
+    private final com.venueon.ticket.application.port.out.TicketRepositoryPort ticketRepositoryPort;
     
     @Override
     public Event loadEvent(Long eventId) {
@@ -19,5 +21,15 @@ public class EventClientAdapter implements LoadEventPort {
     @Override
     public HostInfo loadHost(Long creatorId) {
         return eventQueryService.getHostInfoByCreatorId(creatorId);
+    }
+
+    @Override
+    public java.util.List<com.venueon.event.domain.model.Session> loadSessions(Long eventId) {
+        return sessionPort.findByEventId(eventId);
+    }
+
+    @Override
+    public java.util.List<com.venueon.ticket.domain.model.Ticket> loadTickets(Long eventId) {
+        return ticketRepositoryPort.findByEventId(eventId);
     }
 }
