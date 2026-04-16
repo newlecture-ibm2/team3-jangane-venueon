@@ -1,5 +1,5 @@
-import CommunityPostContainer from '@/app/community/components/CommunityPostContainer';
-import CommunityDetailHeader from '@/app/community/components/CommunityDetailHeader';
+import CommunityBoard from '@/app/community/_components/CommunityBoard/CommunityBoard';
+import CommunityDetailHeader from '@/app/community/_components/CommunityDetailHeader';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 import { sessionOptions, SessionData } from '@/lib/session';
@@ -54,7 +54,8 @@ export default async function CommunityDetailPage({ params }: Props) {
       <CommunityDetailHeader name={communityName} description={communityDesc} canManage={canManage} />
 
       {/* 2단 분할: 좌측 리스트 + 우측 상세 */}
-      <CommunityPostContainer communityId={id} canManage={canManage} canWrite={canWrite} />
+      <CommunityBoard communityId={id} canManage={canManage} canWrite={canWrite} />
     </div>
   );
 }
+
