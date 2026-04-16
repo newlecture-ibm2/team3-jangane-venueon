@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import styles from '../[id]/page.module.css';
+import styles from './CommunityDetailHeader.module.css';
 
 interface Props {
   name: string;
