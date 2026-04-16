@@ -34,7 +34,7 @@
   --color-tag-text-violet: #5B21B6;
 
   /* Typography Tokens (font: weight size/line-height font-family) */
-  --font-sans: 'Pretendard', 'Inter', -apple-system, sans-serif;
+  --font-sans: 'Sweet', 'Inter', -apple-system, sans-serif;
   --main-line-height: 1.5;
   --text-hero-bold: 700 2.25rem/1.5 var(--font-sans);
   --text-hero-regular: 400 2.25rem/1.5 var(--font-sans);
