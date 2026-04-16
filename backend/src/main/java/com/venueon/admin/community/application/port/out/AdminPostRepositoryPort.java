@@ -30,5 +30,10 @@ public interface AdminPostRepositoryPort {
     /**
      * 게시글 삭제 (물리 삭제 — DELETED 상태 전환 후 최종 정리용)
      */
+    /**
+     * 특정 커뮤니티의 마지막 게시글 작성 시간 조회
+     */
+    java.time.LocalDateTime findLatestPostDateByCommunityId(Long communityId);
+
     void deletePost(Long id);
 }

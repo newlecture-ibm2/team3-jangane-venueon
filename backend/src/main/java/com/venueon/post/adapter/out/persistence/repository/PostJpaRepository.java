@@ -26,4 +26,7 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             @org.springframework.data.repository.query.Param("type") com.venueon.post.domain.model.PostType type,
             @org.springframework.data.repository.query.Param("keyword") String keyword,
             Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Query("SELECT MAX(p.createdAt) FROM PostJpaEntity p WHERE p.community.id = :communityId")
+    java.time.LocalDateTime findMaxCreatedAtByCommunityId(@org.springframework.data.repository.query.Param("communityId") Long communityId);
 }

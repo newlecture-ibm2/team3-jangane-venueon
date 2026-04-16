@@ -8,6 +8,7 @@ import com.venueon.community.domain.model.Community;
 import com.venueon.user.application.port.out.UserRepositoryPort;
 import com.venueon.user.domain.model.User;
 import com.venueon.member.application.port.out.MemberRepositoryPort;
+import com.venueon.post.application.port.out.PostRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ public class CommunityQueryService implements GetCommunityQuery {
     private final UserRepositoryPort userRepositoryPort;
     private final MemberRepositoryPort memberRepositoryPort;
     private final CommunityPermissionService communityPermissionService;
+    private final PostRepositoryPort postRepositoryPort;
 
     @Override
     @Transactional(readOnly = true)
@@ -69,6 +71,8 @@ public class CommunityQueryService implements GetCommunityQuery {
             }
         }
 
+        java.time.LocalDateTime lastPostCreatedAt = postRepositoryPort.findLatestPostDateByCommunityId(community.getId());
+
         return new CommunityResponse(
                 community.getId(),
                 community.getName(),
@@ -78,9 +82,13 @@ public class CommunityQueryService implements GetCommunityQuery {
                 community.isPublic(),
                 community.getCreatorNickname(),
                 community.getCreatedAt(),
+                lastPostCreatedAt != null ? lastPostCreatedAt : community.getCreatedAt(),
                 canManage,
                 canWrite,
-                community.getType()
+                community.getType(),
+                null,       // eventName
+                "일반",      // eventCategory
+                "상세 정보 참조" // eventLocation
         );
     }
 }

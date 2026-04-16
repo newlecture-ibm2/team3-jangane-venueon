@@ -13,19 +13,26 @@ public record AdminCommunityListResponse(
     String description,
     String creatorNickname,
     String eventName,
-    String createdAt
+    String createdAt,
+    String lastPostCreatedAt
 ) {
     public static AdminCommunityListResponse from(CommunityJpaEntity entity) {
+        return from(entity, null);
+    }
+
+    public static AdminCommunityListResponse from(CommunityJpaEntity entity, java.time.LocalDateTime lastPostDate) {
         String displayName = entity.getName();
         String eventTitle = null;
         
         if (entity.getEvent() != null) {
             eventTitle = entity.getEvent().getTitle();
-            // 강의 커뮤니티인 경우 강의 제목을 우선적으로 표시할 수도 있음
             if (displayName == null || displayName.isEmpty()) {
                 displayName = eventTitle + " 커뮤니티";
             }
         }
+
+        String finalLastPostDate = lastPostDate != null ? lastPostDate.toString() : 
+                                  (entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : "");
 
         return AdminCommunityListResponse.builder()
             .id(entity.getId())
@@ -34,6 +41,7 @@ public record AdminCommunityListResponse(
             .creatorNickname(entity.getCreator() != null ? entity.getCreator().getNickname() : "시스템")
             .eventName(eventTitle)
             .createdAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : "")
+            .lastPostCreatedAt(finalLastPostDate)
             .build();
     }
 }

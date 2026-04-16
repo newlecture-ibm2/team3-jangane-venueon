@@ -31,4 +31,6 @@ public interface PostRepositoryPort {
     Page<Post> findBookmarkedPostsByUserId(Long userId, Pageable pageable);
     
     void delete(Long id);
+
+    java.time.LocalDateTime findLatestPostDateByCommunityId(Long communityId);
 }
