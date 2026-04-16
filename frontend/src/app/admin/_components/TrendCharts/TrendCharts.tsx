@@ -1,46 +1,26 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { 
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer, 
-  BarChart, 
-  Bar,
-  Line,
   Area,
   PieChart,
   Pie,
   ComposedChart,
-  Legend,
   Cell
 } from 'recharts';
 import styles from './TrendCharts.module.css';
-import { adminSummaryAPI, AdminSummaryResponse } from '@/lib/admin-api';
+import { AdminSummaryResponse } from '@/lib/admin-api';
 
-export default function TrendCharts() {
-  const [data, setData] = useState<AdminSummaryResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+interface TrendChartsProps {
+  data: AdminSummaryResponse | null;
+  isLoading: boolean;
+}
 
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const response = await adminSummaryAPI.getSummary();
-        if (response.success) {
-          setData(response.data);
-        }
-      } catch (error) {
-        console.error("차트 데이터를 가져오는 중 오류 발생:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSummary();
-  }, []);
-
-  if (loading) {
+export default function TrendCharts({ data, isLoading }: TrendChartsProps) {
+  if (isLoading) {
     return (
       <div className={styles.container}>
         <div className={styles.chartCard} style={{height: '400px', backgroundColor: '#F9FAFB', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>

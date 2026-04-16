@@ -1,0 +1,95 @@
+.filterContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 1) 탭 + 숨김 체크박스 행 ── */
+.tabRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--space-48);
+  margin-bottom: var(--space-32);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-24);
+}
+
+.tab {
+  padding: 4px 8px 8px 8px;
+  /* 상단 패딩 추가하여 높이감 조정 */
+  font-family: 'Inter', 'Pretendard', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-gray-500, #6b7280);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-bottom: -1px;
+}
+
+.activeTab {
+  color: var(--color-text-gray-900, #111827);
+  font-weight: 700;
+  border-bottom-color: var(--color-text-gray-900, #111827);
+}
+
+.checkboxArea {
+  display: flex;
+  align-items: center;
+}
+
+/* ── 2) 검색바 행 ── */
+.filterRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-32);
+}
+
+.searchArea {
+  width: 410px;
+  flex-shrink: 0;
+}
+
+/* ── 3) 카테고리 칩 행 ── */
+.categoryRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-32);
+}
+
+.categoryChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-12);
+}
+
+.chip {
+  display: flex;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100px;
+  background: var(--color-text-gray-100, #f3f4f6);
+  border: none;
+  color: #4b5563;
+  /* 정확한 Gray-600 명도 적용 */
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chip:hover {
+  background: var(--color-text-gray-200, #e5e7eb);
+}
+
+.activeChip {
+  background: var(--color-text-gray-700, #374151) !important;
+  color: var(--color-white, #ffffff) !important;
+}

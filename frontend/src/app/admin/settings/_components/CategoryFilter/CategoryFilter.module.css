@@ -1,0 +1,46 @@
+.topActionArea {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+}
+
+.tabArea {
+  display: flex;
+  gap: 24px;
+}
+
+.tab {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-500);
+  padding-bottom: 8px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  background: none;
+}
+
+.activeTab {
+  color: var(--color-text-gray-900);
+  border-bottom: 2px solid var(--color-text-gray-900);
+}
+
+.searchAddArea {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.searchArea {
+  width: 100%;
+}
+
+.searchRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.searchField {
+  flex: 1;
+}
