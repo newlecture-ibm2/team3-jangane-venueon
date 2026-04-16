@@ -1,7 +1,6 @@
 import { useRouter } from 'next/navigation';
 import styles from './CartSidebar.module.css';
 import Button from '@/components/ui/Button';
-import { CartItem } from '../../useCart';
 
 interface CartSidebarProps {
   totalAmount: number;

@@ -1,0 +1,30 @@
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-24);
+}
+
+.title {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.count {
+  color: var(--color-primary);
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.emptyState {
+  padding: 64px 0;
+  text-align: center;
+  color: var(--color-text-gray-500);
+  background: var(--color-text-gray-50);
+  border-radius: var(--radius-lg);
+}

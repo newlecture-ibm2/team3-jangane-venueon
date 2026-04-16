@@ -3,63 +3,29 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
-import { api } from '@/lib/api';
 import styles from './page.module.css';
 
-import { 
-  EventDetailHeader, 
-  EventThumbnail, 
-  HostProfile, 
-  EventTabSection 
+import {
+  DetailHeader,
+  Thumbnail,
+  HostProfile,
+  TabSection
 } from './_components/index';
 
-import { HostEventDetail, Attendee } from './types';
+import { useEventDetail } from './useEventDetail';
 
 export default function HostEventDetailPage() {
   const params = useParams();
   const eventId = params.id as string;
 
-  const [event, setEvent] = useState<HostEventDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { event, loading, error, attendees, loadingAttendees, fetchAttendees } = useEventDetail(eventId);
   const [activeTab, setActiveTab] = useState<'BASIC' | 'ATTENDEES' | 'STUDY_ROOM' | 'STATS'>('BASIC');
 
-  const [attendees, setAttendees] = useState<Attendee[]>([]);
-  const [loadingAttendees, setLoadingAttendees] = useState(false);
-
   useEffect(() => {
-    async function fetchDetail() {
-      setLoading(true);
-      try {
-        const response = await api.get<{ status: string; data: HostEventDetail }>(`/host/events/${eventId}`);
-        if (response.data) {
-          setEvent(response.data);
-        }
-      } catch (err: any) {
-        console.error('Failed to fetch event detail:', err);
-        setError('강의 정보를 불러오는 데 실패했습니다.');
-      } finally {
-        setLoading(false);
-      }
+    if (activeTab === 'ATTENDEES') {
+      fetchAttendees();
     }
-    if (eventId) fetchDetail();
-  }, [eventId]);
-
-  useEffect(() => {
-    async function fetchAttendees() {
-      if (activeTab !== 'ATTENDEES') return;
-      setLoadingAttendees(true);
-      try {
-        const response = await api.get<{ status: string; data: Attendee[] }>(`/host/events/${eventId}/attendees`);
-        if (response.data) setAttendees(response.data);
-      } catch (err) {
-        console.error('Failed to fetch attendees:', err);
-      } finally {
-        setLoadingAttendees(false);
-      }
-    }
-    fetchAttendees();
-  }, [activeTab, eventId]);
+  }, [activeTab]);
 
   if (loading) {
     return (
@@ -91,26 +57,26 @@ export default function HostEventDetailPage() {
       <Sidebar role="host" />
       <main className="sidebar-content">
         <div className={styles.contentBody}>
-          <EventDetailHeader 
-            title={event.title} 
-            recruitmentStatus={event.recruitmentStatus} 
+          <DetailHeader
+            title={event.title}
+            recruitmentStatus={event.recruitmentStatus}
           />
-          
-          <EventThumbnail thumbnailUrl={event.thumbnailUrl} />
 
-          <EventTabSection 
+          <Thumbnail thumbnailUrl={event.thumbnailUrl} />
+
+          <TabSection
             event={event}
             attendees={attendees}
             loadingAttendees={loadingAttendees}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
-          
+
           {activeTab === 'BASIC' && (
-            <HostProfile 
-              hostName={event.hostName} 
-              hostDescription={event.hostDescription} 
-              hostProfileImg={event.hostProfileImg} 
+            <HostProfile
+              hostName={event.hostName}
+              hostDescription={event.hostDescription}
+              hostProfileImg={event.hostProfileImg}
             />
           )}
         </div>

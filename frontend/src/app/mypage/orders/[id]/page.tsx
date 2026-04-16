@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
-import { Button, Tag, Toast } from '@/components/ui';
+import { Button, StatusTag, Toast } from '@/components/ui';
 import RefundModal from '../components/RefundModal';
 import mypageStyles from '../../page.module.css';
 import styles from './page.module.css';
@@ -100,16 +100,7 @@ export default function OrderDetailPage() {
     });
   };
 
-  const getStatusTag = (status: string) => {
-    switch (status) {
-      case 'PAID':
-      case 'REGISTERED': return <Tag variant="green">결제 완료</Tag>;
-      case 'REFUND_REQUESTED': return <Tag variant="purple">환불 대기</Tag>;
-      case 'REFUNDED': return <Tag variant="gray">환불 완료</Tag>;
-      case 'CANCELLED': return <Tag variant="gray">취소됨</Tag>;
-      default: return <Tag variant="gray">결제 대기</Tag>;
-    }
-  };
+  // getStatusTag는 공통 StatusTag를 사용하므로 제거
 
   const canRefund = order.status === 'PAID' || order.status === 'REGISTERED';
 
@@ -120,7 +111,7 @@ export default function OrderDetailPage() {
         <div className={mypageStyles.content}>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
             <h1 className={mypageStyles.pageTitle}>결제 상세 내역</h1>
-            {getStatusTag(order.status)}
+            <StatusTag domain="payment" status={order.status} />
           </div>
 
           <div className={styles.detailContainer}>
