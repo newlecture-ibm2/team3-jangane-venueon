@@ -5,9 +5,9 @@ import styles from './page.module.css';
 import { Sidebar } from '@/components/layout';
 import { Pagination } from '@/components/ui';
 import { ConfirmModal } from '@/components/modal';
-import UserFilter from './_components/UserFilter';
-import UserTable from './_components/UserTable';
-import UserDetailModal from './_components/UserDetailModal';
+import UserFilter from './_components/UserFilter/UserFilter';
+import UserTable from './_components/UserTable/UserTable';
+import UserDetailModal from './_components/UserDetailModal/UserDetailModal';
 import { useAdminUsers } from './useAdminUsers';
 
 export default function AdminUsersPage() {

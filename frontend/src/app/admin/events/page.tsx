@@ -6,11 +6,11 @@ import styles from './page.module.css';
 import { Sidebar } from '@/components/layout';
 import { Pagination } from '@/components/ui';
 import ConfirmModal from '@/components/modal/ConfirmModal';
+import EventFilter from './_components/EventFilter/EventFilter';
 import { useAdminEvents } from './useAdminEvents';
-import EventFilter from './_components/EventFilter';
 
 // Hydration Mismatch 방지를 위해 Client Side 전용으로 로드
-const EventTable = dynamic(() => import('./_components/EventTable'), {
+const EventTable = dynamic(() => import('./_components/EventTable/EventTable'), {
   ssr: false,
 });
 

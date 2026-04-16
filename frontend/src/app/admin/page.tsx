@@ -3,7 +3,9 @@
 import React from 'react';
 import styles from './page.module.css';
 import { Sidebar } from '@/components/layout';
-import { StatsCards, TrendCharts } from './_components';
+import StatsCards from './_components/StatsCards/StatsCards';
+import TrendCharts from './_components/TrendCharts/TrendCharts';
+
 
 /**
  * 어드민 대시보드 리뉴얼 (기존 스타일 유지 버전)

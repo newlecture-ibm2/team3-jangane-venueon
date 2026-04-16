@@ -1,5 +1,5 @@
 import React from 'react';
-import CategoryItem from '../CategoryItem';
+import CategoryItem from '../CategoryItem/CategoryItem';
 import { AdminCategoryItem } from '@/lib/admin-api';
 import styles from './CategoryList.module.css';
 

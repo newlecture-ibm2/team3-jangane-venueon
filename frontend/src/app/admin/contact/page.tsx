@@ -4,8 +4,9 @@ import React from 'react';
 import styles from './page.module.css';
 import { Sidebar } from '@/components/layout';
 import { Pagination } from '@/components/ui';
-import ContactFilter from './_components/ContactFilter';
-import ContactTable from './_components/ContactTable';
+import { ConfirmModal } from '@/components/modal';
+import ContactFilter from './_components/ContactFilter/ContactFilter';
+import ContactTable from './_components/ContactTable/ContactTable';
 import { ContactDetailModal } from '@/components/modal';
 import { useAdminContact } from './useAdminContact';
 

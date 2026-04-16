@@ -8,8 +8,8 @@ import CommunityCard from '@/app/community/components/CommunityCard';
 import { format } from 'date-fns';
 import { useAdminCommunity } from './useAdminCommunity';
 import styles from './page.module.css';
-import CommunityFilter from './_components/CommunityFilter';
-import CommunityList from './_components/CommunityList';
+import CommunityFilter from './_components/CommunityFilter/CommunityFilter';
+import CommunityList from './_components/CommunityList/CommunityList';
 
 const TAB_OPTIONS = [
   { value: 'ALL', label: '전체' },

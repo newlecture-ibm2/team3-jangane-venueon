@@ -5,12 +5,12 @@ import styles from './page.module.css';
 import { Sidebar } from '@/components/layout';
 import { InputField, Button, Pagination } from '@/components/ui';
 
-import CategoryItem from './_components/CategoryItem';
-import CategoryFormModal from './_components/CategoryFormModal';
+import CategoryItem from './_components/CategoryItem/CategoryItem';
+import CategoryFormModal from './_components/CategoryFormModal/CategoryFormModal';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useAdminSettings } from './useAdminSettings';
-import CategoryFilter from './_components/CategoryFilter';
-import CategoryList from './_components/CategoryList';
+import CategoryFilter from './_components/CategoryFilter/CategoryFilter';
+import CategoryList from './_components/CategoryList/CategoryList';
 
 export default function AdminSettingsPage() {
   const { state, actions } = useAdminSettings();
