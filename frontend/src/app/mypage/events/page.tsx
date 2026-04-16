@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
-import { Card, CardGrid, Tabs, Pagination, InputField } from '@/components/ui';
+import { Card, CardGrid, Tabs, Pagination } from '@/components/ui';
 import { ReviewModal } from '@/components/modal';
 import styles from './page.module.css';
 import { useEvents } from './useEvents';
@@ -56,10 +56,7 @@ export default function MyPage() {
               onChange={handleTabChange}
             />
 
-            <InputField
-              variant="search"
-              className={styles.searchBar}
-            />
+
 
             <CardGrid layout="2-cols">
               {lectures.map((lecture) => (

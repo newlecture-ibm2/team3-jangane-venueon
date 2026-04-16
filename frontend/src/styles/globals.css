@@ -126,14 +126,16 @@ select {
 @media (max-width: 768px) {
   .container-single {
     max-width: 100%;
-    padding: var(--space-16);
+    padding: var(--space-24); /* 사용자 요청: 양옆 24px로 고정 */
   }
 
   .container-sidebar {
     flex-direction: column;
+    padding: var(--space-24); /* 사용자 요청: 양옆 24px로 고정 */
+    align-items: stretch; /* 세로 배치 시, 하위 요소가 가로 전체를 채우도록 설정 */
   }
 
   .sidebar {
-    padding: var(--space-16);
+    padding: var(--space-24);
   }
 }

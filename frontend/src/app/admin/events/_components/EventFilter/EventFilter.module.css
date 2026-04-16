@@ -50,10 +50,6 @@
   margin-bottom: var(--space-32);
 }
 
-.searchArea {
-  width: 410px;
-  flex-shrink: 0;
-}
 
 /* ── 3) 카테고리 칩 행 ── */
 .categoryRow {

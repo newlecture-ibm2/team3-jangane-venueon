@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button, UserProfile, Logo } from '@/components/ui';
 import { useAuth } from '@/store/useAuthStore';
+import { useUIStore } from '@/store/useUIStore';
+import { HeaderCommunityIcon, CartIcon, AdminIcon, CompanyIcon } from '@/components/icons';
 import styles from './Header.module.css';
 
 interface HeaderProps {
@@ -43,6 +45,9 @@ export default function Header({
   const isMyPage = pathname?.startsWith('/mypage');
   const status = propStatus || (isMyPage ? 'myPage' : (user ? 'signedIn' : 'public'));
 
+  // Zustand drawer state
+  const { setSidebarDrawerOpen } = useUIStore();
+
   // 우측에 렌더링될 버튼/프로필 그룹 로직
   const renderActions = () => {
     // 1. 비로그인 시
@@ -51,7 +56,7 @@ export default function Header({
         <div className={styles.actionGroup}>
           <Link href="/login"><Button variant="primary" size="medium">로그인</Button></Link>
           <Link href="/signup"><Button variant="secondary" size="medium">회원가입</Button></Link>
-          <Link href="/host/intro"><Button variant="outlined" size="medium">호스트 센터</Button></Link>
+          <Link href="/host/intro" className={styles.hostLinkRight}>호스트 센터</Link>
         </div>
       );
     }
@@ -63,13 +68,12 @@ export default function Header({
     if (roleId === 1 || roleLabel === 'admin') {
       return (
         <div className={styles.actionGroup}>
-          <Link href="/host"><Button variant="outlined" size="medium">호스트 센터</Button></Link>
-          <Link href="/admin"><Button variant="outlined" size="medium">어드민 센터</Button></Link>
-          <Link href="/community"><Button variant="outlined" size="medium">커뮤니티</Button></Link>
-          <Link href="/mypage/profile">
-            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+          <Link href="/admin" className={styles.iconLink} title="어드민 센터"><AdminIcon /></Link>
+          <Link href="/community" className={styles.iconLink} title="커뮤니티"><HeaderCommunityIcon /></Link>
+          <Link href="/host" className={styles.iconLink} title="호스트 센터"><CompanyIcon width="24" height="24" /></Link>
+          <Link href="/mypage">
+            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" showName={false} />
           </Link>
-          <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
         </div>
       );
     }
@@ -78,34 +82,45 @@ export default function Header({
     if (roleId === 3 || roleLabel === 'host') {
       return (
         <div className={styles.actionGroup}>
-          <Link href="/host"><Button variant="outlined" size="medium">호스트 센터</Button></Link>
-          <Link href="/community"><Button variant="outlined" size="medium">커뮤니티</Button></Link>
-          <Link href="/mypage/profile">
-            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+          <Link href="/community" className={styles.iconLink} title="커뮤니티"><HeaderCommunityIcon /></Link>
+          <Link href="/host" className={styles.iconLink} title="호스트 센터"><CompanyIcon width="24" height="24" /></Link>
+          <Link href="/mypage">
+            <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" showName={false} />
           </Link>
-          <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
         </div>
       );
     }
 
     // 2. 역할 USER (기본값)
-    // "마이페이지, 장바구니, 커뮤니티, 계정 정보, 로그아웃"
+    // "마이페이지, 장바구니, 커뮤니티, 계정 정보"
     return (
       <div className={styles.actionGroup}>
-        <Link href="/mypage"><Button variant="outlined" size="medium">마이페이지</Button></Link>
-        <Link href="/cart"><Button variant="outlined" size="medium">장바구니</Button></Link>
-        <Link href="/community"><Button variant="outlined" size="medium">커뮤니티</Button></Link>
-        <Link href="/mypage/profile">
-          <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" />
+        <Link href="/community" className={styles.iconLink} title="커뮤니티"><HeaderCommunityIcon /></Link>
+        <Link href="/cart" className={styles.iconLink} title="장바구니"><CartIcon /></Link>
+        <Link href="/mypage">
+          <UserProfile name={displayUserName} imageUrl={displayUserImage} size="large" showName={false} />
         </Link>
-        <Button variant="secondary" size="medium" onClick={logout}>로그아웃</Button>
       </div>
     );
   };
 
+  // Mypage, Host, Admin 페이지에서 사이드바(드로어) 토글 버튼 노출
+  const hasSidebar = pathname?.startsWith('/mypage') || pathname?.startsWith('/host') || pathname?.startsWith('/admin');
+
   return (
     <header className={`${styles.header} ${className}`.trim()}>
-      <Logo />
+      <div className={styles.leftSection}>
+        {hasSidebar && (
+          <button className={styles.mobileHamburgerBtn} onClick={() => setSidebarDrawerOpen(true)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+        )}
+        <Logo />
+      </div>
       {renderActions()}
     </header>
   );

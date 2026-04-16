@@ -7,7 +7,8 @@
   padding: 48px 80px;
   gap: var(--space-100);
   width: 100%;
-  height: 310px;
+  height: auto; /* 고정 높이 310px 제거 */
+  min-height: 310px; 
   background-color: var(--color-text-gray-50); 
 }
 
@@ -82,14 +83,37 @@
   opacity: 0.7;
 }
 
-/* copyright */
 .copyright  {
   width: 100%;
   max-width: 1280px;
   font-style: normal;
-  /* 12px Medium */
   color: var(--color-text-gray-500); /* #6B7280 */
   margin: 0 auto;
   text-align: center;
   font: var(--text-caption-medium);
+}
+
+/* ── Mobile Responsive (Max 768px) ── */
+@media (max-width: 768px) {
+  .footer {
+    height: auto; /* 고정된 높이를 해제하여 배경색이 내용물 끝까지 덮도록 수정 */
+    padding: var(--space-32) var(--space-24); /* 모바일에서는 좌우 여백 축소 */
+    gap: var(--space-48);
+  }
+
+  .topSection {
+    flex-direction: column;
+    gap: var(--space-32);
+  }
+
+  .colLogo {
+    max-width: 100%;
+    flex: none;
+  }
+
+  .colLinks {
+    width: 100%;
+    flex: none;
+    gap: var(--space-16);
+  }
 }

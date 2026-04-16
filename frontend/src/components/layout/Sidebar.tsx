@@ -7,6 +7,8 @@ import { Suspense } from 'react';
 import styles from './Sidebar.module.css';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useAuth } from '@/store/useAuthStore';
+import { useUIStore } from '@/store/useUIStore';
+import { Logo } from '@/components/ui';
 
 import {
   DashboardIcon,
@@ -56,7 +58,8 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
     </>
   );
 
-  if (onClick) {
+  if (isDanger && onClick) {
+    // 로그아웃 같은 특수 목적일 때만 button 반환
     return (
       <button
         type="button"
@@ -73,6 +76,7 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
     <Link
       href={href}
       className={`${styles.item} ${itemStyle}`}
+      onClick={onClick}
     >
       {content}
     </Link>
@@ -80,6 +84,7 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
 }
 
 function SidebarContent({ role = 'user', className = '', fakePathname }: SidebarProps) {
+  const { isSidebarDrawerOpen, setSidebarDrawerOpen } = useUIStore();
   const actualPathname = usePathname() || '';
   const pathname = fakePathname || actualPathname;
   const searchParams = useSearchParams();
@@ -144,12 +149,20 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
   };
 
   const menus = getMenus();
-
   return (
-    <aside
-      className={`${styles.sidebar} ${className}`.trim()}
-      style={{ height: 'calc(100vh - 40px)' }}
-    >
+    <>
+      <div 
+        className={`${styles.drawerOverlay} ${isSidebarDrawerOpen ? styles.drawerOpen : ''}`} 
+        onClick={() => setSidebarDrawerOpen(false)} 
+      />
+
+      <aside
+        className={`${styles.sidebar} ${styles.responsiveDrawer} ${isSidebarDrawerOpen ? styles.drawerOpen : ''} ${className}`.trim()}
+        style={{ height: 'calc(100vh - 40px)' }}
+      >
+        <div className={styles.sidebarHeader}>
+          <Logo />
+        </div>
       {menus.map((menu) => {
         let isActive = false;
 
@@ -180,20 +193,28 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
             href={menu.href}
             isActive={isActive}
             isDanger={isLogout}
-            onClick={isLogout ? (e) => { e.preventDefault(); setIsLogoutModalOpen(true); } : undefined}
+            onClick={(e) => {
+              if (isLogout) {
+                e.preventDefault();
+                setIsLogoutModalOpen(true);
+              }
+              // 메뉴 이동 또는 모달 열기 시 사이드바 드로어 자동 닫기
+              setSidebarDrawerOpen(false);
+            }}
           />
         );
       })}
-
-      <ConfirmModal
-        isOpen={isLogoutModalOpen}
-        onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={handleLogoutConfirm}
-        title="로그아웃 하시겠습니까?"
-        cancelText="취소"
-        confirmText="로그아웃"
-      />
     </aside>
+
+    <ConfirmModal
+      isOpen={isLogoutModalOpen}
+      onClose={() => setIsLogoutModalOpen(false)}
+      onConfirm={handleLogoutConfirm}
+      title="로그아웃 하시겠습니까?"
+      cancelText="취소"
+      confirmText="로그아웃"
+    />
+    </>
   );
 }
 

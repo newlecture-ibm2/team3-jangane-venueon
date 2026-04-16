@@ -39,3 +39,42 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ── Responsive Table (Card View at 768px max) ── */
+@media (max-width: 768px) {
+  .tableHeader {
+    display: none;
+  }
+  .tableContainer {
+    gap: var(--space-16);
+    width: 100% !important;
+    align-self: stretch !important;
+    margin: 0 !important;
+  }
+  .tableRow {
+    display: flex; /* Override grid columns */
+    flex-direction: column;
+    width: 100% !important; 
+    align-self: stretch !important;
+    height: auto;
+    border-radius: var(--radius-md) !important; /* 다시 약간 둥근 카드로 원복 */
+    border: 1px solid var(--color-text-gray-300) !important;
+    padding: var(--space-16) var(--space-24); 
+    gap: var(--space-8);
+    position: relative;
+    background: var(--color-text-white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* 카드 UI 입체감 부여 */
+  }
+  .rowItem {
+    width: 100%;
+    white-space: normal; /* 모바일에서는 줄바꿈 허용 */
+    display: flex;
+    flex-wrap: wrap;       /* 버튼 등 유연한 배치를 위해 추가 */
+    align-items: center;
+    justify-content: space-between;
+  }
+  .rowItem > button {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
