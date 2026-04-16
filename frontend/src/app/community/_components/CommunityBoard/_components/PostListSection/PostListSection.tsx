@@ -1,46 +1,30 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Pagination, InputField, Button } from '@/components/ui';
-import CommunityPostItem from '../CommunityPostItem';
-import { PostListResponse } from './types';
-import styles from './CommunityPostContainer.module.css';
+import CommunityPostItem from '../../../CommunityPostItem';
+import { useCommunityBoard } from '../../CommunityBoardContext';
+import styles from './PostListSection.module.css';
 import { useUIStore } from '@/store/useUIStore';
-import { useAuth } from '@/store/useAuthStore';
 
-interface PostListSectionProps {
-  communityId: string;
-  posts: PostListResponse[];
-  isLoading: boolean;
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  searchInput: string;
-  onSearchInputChange: (value: string) => void;
-  onSearch: () => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  selectedPostId: number | null;
-  onPostSelect: (postId: number) => void;
-  canWrite: boolean;
-}
-
-export const PostListSection = ({
-  communityId,
-  posts,
-  isLoading,
-  currentPage,
-  totalPages,
-  onPageChange,
-  searchInput,
-  onSearchInputChange,
-  onSearch,
-  onKeyDown,
-  selectedPostId,
-  onPostSelect,
-  canWrite
-}: PostListSectionProps) => {
+export const PostListSection = () => {
   const router = useRouter();
   const { showToast } = useUIStore();
-  const { isLoggedIn } = useAuth();
+  const { 
+    communityId,
+    posts, 
+    isLoading, 
+    currentPage, 
+    totalPages, 
+    setCurrentPage,
+    searchInput, 
+    setSearchInput, 
+    handleSearch, 
+    handleKeyDown, 
+    selectedPostId, 
+    setSelectedPostId,
+    canWrite,
+    isLoggedIn
+  } = useCommunityBoard();
 
   return (
     <div className={styles.leftSidebar}>
@@ -50,13 +34,13 @@ export const PostListSection = ({
             variant="search" 
             placeholder="게시글 검색 (제목, 내용, 작성자)" 
             value={searchInput}
-            onChange={(e) => onSearchInputChange(e.target.value)}
-            onKeyDown={onKeyDown}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <Button 
           variant="primary" 
-          onClick={onSearch}
+          onClick={handleSearch}
           className={styles.searchButton}
         >
           검색
@@ -90,14 +74,14 @@ export const PostListSection = ({
         ) : posts.length === 0 ? (
           <div className={styles.loadingOrEmpty}>게시글이 없습니다.</div>
         ) : (
-          posts.map(post => (
+          posts.map((post: any) => (
             <CommunityPostItem
               key={post.id}
               title={post.title}
               username={post.authorNickname}
               date={new Date(post.createdAt).toLocaleDateString() + ' / ' + new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               selected={post.id === selectedPostId}
-              onClick={() => onPostSelect(post.id)}
+              onClick={() => setSelectedPostId(post.id)}
               isPinned={post.isPinned}
               isNotice={post.isNotice}
               type={post.type}
@@ -108,7 +92,7 @@ export const PostListSection = ({
 
       {totalPages > 1 && (
         <div className={styles.paginationWrapper}>
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
         </div>
       )}
     </div>

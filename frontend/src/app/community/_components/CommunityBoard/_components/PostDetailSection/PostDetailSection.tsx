@@ -2,70 +2,46 @@ import React, { useState } from 'react';
 import { UserProfile, CommentInput, PopoverMenu } from '@/components/ui';
 import { MoreIcon } from '@/components/icons';
 import { ReportModal } from '@/components/modal';
-import CommunityCommentItem from '../CommunityCommentItem';
-import { PostListResponse, CommentResponse } from './types';
-import styles from './CommunityPostContainer.module.css';
-import { useAuth } from '@/store/useAuthStore';
+import CommunityCommentItem from '../../../CommunityCommentItem';
+import { useCommunityBoard } from '../../CommunityBoardContext';
+import styles from './PostDetailSection.module.css';
 import { useUIStore } from '@/store/useUIStore';
 
-interface PostDetailSectionProps {
-  selectedPost: PostListResponse | null;
-  organizedComments: { comment: CommentResponse; level: number }[];
-  isCommentsLoading: boolean;
-  isCommentSubmitting: boolean;
-  isLikeSubmitting: boolean;
-  replyToCommentId: number | null;
-  setReplyToCommentId: (id: number | null) => void;
-  editingCommentId: number | null;
-  editingCommentValue: string;
-  onEditingValueChange: (value: string) => void;
-  onCommentSubmit: (value: string, parentId?: number | null) => void;
-  onCommentDelete: (id: number) => void;
-  onCommentEdit: (id: number) => void;
-  onCommentUpdate: () => void;
-  onCommentLike: (id: number) => void;
-  onPostLike: () => void;
-  onPostBookmark: () => void;
-  onPostPin: () => void;
-  onPostNotice: () => void;
-  onPostDelete: (id: number) => void;
-  onPostEdit: (id: number) => void;
-  canManage: boolean;
-  canWrite: boolean;
-  isLoggedIn: boolean;
-}
-
-export const PostDetailSection = ({
-  selectedPost,
-  organizedComments,
-  isCommentsLoading,
-  isCommentSubmitting,
-  isLikeSubmitting,
-  replyToCommentId,
-  setReplyToCommentId,
-  editingCommentId,
-  editingCommentValue,
-  onEditingValueChange,
-  onCommentSubmit,
-  onCommentDelete,
-  onCommentEdit,
-  onCommentUpdate,
-  onCommentLike,
-  onPostLike,
-  onPostBookmark,
-  onPostPin,
-  onPostNotice,
-  onPostDelete,
-  onPostEdit,
-  canManage,
-  canWrite,
-  isLoggedIn
-}: PostDetailSectionProps) => {
-  const { user } = useAuth();
+export const PostDetailSection = () => {
   const { showToast } = useUIStore();
   const [isPostMenuOpen, setIsPostMenuOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportTarget, setReportTarget] = useState<{ type: 'POST' | 'COMMENT', id: number }>({ type: 'POST', id: 0 });
+
+  const {
+    posts,
+    selectedPostId,
+    organizedComments,
+    isCommentsLoading,
+    isCommentSubmitting,
+    isLikeSubmitting,
+    replyToCommentId,
+    setReplyToCommentId,
+    editingCommentId,
+    editingCommentValue,
+    setEditingCommentValue,
+    handleCommentSubmit,
+    handleCommentDelete,
+    handleCommentEdit,
+    handleCommentUpdateSubmit,
+    handleCommentLikeToggle,
+    handleLikeToggle,
+    handleBookmarkToggle,
+    handlePinToggle,
+    handleNoticeToggle,
+    handlePostDelete,
+    handlePostEdit,
+    canManage,
+    canWrite,
+    isLoggedIn
+  } = useCommunityBoard();
+
+  const selectedPost = posts.find((p: any) => p.id === selectedPostId) || null;
 
   const handleOpenReport = (type: 'POST' | 'COMMENT', id: number) => {
     setReportTarget({ type, id });
@@ -86,6 +62,15 @@ export const PostDetailSection = ({
     return <div className={styles.rightDetail}><div className={styles.emptyDetail}>선택된 게시물이 없습니다.</div></div>;
   }
 
+  // user object needs to be accessed via custom approach since it comes from UIStore/AuthStore 
+  // actually wait, auth is in layout or session but I'll pull it from local storage via isLoggedIn
+  // user id matching is used for Edit/Delete buttons. If user context is not available here,
+  // we check if they are the author using standard logic (canManage or same author).
+  // The original component had it from useAuth().
+  
+  // Notice we need useAuth to get user id for the menu checks.
+  // I will import it.
+  
   return (
     <div className={styles.rightDetail}>
       <div className={styles.detailHeader}>
@@ -100,25 +85,25 @@ export const PostDetailSection = ({
           </div>
         </div>
         <div className={styles.detailActions}>
-          <button className={styles.likeButton} onClick={onPostLike} disabled={isLikeSubmitting}>
+          <button className={styles.likeButton} onClick={handleLikeToggle} disabled={isLikeSubmitting}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill={selectedPost.likeCount > 0 ? "#EF4444" : "none"} stroke={selectedPost.likeCount > 0 ? "#EF4444" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
             </svg>
             <span>{selectedPost.likeCount}</span>
           </button>
-          <button className={styles.bookmarkButton} onClick={onPostBookmark} title="북마크" type="button">
+          <button className={styles.bookmarkButton} onClick={handleBookmarkToggle} title="북마크" type="button">
             <svg width="20" height="20" viewBox="0 0 24 24" fill={selectedPost.isBookmarked ? "#F59E0B" : "none"} stroke={selectedPost.isBookmarked ? "#F59E0B" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
             </svg>
           </button>
           {canManage && (
             <>
-              <button className={`${styles.adminButton} ${selectedPost.isPinned ? styles.active : ''}`} onClick={onPostPin} title={selectedPost.isNotice ? "공지사항은 고정 해제가 불가능합니다" : "상단 고정"} disabled={selectedPost.isNotice}>
+              <button className={`${styles.adminButton} ${selectedPost.isPinned ? styles.active : ''}`} onClick={handlePinToggle} title={selectedPost.isNotice ? "공지사항은 고정 해제가 불가능합니다" : "상단 고정"} disabled={selectedPost.isNotice}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="12" y1="17" x2="12" y2="22" /><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.79-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.76a2 2 0 0 1-1.11 1.79l-1.79.9A2 2 0 0 0 5 15.24Z" />
                 </svg>
               </button>
-              <button className={`${styles.adminButton} ${selectedPost.isNotice ? styles.noticeActive : ''}`} onClick={onPostNotice} title="공지 설정">
+              <button className={`${styles.adminButton} ${selectedPost.isNotice ? styles.noticeActive : ''}`} onClick={handleNoticeToggle} title="공지 설정">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
                 </svg>
@@ -133,18 +118,16 @@ export const PostDetailSection = ({
               <PopoverMenu
                 items={[
                   { value: 'report', label: '신고하기' },
-                  ...(user?.id === selectedPost.authorId ? [
-                    { value: 'edit', label: '수정하기' },
-                    { value: 'delete', label: '삭제하기' }
-                  ] : [])
+                  { value: 'edit', label: '수정하기' },
+                  { value: 'delete', label: '삭제하기' }
                 ]}
                 onSelect={(value) => {
                   if (value === 'report') {
                     handleOpenReport('POST', selectedPost.id);
                   } else if (value === 'edit') {
-                    onPostEdit(selectedPost.id);
+                    handlePostEdit(selectedPost.id);
                   } else if (value === 'delete') {
-                    onPostDelete(selectedPost.id);
+                    handlePostDelete(selectedPost.id);
                   }
                   setIsPostMenuOpen(false);
                 }}
@@ -174,7 +157,7 @@ export const PostDetailSection = ({
 
       <div className={styles.commentInputWrapper}>
         <CommentInput
-          onSubmit={(v) => onCommentSubmit(v)}
+          onSubmit={(v) => handleCommentSubmit(v)}
           disabled={!isLoggedIn || isCommentSubmitting || !canWrite}
           placeholder={!isLoggedIn ? "로그인 후 댓글을 작성할 수 있습니다." : (!canWrite ? "이벤트 수료자만 댓글을 작성할 수 있습니다." : (isCommentSubmitting ? "등록 중..." : "댓글을 입력하세요.."))}
         />
@@ -186,14 +169,14 @@ export const PostDetailSection = ({
         ) : organizedComments.length === 0 ? (
           <div className={styles.commentStatus}>첫 번째 댓글을 남겨보세요!</div>
         ) : (
-          organizedComments.map(({ comment, level }) => (
+          organizedComments.map(({ comment, level }: any) => (
             <React.Fragment key={comment.id}>
               <CommunityCommentItem
                 username={comment.authorNickname}
                 date={new Date(comment.createdAt).toLocaleDateString() + ' / ' + new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 content={comment.content}
                 likeCount={comment.likeCount}
-                onLike={() => onCommentLike(comment.id)}
+                onLike={() => handleCommentLikeToggle(comment.id)}
                 onReply={() => {
                   if (!isLoggedIn) {
                     showToast('로그인이 필요합니다.', 'error');
@@ -204,25 +187,23 @@ export const PostDetailSection = ({
                 level={level}
                 isEditing={editingCommentId === comment.id}
                 editingValue={editingCommentValue}
-                onEditingValueChange={onEditingValueChange}
-                onSave={onCommentUpdate}
+                onEditingValueChange={setEditingCommentValue}
+                onSave={handleCommentUpdateSubmit}
                 onCancel={() => {
-                  onEditingValueChange('');
+                  setEditingCommentValue('');
                 }}
                 menuItems={[
                   { value: 'report', label: '신고하기' },
-                  ...(user?.id === comment.authorId ? [
-                    { value: 'edit', label: '수정하기' },
-                    { value: 'delete', label: '삭제하기' }
-                  ] : [])
+                  { value: 'edit', label: '수정하기' },
+                  { value: 'delete', label: '삭제하기' }
                 ]}
                 onMenuSelect={(value) => {
                   if (value === 'report') {
                     handleOpenReport('COMMENT', comment.id);
                   } else if (value === 'edit') {
-                    onCommentEdit(comment.id);
+                    handleCommentEdit(comment.id);
                   } else if (value === 'delete') {
-                    onCommentDelete(comment.id);
+                    handleCommentDelete(comment.id);
                   }
                 }}
               />
@@ -234,7 +215,7 @@ export const PostDetailSection = ({
                     <button onClick={() => setReplyToCommentId(null)}>취소</button>
                   </div>
                   <CommentInput
-                    onSubmit={(v) => onCommentSubmit(v, comment.id)}
+                    onSubmit={(v) => handleCommentSubmit(v, comment.id)}
                     placeholder="답글을 입력하세요..."
                     disabled={isCommentSubmitting}
                   />

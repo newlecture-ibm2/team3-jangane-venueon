@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUIStore } from '@/store/useUIStore';
-import { PostListResponse, PageData } from './types';
+import { PostListResponse, PageData } from '../../types';
 
 interface UseCommunityPostsProps {
   communityId: string;

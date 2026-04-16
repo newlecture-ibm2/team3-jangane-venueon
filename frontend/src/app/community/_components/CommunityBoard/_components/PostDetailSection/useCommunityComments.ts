@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useUIStore } from '@/store/useUIStore';
-import { CommentResponse } from './types';
+import { CommentResponse } from '../../types';
 
 interface UseCommunityCommentsProps {
   selectedPostId: number | null;
