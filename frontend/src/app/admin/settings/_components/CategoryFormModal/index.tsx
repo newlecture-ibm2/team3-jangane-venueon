@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import styles from '@/components/modal/InputModal.module.css';
+import styles from './CategoryFormModal.module.css';
 import ModalOverlay from '@/components/modal/ModalOverlay';
 import ModalCard from '@/components/modal/ModalCard';
 import { CancelIcon } from '@/components/icons';

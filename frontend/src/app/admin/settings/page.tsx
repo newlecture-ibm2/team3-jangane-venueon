@@ -9,6 +9,8 @@ import CategoryItem from './_components/CategoryItem';
 import CategoryFormModal from './_components/CategoryFormModal';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useAdminSettings } from './useAdminSettings';
+import CategoryFilter from './_components/CategoryFilter';
+import CategoryList from './_components/CategoryList';
 
 export default function AdminSettingsPage() {
   const { state, actions } = useAdminSettings();
@@ -31,7 +33,6 @@ export default function AdminSettingsPage() {
     setSortByEvent,
     setIsFormOpen,
     setEditTarget,
-    setDeleteTargetId,
     handleOpenCreate,
     handleOpenEdit,
     handleFormSubmit,
@@ -40,6 +41,7 @@ export default function AdminSettingsPage() {
     handleDragStart,
     handleDragOver,
     handleDragEnd,
+    setDeleteTargetId,
   } = actions;
 
   return (
@@ -51,78 +53,34 @@ export default function AdminSettingsPage() {
             <h1 className={styles.pageTitle}>시스템 설정</h1>
           </div>
 
-          <div className={styles.topActionArea}>
-            <div className={styles.tabArea}>
-              <button className={`${styles.tab} ${styles.activeTab}`}>
-                카테고리 관리
-              </button>
-            </div>
-            <Button variant="primary" size="medium" onClick={handleOpenCreate}>
-              + 새 카테고리 추가
-            </Button>
-          </div>
+          <CategoryFilter
+            searchKeyword={searchKeyword}
+            onSearchKeywordChange={setSearchKeyword}
+            sortByEvent={sortByEvent}
+            onSortToggle={() => setSortByEvent(!sortByEvent)}
+            onAddClick={handleOpenCreate}
+          />
 
-          <div className={styles.searchAddArea}>
-            <div className={styles.searchArea}>
-              <div className={styles.searchRow}>
-                <div className={styles.searchField}>
-                  <InputField
-                    variant="search"
-                    placeholder="검색어를 입력하세요"
-                    value={searchKeyword}
-                    onChange={(e) => setSearchKeyword(e.target.value)}
-                  />
-                </div>
-                <Button
-                  variant={sortByEvent ? "primary" : "secondary"}
-                  size="medium"
-                  onClick={() => setSortByEvent(!sortByEvent)}
-                >
-                  {sortByEvent ? '기본 순서 보기' : '이벤트 많은 순'}
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.listHeader}>
-            <span className={`${styles.headerText} ${styles.colName}`}>카테고리명</span>
-            <span className={`${styles.headerText} ${styles.colExposure}`}>노출</span>
-            <div className={styles.colActions}></div>
-          </div>
-
-          {isLoading ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
-              로딩 중...
-            </div>
-          ) : filteredCategories.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
-              {searchKeyword ? '검색 결과가 없습니다.' : '등록된 카테고리가 없습니다.'}
-            </div>
-          ) : (
-            <div className={styles.categoryList}>
-              {filteredCategories.map((item, index) => (
-                <div key={item.id} className={draggedIndex === index ? styles.dragging : ''}>
-                  <CategoryItem
-                    item={item}
-                    index={index}
-                    isVisible={visibilityMap[item.id] ?? true}
-                    onDelete={setDeleteTargetId}
-                    onEdit={handleOpenEdit}
-                    onToggleVisibility={handleToggleVisibility}
-                    onDragStart={handleDragStart}
-                    onDragOver={handleDragOver}
-                    onDragEnd={handleDragEnd}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+          <CategoryList
+            isLoading={isLoading}
+            filteredCategories={filteredCategories}
+            searchKeyword={searchKeyword}
+            visibilityMap={visibilityMap}
+            draggedIndex={draggedIndex}
+            onDeleteRequest={setDeleteTargetId}
+            onEditRequest={handleOpenEdit}
+            onToggleVisibility={handleToggleVisibility}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          />
 
           <div className={styles.paginationArea}>
             <Pagination currentPage={1} totalPages={1} onPageChange={() => { }} />
           </div>
         </div>
       </section>
+
 
       <CategoryFormModal
         isOpen={isFormOpen}
