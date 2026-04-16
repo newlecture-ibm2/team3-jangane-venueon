@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { Button, Checkbox, Toggle, Radio, SelectBox, Pagination, UserProfile, Logo, Tag, Card, CardGrid, Tabs, InputField, TextareaField, Dropdown, UploadField, CommentInput, FilePreviewList, ReviewItem } from '@/components/ui';
-import CommunityPostItem from '@/app/community/_components/CommunityPostItem';
-import CommunityCommentItem from '@/app/community/_components/CommunityCommentItem';
-import CommunityCard from '@/app/community/_components/CommunityCard';
+import CommunityPostItem from '@/app/community/components/CommunityPostItem';
+import CommunityCommentItem from '@/app/community/components/CommunityCommentItem';
+import CommunityCard from '@/app/community/components/CommunityCard';
 import { ConfirmModal, InputModal, UploadModal, PaymentModal, ContactModal, ContactDetailModal, ReviewModal } from '@/components/modal';
 import { useUIStore } from '@/store/useUIStore';
 

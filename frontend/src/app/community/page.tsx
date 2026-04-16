@@ -1,25 +1,87 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import { Button, Pagination, CardGrid } from '@/components/ui';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Button, Pagination, CardGrid, Tabs } from '@/components/ui';
 import Sidebar from '@/components/layout/Sidebar';
-import CommunityCard from './_components/CommunityCard';
-import { useCommunityList } from './useCommunityList';
+import { useUIStore } from '@/store/useUIStore';
+import { useAuth } from '@/store/useAuthStore';
+import CommunityListCard from './components/CommunityListCard';
 import styles from './page.module.css';
 
+interface CommunityItem {
+  id: number;
+  name: string;
+  description: string;
+  memberCount: number;
+  creatorNickname: string;
+  createdAt: string;
+  canManage: boolean; // 권한 정보 추가
+}
+
+interface PageData {
+  content: CommunityItem[];
+  totalPages: number;
+  totalElements: number;
+  number: number;
+}
+
 function CommunityListContent() {
-  const {
-    communities,
-    isLoading,
-    currentPage,
-    setCurrentPage,
-    totalPages,
-    activeTab,
-    hasBadges,
-    isLoggedIn,
-    user,
-    showToast
-  } = useCommunityList();
+  const { showToast } = useUIStore();
+  const { user, isLoggedIn } = useAuth();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+
+  const [communities, setCommunities] = useState<CommunityItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState(tabParam === 'joined' ? 'joined' : 'all');
+  const [hasBadges, setHasBadges] = useState(false);
+
+  useEffect(() => {
+    setActiveTab(tabParam === 'joined' ? 'joined' : 'all');
+  }, [tabParam]);
+
+  const checkBadges = async () => {
+    if (!isLoggedIn || !user?.id) return;
+    try {
+      const response = await fetch('/api/badges/me');
+      if (response.ok) {
+        const result = await response.json();
+        setHasBadges(result.data && result.data.length > 0);
+      }
+    } catch (e) {
+      console.error('Failed to fetch badges:', e);
+    }
+  };
+
+  const fetchCommunities = async () => {
+    setIsLoading(true);
+    try {
+      const endpoint = activeTab === 'joined' ? '/api/communities/me' : '/api/communities';
+      const response = await fetch(`${endpoint}?page=${currentPage - 1}&size=12`);
+      if (!response.ok) throw new Error('커뮤니티 목록을 불러오는데 실패했습니다.');
+      const data: PageData = await response.json();
+      setCommunities(data.content);
+      setTotalPages(data.totalPages === 0 ? 1 : data.totalPages);
+    } catch (error) {
+      console.error(error);
+      showToast('커뮤니티 불러오기 실패', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommunities();
+  }, [currentPage, activeTab]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      checkBadges();
+    }
+  }, [isLoggedIn, user?.id]);
 
   const handleCreateClick = () => {
     if (!isLoggedIn) {
@@ -56,17 +118,19 @@ function CommunityListContent() {
           ) : (
             <CardGrid layout="2-cols">
               {communities.map((community) => (
-                <CommunityCard
+                <CommunityListCard
                   key={community.id}
-                  postType={community.memberCount > 5 ? "인기 커뮤니티" : "새로운 커뮤니티"}
-                  timeAgo={new Date(community.createdAt).toLocaleDateString()}
+                  status="PUBLISHED"
+                  tagText={community.memberCount > 5 ? "인기" : "신규"}
+                  tagVariant={community.memberCount > 5 ? "purple" : "green"}
                   title={community.name}
-                  keywords={[
-                    community.creatorNickname,
-                    `${community.memberCount}명 참여 중`
-                  ]}
+                  organizer={`주최자: ${community.creatorNickname}`}
+                  dateTime={`생성일: ${new Date(community.createdAt).toLocaleDateString()}`}
+                  location={`멤버: ${community.memberCount}명 참여 중`}
+                  price={0}
                   actionButtonText="커뮤니티 입장하기"
                   onActionClick={() => window.location.href = `/community/${community.id}`}
+                  onEditClick={community.canManage ? () => window.location.href = `/community/${community.id}/edit` : undefined}
                 />
               ))}
             </CardGrid>
