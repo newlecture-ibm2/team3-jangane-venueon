@@ -1,0 +1,211 @@
+.heroSection {
+  width: 100%;
+  background-color: var(--color-surface);
+  padding: 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.heroInner {
+  width: 100%;
+  max-width: 1278px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 80px;
+  padding: 0 var(--space-24);
+}
+
+.heroContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  max-width: 50%;
+}
+
+.heroTitle {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-text-gray-900);
+}
+
+.heroSubtitle {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text-gray-500);
+}
+
+.heroImageBox {
+  width: 440px;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+  position: relative;
+}
+
+.rollingList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: rollVertical 50s linear infinite;
+}
+
+.rollingItem {
+  min-height: 200px;
+  height: auto;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-2xl, 32px);
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.cardHeader {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.3;
+  margin-bottom: 16px;
+  word-break: keep-all;
+}
+
+.cardDesc {
+  font-size: 15px;
+  margin-bottom: auto;
+  line-height: 1.5;
+  font-weight: 500;
+  word-break: keep-all;
+}
+
+.cardTags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: auto;
+}
+
+.tag {
+  background-color: rgba(60, 50, 70, 0.85);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cardFooter {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+}
+
+.bgEvent {
+  background-color: #bcb1cc;
+}
+
+.bgEvent .cardHeader,
+.bgEvent .cardTitle,
+.bgEvent .cardFooter,
+.bgEvent .cardDesc {
+  color: #3b3548;
+}
+
+.bgSession {
+  background-color: #b1c1cc;
+}
+
+.bgSession .cardHeader,
+.bgSession .cardTitle,
+.bgSession .cardFooter,
+.bgSession .cardDesc {
+  color: #354148;
+}
+
+.bgTicket {
+  background-color: #cccab1;
+}
+
+.bgTicket .cardHeader,
+.bgTicket .cardTitle,
+.bgTicket .cardFooter,
+.bgTicket .cardDesc {
+  color: #484635;
+}
+
+.bgCommunity {
+  background-color: #b1ccbe;
+}
+
+.bgCommunity .cardHeader,
+.bgCommunity .cardTitle,
+.bgCommunity .cardFooter,
+.bgCommunity .cardDesc {
+  color: #35483e;
+}
+
+.bgPost {
+  background-color: #ccb1c4;
+}
+
+.bgPost .cardHeader,
+.bgPost .cardTitle,
+.bgPost .cardFooter,
+.bgPost .cardDesc {
+  color: #483542;
+}
+
+.bgReply {
+  background-color: #e2e8f0;
+}
+
+.bgReply .cardHeader,
+.bgReply .cardTitle,
+.bgReply .cardFooter,
+.bgReply .cardDesc {
+  color: #334155;
+}
+
+@keyframes rollVertical {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(calc(-50% - 8px));
+  }
+}
+
+/* 반응형 모바일 */
+@media screen and (max-width: 1024px) {
+  .heroSection {
+    padding: var(--space-32) 0;
+  }
+
+  .heroInner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .heroContent {
+    max-width: 100%;
+    align-items: center;
+  }
+
+  .heroImageBox {
+    width: 100%;
+    max-width: 600px;
+    height: 250px;
+  }
+}

@@ -193,10 +193,7 @@ export default async function EventDetailPage({ params }: Props) {
               </span>
             </span>
           </div>
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>유형</span>
-            <span className={styles.infoValue}>{event.type?.label}</span>
-          </div>
+
         </div>
       </section>
 
