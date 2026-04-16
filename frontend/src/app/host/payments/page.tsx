@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import Sidebar from '@/components/layout/Sidebar';
+import { Table, TableHeader, TableRow, TableCell, StatusTag, Pagination } from '@/components/ui';
 import styles from './page.module.css';
 
 interface Order {
   orderId: number;
-  userName: string; // 추가: 주문자 이름
+  userName: string;
   eventTitle: string;
   amount: number;
   orderedAt: string;
@@ -29,54 +29,15 @@ interface PageData {
   size: number;
 }
 
-function getOrderStatusLabel(status: string) {
-  switch (status) {
-    case 'PAID':
-      return '결제완료';
-    case 'REGISTERED':
-      return '신청완료';
-    case 'CANCELLED':
-      return '주문취소';
-    case 'REFUNDED':
-      return '환불완료';
-    case 'PENDING':
-      return '결제대기';
-    default:
-      return status;
-  }
-}
-
-function getOrderStatusClass(status: string) {
-  switch (status) {
-    case 'PAID':
-      return styles.orderStatusPaid;
-    case 'REGISTERED':
-      return styles.orderStatusRegistered;
-    case 'CANCELLED':
-      return styles.orderStatusCancelled;
-    case 'REFUNDED':
-      return styles.orderStatusRefunded;
-    case 'PENDING':
-      return styles.orderStatusPending;
-    default:
-      return styles.orderStatusDefault;
-  }
-}
-
-function formatOrderDate(isoDateTime: string) {
-  if (!isoDateTime) return '-';
-  return isoDateTime.replace('T', ' ').slice(0, 16);
-}
-
 export default function HostPaymentsPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [events, setEvents] = useState<HostEvent[]>([]); // 추가: 강의 목록
+  const [events, setEvents] = useState<HostEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [statusFilter, setStatusFilter] = useState('');
-  const [eventFilter, setEventFilter] = useState(''); // 추가: 강의 필터
+  const [eventFilter, setEventFilter] = useState('');
 
   const handleRowClick = (orderId: number) => {
     router.push(`/host/payments/${orderId}`);
@@ -128,11 +89,8 @@ export default function HostPaymentsPage() {
   };
 
   return (
-    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
-      <div className="sidebar">
-        <Sidebar role="host" />
-      </div>
-
+    <div className="container-sidebar">
+      <Sidebar role="host" />
       <div className="sidebar-content">
         <div className={styles.container}>
           <header className={styles.header}>
@@ -167,78 +125,57 @@ export default function HostPaymentsPage() {
               </select>
             </div>
 
-            <div className={styles.tableContainer}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>주문번호</th>
-                    <th>주문자</th>
-                    <th>강의명</th>
-                    <th>주문금액</th>
-                    <th>주문일시</th>
-                    <th>상태</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</td>
-                    </tr>
-                  ) : orders.length > 0 ? (
-                    orders.map(order => (
-                      <tr 
-                        key={order.orderId} 
-                        className={styles.tableRow}
+            <Table columns="60px 80px minmax(0, 1fr) 100px 130px 80px">
+              <TableHeader>
+                <TableCell header>주문번호</TableCell>
+                <TableCell header>주문자</TableCell>
+                <TableCell header>강의명</TableCell>
+                <TableCell header>주문금액</TableCell>
+                <TableCell header>주문일시</TableCell>
+                <TableCell header>상태</TableCell>
+              </TableHeader>
+              {loading ? (
+                <TableRow>
+                  <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                    로딩 중...
+                  </div>
+                </TableRow>
+              ) : orders.length > 0 ? (
+                orders.map(order => (
+                  <TableRow key={order.orderId}>
+                    <TableCell>
+                      <span
+                        className={styles.orderLink}
                         onClick={() => handleRowClick(order.orderId)}
                       >
-                        <td>
-                          <span className={styles.orderLink}>
-                            #{order.orderId}
-                          </span>
-                        </td>
-                        <td style={{ fontWeight: '600' }}>{order.userName}</td>
-                        <td>{order.eventTitle}</td>
-                        <td>{order.amount.toLocaleString()}원</td>
-                        <td>{formatOrderDate(order.orderedAt)}</td>
-                        <td>
-                          <span className={`${styles.orderStatus} ${getOrderStatusClass(order.status)}`}>
-                            {getOrderStatusLabel(order.status)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr className={styles.emptyRow}>
-                      <td colSpan={6}>
-                        주문 내역이 없습니다.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                        #{order.orderId}
+                      </span>
+                    </TableCell>
+                    <TableCell>{order.userName}</TableCell>
+                    <TableCell>{order.eventTitle}</TableCell>
+                    <TableCell>{order.amount.toLocaleString()}원</TableCell>
+                    <TableCell>{order.orderedAt ? order.orderedAt.replace('T', ' ').slice(0, 16) : '-'}</TableCell>
+                    <TableCell>
+                      <StatusTag domain="payment" status={order.status} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                    주문 내역이 없습니다.
+                  </div>
+                </TableRow>
+              )}
+            </Table>
 
-            {!loading && totalPages > 0 && (
-              <div className={styles.pagination}>
-                <button 
-                  className={styles.pageBtn} 
-                  disabled={page === 0}
-                  onClick={() => setPage(page - 1)}
-                >
-                  이전
-                </button>
-                
-                <span className={styles.pageInfo}>
-                  {page + 1} / {totalPages} 페이지
-                </span>
-
-                <button 
-                  className={styles.pageBtn} 
-                  disabled={page === totalPages - 1}
-                  onClick={() => setPage(page + 1)}
-                >
-                  다음
-                </button>
+            {!loading && totalPages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '24px' }}>
+                <Pagination
+                  currentPage={page + 1}
+                  totalPages={totalPages}
+                  onPageChange={(p) => setPage(p - 1)}
+                />
               </div>
             )}
           </div>
