@@ -5,10 +5,11 @@ import Link from 'next/link';
 import styles from './page.module.css';
 import { Tag, Button } from '@/components/ui';
 import { format } from 'date-fns';
-import EventActionMenu from './_components/EventActionMenu';
-import TicketList from './_components/TicketList';
-import EventReviewSection from './_components/EventReviewSection';
-import BackButton from './_components/BackButton';
+import ActionMenu from './_components/ActionMenu/ActionMenu';
+import TicketList from './_components/TicketList/TicketList';
+import SessionList from './_components/SessionList/SessionList';
+import ReviewSection from './_components/ReviewSection/ReviewSection';
+import { BackButton } from '@/components/ui';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -92,7 +93,7 @@ export default async function EventDetailPage({ params }: Props) {
   // 모집 기간 도출
   const validRecruitStartDates = sessions.map((s: any) => s.recruitStartDate).filter(Boolean).map((d: string) => new Date(d).getTime());
   const validRecruitEndDates = sessions.map((s: any) => s.recruitEndDate).filter(Boolean).map((d: string) => new Date(d).getTime());
-  
+
   const recruitStartDate = validRecruitStartDates.length > 0 ? new Date(Math.min(...validRecruitStartDates)).toISOString() : null;
   const recruitEndDate = validRecruitEndDates.length > 0 ? new Date(Math.max(...validRecruitEndDates)).toISOString() : null;
 
@@ -128,7 +129,7 @@ export default async function EventDetailPage({ params }: Props) {
         </div>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>{event.title}</h1>
-          <EventActionMenu eventId={event.id.toString()} creatorId={event.creatorId} />
+          <ActionMenu eventId={event.id.toString()} creatorId={event.creatorId} />
         </div>
       </div>
 
@@ -150,7 +151,7 @@ export default async function EventDetailPage({ params }: Props) {
           {event.description}
         </div>
         {event.detailContent && (
-          <div 
+          <div
             className={styles.richContent}
             dangerouslySetInnerHTML={{ __html: event.detailContent }}
           />
@@ -205,28 +206,7 @@ export default async function EventDetailPage({ params }: Props) {
           <h3 className={styles.sectionTitle}>
             세션 일정 {event.hasSession ? `(${sessions.length}개 세션)` : ''}
           </h3>
-          <div className={styles.sessionList}>
-            {sessions.map((session: any, index: number) => {
-              const recruitVariant = RECRUIT_VARIANTS[session.recruitmentStatus?.id]?.variant || 'gray';
-              return (
-                <div key={session.id || index} className={styles.sessionCard}>
-                  <div className={styles.sessionHeader}>
-                    <h4 className={styles.sessionTitle}>{session.title || `세션 ${index + 1}`}</h4>
-                    <Tag variant={recruitVariant}>{session.recruitmentStatus?.label || '—'}</Tag>
-                  </div>
-                  {session.description && (
-                    <p className={styles.sessionDesc}>{session.description}</p>
-                  )}
-                  <div className={styles.sessionMeta} suppressHydrationWarning>
-                    <span suppressHydrationWarning>🕒 {session.startTime ? `${format(new Date(session.startTime), 'MM.dd HH:mm')} ~ ${session.endTime ? format(new Date(session.endTime), 'MM.dd HH:mm') : '미정'}` : '시간 미정'}</span>
-                    <span suppressHydrationWarning>📋 모집 {session.recruitStartDate ? format(new Date(session.recruitStartDate), 'MM.dd') : ''} ~ {session.recruitEndDate ? format(new Date(session.recruitEndDate), 'MM.dd') : ''}</span>
-                    <span>🏫 {session.isOnline ? '온라인' : (session.location || '장소 미정')}</span>
-                    <span>👤 {session.currentAttendees || 0} / {session.maxAttendees || '∞'} 명 (잔여 {session.remainingCapacity !== undefined ? session.remainingCapacity : '∞'}석)</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <SessionList sessions={sessions} />
         </section>
       )}
 
@@ -256,7 +236,7 @@ export default async function EventDetailPage({ params }: Props) {
 
       {/* 수강생 후기 섹션 */}
       <section id="review-section" className={styles.section}>
-        <EventReviewSection eventId={Number(event.id)} eventTitle={event.title} />
+        <ReviewSection eventId={Number(event.id)} eventTitle={event.title} />
       </section>
 
       {/* 하단 액션 버튼 */}

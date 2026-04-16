@@ -21,11 +21,26 @@ public class CommunityQueryService implements GetCommunityQuery {
     private final CommunityRepositoryPort communityRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
     private final MemberRepositoryPort memberRepositoryPort;
+    private final CommunityPermissionService communityPermissionService;
 
     @Override
     @Transactional(readOnly = true)
     public Page<CommunityResponse> getPublicCommunities(Pageable pageable, String email) {
         return communityRepositoryPort.findPublicCommunities(pageable)
+                .map(community -> toResponse(community, email));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CommunityResponse> getJoinedCommunities(Pageable pageable, String email) {
+        if (email == null || email.isEmpty()) {
+            return Page.empty(pageable);
+        }
+        User user = userRepositoryPort.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+        
+        java.util.List<Long> joinedIds = memberRepositoryPort.findCommunityIdsByUserId(user.getId());
+        return communityRepositoryPort.findByIdIn(joinedIds, pageable)
                 .map(community -> toResponse(community, email));
     }
 
@@ -39,37 +54,20 @@ public class CommunityQueryService implements GetCommunityQuery {
     
     private CommunityResponse toResponse(Community community, String email) {
         boolean canManage = false;
-        
-        // 로깅 강화 (System.out 사용하여 출력 보장)
-        System.out.println(">>>> [CommunityAuth] Start check. CommID: " + community.getId() + ", Email: " + email);
-
+        boolean canWrite = false;
         if (email != null && !email.isEmpty()) {
             User user = userRepositoryPort.findByEmail(email).orElse(null);
             if (user != null) {
-                System.out.println(">>>> [CommunityAuth] User found: ID=" + user.getId() + ", RoleID=" + (user.getRole() != null ? user.getRole().id() : "null"));
-                
                 if (user.isAdmin()) {
-                    System.out.println(">>>> [CommunityAuth] User is System Admin");
                     canManage = true;
                 } else {
                     canManage = memberRepositoryPort.findByCommunityIdAndUserId(community.getId(), user.getId())
-                            .map(member -> {
-                                System.out.println(">>>> [CommunityAuth] Member entry found. isManager=" + member.isManager());
-                                return member.isManager();
-                            })
-                            .orElseGet(() -> {
-                                System.out.println(">>>> [CommunityAuth] No member record found for this user in this community");
-                                return false;
-                            });
+                            .map(member -> member.isManager())
+                            .orElse(false);
                 }
-            } else {
-                System.out.println(">>>> [CommunityAuth] User NOT FOUND in database for email: " + email);
+                canWrite = communityPermissionService.canWrite(community.getId(), user);
             }
-        } else {
-            System.out.println(">>>> [CommunityAuth] Email is NULL or EMPTY");
         }
-
-        System.out.println(">>>> [CommunityAuth] Final Verdict: " + canManage);
 
         return new CommunityResponse(
                 community.getId(),
@@ -80,7 +78,9 @@ public class CommunityQueryService implements GetCommunityQuery {
                 community.isPublic(),
                 community.getCreatorNickname(),
                 community.getCreatedAt(),
-                canManage
+                canManage,
+                canWrite,
+                community.getType()
         );
     }
 }

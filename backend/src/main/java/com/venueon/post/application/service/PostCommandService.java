@@ -13,6 +13,7 @@ import com.venueon.post.application.port.out.PostRepositoryPort;
 import com.venueon.post.domain.model.Post;
 import com.venueon.user.application.port.out.UserRepositoryPort;
 import com.venueon.user.domain.model.User;
+import com.venueon.community.application.service.CommunityPermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +25,18 @@ public class PostCommandService implements CreatePostUseCase, PostLikeUseCase, P
 
         private final PostRepositoryPort postRepositoryPort;
         private final UserRepositoryPort userRepositoryPort;
+        private final CommunityPermissionService communityPermissionService;
 
         @Override
         @Transactional
         public CreatePostResponse createPost(CreatePostRequest request, String email) {
                 User author = userRepositoryPort.findByEmail(email)
                                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+
+                // 커뮤니티 권한 체크 (CommunityPermissionService 활용)
+                if (!communityPermissionService.canWrite(request.communityId(), author)) {
+                        throw new IllegalArgumentException("Permission denied: You do not have permission to post in this community.");
+                }
 
                 Post post = Post.builder()
                                 .communityId(request.communityId())

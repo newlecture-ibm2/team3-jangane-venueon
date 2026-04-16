@@ -20,4 +20,6 @@ public interface EventRepositoryPort {
     Event save(Event event);
 
     void deleteById(Long id);
+
+    long countByCreatedAtAfter(java.time.LocalDateTime dateTime);
 }

@@ -2,9 +2,12 @@
 
 import React, { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { InputField, TextareaField, Dropdown, Button } from '@/components/ui';
+import { InputField, Dropdown, Button } from '@/components/ui';
 import { useUIStore } from '@/store/useUIStore';
-import styles from '../../components/CommunityForm.module.css';
+import dynamic from 'next/dynamic';
+import styles from './page.module.css';
+
+const TiptapEditor = dynamic(() => import('@/components/editor/TiptapEditor'), { ssr: false });
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -23,7 +26,7 @@ export default function CommunityWritePage({ params }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!title.trim() || !content.trim()) {
+    if (!title.trim() || !content.trim() || content === '<p></p>') {
       showToast('입력 오류', 'error', '제목과 내용을 모두 입력해주세요.');
       return;
     }
@@ -62,12 +65,11 @@ export default function CommunityWritePage({ params }: Props) {
   };
 
   return (
-    /* 사이드바 없이 중앙 1000px 레이아웃 적용 */
-    <div className={styles.formContainer}>
+    <div className={styles.container}>
       
-      <section style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+      <section className={styles.headerSection}>
         <Button variant="secondary" onClick={() => router.back()}>← 뒤로가기</Button>
-        <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>새 게시글 작성</h1>
+        <h1 className={styles.title}>새 게시글 작성</h1>
       </section>
 
       <section className={styles.formSection}>
@@ -90,14 +92,15 @@ export default function CommunityWritePage({ params }: Props) {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <TextareaField
-          label="본문 내용 (필수)"
-          placeholder="이곳에 내용을 자세히 적어주세요."
-          defaultValue={content}
-          onChange={(e) => setContent(e.target.value)}
-          showCount={true}
-          rows={12}
-        />
+        <div className={styles.editorWrapper}>
+          <label className={styles.label}>본문 내용 (필수)</label>
+          <TiptapEditor 
+            content={content} 
+            onChange={(html) => setContent(html)} 
+            placeholder="이곳에 내용을 자세히 적어주세요."
+            category="community-post"
+          />
+        </div>
 
         <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
           <Button 

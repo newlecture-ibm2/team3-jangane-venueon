@@ -1,0 +1,247 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chartCard {
+  background: white;
+  border: 1px solid #F3F4F6;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.chartTitle {
+  margin-bottom: 32px;
+}
+
+.titleBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #EEF2FF;
+  color: #6366F1;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 99px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chartTitle h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.chartTitle p {
+  font-size: 14px;
+  color: #6B7280;
+}
+
+.chartWrapper {
+  width: 100%;
+  margin-left: -10px;
+}
+
+/* 커스텀 툴팁 */
+.customTooltip {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.tooltipLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.tooltipDivider {
+  height: 1px;
+  background: #F3F4F6;
+  margin-bottom: 12px;
+}
+
+.tooltipItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.tooltipItem:last-child {
+  margin-bottom: 0;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.itemLabel {
+  font-size: 12px;
+  color: #6B7280;
+  flex: 1;
+}
+
+.itemValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* 범례(Legend) 스타일 */
+.legendWrapper {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legendText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4B5563;
+}
+
+/* 로딩 애니메이션 */
+.loader {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #6366F1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 하단 미니 카드 */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.miniCard {
+  background: white;
+  border: 1px solid #F3F4F6;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.miniLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-bottom: 8px;
+}
+
+.miniValue {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.miniTrend {
+  font-size: 11px;
+  font-weight: 600;
+  color: #10B981;
+}
+
+/* 도넛 차트 전용 스타일 */
+.donutWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.donutCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.donutValue {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1;
+}
+
+.donutLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-top: 4px;
+}
+
+.donutLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #F3F4F6;
+}
+
+.donutLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.donutDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.donutText {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4B5563;
+}

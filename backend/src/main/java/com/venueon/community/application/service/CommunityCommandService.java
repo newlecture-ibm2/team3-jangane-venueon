@@ -12,6 +12,8 @@ import com.venueon.user.application.port.out.UserRepositoryPort;
 import com.venueon.user.domain.model.User;
 import com.venueon.member.application.port.out.MemberRepositoryPort;
 import com.venueon.member.domain.model.Member;
+import com.venueon.badge.application.port.out.BadgeRepositoryPort;
+import com.venueon.community.domain.model.CommunityType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +26,32 @@ public class CommunityCommandService implements CreateCommunityUseCase, UpdateCo
     private final CommunityRepositoryPort communityRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
     private final MemberRepositoryPort memberRepositoryPort;
+    private final BadgeRepositoryPort badgeRepositoryPort;
 
     @Override
     @Transactional
     public CommunityResponse createCommunity(CreateCommunityRequest request, String email) {
         User creator = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+
+        // 타입 결정: 명시적 요청이 없으면 HOST_AUTO로 취급하되, 명시적으로 구분할 필요 있음
+        CommunityType type = request.type() != null ? request.type() : CommunityType.HOST_AUTO;
+
+        if (type == CommunityType.HOST_AUTO) {
+            // HOST_AUTO는 호스트나 어드민만 생성 가능 (보통 이벤트 생성 시 자동 호출됨)
+            if (!creator.isAdmin() && !creator.isHost()) {
+                throw new IllegalArgumentException("Only hosts or admins can create HOST_AUTO type communities.");
+            }
+        } else if (type == CommunityType.BADGE_CREATED) {
+            // 뱃지 보유자 개설 커뮤니티인 경우 뱃지 보유 여부 확인
+            if (request.eventId() == null) {
+                throw new IllegalArgumentException("Badge created community must be linked to an event.");
+            }
+            boolean hasBadge = badgeRepositoryPort.existsByUserIdAndEventId(creator.getId(), request.eventId());
+            if (!hasBadge) {
+                throw new IllegalArgumentException("You must have an issued badge for this event to create a community.");
+            }
+        }
 
         Community community = Community.builder()
                 .creatorId(creator.getId())
@@ -38,6 +60,7 @@ public class CommunityCommandService implements CreateCommunityUseCase, UpdateCo
                 .name(request.name())
                 .description(request.description())
                 .isPublic(request.isPublic() != null ? request.isPublic() : true)
+                .type(type)
                 .build();
 
         Community saved = communityRepositoryPort.save(community);
@@ -56,7 +79,9 @@ public class CommunityCommandService implements CreateCommunityUseCase, UpdateCo
                 saved.isPublic(),
                 saved.getCreatorNickname(),
                 saved.getCreatedAt(),
-                true
+                true,
+                true,
+                saved.getType()
         );
     }
 
@@ -88,6 +113,7 @@ public class CommunityCommandService implements CreateCommunityUseCase, UpdateCo
                 .thumbnailUrl(existing.getThumbnailUrl())
                 .memberCount(existing.getMemberCount())
                 .isPublic(request.isPublic() != null ? request.isPublic() : existing.isPublic())
+                .type(existing.getType())
                 .createdAt(existing.getCreatedAt())
                 .build();
 
@@ -102,7 +128,9 @@ public class CommunityCommandService implements CreateCommunityUseCase, UpdateCo
                 saved.isPublic(),
                 saved.getCreatorNickname(),
                 saved.getCreatedAt(),
-                true
+                true,
+                true,
+                saved.getType()
         );
     }
 }
