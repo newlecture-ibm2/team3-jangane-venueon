@@ -1,14 +1,30 @@
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   padding: 10px var(--space-24);
-  width: 100%;
-  height: var(--space-60); /* 60px 강제 지정 요청 반영 */
+
+  width: calc(100% - 60px);
+  /* 좌우 여백 */
+  /* max-width: 1280px;  */
+  margin: 0 auto;
+  /* 중앙 정렬 */
+
+  height: var(--space-60);
+  /* 60px 강제 지정 요청 반영 */
   background: var(--color-bg);
-  border-bottom: 1px solid var(--color-text-gray-300);
+  border: 1px solid var(--color-text-gray-500);
+  border-top: none;
+  /* 상단 보더만 제외 */
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .leftSection {

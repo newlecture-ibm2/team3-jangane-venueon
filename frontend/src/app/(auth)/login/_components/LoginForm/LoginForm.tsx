@@ -35,12 +35,12 @@ export default function LoginForm() {
       >
         <InputField
           id="email"
-          label="아이디"
+          label="이메일"
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="아이디를 입력하세요."
+          placeholder="이메일을 입력하세요."
         />
         <InputField
           id="password"

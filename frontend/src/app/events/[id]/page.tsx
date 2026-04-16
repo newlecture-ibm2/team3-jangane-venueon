@@ -197,11 +197,11 @@ export default async function EventDetailPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 세션 일정 섹션 */}
-      {sessions.length > 0 && (
+      {/* 세션 일정 섹션 — 복합 이벤트(다중 세션)일 때만 노출 */}
+      {event.hasSession && sessions.length > 0 && (
         <section className={styles.section}>
           <h3 className={styles.sectionTitle}>
-            세션 일정 {event.hasSession ? `(${sessions.length}개 세션)` : ''}
+            세션 일정 ({sessions.length}개 세션)
           </h3>
           <SessionList sessions={sessions} />
         </section>

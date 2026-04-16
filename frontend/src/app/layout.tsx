@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "VenueOn — 세션 중계 플랫폼",
   description:
     "유료·무료 세션를 탐색하고, 티켓을 구매하고, 커뮤니티에 참여하세요.",
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
