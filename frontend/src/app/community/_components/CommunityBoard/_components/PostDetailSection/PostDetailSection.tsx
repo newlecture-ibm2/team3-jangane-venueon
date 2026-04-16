@@ -3,7 +3,7 @@ import { UserProfile, CommentInput, PopoverMenu } from '@/components/ui';
 import { MoreIcon } from '@/components/icons';
 import { ReportModal } from '@/components/modal';
 import CommunityCommentItem from '../../../CommunityCommentItem';
-import { useCommunityBoard } from '../../CommunityBoardContext';
+import { useCommunityBoard } from '../../CommunityBoard';
 import styles from './PostDetailSection.module.css';
 import { useUIStore } from '@/store/useUIStore';
 

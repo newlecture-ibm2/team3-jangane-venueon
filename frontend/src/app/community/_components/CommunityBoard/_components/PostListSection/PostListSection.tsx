@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Pagination, InputField, Button } from '@/components/ui';
 import CommunityPostItem from '../../../CommunityPostItem';
-import { useCommunityBoard } from '../../CommunityBoardContext';
+import { useCommunityBoard } from '../../CommunityBoard';
 import styles from './PostListSection.module.css';
 import { useUIStore } from '@/store/useUIStore';
 
