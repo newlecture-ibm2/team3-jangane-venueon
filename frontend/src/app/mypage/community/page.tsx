@@ -3,11 +3,11 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
-import { CardGrid, Pagination, Tabs } from '@/components/ui';
-import CommunityCard from '@/app/community/components/CommunityCard';
-import CommunityPostItem from '@/app/community/components/CommunityPostItem';
+import { CardGrid, Pagination, InputField, Tabs } from '@/components/ui';
+import CommunityCard from '@/app/community/_components/CommunityCard';
 import styles from './page.module.css';
 import { useCommunity } from './useCommunity';
+import CommunityPostItem from '@/app/community/_components/CommunityPostItem';
 
 const TAB_OPTIONS = [
   { value: 'participating', label: '참여 중' },
@@ -41,7 +41,7 @@ export default function MyCommunityPage() {
       <div className="sidebar-content">
         <div className={styles.content}>
           <h1 className={styles.pageTitle}>내 커뮤니티</h1>
-          
+
           <div className={styles.listSection}>
             <Tabs
               variant="line"
