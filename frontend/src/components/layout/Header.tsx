@@ -104,10 +104,13 @@ export default function Header({
     );
   };
 
+  // Mypage, Host, Admin 페이지에서 사이드바(드로어) 토글 버튼 노출
+  const hasSidebar = pathname?.startsWith('/mypage') || pathname?.startsWith('/host') || pathname?.startsWith('/admin');
+
   return (
     <header className={`${styles.header} ${className}`.trim()}>
       <div className={styles.leftSection}>
-        {isMyPage && (
+        {hasSidebar && (
           <button className={styles.mobileHamburgerBtn} onClick={() => setSidebarDrawerOpen(true)}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="12" x2="21" y2="12"></line>

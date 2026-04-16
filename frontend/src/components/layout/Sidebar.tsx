@@ -146,24 +146,18 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
   };
 
   const menus = getMenus();
-  const isMypageDrawer = pathname.startsWith('/mypage');
-
   return (
     <>
-      {isMypageDrawer && (
-        <div 
-          className={`${styles.drawerOverlay} ${isSidebarDrawerOpen ? styles.drawerOpen : ''}`} 
-          onClick={() => setSidebarDrawerOpen(false)} 
-        />
-      )}
+      <div 
+        className={`${styles.drawerOverlay} ${isSidebarDrawerOpen ? styles.drawerOpen : ''}`} 
+        onClick={() => setSidebarDrawerOpen(false)} 
+      />
 
       <aside
-        className={`${styles.sidebar} ${isMypageDrawer ? styles.mypageDrawer : ''} ${isSidebarDrawerOpen ? styles.drawerOpen : ''} ${className}`.trim()}
+        className={`${styles.sidebar} ${styles.responsiveDrawer} ${isSidebarDrawerOpen ? styles.drawerOpen : ''} ${className}`.trim()}
         style={{ height: 'calc(100vh - 40px)' }}
       >
-        {isMypageDrawer && (
-          <button className={styles.closeBtn} onClick={() => setSidebarDrawerOpen(false)}>✕</button>
-        )}
+        <button className={styles.closeBtn} onClick={() => setSidebarDrawerOpen(false)}>✕</button>
       {menus.map((menu) => {
         let isActive = false;
 
