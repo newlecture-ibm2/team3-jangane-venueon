@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { Card, CardGrid, InputField, Tabs, Pagination } from '@/components/ui';
@@ -34,15 +34,31 @@ export default function EventsPage() {
     }
   };
 
+  const [categoryOptions, setCategoryOptions] = useState<{ value: string, label: string }[]>([
+    { value: 'all', label: '전체보기' }
+  ]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/categories');
+        const resData = await res.json();
+        if (resData.success && resData.data) {
+          const opts = resData.data.map((c: any) => ({
+            value: String(c.id),
+            label: c.name
+          }));
+          setCategoryOptions([{ value: 'all', label: '전체보기' }, ...opts]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   // 💡 최적화: 현재 시간은 카드 개수만큼 여러 번 계산할 필요 없이 한 번만 계산합니다.
   const nowTime = new Date().getTime();
-
-  const categoryOptions = [
-    { value: 'all', label: '전체보기' },
-    { value: '1', label: '디자인' },
-    { value: '2', label: '개발' },
-    { value: '3', label: '마케팅' },
-  ];
 
   return (
     <div className="container-full">

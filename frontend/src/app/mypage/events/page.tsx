@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Tabs, Pagination } from '@/components/ui';
@@ -14,14 +14,29 @@ const TAB_OPTIONS = [
   { value: 'completed', label: '종료' },
 ];
 
-const CATEGORY_MAP: Record<number, string> = {
-  1: '디자인',
-  2: '개발',
-  3: '마케팅',
-};
+
 
 export default function MyPage() {
   const router = useRouter();
+  const [categoryMap, setCategoryMap] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/categories');
+        const resData = await res.json();
+        if (resData.success && resData.data) {
+          const map: Record<number, string> = {};
+          resData.data.forEach((c: any) => { map[c.id] = c.name; });
+          setCategoryMap(map);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const {
     activeTab,
     currentPage,
@@ -63,7 +78,7 @@ export default function MyPage() {
                 <Card
                   key={lecture.orderId}
                   variant="landing"
-                  category={lecture.categoryId ? (CATEGORY_MAP[lecture.categoryId] || '기타') : undefined}
+                  category={lecture.categoryId ? (categoryMap[lecture.categoryId] || '기타') : undefined}
                   status={lecture.status}
                   title={lecture.title}
                   imageUrl={lecture.thumbnailUrl ? `/upload/${lecture.thumbnailUrl}` : undefined}
