@@ -530,7 +530,6 @@ export default function UITestPage() {
                 postType="프로젝트 모집"
                 timeAgo="방금 전"
                 title="함께 사이드 프로젝트 완성할 프론트엔드 개발자 찾습니다 👀"
-                keywords={['사이드프로젝트', '프론트엔드', '리액트', '주말코딩']}
               />
             </div>
           </div>
