@@ -1,19 +1,26 @@
 /* src/components/layout/Footer.module.css */
-.footer  {
+.footer {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 48px 80px;
   gap: var(--space-100);
-  width: 100%;
-  height: auto; /* 고정 높이 310px 제거 */
-  min-height: 310px; 
-  background-color: var(--color-text-gray-50); 
+  width: calc(100% - 2px);
+  margin: 0 auto;
+  height: auto;
+  /* 고정 높이 310px 제거 */
+  min-height: 310px;
+  background-color: #e0dacf;
+  border-bottom: none;
+  /* 상단 보더만 제외 */
+  border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+
 }
 
 /* Frame 70 (링크 영역 레이아웃) */
-.topSection  {
+.topSection {
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -23,11 +30,12 @@
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  flex-wrap: wrap; /* 작은 화면 대응 */
+  flex-wrap: wrap;
+  /* 작은 화면 대응 */
 }
 
 /* Frame 66 (로고 및 회사 정보) */
-.colLogo  {
+.colLogo {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -37,15 +45,16 @@
   flex: 1 1 200px;
 }
 
-.companyInfo  {
+.companyInfo {
   /* 12px */
   /* 150% */
-  color: var(--color-text-gray-500); /* #6B7280 */
+  color: var(--color-text-gray-500);
+  /* #6B7280 */
   font: var(--text-caption-regular);
 }
 
 /* Frame 67, 68, 69 (메뉴 링크 열) */
-.colLinks  {
+.colLinks {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -55,13 +64,14 @@
   flex: none;
 }
 
-.colTitle  {
+.colTitle {
   /* 12px */
-  color: var(--color-text-gray-500); /* #6B7280 */
+  color: var(--color-text-gray-500);
+  /* #6B7280 */
   font: var(--text-caption-regular);
 }
 
-.linkList  {
+.linkList {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -70,24 +80,26 @@
   padding: 0;
 }
 
-.linkItem  {
+.linkItem {
   /* 14px */
   /* 150% */
-  color: var(--color-primary); /* #374151 */
+  color: var(--color-primary);
+  /* #374151 */
   text-decoration: none;
   transition: opacity var(--transition);
   font: var(--text-body-regular);
 }
 
-.linkItem:hover  {
+.linkItem:hover {
   opacity: 0.7;
 }
 
-.copyright  {
+.copyright {
   width: 100%;
   max-width: 1280px;
   font-style: normal;
-  color: var(--color-text-gray-500); /* #6B7280 */
+  color: var(--color-text-gray-500);
+  /* #6B7280 */
   margin: 0 auto;
   text-align: center;
   font: var(--text-caption-medium);
@@ -96,8 +108,10 @@
 /* ── Mobile Responsive (Max 768px) ── */
 @media (max-width: 768px) {
   .footer {
-    height: auto; /* 고정된 높이를 해제하여 배경색이 내용물 끝까지 덮도록 수정 */
-    padding: var(--space-32) var(--space-24); /* 모바일에서는 좌우 여백 축소 */
+    height: auto;
+    /* 고정된 높이를 해제하여 배경색이 내용물 끝까지 덮도록 수정 */
+    padding: var(--space-32) var(--space-24);
+    /* 모바일에서는 좌우 여백 축소 */
     gap: var(--space-48);
   }
 

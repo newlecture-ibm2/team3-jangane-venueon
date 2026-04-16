@@ -1,7 +1,7 @@
 .heroSection {
   width: 100%;
   background-color: #e0dacf;
-  padding: 0 0;
+  padding: 60px 0 0 0; /* fixed 헤더(60px)가 위를 가리게 되므로 내용이 가려지지 않도록 패딩 추가 */
   display: flex;
   justify-content: center;
 }
