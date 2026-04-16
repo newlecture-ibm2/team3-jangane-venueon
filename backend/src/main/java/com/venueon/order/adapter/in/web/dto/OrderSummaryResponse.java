@@ -31,4 +31,5 @@ public class OrderSummaryResponse {
     private int amount; // 단일 금액 (UI 역호환성)
     private String thumbnailUrl; // 이벤트 썸네일 이미지
     private Long categoryId; // 카테고리 ID (프론트에서 라벨 매핑)
+    private boolean hasOnlineSessions; // 온라인 세션 존재 여부 (런타임 계산)
 }

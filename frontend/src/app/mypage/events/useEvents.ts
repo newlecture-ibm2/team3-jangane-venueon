@@ -11,6 +11,7 @@ export interface LectureItem {
   eventId: number;
   thumbnailUrl?: string;
   categoryId?: number;
+  hasOnlineSessions: boolean;
 }
 
 const ITEMS_PER_PAGE = 8; // 2열 × 4줄
@@ -57,6 +58,7 @@ export function useEvents() {
           price: item.amount,
           thumbnailUrl: item.thumbnailUrl || undefined,
           categoryId: item.categoryId || undefined,
+          hasOnlineSessions: item.hasOnlineSessions || false,
         }));
         setLectures(mappedLectures);
         setTotalPages(data.totalPages || 1);
