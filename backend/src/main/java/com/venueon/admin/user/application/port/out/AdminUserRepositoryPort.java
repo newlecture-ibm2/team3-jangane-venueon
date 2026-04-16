@@ -43,4 +43,14 @@ public interface AdminUserRepositoryPort {
      * 회원 삭제
      */
     void deleteById(Long id);
+
+    /**
+     * 역할별 전체 회원 수 조회
+     */
+    long countByRoleId(Long roleId);
+
+    /**
+     * 특정 날짜 이후 가입한 역할별 신규 회원 수 조회
+     */
+    long countByRoleIdAndCreatedAtAfter(Long roleId, java.time.LocalDateTime dateTime);
 }

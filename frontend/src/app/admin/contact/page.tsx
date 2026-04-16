@@ -1,73 +1,40 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import styles from './page.module.css';
 import { Sidebar } from '@/components/layout';
 import { Pagination } from '@/components/ui';
-import { adminContactAPI, type ContactListItem } from '@/lib/contact-api';
-import ContactFilter from './_components/ContactFilter';
-import ContactTable from './_components/ContactTable';
+import { ConfirmModal } from '@/components/modal';
+import ContactFilter from './_components/ContactFilter/ContactFilter';
+import ContactTable from './_components/ContactTable/ContactTable';
 import { ContactDetailModal } from '@/components/modal';
+import { useAdminContact } from './useAdminContact';
 
 export default function AdminContactPage() {
-  // ── 필터 상태 ──
-  const [keyword, setKeyword] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const { state, actions } = useAdminContact();
 
-  // ── 데이터 상태 ──
-  const [contacts, setContacts] = useState<ContactListItem[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    keyword,
+    categoryFilter,
+    statusFilter,
+    currentPage,
+    contacts,
+    totalPages,
+    isLoading,
+    detailContactId,
+    isDetailOpen,
+  } = state;
 
-  // ── 모달 상태 ──
-  const [detailContactId, setDetailContactId] = useState<number | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-
-  // ── 데이터 패칭 ──
-  const fetchContacts = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const res = await adminContactAPI.getContacts({
-        category: categoryFilter || undefined,
-        status: statusFilter || undefined,
-        page: String(currentPage - 1),
-        size: '20',
-      });
-      setContacts(res.data.content);
-      setTotalPages(res.data.totalPages);
-    } catch (error) {
-      console.error('Failed to fetch admin contacts:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [categoryFilter, statusFilter, currentPage]);
-
-  useEffect(() => {
-    fetchContacts();
-  }, [fetchContacts]);
-
-  // ── 이벤트 핸들러 ──
-  const handleSearch = () => {
-    setCurrentPage(1);
-    fetchContacts();
-  };
-
-  const handleCategoryChange = (value: string) => {
-    setCategoryFilter(value);
-    setCurrentPage(1);
-  };
-
-  const handleStatusChange = (value: string) => {
-    setStatusFilter(value);
-    setCurrentPage(1);
-  };
-
-  const handleViewDetail = (id: number) => {
-    setDetailContactId(id);
-    setIsDetailOpen(true);
-  };
+  const {
+    setKeyword,
+    setCurrentPage,
+    setIsDetailOpen,
+    handleSearch,
+    handleCategoryChange,
+    handleStatusChange,
+    handleViewDetail,
+    fetchContacts,
+  } = actions;
 
   return (
     <div className="container-sidebar">

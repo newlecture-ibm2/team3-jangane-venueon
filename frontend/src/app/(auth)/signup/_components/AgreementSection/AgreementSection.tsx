@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Checkbox from "@/components/ui/Checkbox";
-import TermsModal, { TermType } from "../TermsModal/TermsModal";
+import TermsModal, { TermType } from "../../../_components/TermsModal";
 import styles from "./AgreementSection.module.css";
 
 export interface AgreementState {
@@ -21,7 +21,7 @@ export function isRequiredAgreed(agreements: AgreementState): boolean {
 }
 
 export default function AgreementSection({ agreements, onChange }: AgreementSectionProps) {
-  const [modalType, setModalType] = useState<TermType | null>(null);
+  const [modalType, setModalType] = useState<keyof AgreementState | null>(null);
 
   const allChecked = agreements.termsOfService && agreements.privacyPolicy;
 

@@ -1,0 +1,133 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--space-24);
+  gap: var(--space-16);
+  width: 100%;
+  max-width: 100%;
+  background-color: var(--color-text-white);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-xl);
+  box-sizing: border-box;
+  text-decoration: none;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.topRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.title {
+  font: var(--text-h1-card-regular);
+  color: var(--color-text-gray-900);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.editIconButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-gray-400);
+  transition: color 0.2s ease;
+}
+
+.editIconButton:hover {
+  color: var(--color-primary);
+}
+
+.imageWrapper {
+  width: 100%;
+  aspect-ratio: 362 / 204;
+  background-color: var(--color-text-gray-300);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  flex: none;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--space-12);
+  gap: var(--space-4);
+}
+
+.infoRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-8);
+  color: var(--color-text-gray-700);
+}
+
+.infoIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.infoText {
+  font: var(--text-body-regular);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.priceSection {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.price {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.actionWrapper {
+  width: 100%;
+  margin-top: auto;
+  padding-top: var(--space-8);
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-8);
+}

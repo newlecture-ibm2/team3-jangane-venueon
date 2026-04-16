@@ -1,257 +1,39 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import { Button, InputField, UserProfile, Toggle } from '@/components/ui';
 import UploadModal from '@/components/modal/UploadModal';
 import ConfirmModal from '@/components/modal/ConfirmModal';
-import { useUIStore } from '@/store/useUIStore';
-import { useAuth } from '@/store/useAuthStore';
-import tabsStyles from '@/components/ui/Tabs.module.css';
 import styles from './page.module.css';
-
-
+import { useProfile } from './useProfile';
 
 export default function ProfileSettingsPage() {
-  const { showToast } = useUIStore();
-  const { logout } = useAuth();
-  const router = useRouter();
-
-  const [baseImage, setBaseImage] = useState<string | undefined>(undefined);
-  const [baseEmail, setBaseEmail] = useState('');
-  const [baseName, setBaseName] = useState('');
-
-  const [profileImage, setProfileImage] = useState<string | undefined>(baseImage);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [userEmail, setUserEmail] = useState(baseEmail);
-  const [userName, setUserName] = useState(baseName);
-
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  // 관심 카테고리 및 뱃지 상태
-  const [baseCategories, setBaseCategories] = useState<string[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [baseBadge, setBaseBadge] = useState<boolean>(true);
-  const [showBadge, setShowBadge] = useState<boolean>(true);
-
-  interface Category {
-    id: number;
-    name: string;
-  }
-  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
-
-  // 초기 프로필 및 메타데이터 로드
-  useEffect(() => {
-    const fetchMetadata = async () => {
-      try {
-        const catRes = await fetch('/api/categories');
-        if (catRes.ok) {
-          const catData = await catRes.json();
-          if (catData.data) {
-            setAvailableCategories(catData.data);
-          }
-        }
-      } catch (e) {
-        console.error("Failed to load categories", e);
-      }
-    };
-    fetchMetadata();
-
-    const fetchProfile = async () => {
-      try {
-        const res = await fetch('/api/auth/me'); // BFF proxy (iron-session) handles JWT
-        if (res.ok) {
-          const data = await res.json();
-          // Assume data is { id, email, nickname, profileImg, role }
-          const fetchedEmail = data.email || '';
-          const fetchedName = data.nickname || '';
-          // DB에 null이면 기본 아바타 아이콘이 뜨도록 undefined 로 세팅
-          // 서버에 저장된 상대경로(profile/2026/04/uuid.jpg)에 /upload/ prefix 추가
-          const rawImg = data.profileImg;
-          const fetchedImg = rawImg
-            ? (rawImg.startsWith('/') || rawImg.startsWith('http') ? rawImg : `/upload/${rawImg}`)
-            : undefined;
-
-          setBaseEmail(fetchedEmail);
-          setBaseName(fetchedName);
-          setBaseImage(fetchedImg);
-
-          // 확장 설정
-          // 현재 /api/auth/me (또는 user profile API)에서 카테고리와 뱃지 정보가 넘어오지 않으면 빈값으로 치환
-          const fetchedCategories = data.categories || [];
-          const fetchedBadge = data.showBadge ?? true;
-
-          setBaseCategories(fetchedCategories);
-          setBaseBadge(fetchedBadge);
-
-          setUserEmail(fetchedEmail);
-          setUserName(fetchedName);
-          setProfileImage(fetchedImg);
-          setCategories(fetchedCategories);
-          setShowBadge(fetchedBadge);
-        }
-      } catch (err) {
-        console.error("Failed to load profile", err);
-      }
-    };
-    fetchProfile();
-  }, []);
-
-  // 수정된 사항이 하나라도 있는지 확인 (버튼 활성화 여부 판별)
-  const isDirty =
-    profileImage !== baseImage ||
-    userName !== baseName ||
-    showBadge !== baseBadge ||
-    JSON.stringify(categories.sort()) !== JSON.stringify(baseCategories.sort());
-
-  // '사진 변경' 클릭 시 모달 열기
-  const handleImageChangeClick = () => {
-    setIsUploadModalOpen(true);
-  };
-
-  // 모달에서 '확인'을 눌러 파일을 반영했을 때
-  const handleUploadConfirm = (file: File | null) => {
-    if (file) {
-      setSelectedFile(file);
-      // 이전 미리보기 이미지가 메모리에 남아있다면 해제
-      if (profileImage && profileImage.startsWith('blob:')) {
-        URL.revokeObjectURL(profileImage);
-      }
-      setProfileImage(URL.createObjectURL(file));
-    }
-    setIsUploadModalOpen(false);
-  };
-
-  // '삭제' 클릭 시 이미지 없앰
-  const handleDeleteImage = () => {
-    if (profileImage && profileImage.startsWith('blob:')) {
-      URL.revokeObjectURL(profileImage);
-    }
-    setSelectedFile(null);
-    setProfileImage(undefined); // undefined면 UserProfile에서 이름 첫 글자 대체 로직 발동
-  };
-
-  // '취소' 클릭 시 모달 열기
-  const handleCancelClick = () => {
-    setIsCancelModalOpen(true);
-  };
-
-  // 모달 내 '초기화(확인)' 클릭 시 모든 수정을 롤백
-  const handleCancelConfirm = () => {
-    if (profileImage && profileImage.startsWith('blob:')) {
-      URL.revokeObjectURL(profileImage);
-    }
-    setProfileImage(baseImage);
-    setSelectedFile(null);
-    setUserName(baseName);
-    setCategories(baseCategories);
-    setShowBadge(baseBadge);
-    setIsCancelModalOpen(false);
-  };
-
-  // 저장(확인) 클릭 - 실제 백엔드 연동 부분
-  const handleSave = async () => {
-    try {
-      // 1) 새로 선택한 파일이 있으면 먼저 서버에 업로드
-      let finalProfileImg: string | null = null;
-
-      if (selectedFile) {
-        // FormData로 파일 업로드 (category=profile)
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        formData.append('category', 'profile');
-
-        const uploadRes = await fetch('/api/files/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!uploadRes.ok) {
-          showToast('이미지 업로드에 실패했습니다.', 'error');
-          return;
-        }
-
-        const uploadData = await uploadRes.json();
-        // 백엔드 반환: { data: { filePath: "profile/2026/04/uuid.jpg" } }
-        finalProfileImg = uploadData.data?.filePath || uploadData.filePath || null;
-      } else if (profileImage && !profileImage.startsWith('blob:')) {
-        // 기존 이미지 유지 — /upload/ prefix 제거 후 상대경로만 저장
-        finalProfileImg = profileImage.replace(/^\/upload\//, '');
-      } else {
-        // 이미지 삭제 (profileImage === undefined)
-        finalProfileImg = null;
-      }
-
-      // 2) 프로필 정보 저장 (실제 서버 경로를 전송)
-      const res = await fetch('/api/users/me/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nickname: userName,
-          profileImg: finalProfileImg,
-          categories: categories,
-          showBadge: showBadge,
-        }),
-      });
-
-      if (res.ok) {
-        // 저장된 이미지 경로에 /upload/ prefix 붙여서 화면에 표시
-        const displayImg = finalProfileImg ? `/upload/${finalProfileImg}` : undefined;
-
-        setBaseImage(displayImg);
-        setProfileImage(displayImg);
-        setSelectedFile(null);
-        setBaseEmail(userEmail);
-        setBaseName(userName);
-        setBaseCategories(categories);
-        setBaseBadge(showBadge);
-        showToast('내 정보 수정이 완료되었습니다.', 'success');
-
-        // 3) Zustand 스토어 갱신 (Header 즉시 반영)
-        const { updateUser } = useAuth.getState();
-        updateUser({ nickname: userName, profileImg: displayImg });
-
-        // 4) iron-session 동기화 (새로고침 후에도 유지)
-        await fetch('/api/auth/session', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nickname: userName, profileImg: finalProfileImg }),
-        });
-      } else {
-        const errorText = await res.text();
-        try {
-          const errorData = JSON.parse(errorText);
-          showToast(errorData.message || '저장 중 오류가 발생했습니다.', 'error');
-        } catch {
-          showToast(`오류가 발생했습니다: ${res.status} ${errorText.substring(0, 50)}`, 'error');
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      showToast('네트워크 오류가 발생했습니다.', 'error');
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    try {
-      const res = await fetch('/api/users/me', { method: 'DELETE' });
-      if (res.ok) {
-        showToast('계정이 안전하게 탈퇴 처리되었습니다.', 'success');
-        await logout(); // 로그아웃 처리하여 세션 파기
-        router.push('/');
-      } else {
-        showToast('탈퇴 처리 중 오류가 발생했습니다.', 'error');
-      }
-    } catch (e) {
-      showToast('네트워크 오류가 발생했습니다.', 'error');
-    }
-    setIsDeleteModalOpen(false);
-  };
+  const {
+    profileImage,
+    userEmail,
+    userName,
+    setUserName,
+    showBadge,
+    setShowBadge,
+    categories,
+    availableCategories,
+    isDirty,
+    isUploadModalOpen,
+    setIsUploadModalOpen,
+    isCancelModalOpen,
+    setIsCancelModalOpen,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen,
+    handleImageChangeClick,
+    handleUploadConfirm,
+    handleDeleteImage,
+    handleCancelClick,
+    handleCancelConfirm,
+    handleSave,
+    handleDeleteAccount,
+    toggleCategory,
+  } = useProfile();
 
   return (
     <div className="container-sidebar">
@@ -313,14 +95,8 @@ export default function ProfileSettingsPage() {
                 <button
                   key={cat.id}
                   type="button"
-                  className={`${tabsStyles.tabButton} ${tabsStyles.pillTab} ${categories.includes(cat.name) ? tabsStyles.pillTabActive : ''}`}
-                  onClick={() => {
-                    if (categories.includes(cat.name)) {
-                      setCategories(categories.filter(c => c !== cat.name));
-                    } else {
-                      setCategories([...categories, cat.name]);
-                    }
-                  }}
+                  className={`${styles.categoryPill} ${categories.includes(cat.name) ? styles.categoryPillActive : ''}`}
+                  onClick={() => toggleCategory(cat.name)}
                 >
                   {cat.name}
                 </button>

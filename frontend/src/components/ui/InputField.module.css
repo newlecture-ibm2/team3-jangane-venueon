@@ -59,7 +59,7 @@
 
 /* 비활성 상태 (F3F4F6) */
 .inputContainerDisabled {
-  background: var(--color-surface); 
+  background: var(--color-text-gray-100); 
   border: 1px solid var(--color-text-gray-300);
 }
 

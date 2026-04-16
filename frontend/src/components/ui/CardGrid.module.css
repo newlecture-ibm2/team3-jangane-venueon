@@ -17,6 +17,7 @@
 /* 3열 레이아웃 (ex: 메인 세션 목록 페이지) */
 .threeCols {
   grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
   max-width: 100%;
 }
 

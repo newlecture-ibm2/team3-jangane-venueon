@@ -6,12 +6,19 @@ const nextConfig: NextConfig = {
   output: "standalone", // ⭐ Docker 이미지 최적화
   async rewrites() {
     return [
-      // 로컬 개발: /upload/* → 백엔드 프록시 (Spring이 서빙)
-      // 배포: Nginx가 /upload/* 를 먼저 가로채므로 이 rewrite 무시됨
+      {
+        source: "/v1/:path*",
+        destination: `${backendUrl}/:path*`, // ⭐ 백엔드에는 /v1 접두사가 없으므로 /:path* 로 전달
+      },
+      {
+        source: "/images/:path*",
+        destination: `${backendUrl}/images/:path*`,
+      },
       {
         source: "/upload/:path*",
         destination: `${backendUrl}/upload/:path*`,
-      }
+      },
+      // 백엔드 경로 추가 시 여기에 명시적으로 추가
     ];
   },
 };

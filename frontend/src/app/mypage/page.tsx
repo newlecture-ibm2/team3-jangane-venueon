@@ -1,46 +1,54 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
-import { Tabs, InputField, Table, TableHeader, TableRow, TableCell, StatusTag, Button, Tag } from '@/components/ui';
+import { Tabs, Table, TableHeader, TableRow, TableCell, Button } from '@/components/ui';
 import styles from './page.module.css';
+import { useDashboard, DashboardEventItem } from './useDashboard';
 
 const TAB_OPTIONS = [
   { value: 'resume', label: '진행 중' },
   { value: 'schedule', label: '다가오는 일정' },
 ];
 
-interface SummaryData {
-  ongoingCourseCount: number;
-  pendingReviewCount: number;
-  earnedBadgeCount: number;
-}
-
 export default function MyPageDashboard() {
-  const [activeTab, setActiveTab] = useState('resume');
-  const [summaryData, setSummaryData] = useState<SummaryData>({
-    ongoingCourseCount: 0,
-    pendingReviewCount: 0,
-    earnedBadgeCount: 0,
-  });
+  const router = useRouter();
+  const {
+    activeTab,
+    setActiveTab,
+    summaryData,
+    events,
+    isLoadingEvents
+  } = useDashboard();
 
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const res = await fetch('/api/mypage/summary');
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data) {
-            setSummaryData(json.data);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch dashboard summary:', err);
-      }
-    };
+  // 날짜 포맷 함수
+  const formatDateTime = (dateString: string | null) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
-    fetchSummary();
-  }, []);
+  // D-Day 계산 함수
+  const calculateDdayText = (dateString: string | null) => {
+    if (!dateString) return '-';
+    const target = new Date(dateString);
+    const today = new Date();
+    target.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    
+    const diffTime = target.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'D-Day';
+    if (diffDays > 0) return `D-${diffDays}`;
+    return `D+${Math.abs(diffDays)}`;
+  };
 
   return (
     <div className="container-sidebar">
@@ -65,7 +73,7 @@ export default function MyPageDashboard() {
             </div>
           </div>
           
-          {/* Category Tab (lined style) */}
+          {/* Category Tab */}
           <Tabs
             variant="line"
             options={TAB_OPTIONS}
@@ -74,36 +82,36 @@ export default function MyPageDashboard() {
           />
 
           <div className={styles.tableSection}>
-            {/* 검색창 */}
-            <InputField
-              variant="search"
-              className={styles.searchBar}
-            />
-
-
-
-            {/* "진행 중" 탭 전용 테이블 */}
-            {activeTab === 'resume' && (
+            {isLoadingEvents ? (
+              <div style={{ padding: '40px 0', textAlign: 'center', color: '#6B7280' }}>
+                데이터를 불러오는 중...
+              </div>
+            ) : events.length === 0 ? (
+              <div style={{ padding: '40px 0', textAlign: 'center', color: '#6B7280' }}>
+                해당하는 일정이 없습니다.
+              </div>
+            ) : activeTab === 'resume' ? (
               <Table columns="1fr 120px 180px 120px">
                 <TableHeader>
-                  <TableCell header>행사명</TableCell>
+                  <TableCell header>이벤트 명</TableCell>
                   <TableCell header>호스트</TableCell>
                   <TableCell header>진행 시간</TableCell>
                   <TableCell header></TableCell>
                 </TableHeader>
-                <TableRow>
-                  <TableCell>실전! Spring Boot 백엔드 마스터</TableCell>
-                  <TableCell>장안에화제</TableCell>
-                  <TableCell>오늘 14:00 - 18:00</TableCell>
-                  <TableCell>
-                    <Button variant="primary">입장하기</Button>
-                  </TableCell>
-                </TableRow>
+                {events.map((event: DashboardEventItem) => (
+                  <TableRow key={event.orderId}>
+                    <TableCell>{event.title}</TableCell>
+                    <TableCell>{event.organizer}</TableCell>
+                    <TableCell>{formatDateTime(event.startDate)}</TableCell>
+                    <TableCell>
+                      <Button variant="primary" onClick={() => router.push(`/events/${event.eventId}`)}>
+                        입장하기
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </Table>
-            )}
-
-            {/* "다가오는 일정" 탭 전용 테이블 */}
-            {activeTab === 'schedule' && (
+            ) : (
               <Table columns="1fr 120px 180px 88px">
                 <TableHeader>
                   <TableCell header>이벤트 명</TableCell>
@@ -111,18 +119,18 @@ export default function MyPageDashboard() {
                   <TableCell header>일시</TableCell>
                   <TableCell header>상태</TableCell>
                 </TableHeader>
-                <TableRow>
-                  <TableCell>스프링 부트 실전 웹 개발 라이브 Q&A</TableCell>
-                  <TableCell>장안에화제</TableCell>
-                  <TableCell>오늘 오후 8:00</TableCell>
-                  <TableCell>D-Day</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>이력서/포트폴리오 단기 피드백</TableCell>
-                  <TableCell>김프론트</TableCell>
-                  <TableCell>2026.04.12 오후 2:00</TableCell>
-                  <TableCell>D-4</TableCell>
-                </TableRow>
+                {events.map((event: DashboardEventItem) => (
+                  <TableRow key={event.orderId}>
+                    <TableCell>{event.title}</TableCell>
+                    <TableCell>{event.organizer}</TableCell>
+                    <TableCell>{formatDateTime(event.startDate)}</TableCell>
+                    <TableCell>
+                      <span style={{ color: '#172554', fontWeight: 600 }}>
+                        {calculateDdayText(event.startDate)}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </Table>
             )}
           </div>

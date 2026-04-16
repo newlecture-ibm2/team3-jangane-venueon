@@ -24,3 +24,10 @@
 .searchBar {
   width: 410px;
 }
+
+.emptyState {
+  color: var(--color-text-gray-500);
+  text-align: center;
+  width: 100%;
+  padding: var(--space-48) 0;
+}

@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import Sidebar from '@/components/layout/Sidebar';
+import { StatusTag } from '@/components/ui';
 import styles from './page.module.css';
 
 interface OrderDetail {
@@ -26,28 +27,7 @@ interface OrderDetail {
   sessionEndTime: string | null;
 }
 
-function getStatusLabel(status: string) {
-  switch (status) {
-    case 'PAID': return '결제완료';
-    case 'REGISTERED': return '신청완료';
-    case 'CANCELLED': return '주문취소';
-    case 'REFUNDED': return '환불완료';
-    case 'PENDING': return '결제대기';
-    default: return status;
-  }
-}
-
-function getStatusClass(status: string) {
-  switch (status) {
-    case 'PAID': return styles.statusPaid;
-    case 'REGISTERED': return styles.statusRegistered;
-    case 'CANCELLED': return styles.statusCancelled;
-    case 'REFUNDED': return styles.statusRefunded;
-    case 'PENDING': return styles.statusPending;
-    default: return styles.statusDefault;
-  }
-}
-
+// getStatusLabel과 getStatusClass는 공통 StatusTag를 사용하므로 제거됨.
 function getPaymentMethodLabel(method: string | null) {
   if (!method) return '-';
   switch (method) {
@@ -96,10 +76,10 @@ export default function HostOrderDetailPage() {
 
   if (loading) {
     return (
-    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
-        <div className="sidebar"><Sidebar role="host" /></div>
-        <div className="sidebar-content">
-          <div className={styles.loadingWrapper}>로딩 중...</div>
+    <div className="container-sidebar">
+      <Sidebar role="host" />
+      <div className="sidebar-content">
+        <div className={styles.loadingWrapper}>로딩 중...</div>
         </div>
       </div>
     );
@@ -107,10 +87,10 @@ export default function HostOrderDetailPage() {
 
   if (error || !order) {
     return (
-    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
-        <div className="sidebar"><Sidebar role="host" /></div>
-        <div className="sidebar-content">
-          <div className={styles.errorWrapper}>
+    <div className="container-sidebar">
+      <Sidebar role="host" />
+      <div className="sidebar-content">
+        <div className={styles.errorWrapper}>
             <p>{error || '주문을 찾을 수 없습니다.'}</p>
             <Link href="/host/payments">← 목록으로 돌아가기</Link>
           </div>
@@ -120,11 +100,8 @@ export default function HostOrderDetailPage() {
   }
 
   return (
-    <div className="container-sidebar" style={{ scrollbarGutter: 'stable' }}>
-      <div className="sidebar">
-        <Sidebar role="host" />
-      </div>
-
+    <div className="container-sidebar">
+      <Sidebar role="host" />
       <div className="sidebar-content">
         <div className={styles.container}>
           <header className={styles.header}>
@@ -136,9 +113,7 @@ export default function HostOrderDetailPage() {
                 <h1 className={styles.pageTitle}>주문 상세</h1>
                 <span className={styles.orderIdBadge}>주문번호 #{order.orderId}</span>
               </div>
-              <span className={`${styles.statusBadge} ${getStatusClass(order.status)}`}>
-                {getStatusLabel(order.status)}
-              </span>
+              <StatusTag domain="payment" status={order.status} />
             </div>
           </header>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { StatusTag } from '@/components/ui';
 import styles from './page.module.css';
 import CancelDialog from './_components/CancelDialog';
 import { useRefund } from './useRefund';
@@ -26,18 +27,7 @@ export default function RefundPage() {
     return new Date(dateStr).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  // 상태 뱃지 매핑
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'PAID': return { label: '결제 완료', className: styles.statusPaid };
-      case 'REFUNDED': return { label: '환불 완료', className: styles.statusRefunded };
-      case 'PENDING': return { label: '결제 대기', className: styles.statusPending };
-      case 'CANCELLED': return { label: '취소됨', className: styles.statusRefunded };
-      case 'REGISTERED': return { label: '등록 완료', className: styles.statusPaid };
-      default: return { label: status, className: '' };
-    }
-  };
-
+  // 상태 관련 매핑 제거됨 (StatusTag로 대체)
   if (loading) {
     return (
       <div className={styles.pageContainer}>
@@ -67,16 +57,15 @@ export default function RefundPage() {
       ) : (
         <div className={styles.orderList}>
           {orders.map((order) => {
-            const badge = getStatusBadge(order.status);
             return (
               <div key={order.orderId} className={styles.orderCard}>
                 <div className={styles.orderInfo}>
                   <p className={styles.eventTitle}>{order.eventTitle}</p>
-                  <p className={styles.orderMeta}>
+                  <p className={styles.orderMeta} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>{formatPrice(order.amount)}</span>
                     <span>•</span>
                     <span>{formatDate(order.orderedAt)}</span>
-                    <span className={`${styles.statusBadge} ${badge.className}`}>{badge.label}</span>
+                    <StatusTag domain="payment" status={order.status} />
                   </p>
                 </div>
                 {order.status === 'PAID' && (

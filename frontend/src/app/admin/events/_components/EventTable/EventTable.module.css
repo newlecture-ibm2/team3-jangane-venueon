@@ -1,0 +1,139 @@
+/* ── 3) 테이블 ── */
+.container {
+  width: 100%;
+  border-top: 1px solid var(--color-text-gray-300);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead tr {
+  border-bottom: 1px solid var(--color-text-gray-300);
+}
+
+.table th {
+  padding: var(--space-16) var(--space-24);
+  color: var(--color-text-gray-700);
+  font: var(--text-body-medium);
+  text-align: left;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--color-text-gray-100);
+  transition: background var(--transition);
+}
+
+.table tbody tr:hover {
+  background: var(--color-text-gray-50);
+}
+
+.table td {
+  padding: var(--space-16) var(--space-24);
+  font: var(--text-body-medium);
+  color: var(--color-text-gray-900);
+  vertical-align: middle;
+}
+
+/* 피그마 비율에 맞춘 컬럼 설정 */
+.colTitle {
+  width: auto;
+  max-width: 400px;
+}
+
+.colAttendees {
+  width: 100px;
+  text-align: center;
+}
+
+.colDate {
+  width: 180px;
+}
+
+.colStatus {
+  width: 120px;
+  text-align: center;
+}
+
+.colVisibility {
+  width: 100px;
+  text-align: center;
+}
+
+.colAction {
+  width: 120px;
+  text-align: right;
+}
+
+.clickableRow {
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.clickableRow:hover {
+  background: var(--color-text-gray-50);
+}
+
+.eventTitleText {
+  font: var(--text-body-bold);
+  color: var(--color-text-gray-900, #111827);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 액션 영역 */
+.actionGroup {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-12);
+}
+
+.deleteBtn {
+  border: none;
+  background: transparent;
+  padding: var(--space-4);
+  cursor: pointer;
+  color: var(--color-error);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deleteBtn:hover {
+  color: var(--color-error);
+  opacity: 0.7;
+}
+
+.moreWrapper {
+  position: relative;
+}
+
+.iconButton {
+  border: none;
+  background: transparent;
+  padding: var(--space-4);
+  cursor: pointer;
+  color: var(--color-text-gray-500);
+  display: flex;
+  align-items: center;
+}
+
+.popover {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  z-index: 100;
+}
+
+/* 상태 메시지 */
+.loadingTd,
+.emptyTd {
+  text-align: center;
+  padding: var(--space-40);
+  color: var(--color-text-gray-500);
+}

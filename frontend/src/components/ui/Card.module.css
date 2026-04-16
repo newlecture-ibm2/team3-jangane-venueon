@@ -9,8 +9,8 @@
   /* 16px */
   width: 100%;
   max-width: 100%;
-  background-color: var(--color-surface);
-  /* #F3F4F6 */
+  background-color: var(--color-text-white);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
   border-radius: var(--radius-xl);
   /* 24px */
   box-sizing: border-box;
@@ -20,7 +20,7 @@
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
   /* 호버 시 떠오르는 효과 */
 }
 
