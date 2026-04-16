@@ -1,18 +1,6 @@
-import React from "react";
-import Checkbox from "@/components/ui/Checkbox";
-import styles from "./HostTermsModal.module.css";
+export type TermType = "termsOfService" | "privacyPolicy" | "hostTerms";
 
-export type HostTermType = "termsOfService" | "privacyPolicy" | "hostTerms";
-
-interface HostTermsModalProps {
-  type: HostTermType;
-  isOpen: boolean;
-  isChecked: boolean;
-  onClose: () => void;
-  onAgree: (type: HostTermType) => void;
-}
-
-const TERMS_DATA: Record<HostTermType, { title: string; sections: { heading: string; body: string[] }[] }> = {
+export const TERMS_DATA: Record<TermType, { title: string; sections: { heading: string; body: string[] }[] }> = {
   termsOfService: {
     title: "이용약관 동의",
     sections: [
@@ -56,7 +44,7 @@ const TERMS_DATA: Record<HostTermType, { title: string; sections: { heading: str
           "회사는 수집한 개인정보를 다음의 핵심 목적을 위해 엄격히 활용합니다.",
           "- 서비스 제공에 관한 계약 이행 및 요금 정산",
           "- 회원제 서비스 이용에 따른 본인확인 및 개인 식별",
-          "- 호스트 자격 심사 및 사업자 인증"
+          "- 불량회원의 부정 이용 방지와 비인가 사용 방지 및 호스트 자격 심사"
         ]
       },
       {
@@ -102,47 +90,3 @@ const TERMS_DATA: Record<HostTermType, { title: string; sections: { heading: str
     ]
   }
 };
-
-export default function HostTermsModal({ type, isOpen, isChecked, onClose, onAgree }: HostTermsModalProps) {
-  if (!isOpen) return null;
-
-  const data = TERMS_DATA[type];
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      onAgree(type);
-    }
-  };
-
-  return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h3 className={styles.modalTitle}>{data.title}</h3>
-          <button type="button" className={styles.closeButton} onClick={onClose}>
-            &times;
-          </button>
-        </div>
-
-        <div className={styles.modalBody}>
-          {data.sections.map((section, idx) => (
-            <div key={idx} className={styles.termSection}>
-              <h4 className={styles.termHeading}>{section.heading}</h4>
-              {section.body.map((paragraph, pIdx) => (
-                <p key={pIdx} className={styles.termParagraph}>{paragraph}</p>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        <div className={styles.modalFooter}>
-          <Checkbox
-            checked={isChecked}
-            onChange={handleCheckboxChange}
-            label={<span className={styles.footerLabel}>위 약관에 동의합니다.</span>}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
