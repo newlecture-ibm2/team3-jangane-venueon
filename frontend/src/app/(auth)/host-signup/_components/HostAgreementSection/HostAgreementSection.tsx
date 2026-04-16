@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Checkbox from "@/components/ui/Checkbox";
-import HostTermsModal, { HostTermType } from "../HostTermsModal/HostTermsModal";
+import TermsModal, { TermType as HostTermType } from "../../../_components/TermsModal";
 import styles from "./HostAgreementSection.module.css";
 
 export interface HostAgreementState {
@@ -124,7 +124,7 @@ export default function HostAgreementSection({ agreements, onChange }: HostAgree
         </div>
       </div>
 
-      <HostTermsModal
+      <TermsModal
         type={modalType || "termsOfService"}
         isOpen={modalType !== null}
         isChecked={modalType ? agreements[modalType] : false}
