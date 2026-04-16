@@ -35,6 +35,8 @@ public interface OrderRepositoryPort {
 
     long countCompletedByUserId(Long userId);
 
+    long countCompletedWithoutReviewByUserId(Long userId);
+
     List<Order> findAllValidOrdersByUserId(Long userId);
 
     boolean existsByUserIdAndEventIdAndStatusIn(Long userId, Long eventId, List<OrderStatus> statuses);

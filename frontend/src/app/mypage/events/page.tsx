@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Tabs, Pagination } from '@/components/ui';
 import { ReviewModal } from '@/components/modal';
@@ -18,6 +18,8 @@ const TAB_OPTIONS = [
 
 export default function MyPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') || undefined;
   const [categoryMap, setCategoryMap] = useState<Record<number, string>>({});
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export default function MyPage() {
     openReviewModal,
     closeReviewModal,
     handleReviewSuccess,
-  } = useEvents();
+  } = useEvents(initialTab);
 
   return (
     <div className="container-sidebar">
