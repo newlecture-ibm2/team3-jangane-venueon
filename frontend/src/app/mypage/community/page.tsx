@@ -49,13 +49,13 @@ export default function MyCommunityPage() {
 
             {/* participating 탭이면 CommunityListCard(커뮤니티 페이지와 동일), post_bookmark 탭이면 수직 리스트 */}
             {activeTab === 'post_bookmark' ? (
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div className={styles.postListContainer}>
                 {isLoading ? (
-                  <div style={{ padding: 'var(--space-48)', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
+                  <div className={styles.emptyState}>
                     불러오는 중...
                   </div>
                 ) : communityList.length === 0 ? (
-                  <div style={{ padding: 'var(--space-48)', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
+                  <div className={styles.emptyState}>
                     해당 항목이 없습니다.
                   </div>
                 ) : (
@@ -77,11 +77,11 @@ export default function MyCommunityPage() {
             ) : (
               <CardGrid layout="2-cols">
                 {isLoading ? (
-                  <div style={{ gridColumn: '1 / -1', padding: 'var(--space-48)', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
+                  <div className={styles.emptyStateGrid}>
                     불러오는 중...
                   </div>
                 ) : communityList.length === 0 ? (
-                  <div style={{ gridColumn: '1 / -1', padding: 'var(--space-48)', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
+                  <div className={styles.emptyStateGrid}>
                     해당 항목이 없습니다.
                   </div>
                 ) : (

@@ -24,3 +24,21 @@
 .searchBar {
   width: 410px;
 }
+
+.postListContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.emptyState {
+  padding: var(--space-48);
+  text-align: center;
+  color: var(--color-text-gray-500);
+}
+
+.emptyStateGrid {
+  grid-column: 1 / -1;
+  padding: var(--space-48);
+  text-align: center;
+  color: var(--color-text-gray-500);
+}
