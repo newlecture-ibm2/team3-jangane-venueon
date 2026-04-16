@@ -109,6 +109,7 @@
   align-items: center;
   padding: var(--space-12) var(--space-16);
   width: 100%;
+  max-width: 410px; /* 데스크톱 기본 최대 410px 고정, 좁아지면 자연스레 100%로 쭈그러듦 */
   height: 48px;
   background: #F9FAFB; /* Gray/50 */
   border: 1px solid var(--color-text-gray-300);

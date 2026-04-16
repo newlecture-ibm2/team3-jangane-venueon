@@ -3,7 +3,7 @@
 .content {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch; /* 테이블/카드 등이 쪼그라들지 않도록 꽉 채움 */
   gap: var(--space-32);
   width: 100%;
 }
@@ -48,11 +48,16 @@
 .tableSection {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch; /* 테이블이 축소되지 않고 영역을 꽉 채우게 함 */
   gap: var(--space-24);
   align-self: stretch;
 }
 
-.searchBar {
-  width: 410px;
+/* ── MyPage Content Responsive (Max 768px) ── */
+@media (max-width: 768px) {
+  .summaryContainer {
+    display: grid;
+    grid-template-columns: 1fr; /* 1줄에 1개씩 꽉 채우기 */
+    gap: var(--space-16);
+  }
 }

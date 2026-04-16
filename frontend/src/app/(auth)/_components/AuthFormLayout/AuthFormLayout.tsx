@@ -52,7 +52,7 @@ export default function AuthFormLayout({
 
         {error && <div className={styles.error}>{error}</div>}
 
-        <Button type="submit" className={styles.submitButton} disabled={loading}>
+        <Button type="submit" className={styles.submitButton} disabled={loading} size="large" fullWidth>
           {loading ? loadingText : submitText}
         </Button>
       </form>

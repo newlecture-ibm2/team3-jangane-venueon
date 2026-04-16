@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
-import { Card, CardGrid, Pagination, InputField } from '@/components/ui';
+import { Card, CardGrid, Pagination } from '@/components/ui';
 import styles from './page.module.css';
 import { useWishlist } from './useWishlist';
 
@@ -32,10 +32,7 @@ export default function WishlistPage() {
           <h1 className={styles.pageTitle}>찜 목록</h1>
 
           <div className={styles.listSection}>
-            <InputField
-              variant="search"
-              className={styles.searchBar}
-            />
+
 
             <CardGrid layout="2-cols">
               {lectures.map((lecture) => (

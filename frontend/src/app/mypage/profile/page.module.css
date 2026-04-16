@@ -158,3 +158,32 @@
 .categoryPillActive:hover {
   background: var(--color-primary-hover);
 }
+
+/* ── Mobile Responsive (Max 768px) ── */
+@media (max-width: 768px) {
+  .actionButtons {
+    flex-direction: column;
+  }
+  
+  .actionButtons > button {
+    width: 100% !important;
+  }
+
+  .formGroup {
+    max-width: 100%;
+  }
+
+  .imageRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .imageButtons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .imageButtons > button {
+    width: 100% !important;
+  }
+}

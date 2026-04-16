@@ -12,6 +12,8 @@ interface ToastState {
 interface UIStore extends ToastState {
   showToast: (message: string, type?: ToastType, subtitle?: string) => void;
   hideToast: () => void;
+  isSidebarDrawerOpen: boolean;
+  setSidebarDrawerOpen: (isOpen: boolean) => void;
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -32,4 +34,6 @@ export const useUIStore = create<UIStore>((set) => ({
     }, 3000);
   },
   hideToast: () => set({ isToastOpen: false }),
+  isSidebarDrawerOpen: false,
+  setSidebarDrawerOpen: (isOpen) => set({ isSidebarDrawerOpen: isOpen }),
 }));

@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import styles from './Sidebar.module.css';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useAuth } from '@/store/useAuthStore';
+import { useUIStore } from '@/store/useUIStore';
 
 import {
   DashboardIcon,
@@ -80,6 +81,7 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
 }
 
 function SidebarContent({ role = 'user', className = '', fakePathname }: SidebarProps) {
+  const { isSidebarDrawerOpen, setSidebarDrawerOpen } = useUIStore();
   const actualPathname = usePathname() || '';
   const pathname = fakePathname || actualPathname;
   const searchParams = useSearchParams();
@@ -144,12 +146,24 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
   };
 
   const menus = getMenus();
+  const isMypageDrawer = pathname.startsWith('/mypage');
 
   return (
-    <aside
-      className={`${styles.sidebar} ${className}`.trim()}
-      style={{ height: 'calc(100vh - 40px)' }}
-    >
+    <>
+      {isMypageDrawer && (
+        <div 
+          className={`${styles.drawerOverlay} ${isSidebarDrawerOpen ? styles.drawerOpen : ''}`} 
+          onClick={() => setSidebarDrawerOpen(false)} 
+        />
+      )}
+
+      <aside
+        className={`${styles.sidebar} ${isMypageDrawer ? styles.mypageDrawer : ''} ${isSidebarDrawerOpen ? styles.drawerOpen : ''} ${className}`.trim()}
+        style={{ height: 'calc(100vh - 40px)' }}
+      >
+        {isMypageDrawer && (
+          <button className={styles.closeBtn} onClick={() => setSidebarDrawerOpen(false)}>✕</button>
+        )}
       {menus.map((menu) => {
         let isActive = false;
 
@@ -184,16 +198,17 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
           />
         );
       })}
-
-      <ConfirmModal
-        isOpen={isLogoutModalOpen}
-        onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={handleLogoutConfirm}
-        title="로그아웃 하시겠습니까?"
-        cancelText="취소"
-        confirmText="로그아웃"
-      />
     </aside>
+
+    <ConfirmModal
+      isOpen={isLogoutModalOpen}
+      onClose={() => setIsLogoutModalOpen(false)}
+      onConfirm={handleLogoutConfirm}
+      title="로그아웃 하시겠습니까?"
+      cancelText="취소"
+      confirmText="로그아웃"
+    />
+    </>
   );
 }
 

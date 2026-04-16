@@ -40,3 +40,6 @@ export { default as ReviewStarIcon } from './ReviewStarIcon';
 export { default as RequestIcon } from './RequestIcon';
 export { default as ContactIcon } from './ContactIcon';
 export { default as BadgeIcon } from './BadgeIcon';
+export { default as CartIcon } from './CartIcon';
+export { default as AdminIcon } from './AdminIcon';
+export { default as HeaderCommunityIcon } from './HeaderCommunityIcon';

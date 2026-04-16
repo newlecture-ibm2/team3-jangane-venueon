@@ -33,3 +33,11 @@
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-md);
 }
+
+/* ── Mobile Responsive (Max 768px) ── */
+@media (max-width: 768px) {
+  .badgeGrid {
+    grid-template-columns: 1fr; /* 줄바꿈 시 한 줄에 1개 뱃지만 표시 */
+    gap: var(--space-24);
+  }
+}

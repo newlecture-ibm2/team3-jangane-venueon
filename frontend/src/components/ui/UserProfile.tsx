@@ -6,13 +6,15 @@ export interface UserProfileProps {
   imageUrl?: string; // 이미지가 없을 경우를 대비해 optional 처리
   size?: 'large' | 'medium';
   className?: string;
+  showName?: boolean;
 }
 
 export default function UserProfile({ 
   name, 
   imageUrl, 
   size = 'large', 
-  className = '' 
+  className = '',
+  showName = true
 }: UserProfileProps) {
   
   const sizeClass = size === 'large' ? styles.large : styles.medium;
@@ -32,7 +34,7 @@ export default function UserProfile({
           </span>
         )}
       </div>
-      <span className={styles.userName}>{name}</span>
+      {showName && <span className={styles.userName}>{name}</span>}
     </div>
   );
 }
