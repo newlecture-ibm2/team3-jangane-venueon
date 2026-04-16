@@ -107,8 +107,12 @@ export default function Header({
   // Mypage, Host, Admin 페이지에서 사이드바(드로어) 토글 버튼 노출
   const hasSidebar = pathname?.startsWith('/mypage') || pathname?.startsWith('/host') || pathname?.startsWith('/admin');
 
+  // 메인 페이지만 fixed, 나머지는 레이아웃 깨짐 방지를 위해 sticky 적용
+  const isMainPage = pathname === '/';
+  const positionClass = isMainPage ? styles.fixedHeader : styles.stickyHeader;
+
   return (
-    <header className={`${styles.header} ${className}`.trim()}>
+    <header className={`${styles.header} ${positionClass} ${className}`.trim()}>
       <div className={styles.leftSection}>
         {hasSidebar && (
           <button className={styles.mobileHamburgerBtn} onClick={() => setSidebarDrawerOpen(true)}>

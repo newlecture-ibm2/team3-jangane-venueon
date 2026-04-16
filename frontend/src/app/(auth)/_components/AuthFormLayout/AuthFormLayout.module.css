@@ -1,5 +1,5 @@
 .container {
-  padding: 100px 20px 40px; /* fixed 헤더(60px) 고려하여 상단 패딩 증가 */
+  padding: 40px 20px;
   max-width: 440px;
   width: 100%;
   margin: 0 auto;
