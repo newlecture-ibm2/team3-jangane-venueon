@@ -58,7 +58,7 @@ export const PostListSection = () => {
               return;
             }
             if (!canWrite) {
-              showToast('권한이 없습니다.', 'error', '해당 이벤트를 수료한 사용자만 글을 작성할 수 있습니다.');
+              showToast('뱃지를 발급받아야 글을 쓸 수 있습니다.', 'error');
               return;
             }
             router.push(`/community/${communityId}/write`);

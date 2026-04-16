@@ -54,7 +54,7 @@ export default async function CommunityDetailPage({ params }: Props) {
       <CommunityDetailHeader name={communityName} description={communityDesc} canManage={canManage} />
 
       {/* 2단 분할: 좌측 리스트 + 우측 상세 */}
-      <CommunityBoard communityId={id} canManage={canManage} canWrite={canWrite} />
+      <CommunityBoard communityId={id} canManage={canManage} canWrite={canWrite} isLoggedIn={!!session.jwt} />
     </div>
   );
 }

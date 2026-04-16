@@ -3,7 +3,6 @@
 import React, { createContext, useContext } from 'react';
 import { useCommunityPosts } from './useCommunityPosts';
 import { useCommunityComments } from './useCommunityComments';
-import { useAuth } from '@/store/useAuthStore';
 import { PostListSection } from './_components/PostListSection/PostListSection';
 import { PostDetailSection } from './_components/PostDetailSection/PostDetailSection';
 import styles from './CommunityBoard.module.css';
@@ -32,10 +31,10 @@ interface Props {
   communityId: string;
   canManage: boolean;
   canWrite: boolean;
+  isLoggedIn: boolean;
 }
 
-export default function CommunityBoard({ communityId, canManage, canWrite }: Props) {
-  const { isLoggedIn } = useAuth();
+export default function CommunityBoard({ communityId, canManage, canWrite, isLoggedIn }: Props) {
   const postsData = useCommunityPosts({ communityId });
   const commentsData = useCommunityComments({ selectedPostId: postsData.selectedPostId });
 
