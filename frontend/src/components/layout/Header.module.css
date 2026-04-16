@@ -1,5 +1,4 @@
 .header {
-  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -25,6 +24,14 @@
   /* 상단 보더만 제외 */
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
+}
+
+.stickyHeader {
+  position: sticky;
+}
+
+.fixedHeader {
+  position: fixed;
 }
 
 .leftSection {
