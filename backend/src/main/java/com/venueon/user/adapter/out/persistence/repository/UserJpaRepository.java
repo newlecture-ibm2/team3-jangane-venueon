@@ -38,4 +38,8 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
                                              @Param("active") Boolean active,
                                              @Param("hasActive") boolean hasActive,
                                              Pageable pageable);
+
+    long countByRoleId(Long roleId);
+
+    long countByRoleIdAndCreatedAtAfter(Long roleId, java.time.LocalDateTime createdAt);
 }

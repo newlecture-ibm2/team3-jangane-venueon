@@ -203,4 +203,9 @@ public class EventPersistenceAdapter implements EventRepositoryPort {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+
+    @Override
+    public long countByCreatedAtAfter(java.time.LocalDateTime dateTime) {
+        return eventJpaRepository.countByCreatedAtAfter(dateTime);
+    }
 }

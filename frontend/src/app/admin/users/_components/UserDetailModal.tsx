@@ -5,7 +5,7 @@ import styles from './UserDetailModal.module.css';
 import { ModalOverlay, ModalCard } from '@/components/modal';
 import { InputField, Button, Dropdown } from '@/components/ui';
 import { CancelIcon } from '@/components/icons';
-import { adminUserAPI, type AdminUserDetail } from '@/lib/admin-api';
+import { adminUserAPI, type AdminUserDetail, formatImageUrl } from '@/lib/admin-api';
 
 interface UserDetailModalProps {
   isOpen: boolean;
@@ -111,9 +111,13 @@ export default function UserDetailModal({ isOpen, userId, onClose, onUpdated }: 
           <div className={styles.contentScroll}>
             {/* 프로필 이미지 */}
             <div className={styles.profilePicture}>
-               <span style={{ color: 'white', fontWeight: 'bold', fontSize: '32px' }}>
-                 {user.nickname ? user.nickname.charAt(0) : 'U'}
-               </span>
+              {user.profileImg ? (
+                <img src={formatImageUrl(user.profileImg)} alt={user.nickname} className={styles.detailAvatarImg} />
+              ) : (
+                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '32px' }}>
+                  {user.nickname ? user.nickname.charAt(0) : 'U'}
+                </span>
+              )}
             </div>
 
             <div className={styles.fieldsContainer}>

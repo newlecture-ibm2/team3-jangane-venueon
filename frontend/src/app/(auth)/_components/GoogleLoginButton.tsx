@@ -39,7 +39,7 @@ function GoogleLoginButtonContent({ position = "bottom", redirectTo }: GoogleLog
         showToast("구글 로그인 성공!", "success");
         const explicitRedirect = redirectTo || searchParams.get("redirect");
         const roleId = result.user?.role?.id;
-        const defaultRedirect = roleId === 1 ? "/admin/dashboard" : roleId === 3 ? "/host" : "/";
+        const defaultRedirect = roleId === 1 ? "/admin" : roleId === 3 ? "/host" : "/";
         const nextUrl = explicitRedirect || defaultRedirect;
         router.push(nextUrl);
         router.refresh();

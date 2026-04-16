@@ -108,12 +108,11 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
     switch (role) {
       case 'admin':
         return [
-          { label: '대시보드', href: '/admin/dashboard', icon: DashboardIcon },
+          { label: '대시보드', href: '/admin', icon: DashboardIcon },
           { label: '사용자 관리', href: '/admin/users', icon: ProfileIcon },
           { label: '시스템 설정', href: '/admin/settings', icon: SettingIcon },
           { label: '이벤트 관리', href: '/admin/events', icon: SeminarSettingIcon },
           { label: '커뮤니티 관리', href: '/admin/community', icon: CommunityIcon },
-          { label: '신고 관리', href: '/admin/reports', icon: ReportIcon },
           { label: '문의 관리', href: '/admin/contact', icon: RequestIcon },
           { label: '로그아웃', href: '/logout', icon: LogoutIcon },
         ];
@@ -153,7 +152,7 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
     >
       {menus.map((menu) => {
         let isActive = false;
-        
+
         // 커뮤니티 페이지 특수 활성화 로직
         if (pathname === '/community') {
           if (menu.href === '/community?tab=joined') {
@@ -163,12 +162,13 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
           }
         } else {
           // 일반 활성화 로직
-          // 대시보드 등 최상위 메뉴는 정확히 일치할 때만 활성화 (하위 경로 진입 시 중복 활성화 방지)
-          if (menu.href === '/host' || menu.href === '/mypage' || menu.href === '/admin/dashboard') {
-            isActive = pathname === menu.href;
-          } else {
-            isActive = pathname === menu.href || (menu.href !== '/' && pathname.startsWith(`${menu.href}/`));
-          }
+          isActive = pathname === menu.href || (
+            menu.href !== '/' && 
+            menu.href !== '/admin' && 
+            menu.href !== '/host' && 
+            menu.href !== '/mypage' && 
+            pathname.startsWith(`${menu.href}/`)
+          );
         }
 
         const isLogout = menu.href === '/logout';
