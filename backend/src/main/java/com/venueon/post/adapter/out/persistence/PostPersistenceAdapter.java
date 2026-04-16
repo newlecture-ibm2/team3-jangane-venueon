@@ -161,6 +161,11 @@ public class PostPersistenceAdapter implements PostRepositoryPort {
         postJpaRepository.deleteById(id);
     }
 
+    @Override
+    public java.time.LocalDateTime findLatestPostDateByCommunityId(Long communityId) {
+        return postJpaRepository.findMaxCreatedAtByCommunityId(communityId);
+    }
+
     private Post mapToDomain(PostJpaEntity entity) {
         return Post.builder()
                 .id(entity.getId())

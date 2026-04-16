@@ -9,6 +9,7 @@ interface CommunityItem {
   creatorNickname: string;
   eventName: string | null;
   createdAt: string;
+  lastPostCreatedAt?: string;
 }
 
 export function useAdminCommunity() {

@@ -96,6 +96,14 @@ public class AdminPostPersistenceAdapter implements AdminPostRepositoryPort {
     }
 
     @Override
+    public java.time.LocalDateTime findLatestPostDateByCommunityId(Long communityId) {
+        String jpql = "SELECT MAX(p.createdAt) FROM PostJpaEntity p WHERE p.community.id = :communityId";
+        return em.createQuery(jpql, java.time.LocalDateTime.class)
+                .setParameter("communityId", communityId)
+                .getSingleResult();
+    }
+
+    @Override
     @Transactional
     public void deletePost(Long id) {
         // 연관 데이터 정리 후 삭제 (기존 PostPersistenceAdapter.delete 로직과 동일)

@@ -12,6 +12,7 @@ interface CommunityItem {
   creatorNickname: string;
   eventName: string | null;
   createdAt: string;
+  lastPostCreatedAt?: string;
 }
 
 interface CommunityListProps {
@@ -36,9 +37,11 @@ export default function CommunityList({ pagedItems, isLoading }: CommunityListPr
             <CommunityCard
               key={item.id}
               title={item.name}
-              postType={item.eventName || '일반 커뮤니티'}
-              timeAgo={item.createdAt ? format(new Date(item.createdAt), 'yyyy.MM.dd') : '—'}
-              keywords={item.description ? item.description.split(' ').slice(0, 3) : ['커뮤니티']}
+              category={item.eventName || '일반 커뮤니티'}
+              createdAt={item.lastPostCreatedAt || item.createdAt}
+              organizer={item.creatorNickname}
+              dateTime={format(new Date(item.createdAt), 'yyyy.MM.dd')}
+              location={item.eventName ? '이벤트 연동 장소' : '온라인 커뮤니티'}
               actionButtonText="관리하기"
               onActionClick={() => router.push(`/community/${item.id}`)}
             />

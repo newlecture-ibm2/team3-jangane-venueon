@@ -10,7 +10,11 @@ interface CommunityItem {
   memberCount: number;
   creatorNickname: string;
   createdAt: string;
+  lastPostCreatedAt?: string;
   canManage: boolean;
+  eventName?: string;
+  eventCategory?: string;
+  eventLocation?: string;
 }
 
 interface PageData {
@@ -35,6 +39,7 @@ export function useCommunityList() {
 
   useEffect(() => {
     setActiveTab(tabParam === 'joined' ? 'joined' : 'all');
+    setCurrentPage(1); // 탭 전환 시 페이지 1로 초기화
   }, [tabParam]);
 
   const checkBadges = async () => {

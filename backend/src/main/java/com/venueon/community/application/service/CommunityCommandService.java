@@ -79,9 +79,13 @@ public class CommunityCommandService implements CreateCommunityUseCase, UpdateCo
                 saved.isPublic(),
                 saved.getCreatorNickname(),
                 saved.getCreatedAt(),
+                saved.getCreatedAt(), // lastPostCreatedAt 초기값은 생성일과 동일
                 true,
                 true,
-                saved.getType()
+                saved.getType(),
+                null,       // eventName
+                "일반",      // eventCategory
+                "상세 정보 참조" // eventLocation
         );
     }
 
@@ -128,9 +132,13 @@ public class CommunityCommandService implements CreateCommunityUseCase, UpdateCo
                 saved.isPublic(),
                 saved.getCreatorNickname(),
                 saved.getCreatedAt(),
+                saved.getCreatedAt(), // lastPostCreatedAt 초기물은 생성시간
                 true,
                 true,
-                saved.getType()
+                saved.getType(),
+                null,       // eventName
+                "일반",      // eventCategory
+                "상세 정보 참조" // eventLocation
         );
     }
 }

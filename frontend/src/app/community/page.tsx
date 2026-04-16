@@ -58,13 +58,12 @@ function CommunityListContent() {
               {communities.map((community) => (
                 <CommunityCard
                   key={community.id}
-                  postType={community.memberCount > 5 ? "인기 커뮤니티" : "새로운 커뮤니티"}
-                  timeAgo={new Date(community.createdAt).toLocaleDateString()}
+                  category={community.eventCategory || (community.memberCount > 5 ? "인기 커뮤니티" : "새로운 커뮤니티")}
+                  createdAt={community.lastPostCreatedAt || community.createdAt}
                   title={community.name}
-                  keywords={[
-                    community.creatorNickname,
-                    `${community.memberCount}명 참여 중`
-                  ]}
+                  organizer={community.creatorNickname}
+                  dateTime={new Date(community.createdAt).toLocaleDateString()}
+                  location={community.eventLocation || "커뮤니티 광장"}
                   actionButtonText="커뮤니티 입장하기"
                   onActionClick={() => window.location.href = `/community/${community.id}`}
                 />

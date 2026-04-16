@@ -120,7 +120,10 @@ public class AdminCommunityService implements
     @Override
     public List<AdminCommunityListResponse> getCommunities() {
         return adminCommunityRepositoryPort.findAllCommunities().stream()
-                .map(AdminCommunityListResponse::from)
+                .map(entity -> {
+                    java.time.LocalDateTime lastPostDate = adminPostRepositoryPort.findLatestPostDateByCommunityId(entity.getId());
+                    return AdminCommunityListResponse.from(entity, lastPostDate);
+                })
                 .collect(Collectors.toList());
     }
 }

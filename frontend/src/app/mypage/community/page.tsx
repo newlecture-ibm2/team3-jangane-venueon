@@ -61,13 +61,12 @@ export default function MyCommunityPage() {
                 {items.map((community: any) => (
                   <CommunityCard
                     key={community.id}
-                    postType={community.memberCount > 5 ? '인기 커뮤니티' : '일반 커뮤니티'}
-                    timeAgo={`생성일: ${formatDate(community.createdAt)}`}
+                    category={community.eventCategory || (community.memberCount > 5 ? '인기 커뮤니티' : '일반 커뮤니티')}
+                    createdAt={community.lastPostCreatedAt || community.createdAt}
                     title={community.name}
-                    keywords={[
-                      ...(community.creatorNickname ? [`주최자: ${community.creatorNickname}`] : []),
-                      `멤버: ${community.memberCount || 0}명`
-                    ]}
+                    organizer={community.creatorNickname}
+                    dateTime={new Date(community.createdAt).toLocaleDateString()}
+                    location={community.eventLocation || "상세 정보 참조"}
                     actionButtonText="커뮤니티 입장하기"
                     onActionClick={() => router.push(`/community/${community.id}`)}
                   />
