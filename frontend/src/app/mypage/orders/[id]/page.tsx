@@ -1,84 +1,23 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import React from 'react';
 import Sidebar from '@/components/layout/Sidebar';
-import { Button, StatusTag, Toast } from '@/components/ui';
+import { Button, StatusTag } from '@/components/ui';
 import RefundModal from '../components/RefundModal';
 import mypageStyles from '../../page.module.css';
 import styles from './page.module.css';
-import { useUIStore } from '@/store/useUIStore';
-
-// 백엔드 API 응답 타입 (OrderController.OrderDetailResponse)
-interface OrderDetailResponse {
-  orderId: number;
-  eventId: number;
-  eventTitle: string;
-  ticketName: string;
-  ticketPrice: number;
-  status: string;
-  quantity: number;
-  amount: number;
-  paymentMethod: string;
-  orderedAt: string;
-  paidAt: string | null;
-}
+import { useOrderDetail } from './useOrderDetail';
+import { OnlineSessionCard } from './_components/OnlineSessionCard';
 
 export default function OrderDetailPage() {
-  const router = useRouter();
-  const params = useParams();
-  const { showToast } = useUIStore();
-  const orderId = params.id as string;
-
-  const [order, setOrder] = useState<OrderDetailResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
-
-  const fetchOrderDetail = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/orders/${orderId}`);
-      if (res.ok) {
-        const json = await res.json();
-        setOrder(json.data);
-      } else {
-        showToast('오류', 'error', '결제 상세 내역을 불러오는데 실패했습니다.');
-        router.push('/mypage/orders');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('오류', 'error', '오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [orderId, router]);
-
-  useEffect(() => {
-    fetchOrderDetail();
-  }, [fetchOrderDetail]);
-
-  const submitRefund = async (reason: string) => {
-    try {
-      const res = await fetch(`/api/orders/${orderId}/refund`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ reason })
-      });
-
-      if (res.ok) {
-        showToast('환불 제출 완료', 'success', '환불 신청이 완료되었습니다.');
-        setIsRefundModalOpen(false);
-        fetchOrderDetail(); // 데이터 리프레시
-      } else {
-        const errorData = await res.json();
-        showToast('환불 신청 실패', 'error', errorData.message || '환불 신청 중 오류가 발생했습니다.');
-      }
-    } catch (e) {
-      console.error(e);
-      showToast('통신 오류', 'error', '서버와의 통신에 실패했습니다.');
-    }
-  };
+  const {
+    order,
+    loading,
+    isRefundModalOpen,
+    setIsRefundModalOpen,
+    submitRefund,
+    router
+  } = useOrderDetail();
 
   if (loading) {
     return (
@@ -99,8 +38,6 @@ export default function OrderDetailPage() {
       hour: '2-digit', minute: '2-digit'
     });
   };
-
-  // getStatusTag는 공통 StatusTag를 사용하므로 제거
 
   const canRefund = order.status === 'PAID' || order.status === 'REGISTERED';
 
@@ -147,7 +84,17 @@ export default function OrderDetailPage() {
               </div>
             </div>
 
-            {/* 3. 결제 정보 섹션 */}
+            {/* 3. 온라인 세션 정보 섹션 (조건부 노출) */}
+            {order.onlineSessions && order.onlineSessions.length > 0 && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>온라인 세션 입장</h2>
+                {order.onlineSessions.map(session => (
+                  <OnlineSessionCard key={session.sessionId} session={session} />
+                ))}
+              </div>
+            )}
+
+            {/* 4. 결제 정보 섹션 */}
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>결제 정보</h2>
               <div className={styles.row}>

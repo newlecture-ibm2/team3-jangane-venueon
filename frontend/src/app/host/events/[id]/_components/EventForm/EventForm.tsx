@@ -86,6 +86,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     addressDetail: '',
     regionSido: '',
     regionSigungu: '',
+    onlineLink: initialData?.onlineLink || '',
   });
 
   React.useEffect(() => {
@@ -249,26 +250,32 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       if (hasSession && sessions.length > 0) {
         for (let i = 0; i < sessions.length; i++) {
           const session = sessions[i];
-          // 세션 기간: 날짜+시간을 합쳐서 ISO 형식 생성
+          // 세션 기간: 개별 설정이 없으면 공통 설정(formData)으로 폴백
           let startTime = null;
           let endTime = null;
-          if (session.startDate) {
-            startTime = `${session.startDate}T${session.startTimeOnly || '10:00'}:00`;
+          
+          const sDate = session.startDate || formData.startDate;
+          const sTime = session.startDate ? (session.startTimeOnly || '10:00') : (formData.startTimeOnly || '10:00');
+          if (sDate) {
+            startTime = `${sDate}T${sTime}:00`;
           }
-          if (session.endDate) {
-            endTime = `${session.endDate}T${session.endTimeOnly || '18:00'}:00`;
+          
+          const eDate = session.endDate || formData.endDate;
+          const eTime = session.endDate ? (session.endTimeOnly || '18:00') : (formData.endTimeOnly || '18:00');
+          if (eDate) {
+            endTime = `${eDate}T${eTime}:00`;
           }
 
-          // 모집 기간
+          // 모집 기간: 개별 설정이 없으면 공통 설정(formData)으로 폴백
           let recruitStartDate = null;
           let recruitEndDate = null;
+          
           if (session.useRecruitPeriod) {
-            if (session.recruitStartDate) {
-              recruitStartDate = `${session.recruitStartDate}T00:00:00`;
-            }
-            if (session.recruitEndDate) {
-              recruitEndDate = `${session.recruitEndDate}T23:59:00`;
-            }
+            if (session.recruitStartDate) recruitStartDate = `${session.recruitStartDate}T00:00:00`;
+            if (session.recruitEndDate) recruitEndDate = `${session.recruitEndDate}T23:59:00`;
+          } else if (formData.useRecruitPeriod) {
+            if (formData.recruitStartDate) recruitStartDate = `${formData.recruitStartDate}T00:00:00`;
+            if (formData.recruitEndDate) recruitEndDate = `${formData.recruitEndDate}T23:59:00`;
           }
 
           const sessionPayload = {
@@ -282,7 +289,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
             regionSigungu: session.useCustomAddress ? session.regionSigungu : formData.regionSigungu || '강남구',
             addressRoad: session.useCustomAddress ? session.addressRoad : formData.addressRoad || '',
             addressDetail: session.useCustomAddress ? session.addressDetail : formData.addressDetail || '',
-            isOnline: formData.isOnlineStr === 'true',
+            isOnline: hasSession ? session.isOnline : (formData.isOnlineStr === 'true'),
             onlineLink: session.onlineLink || '',
             maxAttendees: Number(session.maxAttendees) || 0,
             recruitStartDate,
@@ -345,7 +352,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               addressRoad: formData.addressRoad || '',
               addressDetail: formData.addressDetail || '',
               isOnline: formData.isOnlineStr === 'true',
-              onlineLink: '',
+              onlineLink: formData.isOnlineStr === 'true' ? formData.onlineLink : '',
               maxAttendees: 0,
               recruitStartDate,
               recruitEndDate,
@@ -520,7 +527,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>세션 제목</label>
+        <label className={styles.label}>이벤트 제목</label>
         <input
           type="text"
           name="title"
@@ -532,7 +539,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>세션 이미지</label>
+        <label className={styles.label}>이벤트 이미지</label>
         {previewUrl ? (
           <div className={styles.previewWrapper}>
             <img src={previewUrl} alt="미리보기" className={styles.previewImage} />
@@ -576,13 +583,13 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
 
       <div className={styles.formGroup}>
         <div className={styles.labelRow}>
-          <label className={styles.label}>세션 정보</label>
+          <label className={styles.label}>이벤트 요약 정보</label>
           <span className={styles.charCount}>{formData.description.length}/300</span>
         </div>
         <textarea
           name="description"
           className={styles.textarea}
-          placeholder="세션 정보를 입력하세요."
+          placeholder="이벤트 요약 정보를 300자 이내로 간략하게 입력하세요."
           maxLength={300}
           value={formData.description}
           onChange={handleChange}
@@ -630,17 +637,6 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         </h3>
 
         <div className={styles.grid2}>
-
-          <div className={styles.formGroup} style={{ display: hasSession ? 'block' : 'none' }}>
-            <label className={styles.label}>{hasSession ? '기본 날짜' : '날짜'}</label>
-            <input
-              type="date"
-              name="date"
-              className={styles.dateInput}
-              value={formData.startDate}
-              onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
-            />
-          </div>
 
           <div className={styles.formGroup}>
             <label className={styles.label}>온라인/오프라인</label>
@@ -717,13 +713,30 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               value="온라인 진행"
               disabled
             />
+            {!hasSession && (
+              <div style={{ marginTop: '0.75rem' }}>
+                <label className={styles.label}>
+                  온라인 접속 링크
+                  <span style={{ fontWeight: 'normal', color: '#666', fontSize: '0.8rem', marginLeft: '0.5rem' }}>
+                    (구매 완료 고객에게만 공개됩니다)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  name="onlineLink"
+                  className={styles.standardInput}
+                  placeholder="Zoom, Google Meet 등 접속 링크를 입력해주세요"
+                  value={formData.onlineLink}
+                  onChange={handleChange}
+                />
+              </div>
+            )}
           </div>
         )}
 
-        {/* ── 단일 이벤트 세션 기간 설정 (복합세션과 동일 패턴) ── */}
-        {!hasSession && (
-          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid #ddd' }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#333', marginBottom: '0.75rem' }}>📅 이벤트 기간 <span style={{ fontWeight: 'normal', color: '#999', fontSize: '0.75rem' }}>미설정 시 호스트가 수동으로 시작/종료 관리</span></div>
+        {/* ── 공통 날짜/기간 설정 ── */}
+        <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid #ddd' }}>
+          <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#333', marginBottom: '0.75rem' }}>📅 {hasSession ? '공통 이벤트 기간' : '이벤트 기간'} <span style={{ fontWeight: 'normal', color: '#999', fontSize: '0.75rem' }}>미설정 시 개별 세션에서 설정하거나 수동으로 시작/종료 관리</span></div>
             <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '1.5rem', background: '#fff', padding: '1rem', borderRadius: '4px', border: '1px solid #e5e5e5' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>시작 날짜</label>
@@ -810,7 +823,6 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
               </div>
             )}
           </div>
-        )}
 
       </div>
 

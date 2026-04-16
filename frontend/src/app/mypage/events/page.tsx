@@ -78,14 +78,18 @@ export default function MyPage() {
                   price={lecture.price}
                   onCardClick={() => router.push(`/events/${lecture.eventId}`)}
                   actionButtonText={
-                    canWriteReview(lecture.eventId) 
-                      ? '리뷰 작성하기' 
-                      : activeTab === 'enrolled' 
-                        ? '입장하기' 
-                        : '상세 보기'
+                    lecture.hasOnlineSessions 
+                      ? '온라인 입장'
+                      : canWriteReview(lecture.eventId) 
+                        ? '리뷰 작성하기' 
+                        : activeTab === 'enrolled' 
+                          ? '입장하기' 
+                          : '상세 보기'
                   }
                   onActionClick={() => {
-                    if (canWriteReview(lecture.eventId)) {
+                    if (lecture.hasOnlineSessions) {
+                      router.push(`/mypage/orders/${lecture.orderId}`);
+                    } else if (canWriteReview(lecture.eventId)) {
                       openReviewModal(lecture.eventId, lecture.title);
                     } else {
                       router.push(`/events/${lecture.eventId}`);

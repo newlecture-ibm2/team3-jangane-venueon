@@ -431,6 +431,11 @@ public class OrderService {
                         .orElse(null);
             }
 
+            // 온라인 세션 존재 여부 (런타임 계산, DB 컬럼 아님)
+            final List<com.venueon.event.domain.model.Session> finalTargetSessions = orderEvent != null ? (order.getTicketId() != null ? ticketRepositoryPort.findById(order.getTicketId()).map(this::resolveTicketSessions).orElse(sessionPort.findByEventId(orderEvent.getId())) : sessionPort.findByEventId(orderEvent.getId())) : List.of();
+            boolean hasOnline = finalTargetSessions.stream()
+                    .anyMatch(s -> s.getIsOnline() && s.getOnlineLink() != null && !s.getOnlineLink().isBlank());
+
             return OrderSummaryResponse.builder()
                     .orderId(order.getId())
                     .tossOrderId(order.getTossOrderId())
@@ -449,6 +454,7 @@ public class OrderService {
                     .amount(order.getAmount())
                     .thumbnailUrl(orderEvent != null ? orderEvent.getThumbnailUrl() : null)
                     .categoryId(orderEvent != null ? orderEvent.getCategoryId() : null)
+                    .hasOnlineSessions(hasOnline)
                     .build();
         }).collect(Collectors.toList());
 
@@ -585,11 +591,32 @@ public class OrderService {
         // 티켓 정보 조회
         String ticketName = "-";
         int ticketPrice = 0;
+        List<OrderDetailResponse.OnlineSessionInfo> onlineSessions = List.of();
+
         if (order.getTicketId() != null) {
             Ticket ticket = ticketRepositoryPort.findById(order.getTicketId()).orElse(null);
             if (ticket != null) {
                 ticketName = ticket.getName();
                 ticketPrice = ticket.getPrice();
+
+                // 온라인 세션 정보 조회 (구매자 전용)
+                List<Session> sessions = resolveTicketSessions(ticket);
+                LocalDateTime now = LocalDateTime.now();
+                onlineSessions = sessions.stream()
+                        .filter(Session::getIsOnline)
+                        .filter(s -> s.getOnlineLink() != null && !s.getOnlineLink().isBlank())
+                        // 종료된 세션 제외: endTime이 지난 세션은 응답에 포함하지 않음
+                        .filter(s -> s.getEndTime() == null || !now.isAfter(s.getEndTime()))
+                        .map(s -> OrderDetailResponse.OnlineSessionInfo.builder()
+                                .sessionId(s.getId())
+                                .title(s.getTitle())
+                                .startTime(s.getStartTime())
+                                .endTime(s.getEndTime())
+                                .onlineLink(s.getOnlineLink())
+                                .isLive(s.getStartTime() != null && s.getEndTime() != null
+                                        && now.isAfter(s.getStartTime()) && now.isBefore(s.getEndTime()))
+                                .build())
+                        .toList();
             }
         }
 
@@ -608,6 +635,7 @@ public class OrderService {
                 .organizer(organizer)
                 .location(location)
                 .eventStatus(event != null && event.getStatus() != null ? com.venueon.common.dto.CodeDto.of(event.getStatus().id(), event.getStatus().label()) : com.venueon.common.dto.CodeDto.of(com.venueon.common.model.CodeConstants.EVENT_STATUS_DRAFT_ID, "임시저장"))
+                .onlineSessions(onlineSessions)
                 .build();
     }
 
