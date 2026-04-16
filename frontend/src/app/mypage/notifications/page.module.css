@@ -1,0 +1,14 @@
+/* src/app/mypage/notifications/page.module.css */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-32);
+  width: 100%;
+}
+
+.pageTitle {
+  font: var(--text-h1-bold);
+  color: var(--color-text-gray-900);
+}

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Pagination, InputField } from '@/components/ui';
-import styles from '../events/page.module.css';
+import styles from './page.module.css';
+import { useWishlist } from './useWishlist';
 
 const CATEGORY_MAP: Record<number, string> = {
   1: '디자인',
@@ -14,37 +15,13 @@ const CATEGORY_MAP: Record<number, string> = {
 
 export default function WishlistPage() {
   const router = useRouter();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [lectures, setLectures] = useState<any[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const ITEMS_PER_PAGE = 8;
-  const [loading, setLoading] = useState(false);
-
-  React.useEffect(() => {
-    async function fetchWishlist() {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/wishlists/me?page=${currentPage - 1}&size=${ITEMS_PER_PAGE}`);
-        if (res.ok) {
-          const json = await res.json();
-          setLectures(json.data.content || []);
-          setTotalPages(json.data.totalPages || 1);
-        } else {
-          setLectures([]);
-        }
-      } catch (err) {
-        console.error('Failed to fetch wishlist', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchWishlist();
-  }, [currentPage]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const {
+    currentPage,
+    lectures,
+    totalPages,
+    loading,
+    handlePageChange,
+  } = useWishlist();
 
   return (
     <div className="container-sidebar">
@@ -72,17 +49,17 @@ export default function WishlistPage() {
                   recruitmentStatus={lecture.recruitmentStatus?.label || lecture.recruitmentStatus}
                   title={lecture.title}
                   imageUrl={lecture.thumbnailUrl ? `/upload/${lecture.thumbnailUrl}` : undefined}
-                  organizer={lecture.organizer}
-                  dateTime={lecture.dateTime}
-                  location={lecture.location}
-                  price={lecture.price}
+                  organizer={lecture.organizer || ''}
+                  dateTime={lecture.dateTime || ''}
+                  location={lecture.location || ''}
+                  price={lecture.price ?? 0}
                   onCardClick={() => router.push(`/events/${lecture.id}`)}
                 />
               ))}
             </CardGrid>
 
             {!loading && lectures.length === 0 && (
-              <p style={{ color: 'var(--color-text-gray-500)', textAlign: 'center', width: '100%', padding: 'var(--space-48) 0' }}>
+              <p className={styles.emptyState}>
                 아직 찜한 이벤트가 없습니다.
               </p>
             )}
