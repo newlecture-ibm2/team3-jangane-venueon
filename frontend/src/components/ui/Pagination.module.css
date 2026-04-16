@@ -14,7 +14,7 @@
   padding: var(--space-8) var(--space-16);
   gap: var(--space-12);
   height: 40px;
-  background: var(--color-text-gray-300); /* #D1D5DB */
+  background: transparent;
   border-radius: var(--radius-full);
 }
 
@@ -31,7 +31,7 @@
   border-radius: var(--radius-full);
   border: none;
   background: transparent;
-  color: var(--color-text-gray-900); /* #111827 */
+  color: var(--color-primary);
   font-family: inherit;
   font: var(--text-body-bold); /* 14px */
   cursor: pointer;
@@ -53,6 +53,6 @@
 
 /* state=selected */
 .selected {
-  background: var(--color-text-gray-900); /* #111827 */
+  background: var(--color-primary);
   color: var(--color-text-white); /* #FFFFFF */
 }

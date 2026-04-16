@@ -1,72 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
-import { CardGrid, Pagination, InputField, Tabs } from '@/components/ui';
+import { CardGrid, Pagination, Tabs } from '@/components/ui';
 import CommunityCard from '@/app/community/components/CommunityCard';
+import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 import styles from './page.module.css';
+import { useCommunity } from './useCommunity';
 
 const TAB_OPTIONS = [
   { value: 'participating', label: '참여 중' },
-  { value: 'community_bookmark', label: '커뮤니티 북마크' },
-  { value: 'my_post', label: '내가 쓴 게시물' },
   { value: 'post_bookmark', label: '게시물 북마크' },
 ];
 
-const MOCK_COMMUNITIES = [
-  {
-    id: 1,
-    postType: "프로젝트 모집",
-    timeAgo: "방금 전",
-    title: "함께 사이드 프로젝트 완성할 프론트엔드 개발자 찾습니다 👀",
-    keywords: ['사이드프로젝트', '프론트엔드', '리액트', '주말코딩']
-  },
-  {
-    id: 2,
-    postType: "스터디 모집",
-    timeAgo: "2시간 전",
-    title: "Next.js 14 앱 라우터 뽀개기 스터디 모집",
-    keywords: ['Nextjs', '앱라우터', '스터디', '프론트엔드개발']
-  },
-  {
-    id: 3,
-    postType: "네트워킹",
-    timeAgo: "1일 전",
-    title: "판교 직장인 IT 네트워킹 및 정보 공유 모임",
-    keywords: ['판교', 'IT네트워킹', '직장인모임', '오프라인']
-  },
-  {
-    id: 4,
-    postType: "코드 리뷰",
-    timeAgo: "2일 전",
-    title: "서로 코드리뷰 해주면서 상부상조할 백엔드 개발자 분 모셔요",
-    keywords: ['코드리뷰', '백엔드', 'Java', '스프링부트']
-  }
-];
+const formatDate = (dateString?: string) => {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+};
 
 export default function MyCommunityPage() {
-  const [activeTab, setActiveTab] = useState('participating');
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 1; // 목업용
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const router = useRouter();
+  const {
+    activeTab,
+    currentPage,
+    totalPages,
+    items,
+    isLoading,
+    handleTabChange,
+    handlePageChange,
+  } = useCommunity();
 
   return (
     <div className="container-sidebar">
       <Sidebar role="user" />
       <div className="sidebar-content">
         <div className={styles.content}>
-          {/* 페이지 타이틀 */}
           <h1 className={styles.pageTitle}>내 커뮤니티</h1>
-
+          
           <div className={styles.listSection}>
             <Tabs
               variant="line"
@@ -75,28 +50,51 @@ export default function MyCommunityPage() {
               onChange={handleTabChange}
             />
 
-            <InputField
-              variant="search"
-              className={styles.searchBar}
-            />
+            {isLoading ? (
+              <div className={styles.emptyState}>데이터를 불러오는 중...</div>
+            ) : items.length === 0 ? (
+              <div className={styles.emptyState}>
+                해당하는 {activeTab === 'participating' ? '커뮤니티가' : '게시물이'} 없습니다.
+              </div>
+            ) : activeTab === 'participating' ? (
+              <CardGrid layout="2-cols">
+                {items.map((community: any) => (
+                  <CommunityCard
+                    key={community.id}
+                    postType={community.memberCount > 5 ? '인기 커뮤니티' : '일반 커뮤니티'}
+                    timeAgo={`생성일: ${formatDate(community.createdAt)}`}
+                    title={community.name}
+                    keywords={[
+                      ...(community.creatorNickname ? [`주최자: ${community.creatorNickname}`] : []),
+                      `멤버: ${community.memberCount || 0}명`
+                    ]}
+                    actionButtonText="커뮤니티 입장하기"
+                    onActionClick={() => router.push(`/community/${community.id}`)}
+                  />
+                ))}
+              </CardGrid>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
+                {items.map((post: any) => (
+                  <CommunityPostItem
+                    key={post.postId || post.id}
+                    title={post.title}
+                    username={post.authorNickname || post.author || '익명'}
+                    date={formatDate(post.createdAt)}
+                    type={post.postType || 'FREE'}
+                    onClick={() => router.push(`/community/${post.communityId}?post=${post.postId || post.id}`)}
+                  />
+                ))}
+              </div>
+            )}
 
-            <CardGrid layout="2-cols">
-              {MOCK_COMMUNITIES.map((community) => (
-                <CommunityCard
-                  key={community.id}
-                  postType={community.postType}
-                  timeAgo={community.timeAgo}
-                  title={community.title}
-                  keywords={community.keywords}
-                />
-              ))}
-            </CardGrid>
-
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            {!isLoading && totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
           </div>
         </div>
       </div>
