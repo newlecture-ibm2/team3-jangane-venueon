@@ -79,6 +79,14 @@ public class CommunityQueryService implements GetCommunityQuery {
                 .orElseThrow(() -> new IllegalArgumentException("Community not found with id: " + id));
         return toResponse(community, email);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CommunityResponse getCommunityByEventId(Long eventId) {
+        return communityRepositoryPort.findByEventId(eventId)
+                .map(community -> toResponse(community, null))
+                .orElse(null);
+    }
     
     private CommunityResponse toResponse(Community community, String email) {
         boolean canManage = false;
