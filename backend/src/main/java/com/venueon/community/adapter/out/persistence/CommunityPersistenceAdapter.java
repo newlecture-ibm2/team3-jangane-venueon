@@ -71,6 +71,27 @@ public class CommunityPersistenceAdapter implements CommunityRepositoryPort {
     }
 
     @Override
+    public Page<Community> findJoinedCommunities(java.util.List<Long> memberCommunityIds, java.util.List<Long> eventIds, Pageable pageable) {
+        if ((memberCommunityIds == null || memberCommunityIds.isEmpty()) && (eventIds == null || eventIds.isEmpty())) {
+            return Page.empty(pageable);
+        }
+        
+        // NULL 방지 (Query에서 IN 절에 빈 리스트/null 전달 시 오류 우려)
+        if (memberCommunityIds == null) memberCommunityIds = new java.util.ArrayList<>();
+        if (eventIds == null) eventIds = new java.util.ArrayList<>();
+        
+        // 만약 둘 다 비어있다면 위에서 걸러짐
+        // memberCommunityIds나 eventIds 중 하나가 비어있으면 쿼리 에러가 날 수 있으므로 최소 1개는 더미 데이터를 넣거나 명시적인 처리가 필요함
+        // 하지만 findJoinedCommunities 쿼리 특성상 둘 다 필수로 필요할 수 있음
+        // 빈 리스트일 때 0L 을 넣어주면 ID 0인 데이터는 없으므로 안전하게 쿼리 가능
+        if (memberCommunityIds.isEmpty()) memberCommunityIds = java.util.List.of(0L);
+        if (eventIds.isEmpty()) eventIds = java.util.List.of(0L);
+
+        return communityJpaRepository.findJoinedCommunities(memberCommunityIds, eventIds, pageable)
+                .map(this::mapToDomain);
+    }
+
+    @Override
     public Optional<Community> findById(Long id) {
         return communityJpaRepository.findById(id).map(this::mapToDomain);
     }
