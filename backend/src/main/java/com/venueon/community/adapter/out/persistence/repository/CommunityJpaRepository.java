@@ -16,4 +16,12 @@ public interface CommunityJpaRepository extends JpaRepository<CommunityJpaEntity
 
     List<CommunityJpaEntity> findByCreatorId(Long creatorId);
     Page<CommunityJpaEntity> findByIdIn(List<Long> ids, Pageable pageable);
+    
+    @org.springframework.data.jpa.repository.Query("SELECT c FROM CommunityJpaEntity c " +
+        "LEFT JOIN c.event e " +
+        "WHERE c.id IN :ids OR e.id IN :eventIds")
+    Page<CommunityJpaEntity> findJoinedCommunities(
+        @org.springframework.data.repository.query.Param("ids") List<Long> ids, 
+        @org.springframework.data.repository.query.Param("eventIds") List<Long> eventIds, 
+        Pageable pageable);
 }

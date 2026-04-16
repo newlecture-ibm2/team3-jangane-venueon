@@ -10,5 +10,6 @@ public interface CommunityRepositoryPort {
     Community save(Community community);
     Page<Community> findPublicCommunities(Pageable pageable);
     Page<Community> findByIdIn(java.util.List<Long> ids, Pageable pageable);
+    Page<Community> findJoinedCommunities(java.util.List<Long> memberCommunityIds, java.util.List<Long> eventIds, Pageable pageable);
     Optional<Community> findById(Long id);
 }

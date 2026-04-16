@@ -10,6 +10,8 @@ import com.venueon.user.domain.model.User;
 import com.venueon.member.application.port.out.MemberRepositoryPort;
 import com.venueon.post.application.port.out.PostRepositoryPort;
 import lombok.RequiredArgsConstructor;
+import com.venueon.order.application.port.out.OrderRepositoryPort;
+import com.venueon.badge.application.port.out.BadgeRepositoryPort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,8 @@ public class CommunityQueryService implements GetCommunityQuery {
     private final MemberRepositoryPort memberRepositoryPort;
     private final CommunityPermissionService communityPermissionService;
     private final PostRepositoryPort postRepositoryPort;
+    private final OrderRepositoryPort orderRepositoryPort;
+    private final BadgeRepositoryPort badgeRepositoryPort;
 
     @Override
     @Transactional(readOnly = true)
@@ -41,8 +45,30 @@ public class CommunityQueryService implements GetCommunityQuery {
         User user = userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
         
-        java.util.List<Long> joinedIds = memberRepositoryPort.findCommunityIdsByUserId(user.getId());
-        return communityRepositoryPort.findByIdIn(joinedIds, pageable)
+        Long userId = user.getId();
+
+        // 1. 멤버 테이블에서 가입된 커뮤니티 ID들
+        java.util.List<Long> memberCommunityIds = memberRepositoryPort.findCommunityIdsByUserId(userId);
+
+        // 2. 유효 주문(PAID, REGISTERED)이 있는 이벤트 ID들
+        java.util.List<Long> orderEventIds = orderRepositoryPort.findAllValidOrdersByUserId(userId).stream()
+                .map(o -> o.getEventId())
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .collect(java.util.stream.Collectors.toList());
+
+        // 3. 뱃지를 보유한 이벤트 ID들
+        java.util.List<Long> badgeEventIds = badgeRepositoryPort.findByUserId(userId).stream()
+                .map(b -> b.getEventId())
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .collect(java.util.stream.Collectors.toList());
+
+        // 합집합용 이벤트 ID 리스트
+        java.util.Set<Long> allEventIds = new java.util.HashSet<>(orderEventIds);
+        allEventIds.addAll(badgeEventIds);
+
+        return communityRepositoryPort.findJoinedCommunities(memberCommunityIds, new java.util.ArrayList<>(allEventIds), pageable)
                 .map(community -> toResponse(community, email));
     }
 
