@@ -57,7 +57,8 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
     </>
   );
 
-  if (onClick) {
+  if (isDanger && onClick) {
+    // 로그아웃 같은 특수 목적일 때만 button 반환
     return (
       <button
         type="button"
@@ -74,6 +75,7 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
     <Link
       href={href}
       className={`${styles.item} ${itemStyle}`}
+      onClick={onClick}
     >
       {content}
     </Link>
@@ -188,7 +190,14 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
             href={menu.href}
             isActive={isActive}
             isDanger={isLogout}
-            onClick={isLogout ? (e) => { e.preventDefault(); setIsLogoutModalOpen(true); } : undefined}
+            onClick={(e) => {
+              if (isLogout) {
+                e.preventDefault();
+                setIsLogoutModalOpen(true);
+              }
+              // 메뉴 이동 또는 모달 열기 시 사이드바 드로어 자동 닫기
+              setSidebarDrawerOpen(false);
+            }}
           />
         );
       })}
