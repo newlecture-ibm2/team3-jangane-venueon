@@ -1,6 +1,6 @@
 import React from 'react';
 import { CardGrid } from '@/components/ui';
-import CommunityCard from '@/app/community/components/CommunityCard';
+import CommunityCard from '@/app/community/_components/CommunityCard/CommunityCard';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import styles from './CommunityList.module.css';
