@@ -3,61 +3,28 @@
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import { CardGrid, Pagination, InputField, Tabs } from '@/components/ui';
-import CommunityCard from '@/app/community/components/CommunityCard';
+import CommunityListCard from '@/app/community/components/CommunityListCard';
 import styles from './page.module.css';
+
+import { useCommunity } from './useCommunity';
+
+import CommunityPostItem from '@/app/community/components/CommunityPostItem';
 
 const TAB_OPTIONS = [
   { value: 'participating', label: '참여 중' },
-  { value: 'community_bookmark', label: '커뮤니티 북마크' },
-  { value: 'my_post', label: '내가 쓴 게시물' },
   { value: 'post_bookmark', label: '게시물 북마크' },
 ];
 
-const MOCK_COMMUNITIES = [
-  {
-    id: 1,
-    postType: "프로젝트 모집",
-    timeAgo: "방금 전",
-    title: "함께 사이드 프로젝트 완성할 프론트엔드 개발자 찾습니다 👀",
-    keywords: ['사이드프로젝트', '프론트엔드', '리액트', '주말코딩']
-  },
-  {
-    id: 2,
-    postType: "스터디 모집",
-    timeAgo: "2시간 전",
-    title: "Next.js 14 앱 라우터 뽀개기 스터디 모집",
-    keywords: ['Nextjs', '앱라우터', '스터디', '프론트엔드개발']
-  },
-  {
-    id: 3,
-    postType: "네트워킹",
-    timeAgo: "1일 전",
-    title: "판교 직장인 IT 네트워킹 및 정보 공유 모임",
-    keywords: ['판교', 'IT네트워킹', '직장인모임', '오프라인']
-  },
-  {
-    id: 4,
-    postType: "코드 리뷰",
-    timeAgo: "2일 전",
-    title: "서로 코드리뷰 해주면서 상부상조할 백엔드 개발자 분 모셔요",
-    keywords: ['코드리뷰', '백엔드', 'Java', '스프링부트']
-  }
-];
-
 export default function MyCommunityPage() {
-  const [activeTab, setActiveTab] = useState('participating');
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 1; // 목업용
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const {
+    activeTab,
+    currentPage,
+    totalPages,
+    communityList,
+    isLoading,
+    handleTabChange,
+    handlePageChange,
+  } = useCommunity();
 
   return (
     <div className="container-sidebar">
@@ -80,17 +47,63 @@ export default function MyCommunityPage() {
               className={styles.searchBar}
             />
 
-            <CardGrid layout="2-cols">
-              {MOCK_COMMUNITIES.map((community) => (
-                <CommunityCard
-                  key={community.id}
-                  postType={community.postType}
-                  timeAgo={community.timeAgo}
-                  title={community.title}
-                  keywords={community.keywords}
-                />
-              ))}
-            </CardGrid>
+            {/* participating 탭이면 CommunityListCard(커뮤니티 페이지와 동일), post_bookmark 탭이면 수직 리스트 */}
+            {activeTab === 'post_bookmark' ? (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {isLoading ? (
+                  <div style={{ padding: 'var(--space-48)', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
+                    불러오는 중...
+                  </div>
+                ) : communityList.length === 0 ? (
+                  <div style={{ padding: 'var(--space-48)', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
+                    해당 항목이 없습니다.
+                  </div>
+                ) : (
+                  communityList.map((post: any) => (
+                    <CommunityPostItem
+                      key={post.id}
+                      title={post.title}
+                      username={post.username || "익명"}
+                      date={post.date || ""}
+                      avatarUrl={post.avatarUrl}
+                      isNotice={post.isNotice}
+                      isPinned={post.isPinned}
+                      type={post.postType}
+                      onClick={() => { /* 상세 페이지 이동 로직. 추후 구현 */ }}
+                    />
+                  ))
+                )}
+              </div>
+            ) : (
+              <CardGrid layout="2-cols">
+                {isLoading ? (
+                  <div style={{ gridColumn: '1 / -1', padding: 'var(--space-48)', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
+                    불러오는 중...
+                  </div>
+                ) : communityList.length === 0 ? (
+                  <div style={{ gridColumn: '1 / -1', padding: 'var(--space-48)', textAlign: 'center', color: 'var(--color-text-gray-500)' }}>
+                    해당 항목이 없습니다.
+                  </div>
+                ) : (
+                  communityList.map((community: any) => (
+                    <CommunityListCard
+                      key={community.id}
+                      status="PUBLISHED"
+                      tagText={community.memberCount > 5 ? "인기" : "신규"}
+                      tagVariant={community.memberCount > 5 ? "purple" : "green"}
+                      title={community.name}
+                      organizer={`주최자: ${community.creatorNickname}`}
+                      dateTime={`생성일: ${new Date(community.createdAt).toLocaleDateString()}`}
+                      location={`멤버: ${community.memberCount}명 참여 중`}
+                      price={0}
+                      actionButtonText="커뮤니티 입장하기"
+                      onActionClick={() => window.location.href = `/community/${community.id}`}
+                      onEditClick={community.canManage ? () => window.location.href = `/community/${community.id}/edit` : undefined}
+                    />
+                  ))
+                )}
+              </CardGrid>
+            )}
 
             <Pagination
               currentPage={currentPage}
