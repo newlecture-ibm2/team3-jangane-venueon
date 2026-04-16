@@ -8,6 +8,7 @@ import styles from './Sidebar.module.css';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import { useAuth } from '@/store/useAuthStore';
 import { useUIStore } from '@/store/useUIStore';
+import { Logo } from '@/components/ui';
 
 import {
   DashboardIcon,
@@ -159,7 +160,9 @@ function SidebarContent({ role = 'user', className = '', fakePathname }: Sidebar
         className={`${styles.sidebar} ${styles.responsiveDrawer} ${isSidebarDrawerOpen ? styles.drawerOpen : ''} ${className}`.trim()}
         style={{ height: 'calc(100vh - 40px)' }}
       >
-        <button className={styles.closeBtn} onClick={() => setSidebarDrawerOpen(false)}>✕</button>
+        <div className={styles.sidebarHeader}>
+          <Logo />
+        </div>
       {menus.map((menu) => {
         let isActive = false;
 
