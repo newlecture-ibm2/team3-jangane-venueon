@@ -67,14 +67,19 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   const [deletedTicketIds, setDeletedTicketIds] = useState<number[]>([]);
   const [deletedSessionIds, setDeletedSessionIds] = useState<number[]>([]);
 
+  // 수정 모드일 때 첫 번째 세션에서 주소 정보 복원
+  const firstSession = initialData?.sessions?.[0];
+
   const [formData, setFormData] = useState({
     categoryId: initialData?.categoryId ? String(initialData.categoryId) : '1',
     title: initialData?.title || '',
     description: initialData?.description || '',
     detailContent: initialData?.detailContent || '',
     price: initialData?.price !== undefined ? initialData.price.toString() : '',
-    location: initialData?.location || '',
-    isOnlineStr: initialData?.isOnline !== undefined ? String(initialData.isOnline) : '',
+    location: initialData?.location || firstSession?.location || '',
+    isOnlineStr: initialData?.isOnline !== undefined
+      ? String(initialData.isOnline)
+      : (firstSession?.isOnline !== undefined ? String(firstSession.isOnline) : ''),
     startDate: initialData?.startDate ? initialData.startDate.substring(0, 10) : '',
     startTimeOnly: initialData?.startDate ? initialData.startDate.substring(11, 16) : '10:00',
     endDate: initialData?.endDate ? initialData.endDate.substring(0, 10) : '',
@@ -82,11 +87,11 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
     useRecruitPeriod: initialData?.useRecruitPeriod || false,
     recruitStartDate: initialData?.recruitStartDate ? initialData.recruitStartDate.substring(0, 10) : '',
     recruitEndDate: initialData?.recruitEndDate ? initialData.recruitEndDate.substring(0, 10) : '',
-    addressRoad: '',
-    addressDetail: '',
-    regionSido: '',
-    regionSigungu: '',
-    onlineLink: initialData?.onlineLink || '',
+    addressRoad: firstSession?.addressRoad || '',
+    addressDetail: firstSession?.addressDetail || '',
+    regionSido: firstSession?.regionSido || '',
+    regionSigungu: firstSession?.regionSigungu || '',
+    onlineLink: initialData?.onlineLink || firstSession?.onlineLink || '',
   });
 
   React.useEffect(() => {
@@ -132,9 +137,9 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
       showToast('이미지 파일만 업로드 가능합니다.', 'error');
       return;
     }
-    // 5MB 제한
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('파일 크기는 5MB 이하여야 합니다.', 'error');
+    // 10MB 제한
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('파일 크기는 10MB 이하여야 합니다.', 'error');
       return;
     }
 
@@ -196,6 +201,16 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
   const calculatedTotalPrice = 0;
 
   const handleSubmit = async (isDraft: boolean) => {
+    // 게시 시 유효성 검증: 복합 이벤트에서 티켓에 세션이 포함되어 있는지 확인
+    if (!isDraft && hasSession && tickets.length > 0) {
+      for (const t of tickets) {
+        if (!t.isAllSessions && (!t.selectedSessionIndices || t.selectedSessionIndices.length === 0)) {
+          showToast(`"${t.name || '새 티켓'}" 티켓에 포함할 세션을 1개 이상 선택해주세요.`, 'error');
+          return;
+        }
+      }
+    }
+
     setLoading(true);
     try {
       const isOnline = formData.isOnlineStr === 'true';
@@ -253,13 +268,13 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           // 세션 기간: 개별 설정이 없으면 공통 설정(formData)으로 폴백
           let startTime = null;
           let endTime = null;
-          
+
           const sDate = session.startDate || formData.startDate;
           const sTime = session.startDate ? (session.startTimeOnly || '10:00') : (formData.startTimeOnly || '10:00');
           if (sDate) {
             startTime = `${sDate}T${sTime}:00`;
           }
-          
+
           const eDate = session.endDate || formData.endDate;
           const eTime = session.endDate ? (session.endTimeOnly || '18:00') : (formData.endTimeOnly || '18:00');
           if (eDate) {
@@ -269,7 +284,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
           // 모집 기간: 개별 설정이 없으면 공통 설정(formData)으로 폴백
           let recruitStartDate = null;
           let recruitEndDate = null;
-          
+
           if (session.useRecruitPeriod) {
             if (session.recruitStartDate) recruitStartDate = `${session.recruitStartDate}T00:00:00`;
             if (session.recruitEndDate) recruitEndDate = `${session.recruitEndDate}T23:59:00`;
@@ -600,9 +615,9 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         <div className={styles.labelRow}>
           <label className={styles.label}>상세 정보 (선택사항)</label>
         </div>
-        <TiptapEditor 
-          content={formData.detailContent} 
-          onChange={(html) => setFormData(prev => ({ ...prev, detailContent: html }))} 
+        <TiptapEditor
+          content={formData.detailContent}
+          onChange={(html) => setFormData(prev => ({ ...prev, detailContent: html }))}
           placeholder="이벤트 상세 정보를 자유롭게 입력하세요. (이미지 등록 가능)"
         />
       </div>
@@ -737,92 +752,92 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
         {/* ── 공통 날짜/기간 설정 ── */}
         <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid #ddd' }}>
           <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#333', marginBottom: '0.75rem' }}>📅 {hasSession ? '공통 이벤트 기간' : '이벤트 기간'} <span style={{ fontWeight: 'normal', color: '#999', fontSize: '0.75rem' }}>미설정 시 개별 세션에서 설정하거나 수동으로 시작/종료 관리</span></div>
-            <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '1.5rem', background: '#fff', padding: '1rem', borderRadius: '4px', border: '1px solid #e5e5e5' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>시작 날짜</label>
-                <input
-                  type="date"
-                  name="startDate"
-                  value={formData.startDate}
-                  onChange={handleChange}
-                  className={styles.dateInput}
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>시작 시간</label>
-                <input
-                  type="time"
-                  name="startTimeOnly"
-                  value={formData.startTimeOnly}
-                  onChange={handleChange}
-                  className={styles.dateInput}
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>종료 날짜</label>
-                <input
-                  type="date"
-                  name="endDate"
-                  value={formData.endDate}
-                  onChange={handleChange}
-                  className={styles.dateInput}
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>종료 시간</label>
-                <input
-                  type="time"
-                  name="endTimeOnly"
-                  value={formData.endTimeOnly}
-                  onChange={handleChange}
-                  className={styles.dateInput}
-                  style={{ width: '100%' }}
-                />
-              </div>
+          <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '1.5rem', background: '#fff', padding: '1rem', borderRadius: '4px', border: '1px solid #e5e5e5' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>시작 날짜</label>
+              <input
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                className={styles.dateInput}
+                style={{ width: '100%' }}
+              />
             </div>
-
-            {/* 단일 모집 기간 섹션 */}
-            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#333', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>📋 모집 기간 세부 설정</span>
-              <label className={styles.checkboxLabel} style={{ fontSize: '0.75rem', fontWeight: 'normal' }}>
-                <input
-                  type="checkbox"
-                  checked={formData.useRecruitPeriod}
-                  onChange={(e) => setFormData(prev => ({ ...prev, useRecruitPeriod: e.target.checked }))}
-                />
-                모집 기간 별도 설정하기
-              </label>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>시작 시간</label>
+              <input
+                type="time"
+                name="startTimeOnly"
+                value={formData.startTimeOnly}
+                onChange={handleChange}
+                className={styles.dateInput}
+                style={{ width: '100%' }}
+              />
             </div>
-            {formData.useRecruitPeriod && (
-              <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(2, 1fr)', background: '#fff', padding: '1rem', borderRadius: '4px', border: '1px solid #e5e5e5' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>모집 시작일</label>
-                  <input
-                    type="date"
-                    name="recruitStartDate"
-                    value={formData.recruitStartDate}
-                    onChange={handleChange}
-                    className={styles.dateInput}
-                    style={{ width: '100%' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>모집 마감일</label>
-                  <input
-                    type="date"
-                    name="recruitEndDate"
-                    value={formData.recruitEndDate}
-                    onChange={handleChange}
-                    className={styles.dateInput}
-                    style={{ width: '100%' }}
-                  />
-                </div>
-              </div>
-            )}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>종료 날짜</label>
+              <input
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                className={styles.dateInput}
+                style={{ width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>종료 시간</label>
+              <input
+                type="time"
+                name="endTimeOnly"
+                value={formData.endTimeOnly}
+                onChange={handleChange}
+                className={styles.dateInput}
+                style={{ width: '100%' }}
+              />
+            </div>
           </div>
+
+          {/* 단일 모집 기간 섹션 */}
+          <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#333', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>📋 모집 기간 세부 설정</span>
+            <label className={styles.checkboxLabel} style={{ fontSize: '0.75rem', fontWeight: 'normal' }}>
+              <input
+                type="checkbox"
+                checked={formData.useRecruitPeriod}
+                onChange={(e) => setFormData(prev => ({ ...prev, useRecruitPeriod: e.target.checked }))}
+              />
+              모집 기간 별도 설정하기
+            </label>
+          </div>
+          {formData.useRecruitPeriod && (
+            <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(2, 1fr)', background: '#fff', padding: '1rem', borderRadius: '4px', border: '1px solid #e5e5e5' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>모집 시작일</label>
+                <input
+                  type="date"
+                  name="recruitStartDate"
+                  value={formData.recruitStartDate}
+                  onChange={handleChange}
+                  className={styles.dateInput}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem', color: '#555' }}>모집 마감일</label>
+                <input
+                  type="date"
+                  name="recruitEndDate"
+                  value={formData.recruitEndDate}
+                  onChange={handleChange}
+                  className={styles.dateInput}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
 
       </div>
 
@@ -885,7 +900,7 @@ export default function EventForm({ mode = 'create', eventId, initialData }: Eve
                       <button
                         type="button"
                         onClick={() => {
-                          const isSessionUsedInTicket = tickets.some(t => 
+                          const isSessionUsedInTicket = tickets.some(t =>
                             !t.isAllSessions && t.selectedSessionIndices && t.selectedSessionIndices.includes(index)
                           );
 
