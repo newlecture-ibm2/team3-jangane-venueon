@@ -1,6 +1,6 @@
 .heroSection {
   width: 100%;
-  background-color: var(--color-surface);
+  background-color: #e0dacf;
   padding: 0 0;
   display: flex;
   justify-content: center;
@@ -26,14 +26,15 @@
 }
 
 .heroTitle {
-  font-size: 40px;
+  font-size: 60px;
   font-weight: 700;
   line-height: 1.2;
   color: var(--color-text-gray-900);
+  word-break: keep-all;
 }
 
 .heroSubtitle {
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.6;
   color: var(--color-text-gray-500);
 }
@@ -187,6 +188,13 @@
   }
 }
 
+/* 태블릿 및 중간 데스크탑 */
+@media screen and (max-width: 1280px) {
+  .heroTitle {
+    font-size: 48px;
+  }
+}
+
 /* 반응형 모바일 */
 @media screen and (max-width: 1024px) {
   .heroSection {
@@ -196,6 +204,11 @@
   .heroInner {
     flex-direction: column;
     text-align: center;
+  }
+
+  .heroTitle {
+    font-size: 40px; /* Adjust font size for mobile */
+    word-break: keep-all; /* Preserve word breaks */
   }
 
   .heroContent {

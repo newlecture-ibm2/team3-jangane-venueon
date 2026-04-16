@@ -7,11 +7,11 @@ export default function HeroSection() {
       <div className={styles.heroInner}>
         <div className={styles.heroContent}>
           <h1 className={styles.heroTitle}>
-            Skills to transform<br />
-            your career and life
+            새로운 만남, 새로운 경험,<br />
+            새로운 가능성을 만나세요
           </h1>
           <p className={styles.heroSubtitle}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            좋은 이벤트 하나가 커리어의 방향을 바꾸기도 합니다. VenueOn에서 분야별 최고의 컨퍼런스와 세미나를 만나보세요. 세션 단위로 유연하게 참여하고, 얼리버드 할인 티켓으로 합리적으로 시작하세요. 이벤트가 끝난 뒤에도 커뮤니티를 통해 이어지는 네트워킹이 기다리고 있습니다.
           </p>
         </div>
         <div className={styles.heroImageBox}>
