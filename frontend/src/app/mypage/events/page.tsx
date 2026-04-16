@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { Card, CardGrid, Tabs, Pagination } from '@/components/ui';
@@ -16,7 +16,7 @@ const TAB_OPTIONS = [
 
 
 
-export default function MyPage() {
+function MyPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') || undefined;
@@ -145,5 +145,13 @@ export default function MyPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function MyPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: '#6B7280' }}>로딩 중...</div>}>
+      <MyPageContent />
+    </Suspense>
   );
 }
