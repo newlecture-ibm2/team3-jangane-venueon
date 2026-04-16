@@ -62,4 +62,33 @@ export const authAPI = {
     const res = await fetch('/api/auth/session');
     return res.json().catch(() => ({ isLoggedIn: false }));
   },
+  /** 임시 비밀번호 요청 (forgot-password) */
+  requestTempPassword: async (email: string) => {
+    const res = await fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.message || '요청에 실패했습니다.');
+    return result;
+  },
+  /** 비밀번호 변경 (reset-password) */
+  changePassword: async (newPassword: string) => {
+    const res = await fetch('/api/users/me/password', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword: '', newPassword }),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.message || '비밀번호 변경에 실패했습니다.');
+    return result;
+  },
+  /** 이메일 인증 (verify-email) */
+  verifyEmail: async (token: string) => {
+    const res = await fetch(`/api/auth/verify-email?token=${token}`);
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.message || '인증에 실패했습니다.');
+    return result;
+  },
 };
