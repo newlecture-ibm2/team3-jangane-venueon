@@ -45,15 +45,30 @@ async function getTickets(eventId: string) {
   }
 }
 
+async function getCommunityByEventId(eventId: string) {
+  try {
+    const url = `${BACKEND_URL}/communities/by-event/${eventId}`;
+    const res = await fetch(url, { cache: 'no-store' });
+    if (res.status === 204) return null;
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch community for event', error);
+    return null;
+  }
+}
+
 interface Props {
   params: Promise<{ id: string }>;
 }
 
 export default async function EventDetailPage({ params }: Props) {
   const { id } = await params;
-  const [event, tickets] = await Promise.all([
+  const [event, tickets, community] = await Promise.all([
     getEventDetail(id),
     getTickets(id),
+    getCommunityByEventId(id),
   ]);
 
   if (!event || event.error) {
@@ -238,6 +253,11 @@ export default async function EventDetailPage({ params }: Props) {
 
       {/* 하단 액션 버튼 */}
       <div className={styles.bottomActionArea}>
+        {community && (
+          <Link href={`/community/${community.id}`} style={{ textDecoration: 'none' }}>
+            <Button variant="primary" size="large">💬 커뮤니티 바로가기</Button>
+          </Link>
+        )}
         <Link href="/" style={{ textDecoration: 'none' }}>
           <Button variant="outlined" size="large">이벤트 목록</Button>
         </Link>

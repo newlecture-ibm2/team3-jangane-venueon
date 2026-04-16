@@ -113,6 +113,19 @@ public class CommunityController {
     }
 
     /**
+     * 이벤트 ID로 연결된 커뮤니티 조회
+     * GET /communities/by-event/{eventId}
+     */
+    @GetMapping("/by-event/{eventId}")
+    public ResponseEntity<?> getCommunityByEventId(@PathVariable Long eventId) {
+        CommunityResponse response = getCommunityQuery.getCommunityByEventId(eventId);
+        if (response == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * 커뮤니티 수정
      * PUT /communities/{id}
      */

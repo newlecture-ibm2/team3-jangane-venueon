@@ -11,4 +11,5 @@ public interface CommunityRepositoryPort {
     Page<Community> findPublicCommunities(Pageable pageable);
     Page<Community> findByIdIn(java.util.List<Long> ids, Pageable pageable);
     Optional<Community> findById(Long id);
+    Optional<Community> findByEventId(Long eventId);
 }

@@ -8,4 +8,5 @@ public interface GetCommunityQuery {
     Page<CommunityResponse> getPublicCommunities(Pageable pageable, String email);
     Page<CommunityResponse> getJoinedCommunities(Pageable pageable, String email);
     CommunityResponse getCommunityById(Long id, String email);
+    CommunityResponse getCommunityByEventId(Long eventId);
 }

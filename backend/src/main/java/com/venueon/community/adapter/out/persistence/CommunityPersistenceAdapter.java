@@ -74,6 +74,11 @@ public class CommunityPersistenceAdapter implements CommunityRepositoryPort {
     public Optional<Community> findById(Long id) {
         return communityJpaRepository.findById(id).map(this::mapToDomain);
     }
+
+    @Override
+    public Optional<Community> findByEventId(Long eventId) {
+        return communityJpaRepository.findByEventId(eventId).map(this::mapToDomain);
+    }
     
     private Community mapToDomain(CommunityJpaEntity entity) {
         return Community.builder()
