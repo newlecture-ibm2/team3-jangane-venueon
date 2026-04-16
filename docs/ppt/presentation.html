@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VenueOn Project Presentation</title>
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/night.min.css" id="theme">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --r-main-font: 'Inter', 'Noto Sans KR', sans-serif;
+            --r-heading-font: 'Inter', 'Noto Sans KR', sans-serif;
+            --r-heading-text-transform: none;
+            --accent-color: #4a90e2;
+        }
+
+        .reveal .slides section {
+            text-align: left;
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3 {
+            color: var(--accent-color);
+        }
+
+        .reveal .progress {
+            color: var(--accent-color);
+        }
+
+        .tagline {
+            font-size: 0.8em;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid var(--accent-color);
+            margin-bottom: 20px !important;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .tech-icon {
+            font-weight: bold;
+            color: var(--accent-color);
+            min-width: 100px;
+        }
+
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Title Slide -->
+            <section data-background-gradient="linear-gradient(to bottom, #1a1a2e, #16213e)">
+                <h1 style="text-align: center;">VenueOn</h1>
+                <p style="text-align: center; color: #ccc;">이벤트 관리 및 커뮤니티 통합 플랫폼</p>
+                <div style="text-align: center; margin-top: 50px;">
+                    <p style="font-size: 0.6em; color: #888;">Team 3 - Jangane</p>
+                    <p style="font-size: 0.5em; color: #666;">2026. 04. 16</p>
+                </div>
+            </section>
+
+            <!-- Table of Contents -->
+            <section>
+                <h2>목차 (Contents)</h2>
+                <ol>
+                    <li>프로젝트 개요</li>
+                    <li class="highlight">VenueOn만의 차별점</li>
+                    <li>핵심 서비스 및 기능</li>
+                    <li>기술 스택</li>
+                    <li>시스템 아키텍처</li>
+                    <li>기술적 과제 및 해결 방안</li>
+                    <li>Future Vision & Q&A</li>
+                </ol>
+            </section>
+
+            <!-- Overview -->
+            <section>
+                <h2>1. 프로젝트 개요</h2>
+                <div class="feature-card">
+                    <h3>"누구나 호스트가 되는 세상"</h3>
+                    <p>VenueOn은 공연, 강연, 워크숍 등 다양한 이벤트를 쉽게 기획하고 운영하며, 참가자들과 긴밀하게 소통할 수 있는 올인원 플랫폼입니다.</p>
+                </div>
+                <ul>
+                    <li>이벤트 생명주기(기획~종료) 자동화</li>
+                    <li>풍부한 컨텐츠 표현력 (Rich Editor)</li>
+                    <li>정교한 지역 기반 추천 시스템</li>
+                </ul>
+            </section>
+
+            <!-- Differentiation -->
+            <section>
+                <h2>2. VenueOn만의 차별점</h2>
+                <div style="display: flex; gap: 20px; align-items: stretch;">
+                    <div class="feature-card"
+                        style="flex: 1; border-left: 5px solid #666; font-size: 0.8em; opacity: 0.7;">
+                        <h4 style="color: #888;">기존 플랫폼</h4>
+                        <p>단순 티켓 예매 대행</p>
+                        <p>일회성 관계 (결제 후 단절)</p>
+                        <p>텍스트 위주의 단순 정보</p>
+                    </div>
+                    <div style="display: flex; align-items: center; font-size: 2em;">➡️</div>
+                    <div class="feature-card" style="flex: 1.5; font-size: 0.8em; background: rgba(74, 144, 226, 0.1);">
+                        <h4 class="highlight">VenueOn</h4>
+                        <p><strong>이벤트 초밀착형 커뮤니티</strong><br>행사 전 정보 공유부터 행사 후 사후 관리까지</p>
+                        <p><strong>리치 컨텐츠 브랜딩</strong><br>Tiptap 에디터로 호스트의 개성 표현</p>
+                        <p><strong>하이브리드 세션 관리</strong><br>온/오프라인 통합 운영의 자유로움</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Features -->
+            <section>
+                <h2>3. 핵심 기능</h2>
+                <div class="tech-stack">
+                    <div class="feature-card" style="font-size: 0.8em;">
+                        <h4>🛠 호스트 센터</h4>
+                        <p>이벤트 등록, 티켓 설정, 세션(온/오프라인) 관리 및 모집 상태 제어</p>
+                    </div>
+                    <div class="feature-card" style="font-size: 0.8em;">
+                        <h4>💳 결제 및 티켓팅</h4>
+                        <p>Toss Payments 연동. 실시간 좌석/인원 관리 및 간편 결제</p>
+                    </div>
+                    <div class="feature-card" style="font-size: 0.8em; background: rgba(74, 144, 226, 0.2);">
+                        <h4>👥 특화 커뮤니티</h4>
+                        <p>단순 게시판을 넘어, 이벤트 참가자 인증 기반의 독점 정보 공유 채널 및 네트워킹 공간</p>
+                    </div>
+                    <div class="feature-card" style="font-size: 0.8em;">
+                        <h4>🔒 보안 링크</h4>
+                        <p>구매자에게만 공개되는 전용 온라인 입장 링크 보안 시스템</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tech Stack -->
+            <section>
+                <h2>4. 기술 스택</h2>
+                <div class="tech-stack">
+                    <div>
+                        <h4 style="color: #61dafb;">Frontend</h4>
+                        <ul style="font-size: 0.7em;">
+                            <li>Next.js 14 (App Router)</li>
+                            <li>TypeScript</li>
+                            <li>Tiptap (Rich Editor)</li>
+                            <li>Vanilla CSS / CSS Modules</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #6db33f;">Backend</h4>
+                        <ul style="font-size: 0.7em;">
+                            <li>Java 21 / Spring Boot 3.x</li>
+                            <li>PostgreSQL 15</li>
+                            <li>Gradle</li>
+                            <li>Docker</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 30px; font-size: 0.6em; color: #888;">
+                    <strong>API & Others:</strong> Toss Payments, Kakao Postcode API, Git, GitHub Actions
+                </div>
+            </section>
+
+            <!-- Architecture -->
+            <section>
+                <h2>5. 시스템 아키텍처</h2>
+                <div style="text-align: center;">
+                    <p style="font-size: 1.2em;" class="highlight">Hexagonal Architecture</p>
+                    <div class="feature-card" style="text-align: left; display: inline-block;">
+                        <ul style="font-size: 0.8em;">
+                            <li><strong>Core Domain:</strong> 비즈니스 규칙의 독립성 확보</li>
+                            <li><strong>Adapters:</strong> 인프라 기술(DB, Web) 변경에 유연한 대응</li>
+                            <li><strong>Model:</strong> Event - Session - Ticket 계층 구조</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technical Challenges 1 -->
+            <section>
+                <h2>6. 기술적 과제 (1)</h2>
+                <h3>세션 중심의 유연한 모델 설계</h3>
+                <div class="feature-card">
+                    <p><strong>Challenge:</strong> 같은 이벤트라도 다양한 장소와 시간이 혼재된 복잡한 구조</p>
+                    <p><strong>Solution:</strong> v6 아키텍처 도입. <span class="highlight">Event - Session - Ticket</span>으로
+                        계층화하여 온/오프라인이 혼합된 하이브리드 이벤트 대응</p>
+                </div>
+            </section>
+
+            <!-- Technical Challenges 2 -->
+            <section>
+                <h2>6. 기술적 과제 (2)</h2>
+                <h3>컨텐츠 가독성 및 보안 강화</h3>
+                <div class="tech-stack">
+                    <div class="feature-card" style="font-size: 0.7em;">
+                        <h4>Tiptap Editor</h4>
+                        <p>단순 텍스트를 넘어 이미지/포맷팅이 포함된 풍부한 설명 페이지 지원</p>
+                    </div>
+                    <div class="feature-card" style="font-size: 0.7em;">
+                        <h4>Address Filtering</h4>
+                        <p>Kakao API 기반 시/도-시/군/구 2단계 필터로 정확한 지역 탐색</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Future Vision -->
+            <section data-background-color="#0f3460">
+                <h2>7. 향후 발전 방향</h2>
+                <ul style="line-height: 1.8;">
+                    <li>🗺️ <strong>Map-based Search:</strong> 지도를 이용한 위치 기반 이벤트 탐색</li>
+                    <li>📧 <strong>Auto Notification:</strong> 결제 상태에 따른 스마트 티켓 발송</li>
+                    <li>📊 <strong>Host Insights:</strong> 예매 통계 및 참여자 분석 대시보드</li>
+                    <li>🌐 <strong>Global Payment:</strong> 글로벌 결제 수단 확장</li>
+                </ul>
+            </section>
+
+            <!-- Q&A -->
+            <section style="text-align: center;">
+                <h1>Q & A</h1>
+                <p>경청해 주셔서 감사합니다.</p>
+                <div style="margin-top: 50px;">
+                    <p class="highlight" style="font-size: 1.5em;">VenueOn</p>
+                    <p style="font-size: 0.5em; color: #888;">Team 3 - Jangane</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            transition: 'slide', // none/fade/slide/convex/concave/zoom
+            backgroundTransition: 'fade'
+        });
+    </script>
+</body>
+
+</html>
