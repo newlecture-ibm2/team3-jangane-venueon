@@ -59,15 +59,15 @@ export default function MyPageDashboard() {
           
           {/* 요약 박스 (3개 가로 배치) */}
           <div className={styles.summaryContainer}>
-            <div className={styles.summaryBox}>
+            <div className={styles.summaryBox} onClick={() => router.push('/mypage/events?tab=enrolled')}>
               <span className={styles.summaryTitle}>참여 중인 이벤트</span>
               <span className={styles.summaryContent}>{summaryData.ongoingCourseCount}개</span>
             </div>
-            <div className={styles.summaryBox}>
+            <div className={styles.summaryBox} onClick={() => router.push('/mypage/events?tab=completed')}>
               <span className={styles.summaryTitle}>리뷰를 기다리는 이벤트</span>
               <span className={styles.summaryContent}>{summaryData.pendingReviewCount}개</span>
             </div>
-            <div className={styles.summaryBox}>
+            <div className={styles.summaryBox} onClick={() => router.push('/mypage/badges')}>
               <span className={styles.summaryTitle}>획득한 배지</span>
               <span className={styles.summaryContent}>{summaryData.earnedBadgeCount}개</span>
             </div>

@@ -126,6 +126,12 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
            "o.event.status.code = 'ENDED'")
     long countCompletedByUserId(@Param("userId") Long userId);
 
+    @Query("SELECT COUNT(DISTINCT o.event.id) FROM OrderJpaEntity o WHERE o.user.id = :userId AND " +
+           "(o.status = 'PAID' OR o.status = 'REGISTERED') AND " +
+           "o.event.status.code = 'ENDED' AND " +
+           "o.event.id NOT IN (SELECT r.eventId FROM ReviewJpaEntity r WHERE r.reviewerId = :userId)")
+    long countCompletedWithoutReviewByUserId(@Param("userId") Long userId);
+
     @Query("SELECT COUNT(o) FROM OrderJpaEntity o " +
            "JOIN o.event e " +
            "WHERE e.creator.id = :hostId " +

@@ -160,6 +160,11 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
     }
 
     @Override
+    public long countCompletedWithoutReviewByUserId(Long userId) {
+        return orderJpaRepository.countCompletedWithoutReviewByUserId(userId);
+    }
+
+    @Override
     public List<Order> findAllValidOrdersByUserId(Long userId) {
         return orderJpaRepository.findAllValidOrdersByUserId(userId).stream()
                 .map(this::toDomain)

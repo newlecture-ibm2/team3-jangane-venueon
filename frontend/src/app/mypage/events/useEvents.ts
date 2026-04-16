@@ -16,8 +16,15 @@ export interface LectureItem {
 
 const ITEMS_PER_PAGE = 8; // 2열 × 4줄
 
-export function useEvents() {
-  const [activeTab, setActiveTab] = useState('upcoming');
+export function useEvents(initialTab?: string) {
+  const [activeTab, setActiveTab] = useState(initialTab || 'upcoming');
+  
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
   const [currentPage, setCurrentPage] = useState(1);
 
   const [lectures, setLectures] = useState<LectureItem[]>([]);
