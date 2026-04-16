@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { adminCategoryAPI, AdminCategoryItem } from '@/lib/admin-api';
-import { CategoryFormData } from './_components/CategoryFormModal';
+import { CategoryFormData } from './_components/CategoryFormModal/CategoryFormModal';
 
 // Auto-scroll 설정값
 const AUTO_SCROLL_THRESHOLD = 80;
