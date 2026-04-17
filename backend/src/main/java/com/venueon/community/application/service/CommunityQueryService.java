@@ -50,8 +50,10 @@ public class CommunityQueryService implements GetCommunityQuery {
         // 1. 멤버 테이블에서 가입된 커뮤니티 ID들
         java.util.List<Long> memberCommunityIds = memberRepositoryPort.findCommunityIdsByUserId(userId);
 
-        // 2. 유효 주문(PAID, REGISTERED)이 있는 이벤트 ID들
+        // 2. 유효 주문(PAID, REGISTERED)이 있는 이벤트 ID들 추출
         java.util.List<Long> orderEventIds = orderRepositoryPort.findAllValidOrdersByUserId(userId).stream()
+                .filter(o -> o.getStatus() == com.venueon.order.domain.model.OrderStatus.PAID || 
+                             o.getStatus() == com.venueon.order.domain.model.OrderStatus.REGISTERED)
                 .map(o -> o.getEventId())
                 .filter(java.util.Objects::nonNull)
                 .distinct()
@@ -64,11 +66,7 @@ public class CommunityQueryService implements GetCommunityQuery {
                 .distinct()
                 .collect(java.util.stream.Collectors.toList());
 
-        // 합집합용 이벤트 ID 리스트
-        java.util.Set<Long> allEventIds = new java.util.HashSet<>(orderEventIds);
-        allEventIds.addAll(badgeEventIds);
-
-        return communityRepositoryPort.findJoinedCommunities(memberCommunityIds, new java.util.ArrayList<>(allEventIds), pageable)
+        return communityRepositoryPort.findJoinedCommunities(memberCommunityIds, orderEventIds, badgeEventIds, pageable)
                 .map(community -> toResponse(community, email));
     }
 

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VenueOn PPT Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --accent: #f43f5e;
+            --bg-light: #fefefe;
+            --surface: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #f1f5f9;
+            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--text-dark);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Slide Container - Fixed aspect ratio like PPT (16:9) */
+        .viewport {
+            width: 100%;
+            height: 100%;
+            max-width: 1920px;
+            max-height: 1080px;
+            aspect-ratio: 16 / 9;
+            background: var(--bg-light);
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .presentation {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 4rem 6rem;
+            /* Standardized Padding */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        /* Standardized Header for all content slides */
+        .slide-header {
+            margin-bottom: 2.5rem;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .slide-header h2 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin: 0;
+        }
+
+        .slide-header h2::before {
+            content: '';
+            width: 8px;
+            height: 45px;
+            background: var(--primary);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Body container to ensure consistent vertical starts */
+        .slide-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
+
+        /* Transitions */
+        .slide-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: var(--transition);
+        }
+
+        .active .slide-content {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.2s;
+        }
+
+        /* PPT Meta Elements */
+        .slide-footer {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 6rem;
+            right: 6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+            z-index: 20;
+        }
+
+        .slide-number {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .logo-box {
+            position: absolute;
+            top: 1.5rem;
+            right: 6rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            z-index: 20;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 2px;
+            transform: rotate(45deg);
+        }
+
+        /* Typography & Components Alignment */
+        h1 {
+            font-size: 5.5rem;
+            font-weight: 800;
+            line-height: 1.05;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h3 {
+            font-size: 2.2rem;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            width: 100%;
+        }
+
+        .bullet-item {
+            display: flex;
+            gap: 1.5rem;
+            background: rgba(248, 250, 252, 0.5);
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .icon-circle {
+            min-width: 44px;
+            height: 44px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .text-box h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.2rem;
+            color: var(--text-dark);
+        }
+
+        /* Card System for consistency */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .feature-card h4 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Navigation Controls */
+        .controls {
+            position: fixed;
+            bottom: 3rem;
+            right: 3rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-5px);
+        }
+
+        .progress-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            transition: width 0.5s ease;
+            z-index: 100;
+        }
+
+        /* Specific Slide Styles */
+        .title-slide {
+            justify-content: center;
+            text-align: left;
+        }
+
+        .section-header {
+            background: var(--primary);
+            color: white;
+        }
+
+        .section-header::before {
+            display: none;
+        }
+
+        .section-header h2 {
+            color: white;
+            border: none;
+        }
+
+        .section-header h2 span {
+            background: var(--accent);
+        }
+
+        .section-header .slide-footer {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Octagonal Badge in Template style */
+        .badge-shell {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1.2rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="viewport">
+        <div class="progress-indicator" id="progress"></div>
+        <div class="logo-box">
+            <div class="logo-dot"></div> VenueOn
+        </div>
+
+        <div class="presentation" id="presentation">
+
+            <!-- Slide 1: Title Slide -->
+            <section class="slide title-slide">
+                <div class="slide-content" style="justify-content: center;">
+                    <div class="badge-shell" style="width: fit-content;">Integrated Event Platform</div>
+                    <h1>People Connect,<br>Value Stays.</h1>
+                    <p style="font-size: 1.8rem; color: var(--text-muted); margin-bottom: 3rem;">"이벤트는 끝나도, 연결은 계속된다"
+                    </p>
+                    <div style="border-left: 6px solid var(--accent); padding-left: 2rem;">
+                        <p style="font-weight: 700; font-size: 1.4rem;">팀 VenueOn 종합 발표 자료</p>
+                        <p style="color: var(--text-muted); margin: 0.5rem 0 0 0;">2026. 04. 17</p>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div>NEW LECTURE IBM 2ND TEAM 3</div>
+                    <div class="slide-number">01</div>
+                </div>
+            </section>
+
+            <!-- Slide 2: Problem Definition -->
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <h2>The Problem</h2>
+                    </div>
+                    <div class="slide-body">
+                        <h3>"강의가 끝나면, 관계도 끝난다"</h3>
+                        <div class="bullet-list">
+                            <div class="bullet-item">
+                                <div class="icon-circle">01</div>
+                                <div class="text-box">
+                                    <h4>일방향적 소통의 한계</h4>
+                                    <p>기존 플랫폼은 콘텐츠 소비 위주로 수강생간 네트워킹 및 강사와의 실시간 소통이 단절됨</p>
+                                </div>
+                            </div>
+                            <div class="bullet-item">
+                                <div class="icon-circle">02</div>
+                                <div class="text-box">
+                                    <h4>경험의 단절 (Drop-off)</h4>
+                                    <p>이벤트 종료 후 질문이나 의견을 공유할 채널 부재로 사용자가 플랫폼을 이탈함</p>
+                                </div>
+                            </div>
+                            <div class="bullet-item">
+                                <div class="icon-circle">03</div>
+                                <div class="text-box">
+                                    <h4>기능의 파편화</h4>
+                                    <p>모객 따로, 소통 따로(슬랙/단톡방). 통합된 사용자 여정의 부재</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div>WHY WE START?</div>
+                    <div class="slide-number">02</div>
+                </div>
+            </section>
+
+            <!-- Slide 3: Retention Flywheel -->
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <h2>Core Strategy</h2>
+                    </div>
+                    <div class="slide-body">
+                        <h3>Retention Flywheel</h3>
+                        <div style="display: flex; gap: 4rem; align-items: flex-start; flex: 1;">
+                            <div style="flex: 1;">
+                                <p
+                                    style="font-size: 1.3rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; color: var(--text-muted);">
+                                    <strong>이벤트</strong>로 모으고, <strong>커뮤니티</strong>로 남기다
+                                </p>
+                                <div class="bullet-list" style="gap: 1rem;">
+                                    <div class="bullet-item"
+                                        style="background: transparent; border: none; padding: 0.5rem 0;">
+                                        <span
+                                            style="color: var(--accent); font-weight: 800; font-size: 1.1rem; min-width: 60px;">[진입]</span>
+                                        <p style="margin:0;">수강 신청 → 자동 커뮤니티 입장</p>
+                                    </div>
+                                    <div class="bullet-item"
+                                        style="background: transparent; border: none; padding: 0.5rem 0;">
+                                        <span
+                                            style="color: var(--accent); font-weight: 800; font-size: 1.1rem; min-width: 60px;">[활동]</span>
+                                        <p style="margin:0;">뱃지 획득 및 전용 커뮤니티 네트워킹</p>
+                                    </div>
+                                    <div class="bullet-item"
+                                        style="background: transparent; border: none; padding: 0.5rem 0;">
+                                        <span
+                                            style="color: var(--accent); font-weight: 800; font-size: 1.1rem; min-width: 60px;">[순환]</span>
+                                        <p style="margin:0;">커뮤니티 내 새로운 이벤트 발견 및 재구매</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="flex: 1; display: flex; justify-content: flex-end;">
+                                <div
+                                    style="width: 340px; height: 340px; border-radius: 50%; border: 12px solid var(--primary-light); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔄</div>
+                                    <div style="font-weight: 800; font-size: 1.6rem; color: var(--primary);">Growth
+                                        Flywheel</div>
+                                    <p style="font-size: 0.85rem; padding: 0 1.5rem; line-height: 1.4;">네트워크 효과를
+                                        통한<br>플랫폼 잔류 시간의 극대화</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div>BUSINESS VISION</div>
+                    <div class="slide-number">03</div>
+                </div>
+            </section>
+
+            <!-- Slide 4: Tech Stack -->
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <h2>Technology Stack</h2>
+                    </div>
+                    <div class="slide-body">
+                        <div class="card-grid">
+                            <div class="feature-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏗️</div>
+                                <h4>Backend</h4>
+                                <p style="font-size: 1rem;">Spring Boot 3.x / Java 17<br>헥사고날 아키텍처 (Hexagonal)</p>
+                            </div>
+                            <div class="feature-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎨</div>
+                                <h4>Frontend</h4>
+                                <p style="font-size: 1rem;">Next.js 16 / Vanilla CSS<br>BFF Proxy (iron-session)</p>
+                            </div>
+                            <div class="feature-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💾</div>
+                                <h4>Data / Cache</h4>
+                                <p style="font-size: 1rem;">PostgreSQL 15 / Redis 7<br>Domain-Driven ID 연관 관계</p>
+                            </div>
+                        </div>
+                        <div
+                            style="margin-top: 2rem; background: #f8fafc; padding: 1.5rem 2rem; border-radius: 12px; border: 1px dashed var(--primary); display: flex; align-items: center; gap: 1.5rem;">
+                            <div
+                                style="background: var(--primary); color: white; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 700; font-size: 0.9rem;">
+                                Highlights</div>
+                            <p style="font-size: 1rem; color: var(--text-dark); margin: 0;">Docker Volume 서빙(0.5ms),
+                                OAuth2 & JWT 듀얼 인증, SMTP 비동기 처리</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div>TECHNICAL ARCHITECTURE</div>
+                    <div class="slide-number">04</div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Domain 01 - Core Economy -->
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <h2>Domain 01: Core Economy</h2>
+                    </div>
+                    <div class="slide-body">
+                        <h3>Event, Session, Ticket & Payment</h3>
+                        <div class="card-grid">
+                            <div class="feature-card">
+                                <h4>계층형 상품 설계</h4>
+                                <p style="font-size: 0.9rem;">Event - Session - Ticket 3단계 구조. 호스트가 자유롭게 세션을 묶어 패키지 티켓을
+                                    구성하는 'Smart Default' 전략 적용</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>재고 정합성 보호</h4>
+                                <p style="font-size: 0.9rem;">묶음 상품과 개별 상품 간의 복합 재고 관리. 비관적 락(Pessimistic Locking)으로 인기
+                                    세션의 초과 판매(Overselling) 원천 차단</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>트랜잭션 최적화</h4>
+                                <p style="font-size: 0.9rem;">결제 완료 후 SMTP/Toss 통신 지연을 @Async 비동기 처리로 해결. 구글 캘린더 즉시 연동 및
+                                    장바구니 중복 구매 선제 방어 적용</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div>EVENT & PAYMENT SYSTEM</div>
+                    <div class="slide-number">05</div>
+                </div>
+            </section>
+
+            <!-- Slide 6: Domain 02 - Social & Retention -->
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <h2>Domain 02: Social & Retention</h2>
+                    </div>
+                    <div class="slide-body">
+                        <h3>Community, Badge & MyPage</h3>
+                        <div class="card-grid">
+                            <div class="feature-card">
+                                <h4>도메인 융합 권한</h4>
+                                <p style="font-size: 0.9rem;">CommunityPermissionService: 결제 내역(Order)과 뱃지 보유 여부(Badge)를
+                                    통합 검증하여 작성 권한을 부여하는 다중 도메인 체크</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>입체형 리텐션 뱃지</h4>
+                                <p style="font-size: 0.9rem;">8각형 클립패스 기반의 홀로그램 UI 뱃지. 단순 수집을 넘어 전용 커뮤니티 입장권 역할을 수행하는 소셜
+                                    성장 모델 구축</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>통합 마이페이지</h4>
+                                <p style="font-size: 0.9rem;">실시간 데이터 기반 이벤트 자동 분류(진행전/중/종료), 상태 머신 기반의 1:1 문의 CS 루프, 전역
+                                    프로필 실시간 동기화 구현</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div>COMMUNITY & USER EXPERIENCE</div>
+                    <div class="slide-number">06</div>
+                </div>
+            </section>
+
+            <!-- Slide 7: Domain 03 - Management & Trust -->
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <h2>Domain 03: Management & Trust</h2>
+                    </div>
+                    <div class="slide-body">
+                        <h3>Admin, Host & Security</h3>
+                        <div class="card-grid">
+                            <div class="feature-card">
+                                <h4>격리된 워크스페이스</h4>
+                                <p style="font-size: 0.9rem;">Admin, Host, Manager 역할별 인트라넷 급 독립 패널 구축. 권한 위임을 통해 특정
+                                    커뮤니티 전용 부관리자 기능 수행 가능</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>운영 효율화 루틴</h4>
+                                <p style="font-size: 0.9rem;">JPA Specification 기반의 동적 필터 쿼리. 관리자 실수 방지를 위한 Step-wise
+                                    Modal 및 통계 시각화 대시보드 제공</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>BFF 보안 아키텍처</h4>
+                                <p style="font-size: 0.9rem;">Next.js BFF 레이어에서 JWT 은닉 관리. XSS 차단 및 OAuth2 / Local 인증
+                                    공급자별 조건부 렌더링 최적화</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div>SYSTEM ADMINISTRATION & SECURITY</div>
+                    <div class="slide-number">07</div>
+                </div>
+            </section>
+
+            <!-- Slide 8: Engineering Challenges -->
+            <section class="slide">
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <h2>Trouble Shooting</h2>
+                    </div>
+                    <div class="slide-body">
+                        <h3>"기술 부채를 해결하는 엔지니어링"</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="feature-card" style="padding: 1.5rem;">
+                                <div
+                                    style="color: var(--accent); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 1.4rem;">💡</span> SMTP/Toss Blocking 문제
+                                </div>
+                                <p style="font-size: 0.95rem; line-height: 1.5;">동기 메일링 지연(15초)을 <strong>@Async & 스레드풀
+                                        최적화</strong>로 해결 (Non-blocking 전환)</p>
+                            </div>
+                            <div class="feature-card" style="padding: 1.5rem;">
+                                <div
+                                    style="color: var(--accent); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 1.4rem;">💡</span> GDPR & 재가입 무결성
+                                </div>
+                                <p style="font-size: 0.95rem; line-height: 1.5;">Soft Delete 한계 극복을 위해 <strong>Hard
+                                        Delete + Cascade</strong> 정책 수립 및 무결성 확보</p>
+                            </div>
+                            <div class="feature-card" style="padding: 1.5rem;">
+                                <div
+                                    style="color: var(--accent); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 1.4rem;">💡</span> Hydration 엇박자 오류
+                                </div>
+                                <p style="font-size: 0.95rem; line-height: 1.5;">SSR/CSR간 인증 상태 불일치를 <strong>Zustand &
+                                        checkSession 동기화</strong> 패턴으로 영구 해결</p>
+                            </div>
+                            <div class="feature-card" style="padding: 1.5rem;">
+                                <div
+                                    style="color: var(--accent); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 1.4rem;">💡</span> 도커 볼륨 서빙 최적화
+                                </div>
+                                <p style="font-size: 0.95rem; line-height: 1.5;">Spring 스레드 점유 없이 <strong>Nginx가 파일 직접
+                                        서빙</strong>하도록 인프라 최적화 (응답속도 0.5ms)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div>ENGINEERING EXCELLENCE</div>
+                    <div class="slide-number">08</div>
+                </div>
+            </section>
+
+            <!-- Slide 9: Closing -->
+            <section class="slide section-header">
+                <div class="slide-content" style="text-align: center; justify-content: center; align-items: center;">
+                    <div style="font-size: 4rem; margin-bottom: 1.5rem;">🚀</div>
+                    <h2 style="font-size: 4.8rem; justify-content: center; margin: 0; color: white;">VenueOn Vision</h2>
+                    <p style="font-size: 1.8rem; margin-top: 2rem; opacity: 0.9; color: white;">"경험을 소비하고 떠나는 것이
+                        아니라,<br>가치를 공유하고 머무는 플랫폼."</p>
+                    <div
+                        style="margin-top: 5rem; padding: 1.2rem 3rem; background: var(--accent); color: white; border-radius: 50px; font-weight: 800; font-size: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        THANK YOU
+                    </div>
+                </div>
+                <div class="slide-footer">
+                    <div style="color: rgba(255,255,255,0.7);">NEW LECTURE IBM 2ND TEAM 3 발표를 마치겠습니다.</div>
+                    <div class="slide-number" style="color: white;">09</div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="nav-btn" onclick="prevSlide()">←</button>
+        <button class="nav-btn" onclick="nextSlide()">→</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const presentation = document.getElementById('presentation');
+        const slides = document.querySelectorAll('.slide');
+        const progress = document.getElementById('progress');
+        const totalSlides = slides.length;
+
+        function updateSlide() {
+            presentation.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Update Progress Bar
+            const progressWidth = ((currentSlide + 1) / totalSlides) * 100;
+            progress.style.width = `${progressWidth}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Keyboard Controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        updateSlide();
+    </script>
+</body>
+
+</html>

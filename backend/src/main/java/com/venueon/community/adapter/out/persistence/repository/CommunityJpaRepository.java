@@ -19,9 +19,12 @@ public interface CommunityJpaRepository extends JpaRepository<CommunityJpaEntity
     
     @org.springframework.data.jpa.repository.Query("SELECT c FROM CommunityJpaEntity c " +
         "LEFT JOIN c.event e " +
-        "WHERE c.id IN :ids OR e.id IN :eventIds")
+        "WHERE c.id IN :ids " +
+        "OR (c.type = 'HOST_AUTO' AND e.id IN :orderEventIds) " +
+        "OR (c.type = 'BADGE_CREATED' AND e.id IN :badgeEventIds)")
     Page<CommunityJpaEntity> findJoinedCommunities(
         @org.springframework.data.repository.query.Param("ids") List<Long> ids, 
-        @org.springframework.data.repository.query.Param("eventIds") List<Long> eventIds, 
+        @org.springframework.data.repository.query.Param("orderEventIds") List<Long> orderEventIds, 
+        @org.springframework.data.repository.query.Param("badgeEventIds") List<Long> badgeEventIds, 
         Pageable pageable);
 }
