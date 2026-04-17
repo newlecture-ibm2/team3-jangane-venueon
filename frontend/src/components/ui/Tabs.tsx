@@ -13,8 +13,10 @@ export interface TabsProps {
   variant?: 'line' | 'pill';
   /** 출력할 탭 데이터 목록 */
   options: TabOption[];
-  /** 현재 선택된 탭의 value */
-  activeValue: string;
+  /** 현재 선택된 탭의 value (단일 선택 시) */
+  activeValue?: string;
+  /** 선택된 탭들의 value 배열 (다중 선택 시) */
+  activeValues?: string[];
   /** 탭 변경 시 호출될 콜백 함수 */
   onChange: (value: string) => void;
   className?: string;
@@ -24,6 +26,7 @@ export default function Tabs({
   variant = 'line',
   options,
   activeValue,
+  activeValues,
   onChange,
   className = ''
 }: TabsProps) {
@@ -32,7 +35,9 @@ export default function Tabs({
   return (
     <div className={`${styles.container} ${containerClass} ${className}`.trim()} role="tablist">
       {options.map((option) => {
-        const isActive = option.value === activeValue;
+        const isActive = activeValues 
+          ? activeValues.includes(option.value)
+          : option.value === activeValue;
         
         let tabClass = styles.tabButton;
         if (variant === 'line') {
@@ -47,7 +52,13 @@ export default function Tabs({
             role="tab"
             aria-selected={isActive}
             className={tabClass.trim()}
-            onClick={() => onChange(isActive ? '' : option.value)}
+            onClick={() => {
+              if (activeValues) {
+                onChange(option.value);
+              } else {
+                onChange(isActive ? '' : option.value);
+              }
+            }}
           >
             {option.label}
           </button>

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Sidebar from '@/components/layout/Sidebar';
-import { Button, InputField, UserProfile, Toggle } from '@/components/ui';
+import { Button, InputField, UserProfile, Toggle, Tabs } from '@/components/ui';
 import UploadModal from '@/components/modal/UploadModal';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import styles from './page.module.css';
@@ -90,18 +90,12 @@ export default function ProfileSettingsPage() {
               <h1 className={styles.pageTitle}>관심 카테고리 설정</h1>
               <p className={styles.subtitle}>관심있는 카테고리를 선택해주세요. 맞춤 이벤트를 추천해 드립니다.</p>
             </div>
-            <div className={styles.categoryPills}>
-              {availableCategories.map(cat => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  className={`${styles.categoryPill} ${categories.includes(cat.name) ? styles.categoryPillActive : ''}`}
-                  onClick={() => toggleCategory(cat.name)}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
+            <Tabs
+              variant="pill"
+              options={availableCategories.map(cat => ({ value: cat.name, label: cat.name }))}
+              activeValues={categories}
+              onChange={toggleCategory}
+            />
           </div>
 
           <div className={styles.rowSectionBlock}>

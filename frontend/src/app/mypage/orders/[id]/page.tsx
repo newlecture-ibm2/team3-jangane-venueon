@@ -53,71 +53,79 @@ export default function OrderDetailPage() {
 
           <div className={styles.detailContainer}>
             {/* 1. 주문 정보 섹션 */}
-            <div className={styles.section}>
+            <div className={styles.sectionGroup}>
               <h2 className={styles.sectionTitle}>주문 정보</h2>
-              <div className={styles.row}>
-                <span className={styles.label}>주문 번호</span>
-                <span className={styles.value}>{order.orderId}</span>
-              </div>
-              <div className={styles.row}>
-                <span className={styles.label}>주문 일시</span>
-                <span className={styles.value}>{formatDate(order.orderedAt)}</span>
+              <div className={styles.sectionCard}>
+                <div className={styles.row}>
+                  <span className={styles.label}>주문 번호</span>
+                  <span className={styles.value}>{order.orderId}</span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>주문 일시</span>
+                  <span className={styles.value}>{formatDate(order.orderedAt)}</span>
+                </div>
               </div>
             </div>
 
             {/* 2. 상품 정보 섹션 */}
-            <div className={styles.section}>
+            <div className={styles.sectionGroup}>
               <h2 className={styles.sectionTitle}>상품 정보</h2>
-              <div className={styles.row}>
-                <span className={styles.label}>행사명</span>
-                <span className={styles.value}>{order.eventTitle}</span>
-              </div>
-              {order.ticketName && (
+              <div className={styles.sectionCard}>
                 <div className={styles.row}>
-                  <span className={styles.label}>티켓</span>
-                  <span className={styles.value}>{order.ticketName}</span>
+                  <span className={styles.label}>행사명</span>
+                  <span className={styles.value}>{order.eventTitle}</span>
                 </div>
-              )}
-              <div className={styles.row}>
-                <span className={styles.label}>참가 인원(수량)</span>
-                <span className={styles.value}>{order.quantity}명</span>
+                {order.ticketName && (
+                  <div className={styles.row}>
+                    <span className={styles.label}>티켓</span>
+                    <span className={styles.value}>{order.ticketName}</span>
+                  </div>
+                )}
+                <div className={styles.row}>
+                  <span className={styles.label}>참가 인원(수량)</span>
+                  <span className={styles.value}>{order.quantity}명</span>
+                </div>
               </div>
             </div>
 
             {/* 3. 온라인 세션 정보 섹션 (조건부 노출) */}
             {order.onlineSessions && order.onlineSessions.length > 0 && (
-              <div className={styles.section}>
+              <div className={styles.sectionGroup}>
                 <h2 className={styles.sectionTitle}>온라인 세션 입장</h2>
-                {order.onlineSessions.map(session => (
-                  <OnlineSessionCard key={session.sessionId} session={session} />
-                ))}
+                <div className={styles.sectionCard}>
+                  {order.onlineSessions.map(session => (
+                    <OnlineSessionCard key={session.sessionId} session={session} />
+                  ))}
+                </div>
               </div>
             )}
 
             {/* 4. 결제 정보 섹션 */}
-            <div className={styles.section}>
+            <div className={styles.sectionGroup}>
               <h2 className={styles.sectionTitle}>결제 정보</h2>
-              <div className={styles.row}>
-                <span className={styles.label}>결제 수단</span>
-                <span className={styles.value}>{order.paymentMethod}</span>
-              </div>
-              <div className={styles.row}>
-                <span className={styles.label}>결제 일시</span>
-                <span className={styles.value}>{formatDate(order.paidAt || '')}</span>
-              </div>
-              <div className={`${styles.row} ${styles.totalRow}`}>
-                <span className={styles.label}>총 결제 금액</span>
-                <span className={styles.totalValue}>{formatCurrency(order.amount)}</span>
+              <div className={styles.sectionCard}>
+                <div className={styles.row}>
+                  <span className={styles.label}>결제 수단</span>
+                  <span className={styles.value}>{order.paymentMethod}</span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>결제 일시</span>
+                  <span className={styles.value}>{formatDate(order.paidAt || '')}</span>
+                </div>
+                <div className={`${styles.row} ${styles.totalRow}`}>
+                  <span className={styles.label}>총 결제 금액</span>
+                  <span className={styles.totalValue}>{formatCurrency(order.amount)}</span>
+                </div>
               </div>
             </div>
 
             {/* 액션 버튼 */}
             <div className={styles.actionArea}>
-              <Button variant="primary" onClick={() => router.push('/mypage/orders')}>
+              <Button size="large" variant="primary" onClick={() => router.push('/mypage/orders')} style={{ width: '120px' }}>
                 목록으로
               </Button>
               {canRefund && (
-                <Button variant="danger" onClick={() => setIsRefundModalOpen(true)}>
+                <Button size="large" variant="danger" onClick={() => setIsRefundModalOpen(true)} style={{ width: '120px' }}>
                   환불 신청
                 </Button>
               )}

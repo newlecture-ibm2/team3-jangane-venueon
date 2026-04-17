@@ -94,7 +94,7 @@ function MyPageContent() {
                   actionButtonText={
                     lecture.hasOnlineSessions 
                       ? '온라인 입장'
-                      : canWriteReview(lecture.eventId) 
+                      : activeTab === 'completed' && canWriteReview(lecture.eventId) 
                         ? '리뷰 작성하기' 
                         : activeTab === 'enrolled' 
                           ? '입장하기' 
@@ -103,15 +103,15 @@ function MyPageContent() {
                   onActionClick={() => {
                     if (lecture.hasOnlineSessions) {
                       router.push(`/mypage/orders/${lecture.orderId}`);
-                    } else if (canWriteReview(lecture.eventId)) {
+                    } else if (activeTab === 'completed' && canWriteReview(lecture.eventId)) {
                       openReviewModal(lecture.eventId, lecture.title);
                     } else {
                       router.push(`/events/${lecture.eventId}`);
                     }
                   }}
-                  secondaryActionText={activeTab === 'enrolled' ? '리뷰 작성하기' : undefined}
+                  secondaryActionText={activeTab === 'enrolled' && canWriteReview(lecture.eventId) ? '리뷰 작성하기' : undefined}
                   onSecondaryActionClick={() => {
-                    if (activeTab === 'enrolled') {
+                    if (activeTab === 'enrolled' && canWriteReview(lecture.eventId)) {
                       openReviewModal(lecture.eventId, lecture.title);
                     }
                   }}

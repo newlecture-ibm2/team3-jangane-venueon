@@ -70,8 +70,8 @@ export function useEvents(initialTab?: string) {
         setLectures(mappedLectures);
         setTotalPages(data.totalPages || 1);
 
-        // 종료 탭일 때 각 이벤트의 리뷰 작성 여부 확인
-        if (tab === 'completed') {
+        // 종료 및 진행 중 탭일 때 각 이벤트의 리뷰 작성 여부 확인
+        if (tab === 'completed' || tab === 'enrolled') {
           const eventIds = [...new Set(mappedLectures.map(l => l.eventId))];
           const reviewed = new Set<number>();
           await Promise.all(
@@ -132,7 +132,7 @@ export function useEvents(initialTab?: string) {
 
   // 리뷰 작성 가능 여부 판단
   const canWriteReview = (eventId: number) => {
-    return activeTab === 'completed' && !reviewedSet.has(eventId);
+    return (activeTab === 'completed' || activeTab === 'enrolled') && !reviewedSet.has(eventId);
   };
 
   const openReviewModal = (eventId: number, title: string) => {

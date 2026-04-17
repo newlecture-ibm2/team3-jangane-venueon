@@ -11,15 +11,20 @@
   width: 100%;
   box-sizing: border-box;
 
-  background: var(--color-text-gray-50);  /* #F9FAFB */
+  background: var(--color-bg);
   border-radius: var(--radius-md);        /* 8px */
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
 }
 
+.item:hover {
+  background: var(--color-surface);
+}
+
 /* --------- 선택(selected) 상태 --------- */
 .selected {
-  background: var(--color-text-gray-900); /* #111827 */
+  background: var(--color-surface);
+  border: 1.2px solid var(--color-primary);
 }
 
 /* --------- 타이틀 래퍼 --------- */
@@ -70,7 +75,7 @@
 }
 
 .selected .postType {
-  color: #C7D2FE; /* 선택 시 더 밝은 보라색 */
+  color: var(--color-primary);
 }
 
 /* --------- 제목 --------- */
@@ -89,7 +94,7 @@
 }
 
 .selected .title {
-  color: var(--color-text-white);         /* #FFFFFF */
+  color: var(--color-primary);
 }
 
 /* --------- 하단 메타 행 (프로필 + 날짜) --------- */
@@ -111,5 +116,5 @@
 }
 
 .selected .date {
-  color: var(--color-text-gray-300);      /* #D1D5DB */
+  color: var(--color-text-gray-500); 
 }
