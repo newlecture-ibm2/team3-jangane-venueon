@@ -64,11 +64,7 @@ public class CommunityQueryService implements GetCommunityQuery {
                 .distinct()
                 .collect(java.util.stream.Collectors.toList());
 
-        // 합집합용 이벤트 ID 리스트
-        java.util.Set<Long> allEventIds = new java.util.HashSet<>(orderEventIds);
-        allEventIds.addAll(badgeEventIds);
-
-        return communityRepositoryPort.findJoinedCommunities(memberCommunityIds, new java.util.ArrayList<>(allEventIds), pageable)
+        return communityRepositoryPort.findJoinedCommunities(memberCommunityIds, orderEventIds, badgeEventIds, pageable)
                 .map(community -> toResponse(community, email));
     }
 
