@@ -5,7 +5,19 @@
   width: 100%;
 }
 
-.section {
+.sectionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.sectionTitle {
+  font: var(--text-h2-bold);
+  color: var(--color-text-gray-900);
+  margin: 0;
+}
+
+.sectionCard {
   display: flex;
   flex-direction: column;
   gap: var(--space-16);
@@ -13,14 +25,6 @@
   border-radius: var(--radius-md);
   padding: var(--space-24);
   background-color: var(--color-bg);
-}
-
-.sectionTitle {
-  font: var(--text-h2-bold);
-  color: var(--color-text-gray-900);
-  margin: 0 0 var(--space-8) 0;
-  border-bottom: 1px solid var(--color-gray-disabled-fill);
-  padding-bottom: var(--space-12);
 }
 
 .row {

@@ -30,7 +30,7 @@ export default function AdminDashboardPage() {
         <h1 className={styles.pageTitle}>관리자 대시보드</h1>
 
         {/* 요약 카드 섹션 (기존 스타일) */}
-        <div style={{ marginTop: '24px' }}>
+        <div>
           <StatsCards data={state.data} isLoading={state.isLoading} />
         </div>
 

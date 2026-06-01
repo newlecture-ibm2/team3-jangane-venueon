@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, InputField } from '@/components/ui';
+import { Checkbox, InputField, Tabs } from '@/components/ui';
 import styles from './EventFilter.module.css';
 
 interface Category {
@@ -31,10 +31,15 @@ export default function EventFilter({
   onCategoryChange,
 }: EventFilterProps) {
   const tabs = [
-    { key: 'ALL', label: '전체' },
-    { key: 'READY', label: '게시 전' },
-    { key: 'RECRUITING', label: '모집 중' },
-    { key: 'CLOSED', label: '종료' },
+    { value: 'ALL', label: '전체' },
+    { value: 'READY', label: '게시 전' },
+    { value: 'RECRUITING', label: '모집 중' },
+    { value: 'CLOSED', label: '종료' },
+  ];
+
+  const categoryOptions = [
+    { value: 'all', label: '전체' },
+    ...categories.map(c => ({ value: String(c.id), label: c.name }))
   ];
 
   return (
@@ -42,15 +47,12 @@ export default function EventFilter({
       {/* 1) 상단 탭 + 필터 */}
       <div className={styles.tabRow}>
         <div className={styles.tabs}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              className={`${styles.tab} ${activeTab === tab.key ? styles.activeTab : ''}`}
-              onClick={() => onTabChange(tab.key)}
-            >
-              {tab.label}
-            </button>
-          ))}
+          <Tabs
+            variant="line"
+            options={tabs}
+            activeValue={activeTab}
+            onChange={(val) => onTabChange(val || 'ALL')}
+          />
         </div>
         <div className={styles.checkboxArea}>
           <Checkbox
@@ -63,35 +65,23 @@ export default function EventFilter({
 
       {/* 2) 검색바 (공통 InputField 활용) */}
       <div className={styles.filterRow}>
-        <div className={styles.searchArea}>
-          <InputField
-            variant="search"
-            placeholder="강의 제목으로 검색하세요"
-            className={styles.searchInput}
-            value={searchKeyword}
-            onChange={(e) => onSearchChange(e.target.value)}
-          />
-        </div>
+        <InputField
+          variant="search"
+          placeholder="강의 제목으로 검색하세요"
+          value={searchKeyword}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
       </div>
 
       {/* 3) 카테고리 필터 영역 */}
       <div className={styles.categoryRow}>
         <div className={styles.categoryChips}>
-          <button
-            className={`${styles.chip} ${selectedCategoryId === null ? styles.activeChip : ''}`}
-            onClick={() => onCategoryChange(null)}
-          >
-            전체
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              className={`${styles.chip} ${selectedCategoryId === cat.id ? styles.activeChip : ''}`}
-              onClick={() => onCategoryChange(cat.id)}
-            >
-              {cat.name}
-            </button>
-          ))}
+          <Tabs
+            variant="pill"
+            options={categoryOptions}
+            activeValue={selectedCategoryId === null ? 'all' : String(selectedCategoryId)}
+            onChange={(val) => onCategoryChange(!val || val === 'all' ? null : Number(val))}
+          />
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: space-between;
   height: var(--space-48);
-  margin-bottom: var(--space-32);
+  margin-bottom: var(--space-24);
 }
 
 .tabs {
@@ -47,7 +47,7 @@
 .filterRow {
   display: flex;
   align-items: center;
-  margin-bottom: var(--space-32);
+  margin-bottom: var(--space-24);
 }
 
 
@@ -55,7 +55,7 @@
 .categoryRow {
   display: flex;
   align-items: center;
-  margin-bottom: var(--space-32);
+  margin-bottom: var(--space-24);
 }
 
 .categoryChips {

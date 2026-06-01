@@ -24,7 +24,7 @@
 /* 개별 요약 박스 */
 .summaryBox {
   display: flex;
-  padding: var(--space-8) var(--space-16);
+  padding: var(--space-12) var(--space-16);
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-4);
@@ -37,7 +37,7 @@
 }
 
 .summaryBox:hover {
-  background-color: var(--color-surface-hover);
+  background-color: var(--color-text-gray-50);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
