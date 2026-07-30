@@ -17,6 +17,7 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    mem_limit: 300m
 
   # ─── Backend (Spring Boot) ───────────────
   backend:
@@ -52,12 +53,14 @@ services:
       - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
       - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
       - APP_FRONTEND_URL=${APP_FRONTEND_URL}
+      - JAVA_TOOL_OPTIONS=-Xmx320m -Xms192m
     volumes:
       - ~/dist/upload:/home/upload
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
+    mem_limit: 500m
 
   # ─── Frontend (Next.js) ──────────────────
   frontend:
@@ -80,6 +83,7 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    mem_limit: 300m
 
 volumes:
   db-data:

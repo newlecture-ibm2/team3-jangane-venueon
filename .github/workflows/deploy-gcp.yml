@@ -1,0 +1,97 @@
+# ============================================================
+# VenueOn CI/CD Pipeline (GCP Self-hosted Runner, young-server)
+# ============================================================
+# 트리거: deploy/gcp 브랜치 push (팀 공용 dev 브랜치와 분리)
+# 흐름: checkout → .env 생성 → docker compose build → health check
+# ============================================================
+
+name: VenueOn GCP Deploy
+
+on:
+  push:
+    branches: [ deploy/gcp ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, gcp] # young-server(GCP)에 등록된 러너 전용
+
+    env:
+      COMPOSE_PROJECT_NAME: venueon
+      SPRING_DATASOURCE_URL: ${{ vars.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ vars.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      FRONTEND_PORT: "3033" # ncafe=3031, anook=3032 사용 중이라 겹치지 않는 고정값
+      NEXT_PUBLIC_API_URL: "https://venueon.mymyy.com" # gcp 배포 전용 도메인 (공용 vars.* 는 다른 타깃용이라 여기서 하드코딩)
+      CORS_ALLOWED_ORIGINS: "https://venueon.mymyy.com"
+      API_BASE_URL: ${{ vars.API_BASE_URL }}
+      TOSS_CLIENT_KEY: ${{ vars.TOSS_CLIENT_KEY }}
+      TOSS_SECRET_KEY: ${{ secrets.TOSS_SECRET_KEY }}
+      GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+      DATA_GO_KR_API_KEY: ${{ secrets.DATA_GO_KR_API_KEY }}
+      SPRING_MAIL_USERNAME: ${{ vars.SPRING_MAIL_USERNAME }}
+      SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
+      APP_FRONTEND_URL: "https://venueon.mymyy.com"
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Sync to workspace
+        run: |
+          mkdir -p ~/workspace/team3-jangane-venueon
+          rsync -a --delete --exclude='.git' ./ ~/workspace/team3-jangane-venueon/
+
+      - name: Generate .env file
+        run: |
+          cd ~/workspace/team3-jangane-venueon
+          cat > .env << 'ENVEOF'
+          COMPOSE_PROJECT_NAME=venueon
+          SPRING_DATASOURCE_URL=${{ vars.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME=${{ vars.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+          POSTGRES_DB=${{ vars.POSTGRES_DB }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          FRONTEND_PORT=3033
+          NEXT_PUBLIC_API_URL=https://venueon.mymyy.com
+          CORS_ALLOWED_ORIGINS=https://venueon.mymyy.com
+          API_BASE_URL=${{ vars.API_BASE_URL }}
+          TOSS_CLIENT_KEY=${{ vars.TOSS_CLIENT_KEY }}
+          TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}
+          GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
+          DATA_GO_KR_API_KEY=${{ secrets.DATA_GO_KR_API_KEY }}
+          SPRING_MAIL_USERNAME=${{ vars.SPRING_MAIL_USERNAME }}
+          SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}
+          APP_FRONTEND_URL=https://venueon.mymyy.com
+          ENVEOF
+          sed -i 's/^[[:space:]]*//' .env
+
+      - name: Build and Deploy
+        run: |
+          cd ~/workspace/team3-jangane-venueon
+          docker compose down
+          docker compose up -d --build
+
+      - name: Health Check
+        run: |
+          cd ~/workspace/team3-jangane-venueon
+          echo "⏳ Waiting for services to start..."
+          sleep 40
+
+          echo "🔍 Checking Frontend..."
+          curl -f http://localhost:3033 || exit 1
+          echo "✅ Frontend OK"
+
+          echo "🔍 Checking Backend..."
+          BACKEND_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' venueon-backend)
+          curl -f http://${BACKEND_IP}:8080/actuator/health || exit 1
+          echo "✅ Backend OK"
+
+      - name: Cleanup
+        run: docker image prune -f
