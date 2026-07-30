@@ -11,7 +11,7 @@ import SessionList from './_components/SessionList/SessionList';
 import ReviewSection from './_components/ReviewSection/ReviewSection';
 import { BackButton } from '@/components/ui';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const BACKEND_URL = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 // API Fetch 함수
 async function getEventDetail(id: string) {
