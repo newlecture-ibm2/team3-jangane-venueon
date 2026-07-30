@@ -53,6 +53,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -60,6 +61,19 @@ import java.util.List;
 @Profile("dev")
 @RequiredArgsConstructor
 public class DataInitializer implements ApplicationRunner {
+
+    // 아래 seedDate() 호출부에 원래 하드코딩돼 있던 날짜들(2026-04-01 ~ 2026-06-29)은
+    // 이 앱이 기동되는 시점이 언제든 상관없이 데이터가 "지금 기준으로 진행 중/예정"인 것처럼
+    // 보이도록, 이 기준일(원본 데이터의 시작일)로부터의 상대 오프셋만 유지하고
+    // 실제 절대 날짜는 매 기동 시점(now) 기준으로 다시 계산한다.
+    private static final LocalDateTime SEED_ORIGINAL_EPOCH = LocalDateTime.of(2026, 4, 1, 0, 0);
+    private final LocalDateTime seedNewEpoch = LocalDateTime.now().minusDays(5);
+
+    private LocalDateTime seedDate(int year, int month, int day, int hour, int minute) {
+        LocalDateTime original = LocalDateTime.of(year, month, day, hour, minute);
+        long daysSinceEpoch = ChronoUnit.DAYS.between(SEED_ORIGINAL_EPOCH, original);
+        return seedNewEpoch.plusDays(daysSinceEpoch).withHour(hour).withMinute(minute);
+    }
 
         private final UserRoleJpaRepository userRoleRepository;
     private final EventStatusJpaRepository eventStatusRepository;
@@ -378,53 +392,53 @@ public class DataInitializer implements ApplicationRunner {
             // 0: AI Bootcamp (hasSession=true이므로 기본 세션 + 추가 세션)
             new SessionData("AI & Cloud Bootcamp", "2일 집중 부트캠프",
                     "서울 강남구 테헤란로 123 넥스트코드 교육센터", "서울", "강남구", false, null, 40,
-                    LocalDateTime.of(2026, 4, 12, 10, 0), LocalDateTime.of(2026, 4, 13, 18, 0),
-                    LocalDateTime.of(2026, 4, 1, 0, 0), LocalDateTime.of(2026, 4, 11, 23, 59)),
+                    seedDate(2026,4, 12, 10, 0), seedDate(2026,4, 13, 18, 0),
+                    seedDate(2026,4, 1, 0, 0), seedDate(2026,4, 11, 23, 59)),
             // 1: UX Design
             new SessionData("UX Design Workshop", "UX 디자인 실습",
                     "서울 성동구 성수이로 45 디자인브릿지 스튜디오", "서울", "성동구", false, null, 25,
-                    LocalDateTime.of(2026, 4, 26, 10, 0), LocalDateTime.of(2026, 4, 27, 17, 0),
-                    LocalDateTime.of(2026, 4, 10, 0, 0), LocalDateTime.of(2026, 4, 25, 23, 59)),
+                    seedDate(2026,4, 26, 10, 0), seedDate(2026,4, 27, 17, 0),
+                    seedDate(2026,4, 10, 0, 0), seedDate(2026,4, 25, 23, 59)),
             // 2: Startup Demo Day
             new SessionData("Startup Demo Day", "데모데이",
                     "서울 영등포구 여의대로 108 파크원타워 컨벤션홀", "서울", "영등포구", false, null, 200,
-                    LocalDateTime.of(2026, 5, 10, 14, 0), LocalDateTime.of(2026, 5, 10, 20, 0),
-                    LocalDateTime.of(2026, 4, 15, 0, 0), LocalDateTime.of(2026, 5, 9, 23, 59)),
+                    seedDate(2026,5, 10, 14, 0), seedDate(2026,5, 10, 20, 0),
+                    seedDate(2026,4, 15, 0, 0), seedDate(2026,5, 9, 23, 59)),
             // 3: 요가 클래스
             new SessionData("마음챙김 요가 클래스", "빈야사 요가",
                     "서울 마포구 연남로 27 그린라이프 웰니스센터", "서울", "마포구", false, null, 20,
-                    LocalDateTime.of(2026, 5, 17, 9, 0), LocalDateTime.of(2026, 5, 17, 11, 30),
-                    LocalDateTime.of(2026, 5, 1, 0, 0), LocalDateTime.of(2026, 5, 16, 23, 59)),
+                    seedDate(2026,5, 17, 9, 0), seedDate(2026,5, 17, 11, 30),
+                    seedDate(2026,5, 1, 0, 0), seedDate(2026,5, 16, 23, 59)),
             // 4: 현대미술 워크숍
             new SessionData("현대미술 워크숍", "현대미술 작품 제작",
                     "서울 성동구 서울숲2길 17 아트스페이스 서울", "서울", "성동구", false, null, 15,
-                    LocalDateTime.of(2026, 5, 24, 10, 0), LocalDateTime.of(2026, 5, 25, 17, 0),
-                    LocalDateTime.of(2026, 5, 1, 0, 0), LocalDateTime.of(2026, 5, 23, 23, 59)),
+                    seedDate(2026,5, 24, 10, 0), seedDate(2026,5, 25, 17, 0),
+                    seedDate(2026,5, 1, 0, 0), seedDate(2026,5, 23, 23, 59)),
             // 5: Business Growth Summit (온라인 겸용)
             new SessionData("Business Growth Summit", "비즈니스 서밋",
                     "서울 중구 세종대로 110 프레스센터 국제회의장", "서울", "중구", true, null, 150,
-                    LocalDateTime.of(2026, 5, 31, 9, 30), LocalDateTime.of(2026, 5, 31, 18, 0),
-                    LocalDateTime.of(2026, 5, 1, 0, 0), LocalDateTime.of(2026, 5, 30, 23, 59)),
+                    seedDate(2026,5, 31, 9, 30), seedDate(2026,5, 31, 18, 0),
+                    seedDate(2026,5, 1, 0, 0), seedDate(2026,5, 30, 23, 59)),
             // 6: 한식 마스터클래스
             new SessionData("한식 마스터클래스", "한식 쿠킹 클래스",
                     "서울 종로구 인사동길 38 푸드랩 서울 쿠킹스튜디오", "서울", "종로구", false, null, 12,
-                    LocalDateTime.of(2026, 6, 7, 11, 0), LocalDateTime.of(2026, 6, 7, 15, 0),
-                    LocalDateTime.of(2026, 5, 15, 0, 0), LocalDateTime.of(2026, 6, 6, 23, 59)),
+                    seedDate(2026,6, 7, 11, 0), seedDate(2026,6, 7, 15, 0),
+                    seedDate(2026,5, 15, 0, 0), seedDate(2026,6, 6, 23, 59)),
             // 7: Smart Investment Seminar (온라인 겸용)
             new SessionData("Smart Investment Seminar 2026", "투자 전략 세미나",
                     "서울 영등포구 국제금융로 10 머니플로우 세미나홀", "서울", "영등포구", true, null, 100,
-                    LocalDateTime.of(2026, 6, 14, 13, 0), LocalDateTime.of(2026, 6, 14, 18, 0),
-                    LocalDateTime.of(2026, 5, 20, 0, 0), LocalDateTime.of(2026, 6, 13, 23, 59)),
+                    seedDate(2026,6, 14, 13, 0), seedDate(2026,6, 14, 18, 0),
+                    seedDate(2026,5, 20, 0, 0), seedDate(2026,6, 13, 23, 59)),
             // 8: Creator Academy
             new SessionData("Creator Academy: Video Editing", "영상 편집 아카데미",
                     "서울 강남구 논현로 515 크리에이터즈 허브 미디어랩", "서울", "강남구", false, null, 30,
-                    LocalDateTime.of(2026, 6, 21, 10, 0), LocalDateTime.of(2026, 6, 22, 17, 0),
-                    LocalDateTime.of(2026, 6, 1, 0, 0), LocalDateTime.of(2026, 6, 20, 23, 59)),
+                    seedDate(2026,6, 21, 10, 0), seedDate(2026,6, 22, 17, 0),
+                    seedDate(2026,6, 1, 0, 0), seedDate(2026,6, 20, 23, 59)),
             // 9: Future Science Conference (hasSession=true)
             new SessionData("Future Science Conference", "학술 컨퍼런스",
                     "서울 동대문구 회기로 85 서울과학기술대 국제회의실", "서울", "동대문구", true, null, 300,
-                    LocalDateTime.of(2026, 6, 28, 9, 0), LocalDateTime.of(2026, 6, 29, 18, 0),
-                    LocalDateTime.of(2026, 6, 1, 0, 0), LocalDateTime.of(2026, 6, 27, 23, 59))
+                    seedDate(2026,6, 28, 9, 0), seedDate(2026,6, 29, 18, 0),
+                    seedDate(2026,6, 1, 0, 0), seedDate(2026,6, 27, 23, 59))
         };
 
         // 기본 세션 생성
@@ -457,13 +471,13 @@ public class DataInitializer implements ApplicationRunner {
                 .title("Day 1: AI 모델 배포")
                 .description("TensorFlow/PyTorch 모델을 AWS SageMaker에 배포하는 실습")
                 .sortOrder(1)
-                .startTime(LocalDateTime.of(2026, 4, 12, 10, 0))
-                .endTime(LocalDateTime.of(2026, 4, 12, 18, 0))
+                .startTime(seedDate(2026,4, 12, 10, 0))
+                .endTime(seedDate(2026,4, 12, 18, 0))
                 .location("서울 강남구 테헤란로 123 넥스트코드 교육센터")
                 .regionSido("서울").regionSigungu("강남구")
                 .maxAttendees(40)
-                .recruitStartDate(LocalDateTime.of(2026, 4, 1, 0, 0))
-                .recruitEndDate(LocalDateTime.of(2026, 4, 11, 23, 59))
+                .recruitStartDate(seedDate(2026,4, 1, 0, 0))
+                .recruitEndDate(seedDate(2026,4, 11, 23, 59))
                 .isDefault(false)
                 .build());
         sessionRepository.save(SessionJpaEntity.builder()
@@ -471,13 +485,13 @@ public class DataInitializer implements ApplicationRunner {
                 .title("Day 2: 클라우드 인프라 설계")
                 .description("AWS/GCP 기반 마이크로서비스 아키텍처 설계 및 배포 파이프라인 구축")
                 .sortOrder(2)
-                .startTime(LocalDateTime.of(2026, 4, 13, 10, 0))
-                .endTime(LocalDateTime.of(2026, 4, 13, 18, 0))
+                .startTime(seedDate(2026,4, 13, 10, 0))
+                .endTime(seedDate(2026,4, 13, 18, 0))
                 .location("서울 강남구 테헤란로 123 넥스트코드 교육센터")
                 .regionSido("서울").regionSigungu("강남구")
                 .maxAttendees(40)
-                .recruitStartDate(LocalDateTime.of(2026, 4, 1, 0, 0))
-                .recruitEndDate(LocalDateTime.of(2026, 4, 11, 23, 59))
+                .recruitStartDate(seedDate(2026,4, 1, 0, 0))
+                .recruitEndDate(seedDate(2026,4, 11, 23, 59))
                 .isDefault(false)
                 .build());
 
@@ -488,13 +502,13 @@ public class DataInitializer implements ApplicationRunner {
                 .title("세션 A: 생명공학의 미래")
                 .description("유전자 편집 기술과 맞춤형 의료의 최신 연구 성과 발표")
                 .sortOrder(1)
-                .startTime(LocalDateTime.of(2026, 6, 28, 10, 0))
-                .endTime(LocalDateTime.of(2026, 6, 28, 12, 0))
+                .startTime(seedDate(2026,6, 28, 10, 0))
+                .endTime(seedDate(2026,6, 28, 12, 0))
                 .location("서울 동대문구 회기로 85 국제회의실 A홀")
                 .regionSido("서울").regionSigungu("동대문구")
                 .maxAttendees(100)
-                .recruitStartDate(LocalDateTime.of(2026, 6, 1, 0, 0))
-                .recruitEndDate(LocalDateTime.of(2026, 6, 27, 23, 59))
+                .recruitStartDate(seedDate(2026,6, 1, 0, 0))
+                .recruitEndDate(seedDate(2026,6, 27, 23, 59))
                 .isDefault(false)
                 .build());
         sessionRepository.save(SessionJpaEntity.builder()
@@ -502,13 +516,13 @@ public class DataInitializer implements ApplicationRunner {
                 .title("세션 B: 양자컴퓨팅")
                 .description("양자 알고리즘과 오류 보정 기술의 최신 동향")
                 .sortOrder(2)
-                .startTime(LocalDateTime.of(2026, 6, 28, 14, 0))
-                .endTime(LocalDateTime.of(2026, 6, 28, 16, 0))
+                .startTime(seedDate(2026,6, 28, 14, 0))
+                .endTime(seedDate(2026,6, 28, 16, 0))
                 .isOnline(true)
                 .onlineLink("https://zoom.us/j/1234567890")
                 .maxAttendees(200)
-                .recruitStartDate(LocalDateTime.of(2026, 6, 1, 0, 0))
-                .recruitEndDate(LocalDateTime.of(2026, 6, 27, 23, 59))
+                .recruitStartDate(seedDate(2026,6, 1, 0, 0))
+                .recruitEndDate(seedDate(2026,6, 27, 23, 59))
                 .isDefault(false)
                 .build());
         sessionRepository.save(SessionJpaEntity.builder()
@@ -516,13 +530,13 @@ public class DataInitializer implements ApplicationRunner {
                 .title("세션 C: 우주과학")
                 .description("차세대 우주탐사 기술과 민간 우주산업의 전망")
                 .sortOrder(3)
-                .startTime(LocalDateTime.of(2026, 6, 29, 10, 0))
-                .endTime(LocalDateTime.of(2026, 6, 29, 12, 0))
+                .startTime(seedDate(2026,6, 29, 10, 0))
+                .endTime(seedDate(2026,6, 29, 12, 0))
                 .location("서울 동대문구 회기로 85 국제회의실 B홀")
                 .regionSido("서울").regionSigungu("동대문구")
                 .maxAttendees(100)
-                .recruitStartDate(LocalDateTime.of(2026, 6, 1, 0, 0))
-                .recruitEndDate(LocalDateTime.of(2026, 6, 27, 23, 59))
+                .recruitStartDate(seedDate(2026,6, 1, 0, 0))
+                .recruitEndDate(seedDate(2026,6, 27, 23, 59))
                 .isDefault(false)
                 .build());
 
@@ -653,7 +667,7 @@ public class DataInitializer implements ApplicationRunner {
                     .quantity(1)
                     .amount(price)
                     .paymentMethod(price > 0 ? paymentMethods[i % paymentMethods.length] : null)
-                    .displayOrderedAt(LocalDateTime.of(2026, 3, 25, 10, 0).minusDays(i))
+                    .displayOrderedAt(seedDate(2026,3, 25, 10, 0).minusDays(i))
                     .build());
         }
 
@@ -833,7 +847,7 @@ public class DataInitializer implements ApplicationRunner {
                 .badgeName(endedEvent.getTitle())
                 .badgeImageUrl(endedEvent.getThumbnailUrl())
                 .isVisible(true)
-                .earnedAt(LocalDateTime.of(2026, 5, 17, 11, 30))
+                .earnedAt(seedDate(2026,5, 17, 11, 30))
                 .build());
 
         log.info("뱃지 샘플 데이터 생성 완료: 1개");
